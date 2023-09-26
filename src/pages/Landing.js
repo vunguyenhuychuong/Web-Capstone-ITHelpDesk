@@ -2,16 +2,17 @@ import React from "react";
 import tw from "twin.macro";
 import AnimationRevealPage from './helpers/AnimationRevealPage';
 import Hero from './helpers/TwoColumnWithInput';
-import Features from "../components/headers/ThreeColWithSideImage";
-import MainFeature from "../components/headers/TwoColWithButton";
-import MainFeature2 from "../components/headers/TwoColWithTwoHorizontalFeaturesAndButton.js";
-import heroScreenshotImageSrc from "../assets/images/hero-screenshot-1.png";
-import Pricing from "../components/headers/ThreePlans";
-import Testimonial from "../components/headers/TwoColumnWithImageAndRating.js";
+import Features from "../components/landing/ThreeColWithSideImage";
+import MainFeature2 from "../components/landing/TwoColWithTwoHorizontalFeaturesAndButton.js";
+//import heroScreenshotImageSrc from "../assets/images/hero-screenshot-1.png";
+import Pricing from "../components/landing/ThreePlans";
+//import Testimonial from "../components/headers/TwoColumnWithImageAndRating.js";
 import { ReactComponent as MoneyIcon } from "feather-icons/dist/icons/dollar-sign.svg";
 import { ReactComponent as BriefcaseIcon } from "feather-icons/dist/icons/briefcase.svg";
-import FAQ from "../components/headers/SingleCol.js";
-import Footer from "../components/headers/FiveColumnWithBackground.js";
+import FAQ from "../components/landing/SingleCol.js";
+import Footer from "../components/landing/FiveColumnWithBackground.js";
+import prototypeIllustrationImageSrc from "../assets/images/prototype-illustration.svg";
+
 
 const Landing = () => {
   const Subheading = tw.span`uppercase tracking-widest font-bold text-primary-500`;
@@ -28,12 +29,6 @@ const Landing = () => {
           </>
         }
       />
-      <MainFeature
-        subheading={<Subheading>Quality Work</Subheading>}
-        imageSrc={heroScreenshotImageSrc}
-        imageBorder={true}
-        imageDecoratorBlob={true}
-      />
       <MainFeature2
         subheading={<Subheading>VALUES</Subheading>}
         heading={
@@ -41,7 +36,7 @@ const Landing = () => {
             We Always Abide by Our <HighlightedText>Principles.</HighlightedText>
           </>
         }
-        //imageSrc={prototypeIllustrationImageSrc}
+        imageSrc={prototypeIllustrationImageSrc}
         showDecoratorBlob={false}
         features={[
           {
@@ -67,56 +62,26 @@ const Landing = () => {
         }
         plans={[
           {
-            name: "Personal",
+            name: "Basic Package",
             price: "$17.99",
             duration: "Monthly",
             mainFeature: "For Individuals",
-            features: ["30 Templates", "7 Landing Pages", "12 Internal Pages", "Basic Assistance"]
+            features: ["Unlimited IT Helpdesk support", "Technology Consulting", "Service time: 8x5"]
           },
           {
-            name: "Business",
+            name: "Standard Package",
             price: "$37.99",
             duration: "Monthly",
             mainFeature: "For Small Businesses",
-            features: ["60 Templates", "15 Landing Pages", "22 Internal Pages", "Priority Assistance"],
+            features: ["Unlimited IT Helpdesk support", "Network Infrastructure Support", "Periodically check on-site", "Periodic Service Reports", "Service time: 8x5"],
             featured: true
           },
           {
-            name: "Enterprise",
+            name: "Professional Package",
             price: "$57.99",
             duration: "Monthly",
             mainFeature: "For Large Companies",
-            features: ["90 Templates", "27 Landing Pages", "37 Internal Pages", "Personal Assistance"]
-          }
-        ]}
-      />
-      <Testimonial
-        subheading={<Subheading>Testimonials</Subheading>}
-        heading={
-          <>
-            Our Clients <HighlightedText>Love Us.</HighlightedText>
-          </>
-        }
-        testimonials={[
-          {
-            stars: 5,
-            profileImageSrc:
-              "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=3.25&w=512&h=512&q=80",
-            heading: "Amazing User Experience",
-            quote:
-              "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.",
-            customerName: "Charlotte Hale",
-            customerTitle: "Director, Delos Inc."
-          },
-          {
-            stars: 5,
-            profileImageSrc:
-              "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=512&h=512&q=80",
-            heading: "Love the Developer Experience and Design Principles !",
-            quote:
-              "Sinor Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
-            customerName: "Adam Cuppy",
-            customerTitle: "Founder, EventsNYC"
+            features: ["Unlimited IT Helpdesk support", "Network Infrastructure Support", "Periodically check on-site", "Periodic Service Reports", "Network Infrastructure","Service time: 8x5"]
           }
         ]}
       />

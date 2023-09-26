@@ -7,6 +7,8 @@ import { SectionDescription } from "../../components/misc/Typography.js";
 import { PrimaryButton as PrimaryButtonBase } from "../../components/misc/Buttons.js";
 import { Container, ContentWithPaddingXl } from "../../components/misc/Layouts.js";
 import { ReactComponent as SvgDecoratorBlob } from "../../assets/images/svg-decorator-blob-6.svg";
+import { ReactComponent as CheckboxIcon } from "../../assets/images/checkbox-circle.svg";
+
 
 const HeaderContainer = tw.div`mt-10 w-full flex flex-col items-center`;
 const Subheading = tw(SubheadingBase)`mb-4`;
@@ -60,16 +62,16 @@ const PlanHeader = styled.div`
   }
 `;
 const PlanFeatures = styled.div`
-  ${tw`flex flex-col -mx-8 px-8 py-8 border-t-2 border-b-2 flex-1`}
-  .feature {
-    ${tw`mt-5 first:mt-0 font-medium`}
-    &:not(.mainFeature) {
-      ${tw`text-gray-600`}
-    }
+${tw`mt-10 flex-1 border-t lg:-mx-6 -mx-6 sm:-mx-10 py-10 px-6 sm:px-10 lg:p-6 xl:-mx-10 xl:p-10`}
+.feature {
+  ${tw`flex items-start mt-6 first:mt-0`}
+  .icon {
+    ${tw`w-6 h-6 text-gray-500 flex-shrink-0`}
   }
-  .mainFeature {
-    ${tw`text-xl font-bold tracking-wide`}
+  .text {
+    ${tw`font-semibold text-primary-900 tracking-wide ml-3`}
   }
+}
 `;
 
 const PlanAction = tw.div`px-4 sm:px-8 xl:px-16 py-8`;
@@ -151,9 +153,10 @@ const PricingSection = ({
               <PlanFeatures>
                 <span className="feature mainFeature">{plan.mainFeature}</span>
                 {plan.features.map((feature, index) => (
-                  <span key={index} className="feature">
-                    {feature}
-                  </span>
+                  <li className="feature" key={index}>
+                      <CheckboxIcon className="icon" />
+                  <span className="text">{feature}</span>
+                  </li>
                 ))}
               </PlanFeatures>
               <PlanAction>

@@ -1,7 +1,7 @@
 import { HiChevronDoubleLeft, HiChevronDoubleRight } from 'react-icons/hi';
-import Wrapper from '../assets/wrappers/PageBtnContainer';
+import Wrapper from '../../assets/wrappers/PageBtnContainer';
 import { useSelector, useDispatch } from 'react-redux';
-import { changePage } from '../features/allJobs/allJobsSlice';
+import { changePage } from '../../features/allJobs/allJobsSlice';
 
 const PageBtnContainer = () => {
   const { numOfPages, page } = useSelector((store) => store.allJobs);

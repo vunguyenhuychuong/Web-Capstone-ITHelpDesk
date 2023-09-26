@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FormRow } from '../../components';
+import { FormRow } from '../../components/dashboard';
 import Wrapper from '../../assets/wrappers/DashboardFormPage';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
