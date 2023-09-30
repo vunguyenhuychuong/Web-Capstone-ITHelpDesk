@@ -7,8 +7,6 @@ import {
   MDBCardBody,
   MDBCardImage,
   MDBBtn,
-  MDBProgress,
-  MDBProgressBar,
   MDBIcon,
   MDBListGroup,
   MDBListGroupItem
@@ -19,20 +17,19 @@ import { getDataProfile } from '../../app/api';
 
 
 const Profile = () => {
-
   const [data, setData] = useState({ firstName: '', lastName: '',username: '',email: '',avatarUrl: '',phoneNumber: '',dateOfBirth: '',gender: '',team: '' });
-  const userProfile = JSON.parse(localStorage.getItem("profileAdmin"));
-  const UserId = userProfile.result.user.id;
-  const fetchDataProfile = async () => {
-    if(UserId) {
-      const profile = await getDataProfile(UserId);
-      setData(profile);
-      console.log('dataprofile', profile);
-    }
-  }
   useEffect(() => {
+    const userProfile = JSON.parse(localStorage.getItem("profileAdmin"));
+    const UserId = userProfile.result.user.id;
+    const fetchDataProfile = async () => {
+      if(UserId) {
+        const profile = await getDataProfile(UserId);
+        setData(profile);
+        console.log('dataProfile', profile);
+      }
+    }
     fetchDataProfile();
-  }, [fetchDataProfile]);
+  }, []);
 
   return (
     <section style={{ backgroundColor: '#eee' }}>
@@ -101,7 +98,8 @@ const Profile = () => {
                     <MDBCardText>Full Name</MDBCardText>
                   </MDBCol>
                   <MDBCol sm="9">
-                    <MDBCardText className="text-muted">{data && data.result && data.result.firstName} {data && data.result && data.result.lastName}</MDBCardText>
+                    <MDBCardText className="text-muted">{data.result && data.result.firstName ? data.result.firstName : 'Loading'}{' '}
+                                                        {data.result && data.result.lastName ? data.result.lastName : 'Loading'}</MDBCardText>
                   </MDBCol>
                 </MDBRow>
                 <hr />
@@ -110,7 +108,7 @@ const Profile = () => {
                     <MDBCardText>Email</MDBCardText>
                   </MDBCol>
                   <MDBCol sm="9">
-                    <MDBCardText className="text-muted">{data && data.result && data.result.email}</MDBCardText>
+                    <MDBCardText className="text-muted">{data.result && data.result.email ? data.result.email : 'Loading'}</MDBCardText>
                   </MDBCol>
                 </MDBRow>
                 <hr />
@@ -119,7 +117,7 @@ const Profile = () => {
                     <MDBCardText>Phone</MDBCardText>
                   </MDBCol>
                   <MDBCol sm="9">
-                    <MDBCardText className="text-muted">{data ? (data && data.result && data.result.phoneNumber || 'N/A') : 'Loading...'}</MDBCardText>
+                    <MDBCardText className="text-muted">{data.result && data.result.phoneNumber ? data.result.phoneNumber : 'N/A'}</MDBCardText>
                   </MDBCol>
                 </MDBRow>
                 <hr />
@@ -137,26 +135,12 @@ const Profile = () => {
                     <MDBCardText>Date Of Birth</MDBCardText>
                   </MDBCol>
                   <MDBCol sm="9">
-                    <MDBCardText className="text-muted">{data && data.result && data.result.dateOfBirth}{data ? (data && data.result && data.result.phoneNumber || 'N/A') : 'Loading...'}</MDBCardText>
+                    <MDBCardText className="text-muted">{data.result && data.result.dateOfBirth ? (data.result.dateOfBirth) : 'N/A'}</MDBCardText>
                   </MDBCol>
                 </MDBRow>
               </MDBCardBody>
             </MDBCard>
-
             <MDBRow>
-              <MDBCol md="6">
-                <MDBCard className="mb-4 mb-md-0">
-                  <MDBCardBody>
-                    <MDBCardText className="mb-4"><span className="text-primary font-italic me-1">assigment</span> Project Status</MDBCardText>
-                    <MDBCardText className="mb-1" style={{ fontSize: '.77rem' }}>Web Design</MDBCardText>
-                    <MDBCardText className="mt-4 mb-1" style={{ fontSize: '.77rem' }}>Website Markup</MDBCardText>
-                    <MDBCardText className="mt-4 mb-1" style={{ fontSize: '.77rem' }}>One Page</MDBCardText>
-                    <MDBCardText className="mt-4 mb-1" style={{ fontSize: '.77rem' }}>Mobile Template</MDBCardText>
-                    <MDBCardText className="mt-4 mb-1" style={{ fontSize: '.77rem' }}>Backend API</MDBCardText>
-                  </MDBCardBody>
-                </MDBCard>
-              </MDBCol>
-
               <MDBCol md="6">
                 <MDBCard className="mb-4 mb-md-0">
                   <MDBCardBody>

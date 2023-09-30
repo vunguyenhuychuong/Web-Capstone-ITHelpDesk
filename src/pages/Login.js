@@ -18,7 +18,6 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     // if(!usernameRegex.test(data.username)){
     //   toast.error("UserName phải in hoa chữ đầu ít nhất 6 ký tự");
     //   return;

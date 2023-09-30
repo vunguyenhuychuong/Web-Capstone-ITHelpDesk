@@ -1,5 +1,4 @@
 import axios from "axios";
-
 export const baseURL = "https://localhost:7043/v1/itsds";
 
 // Get all users in system
@@ -13,7 +12,6 @@ export async function getAllUser() {
         Authorization: header,
       },
     });
-    console.log('data get users', res.data.result);
     return res.data.result;
   } catch (error) {
     console.log(error);
@@ -63,6 +61,7 @@ export async function AddDataProfile() {
   const user = JSON.parse(localStorage.getItem("profileAdmin"));
   const accessToken = user.response.accessToken;
   const header = `Bearer ${accessToken}`;
+  console.log('accessToken Add', header);
   try{
     const res = await axios.post(`${baseURL}/user`, {
       header: {
@@ -72,9 +71,10 @@ export async function AddDataProfile() {
     console.log('data Add Profile', res);
   }catch(error) {
     console.log(error);
-    return [];
   }
 }
+
+
 
 //Update Data Profile User
 export async function UpdateDataProfile(id) {
