@@ -1,7 +1,8 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import 'normalize.css';
-import './index.css';
+import './index.module.css'; 
+import 'mdb-react-ui-kit/dist/css/mdb.min.css';
 import App from './App';
 import { store } from './store';
 import { Provider } from 'react-redux';

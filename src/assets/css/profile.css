@@ -1,0 +1,26 @@
+/* Profile.css */
+.custom-card {
+    margin-bottom: 1rem;
+  }
+  
+  .profile-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+  }
+  
+  .profile-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-description {
+    font-size: 1rem;
+    color: #888;
+    margin-bottom: 1rem;
+  }
+  
+  .profile-button {
+    margin-right: 0.5rem;
+  }

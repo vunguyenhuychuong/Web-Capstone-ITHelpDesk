@@ -388,10 +388,6 @@ body {
   text-align: center;
 }
 
-.mt-4 {
-  margin-top: 16px;
-}
-
 .text-right {
   text-align: right;
 }
@@ -444,4 +440,11 @@ body {
 .loading {
   cursor: wait;
 }
+
+
+.custom-card {
+  background-color: white;
+  /* Add any other custom styles as needed */
+}
+
 

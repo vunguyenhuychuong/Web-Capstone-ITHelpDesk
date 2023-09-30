@@ -1,65 +1,60 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import CssBaseline from "@mui/material/CssBaseline";
-import Paper from "@mui/material/Paper";
-import Checkbox from "@mui/material/Checkbox";
-//import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
-import { loginUser} from "../features/user/userSlice";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Link from "@mui/material/Link";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Container from "@mui/material/Container";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import ErrorText from  "../components/Typography/ErrorText";
-
-
-const initialState = {
-  name: "",
-  email: "",
-  password: "",
-  isMember: true,
-};
+import {Button, CircularProgress, Container,Typography, Box, Grid, TextField, Link, FormControlLabel,Paper, Checkbox } from "@mui/material";
+import { setUser, setError, clearError } from "../features/user/authSlice";
+import { LoginUser } from "../app/api";
 
 function Login() {
-  const [values, setValues] = useState(initialState);
-  const { user, isLoading } = useSelector((store) => store.user);
-  const [loading, setLoading] = useState(false)
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState("")
+  const [data, setData] = useState({ username: '', password: '' });
+
+  const usernameRegex = /^[a-zA-Z0-9_]+$/;
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    // if(!usernameRegex.test(data.username)){
+    //   toast.error("UserName phải in hoa chữ đầu ít nhất 6 ký tự");
+    //   return;
+    // }
+    // if(!passwordRegex.test(data.password)) {
+    //   toast.error("Password phải In Hoa chữ đầu ít nhất 8 ký tự");
+    //   return;
+    // }
+    setLoading(true);
+    try {
+      dispatch(clearError()); 
+      const userDataResponse = await LoginUser(data); 
+      if (userDataResponse !== null) {
+        dispatch(setUser(userDataResponse)); 
+        localStorage.setItem("profileAdmin",JSON.stringify(userDataResponse));
+        navigate("/profile");
+        toast.success("Login Success");
+      } else {
+        navigate("/login");
+        toast.success("Login Fail");
+      }
+    } catch (error) {
+      dispatch(setError(error.response.data));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
-    const name = e.target.name;
-    const value = e.target.value;
-
-    setValues({ ...values, [name]: value });
-  };
-  const onSubmit = (e) => {
-    e.preventDefault();
-    setErrorMessage("")
-    if(values.email.trim() === "") return setErrorMessage("Email is required!")
-    if(values.password.trim() === "") return setErrorMessage("Password is required!")
-    else{
-      setLoading(true);
-    }
+    const { name, value } = e.target;
+    setData({
+      ...data,
+      [name]: value,
+    });
   };
 
-  const updateFormValue = ({updateType, value}) => {
-    setErrorMessage("")
-    setValues({...value, [updateType] : value})
-}
-
-  useEffect(() => {
-    if (user) {
-      setTimeout(() => {
-        navigate("/");
-      }, 2000);
-    }
-  }, [user, navigate]);
   return (
     <Container component="main" maxWidth="lg">
       <Box
@@ -109,19 +104,18 @@ function Login() {
               <Box
                 component="form"
                 noValidate
-                onSubmit={onSubmit}
                 sx={{ mt: 1 }}
               >
                 <TextField
                   margin="normal"
                   required
                   fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
+                  id="username"
+                  label="User name"
+                  name="username"
                   autoFocus
-                  updateFormValue={updateFormValue}
+                  value={data.username}
+                  onChange={handleChange}
                 />
                 <TextField
                   margin="normal"
@@ -132,37 +126,26 @@ function Login() {
                   type="password"
                   id="password"
                   autoComplete="current-password"
-                  updateFormValue={updateFormValue}
+                  value={data.password}
+                  onChange={handleChange}
                 />
                 <FormControlLabel
                   control={<Checkbox value="remember" color="primary" />}
                   label="Remember me"
                 />
-                <ErrorText styleClass="mt-8">{errorMessage}</ErrorText>
                 <Button
                   type="submit"
                   fullWidth
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
+                  disabled={loading}
+                  onClick={handleLogin}
                 >
-                  Login
-                </Button>
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
-                  onClick={() =>
-                    dispatch(
-                      loginUser({ email: 'testUser@test.com', password: 'secret' })
-                    )
-                  }
-                >
-                  Demo Login
+                  {loading ? <CircularProgress size={24} /> : 'Login' }
                 </Button>
                 <Grid container>
                   <Grid item xs>
-                    <Link href="#" variant="body2">
+                    <Link href="/forgot-password" variant="body2">
                       Forgot password?
                     </Link>
                   </Grid>

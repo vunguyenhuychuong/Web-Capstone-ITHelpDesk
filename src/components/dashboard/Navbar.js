@@ -4,14 +4,23 @@ import Logo from './Logo';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleSidebar, clearStore } from '../../features/user/userSlice';
+import { useNavigate} from 'react-router-dom';
 
 const Navbar = () => {
   const [showLogout, setShowLogout] = useState(false);
   const { user } = useSelector((store) => store.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const toggle = () => {
     dispatch(toggleSidebar());
+  };
+
+  const logout = () => {
+    localStorage.removeItem('profileCustomer');
+    localStorage.clear();
+    setShowLogout(true);
+    navigate('/landing');
   };
 
   return (
@@ -38,7 +47,7 @@ const Navbar = () => {
             <button
               type='button'
               className='dropdown-btn'
-              onClick={() => dispatch(clearStore('Logging out...'))}
+              onClickCapture={logout}
             >
               logout
             </button>
