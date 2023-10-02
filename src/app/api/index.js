@@ -1,4 +1,6 @@
 import axios from "axios";
+import { setUser } from "../../features/user/authSlice";
+import { toast } from "react-toastify";
 export const baseURL = "https://localhost:7043/v1/itsds";
 
 // Get all users in system
@@ -27,9 +29,9 @@ export async function LoginUser(data) {
         "Content-Type": "application/json",
       },
     });
+    setUser(res.data.result);
     return res.data;
   } catch (error) {
-    console.log(error);
     if(error.response && error.response.status === 400) {
         console.log("Input validation error: " , error.response.data);
     }else {
@@ -57,29 +59,45 @@ export async function getDataProfile(id) {
 }
 
 // Add Data Profile User
-export async function AddDataProfile() {
+export async function AddDataProfile(userData) {
   const user = JSON.parse(localStorage.getItem("profileAdmin"));
-  const accessToken = user.response.accessToken;
+  const accessToken = user.result;
   const header = `Bearer ${accessToken}`;
-  console.log('accessToken Add', header);
   try{
-    const res = await axios.post(`${baseURL}/user`, {
+    const res = await axios.post(`${baseURL}/user`,
+    userData, 
+    {
       header: {
         Authorization: header,
       },
     });
-    console.log('data Add Profile', res);
+    return res.data;
+  }catch(error) {
+    console.log(error);
+  }
+}
+
+export async function GetDataProfileUser() {
+  const user = JSON.parse(localStorage.getItem("profileAdmin"));
+  const accessToken = user.result.accessToken;
+  const header = `Bearer ${accessToken}`;
+  try {
+    const res = await axios.get(`https://localhost:7043/v1/itsds/user/profile`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data.result;
   }catch(error) {
     console.log(error);
   }
 }
 
 
-
 //Update Data Profile User
 export async function UpdateDataProfile(id) {
   const user = JSON.parse(localStorage.getItem("profielAdmin"));
-  const accessToken = user.response.accessToken;
+  const accessToken = user.result.accessToken;
   const header = `Bearer ${accessToken}`;
   try{
     const res = await axios.put(`${baseURL}/user/${id}`, {
@@ -87,9 +105,46 @@ export async function UpdateDataProfile(id) {
         Authorization: header,
       },
     });
-    console.log('data Update Profile', res);
   }catch(error){
     console.log(error);
     return [];
+  }
+}
+
+//Delete Data User
+export async function DeleteDataUser(id) {
+  const user = JSON.parse(localStorage.getItem("profileAdmin"));
+  const accessToken = user.result.accessToken;
+  const header = `Bearer ${accessToken}`;
+  try{
+    const res = await axios.delete(`${baseURL}/user/${id}`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data;
+  }catch(error) {
+    console.log(error);
+  }
+}
+
+//Update profile User
+export async function UpdateProfileUser() {
+  const user = JSON.parse(localStorage.getItem("profileAdmin"));
+  const accessToken = user.result.accessToken;
+  const header = `Bearer ${accessToken}`;
+  console.log('token update profile ===',header);
+  try{
+    const res = await axios.patch(`${baseURL}/user/update-profile`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+
+    console.log(res.data);
+    return res.data;
+  }catch(error){
+    toast.error("BAD REQUEST ")
+    console.log(error);
   }
 }

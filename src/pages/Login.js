@@ -29,18 +29,25 @@ function Login() {
     setLoading(true);
     try {
       dispatch(clearError()); 
-      const userDataResponse = await LoginUser(data); 
-      if (userDataResponse !== null) {
-        dispatch(setUser(userDataResponse)); 
+      const userDataResponse = await LoginUser(data);
+      if (userDataResponse && userDataResponse.isError === false && userDataResponse.result !== null) {
+        dispatch(setUser(userDataResponse.result));
+        console.log('User role', userDataResponse.result.role) 
         localStorage.setItem("profileAdmin",JSON.stringify(userDataResponse));
-        navigate("/profile");
-        toast.success("Login Success");
+        if(userDataResponse.result.role === 0) {
+          navigate("/home/customer");        
+          toast.success("Login Success");
+        }
+        if(userDataResponse.result.role === 1) {
+          navigate("/home/profile");
+          toast.success("Login Success");
+        }
       } else {
         navigate("/login");
-        toast.success("Login Fail");
+        toast.error("Login Fail");
       }
     } catch (error) {
-      dispatch(setError(error.response.data));
+      dispatch(setError(error.message || 'An error occurred during login.'));
     } finally {
       setLoading(false);
     }

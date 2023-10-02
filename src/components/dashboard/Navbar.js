@@ -8,25 +8,21 @@ import { useNavigate} from 'react-router-dom';
 
 const Navbar = () => {
   const [showLogout, setShowLogout] = useState(false);
-  const { user } = useSelector((store) => store.user);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const toggle = () => {
-    dispatch(toggleSidebar());
-  };
+
 
   const logout = () => {
     localStorage.removeItem('profileCustomer');
     localStorage.clear();
     setShowLogout(true);
-    navigate('/landing');
+    navigate('/');
   };
 
   return (
     <Wrapper>
       <div className='nav-center'>
-        <button type='button' className='toggle-btn' onClick={toggle}>
+        <button type='button' className='toggle-btn'>
           <FaAlignLeft />
         </button>
         <div>
@@ -40,7 +36,6 @@ const Navbar = () => {
             onClick={() => setShowLogout(!showLogout)}
           >
             <FaUserCircle />
-            {user?.name}
             <FaCaretDown />
           </button>
           <div className={showLogout ? 'dropdown show-dropdown' : 'dropdown'}>

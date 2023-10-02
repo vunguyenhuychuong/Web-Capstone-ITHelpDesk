@@ -1,11 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { useSelector } from 'react-redux';
 
 const initialState = {
   user: null,
   error: null,
 };
-
-
 
 const authSlice = createSlice({
   name: 'auth',
@@ -14,6 +13,7 @@ const authSlice = createSlice({
     setUser: (state, action) => {
       state.user = action.payload;
       state.error = null;
+      console.log(state.user); 
     },
     setError: (state, action) => {
       state.user = null;
@@ -31,3 +31,6 @@ const authSlice = createSlice({
 
 export const { setUser, setError, clearError, logout } = authSlice.actions;
 export default authSlice.reducer;
+
+
+
