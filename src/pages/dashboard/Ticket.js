@@ -1,6 +1,6 @@
 import { JobsContainer, SearchContainer } from '../../components/dashboard';
 
-const AllJobs = () => {
+const Ticket = () => {
   return (
     <>
       <SearchContainer />
@@ -8,4 +8,4 @@ const AllJobs = () => {
     </>
   );
 };
-export default AllJobs;
+export default Ticket;

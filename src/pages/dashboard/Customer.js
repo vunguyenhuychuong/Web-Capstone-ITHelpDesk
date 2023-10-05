@@ -1,27 +1,22 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import {
-  Dialog,
-  DialogTitle,
-  Paper,
-  Button,
-  DialogContent,
-  TableRow,
-  TableSortLabel,
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TextField,
-  TablePagination
+  Dialog,DialogTitle,Paper,Button,DialogContent,TableRow,TableSortLabel,Box,Table,TableBody,TableCell,TableContainer,TableHead,TextField,TablePagination,IconButton,
+  Select,
+  MenuItem,
+  InputLabel,
 } from "@mui/material";
+import {
+  MDBBtn,
+  MDBCol,
+  MDBInput,
+  MDBRow,
+} from "mdb-react-ui-kit";
 import { visuallyHidden } from "@mui/utils";
-import { AddDataProfile, DeleteDataUser, getAllUser } from "../../app/api";
+import { AddDataProfile, DeleteDataUser, UpdateUser, getAllUser, getUserById } from "../../app/api";
 import { toast } from "react-toastify";
-import { headCells } from "./Admin/tableComlumn";
-
+import { headCells, roleOptions } from "./Admin/tableComlumn";
+import { Close } from "@mui/icons-material";
 
 function EnhancedTableHead(props) {
   const { order, orderBy } = props;
@@ -59,19 +54,24 @@ export default function Customer() {
   const [open, setOpen] = React.useState(false);
   const [openAdd, setOpenAdd] = React.useState(false);
   const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [rowsPerPage, setRowPerPage] = useState(5);
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, users.length - page * rowsPerPage);
-
-
   const [data, setData] = useState({
+    id: 0,
     firstName: "",
     lastName: "",
     username: "",
     password: "",
     email: "",
+    address: "",
+    phoneNumber: "",
+    isActive: true,
     role: 0,
     birth: "",
     gender: 0,
+    createdAt:"",
+    modifiedAt: ""
   });
 
   const fetchDataUser = async () => {
@@ -111,12 +111,13 @@ export default function Customer() {
           birth: "",
           gender: 0,
         });
+        console.log(result);
         toast.success("User created successfully");
         setOpenAdd(false);
         fetchDataUser();
-      }else{
+      } else {
         toast.error("Fail to create user");
-        console.log('error', result.message);
+        console.log("error", result.message);
       }
     } catch (error) {
       toast.error("Error");
@@ -124,39 +125,66 @@ export default function Customer() {
     }
   };
 
+  const handleDetailUser = async (id) => {
+    setLoading(true);
+    try {
+      const user = await getUserById(id);
+      setData({
+        id: user.result.id,
+        firstName: user.result.firstName || "", 
+        lastName: user.result.lastName || "",
+        username: user.result.username || "",
+        password: user.result.password || "",
+        email: user.result.email || "",
+        address: user.result.address || "",
+        phoneNumber: user.result.phoneNumber || "",
+        isActive: user.result.isActive || true, 
+        role: user.result.role || 0, 
+        birth: user.result.birth || "",
+        gender: user.result.gender || 0, 
+        dateOfBirth: user.result.dateOfBirth || "",
+      });
+    } catch (error) {
+      toast.error("Can not get user id");
+      console.log(error);
+    }
+    setLoading(false);
+    setOpen(true);
+  }
+
   const onDeleteUser = async (id) => {
     const shouldDelete = window.confirm("Are you sure you want to delete?");
-    if(shouldDelete) {
-      try{
+    if (shouldDelete) {
+      try {
         const result = await DeleteDataUser(id);
         fetchDataUser();
-        if(result.isError === false) {
-          toast.message("Delete successful");
-        }else{
-          toast.message("Delete fail");
+        if (result.isError === false) {
+          toast.success("Delete successful");
+        } else {
+          toast.error("Delete fail");
         }
-      }catch(error) {
+      } catch (error) {
         console.log(error);
       }
     }
-  }
+  };
 
   const handleChangePage = (e, newPage) => {
     setPage(newPage);
-  }
+  };
 
   const handleChangeRowsPerPage = (e) => {
     setRowPerPage(parseInt(e.target.value, 10));
     setPage(0);
   };
 
-  const handleChange = (e) => {
+  const handleChange = React.useCallback((e) => {
     const { name, value } = e.target;
-    setData((prevData) => ({
+    setData(prevData => ({
       ...prevData,
       [name]: value,
     }));
-  };
+  }, []);
 
   const handleClose = () => {
     setOpen(false);
@@ -168,6 +196,22 @@ export default function Customer() {
     setOpenAdd(true);
   };
 
+  const handleOpenEditUser = (id) => {
+    getUserById(id);
+  };
+
+  const onHandleEditUser = async () => {
+    try{
+      const response = UpdateUser(data.id, data);
+      console.log(data);
+      console.log(response);
+      toast.success("User updated successfully");
+    }catch(error){
+      toast.error("Failed to update user");
+      console.log(error);
+    }
+  }
+
   return (
     <Box sx={{ width: "100%" }}>
       <Button variant="contained" color="primary" onClick={handleOpenAdd}>
@@ -175,16 +219,16 @@ export default function Customer() {
       </Button>
       <Paper sx={{ width: "100%", mb: 2 }}>
         <TableContainer>
-          <Table sx={{ minWidth: 750 }} >
+          <Table sx={{ minWidth: 750 }}>
             <EnhancedTableHead />
             <TableBody>
-              {users.map((user) => {
-                return (
+              {users.map((user, index) => 
+                 (
                   <TableRow
+                    key={`user-${index}`} 
                     hover
                     role="checkbox"
                     tabIndex={-1}
-                    key={user.id}
                     sx={{ cursor: "pointer" }}
                   >
                     <TableCell align="left">{user.id}</TableCell>
@@ -200,7 +244,7 @@ export default function Customer() {
                       <Button
                         variant="contained"
                         color="primary"
-                        //onClick={() => handleEdit(user.id)}
+                        onClick={() => handleDetailUser(user.id)}
                       >
                         Edit
                       </Button>
@@ -215,13 +259,12 @@ export default function Customer() {
                       </Button>
                     </TableCell>
                   </TableRow>
-                );
-              })}
+                ))}
             </TableBody>
           </Table>
         </TableContainer>
-        <TablePagination  
-          rowsPerPageOptions={[5, 10, 25]} // You can customize the number of rows per page options here.
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
           component="div"
           count={users.length}
           rowsPerPage={rowsPerPage}
@@ -230,66 +273,152 @@ export default function Customer() {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-      <Dialog open={openAdd} onClose={handleClose}>
-        <DialogTitle>Create Account Users</DialogTitle>
-        <DialogContent>
-        <TextField
-      label="First Name"
-      variant="outlined"
-      fullWidth
-      name="firstName"
-      value={data.firstName}
-      onChange={handleChange}
-    />
-    <TextField
-      label="Last Name"
-      variant="outlined"
-      fullWidth
-      name="lastName"
-      value={data.lastName}
-      onChange={handleChange}
-    />
-    <TextField
-      label="Username"
-      variant="outlined"
-      fullWidth
-      name="username"
-      value={data.username}
-      onChange={handleChange}
-    />
-    <TextField
-      label="Password"
-      variant="outlined"
-      fullWidth
-      name="password"
-      type="password"
-      value={data.password}
-      onChange={handleChange}
-    />
-    <TextField
-      label="Email"
-      variant="outlined"
-      fullWidth
-      name="email"
-      value={data.email}
-      onChange={handleChange}
-    />
-    <TextField
-      label="Role"
-      variant="outlined"
-      fullWidth
-      name="role"
-      type="number"
-      value={data.role}
-      onChange={handleChange}
-    />
-          <Button variant="contained" onClick={onCreateUser}>
-            Add
-          </Button>
-          <Button onClick={handleClose} variant="contained">
-            Close
-          </Button>
-        </DialogContent>
+      <Dialog open={openAdd} fullWidth maxWidth="lg">
+        <DialogTitle className="text-center">
+          <IconButton
+            edge="end"
+            onClick={handleClose}
+            aria-label="close"
+            color="#3b71ca"
+            style={{
+              position: 'absolute',
+              right: '32px',
+              top: '8px',
+              width: '36px',
+              height: '36px',
+              backgroundColor: '#2196f3',
+              borderRadius: '4px',
+            }}
+          >
+            <Close style={{ color: 'white' }} />
+          </IconButton>
+          Create Team
+        </DialogTitle>
+        <form style={{ margin: "0px 40px" }} className="custom-dialog ">         
+          <MDBRow>
+            <MDBCol>
+              <InputLabel>First Name</InputLabel>
+              <MDBInput id="firstName" name="firstName" value={data.firstName} onChange={handleChange}/>
+            </MDBCol>
+            <MDBCol>
+              <InputLabel >Last Name</InputLabel>
+              <MDBInput id="lastName" name="lastName" value={data.lastName} onChange={handleChange}/>
+            </MDBCol>
+          </MDBRow>  
+          <MDBRow>
+            <MDBCol>
+              <InputLabel >User Name</InputLabel>
+              <MDBInput id="username" name="username" value={data.username} onChange={handleChange}/>
+            </MDBCol>
+            <MDBCol>
+              <InputLabel>Password</InputLabel>
+              <MDBInput id="password" name="password" value={data.password} onChange={handleChange}/>
+            </MDBCol>
+          </MDBRow>  
+          <MDBRow>
+            <MDBCol>
+              <InputLabel>Email</InputLabel>
+              <MDBInput id="email" name="email" value={data.email} onChange={handleChange}/>
+            </MDBCol>
+            <MDBCol>
+              <InputLabel>Role</InputLabel>
+              <Select
+                  id="role"
+                  onChange={handleChange}
+                  fullWidth
+                  margin="dense" // or margin="none"
+                  variant="outlined"
+                  style={{ height: '36px' }}
+                  displayEmpty
+                  renderValue={(value) => (value === '' ? <span>&nbsp;</span> : value)}>
+                {roleOptions.map((role) => (
+                <MenuItem key={role.id} value={role.id}>
+                  {role.name}
+                </MenuItem>
+                ))}
+              </Select>
+            </MDBCol>
+          </MDBRow>
+          <div className="text-center customer-center-btn">
+            <MDBBtn className="mb-4 mt-4" type="submit" onClick={onCreateUser}>
+              Add
+            </MDBBtn>
+          </div>
+        </form>
+      </Dialog>
+
+      <Dialog open={open} fullWidth maxWidth="lg">
+        <DialogTitle className="text-center">
+        <IconButton
+            edge="end"
+            onClick={handleClose}
+            aria-label="close"
+            color="#3b71ca"
+            style={{
+              position: 'absolute',
+              right: '32px',
+              top: '8px',
+              width: '36px', // Set the width and height to create a square button
+              height: '36px',
+              backgroundColor: '#2196f3', // Set the background color to blue
+              borderRadius: '4px', // Optional: Add border-radius for rounded corners
+            }}
+          >
+            <Close style={{ color: 'white' }} />
+          </IconButton>
+          Create Team
+        </DialogTitle>
+          {loading ? (
+            <div>loading...</div>
+          ) : (
+        <form style={{ margin: "0px 40px" }} className="custom-dialog ">         
+          <MDBRow>
+            <MDBCol>
+              <InputLabel>First Name</InputLabel>
+              <MDBInput id="firstName" name="firstName" value={data.firstName} onChange={handleChange}/>
+            </MDBCol>
+            <MDBCol>
+              <InputLabel >Last Name</InputLabel>
+              <MDBInput id="lastName" name="lastName" value={data.lastName} onChange={handleChange}/>
+            </MDBCol>
+          </MDBRow>
+          <MDBRow>
+            <MDBCol>
+              <InputLabel>Email</InputLabel>
+              <MDBInput id="email" name="email" value={data.email} onChange={handleChange}/>
+            </MDBCol>
+            <MDBCol>
+              <InputLabel>Phone Number</InputLabel>
+              <MDBInput id="phoneNumber" name="phoneNumber" value={data.phoneNumber} onChange={handleChange}/>
+            </MDBCol>
+          </MDBRow> 
+          <MDBRow>
+          <MDBCol>
+              <InputLabel>Gender</InputLabel>
+              <MDBInput id="gender" name="gender" value={data.gender} onChange={handleChange}/>
+            </MDBCol>
+            <MDBCol>
+              <InputLabel >IsActive</InputLabel>
+              <MDBInput id="isActive" name="isActive" value={data.isActive} onChange={handleChange}/>
+            </MDBCol>  
+          </MDBRow>  
+          <MDBRow>
+          <MDBCol>
+              <InputLabel>Date Of Birth</InputLabel>
+              <MDBInput id="dateOfBirth" name="dateOfBirth" value={data.dateOfBirth} onChange={handleChange}/>
+            </MDBCol>
+            <MDBCol>
+              <InputLabel>Address</InputLabel>
+              <MDBInput id="address" name="address" value={data.address} onChange={handleChange}/>
+            </MDBCol>  
+          </MDBRow>  
+          <div className="text-center customer-center-btn">
+            <MDBBtn className="mb-4 mt-4" type="button" onClick={onHandleEditUser}>
+              Edit
+            </MDBBtn>
+          </div>
+        </form>
+          )}  
       </Dialog>
     </Box>
   );

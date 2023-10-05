@@ -446,5 +446,58 @@ body {
   /* Add any other custom styles as needed */
 }
 
+.Dialog {
+  width: 80%; /* Set the width of the dialog */
+  margin: 0 auto; /* Center the dialog on the screen */
+  padding: 20px; /* Add padding to the dialog content */
+}
+
+.custom-dialog {
+  width: 80%;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.custom-dialog input,
+.custom-dialog select {
+  width: 100%;
+  height: 40px;
+  padding: 10px;
+}
+
+.custom-dialog .MDBCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.custom-dialog .MDBBtn {
+  width: 100%;
+}
+
+.custom-dialog .big-text-input input {
+  font-size: 16px;
+  height: 40px;
+  padding: 10px;
+  /* Add any additional styles as needed */
+}
+
+.custom-dialog .MDBBtn {
+  margin-top: 20px; /* Adjust the top margin as needed */
+  width: 100%;
+}
+
+.custom-small-button {
+  width: 50%;
+}
+
+.custom-dialog .custom-center-btn {
+  width: 200px; /* Set the width of the button as per your requirement */
+  /* Add other custom styles if needed */
+}
+
+.custom-input input {
+  height: 40px; /* You can adjust the height value according to your preference */
+}
 
 

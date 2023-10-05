@@ -1,13 +1,13 @@
 import axios from "axios";
 import { setUser } from "../../features/user/authSlice";
 import { toast } from "react-toastify";
-export const baseURL = "https://localhost:7043/v1/itsds";
+import { getAuthHeader } from "./auth";
+//export const baseURL = process.env.REACT_APP_BASE_URL;
+export const baseURL = 'https://localhost:7043/v1/itsds';
 
 // Get all users in system
 export async function getAllUser() {
-  const user = JSON.parse(localStorage.getItem("profileAdmin"));
-  const accessToken = user.result.accessToken;
-  const header = `Bearer ${accessToken}`;
+  const header = getAuthHeader();
   try {
     const res = await axios.get(`${baseURL}/user`, {
       headers: {
@@ -30,39 +30,35 @@ export async function LoginUser(data) {
       },
     });
     setUser(res.data.result);
+    sessionStorage.setItem("profile", JSON.stringify(res.data.result));
     return res.data;
   } catch (error) {
-    if(error.response && error.response.status === 400) {
-        console.log("Input validation error: " , error.response.data);
+    if(error.response) {
+        if(error.response.status === 400) {
+          console.error("Input validation error: ", error.response.data);
+          toast.error("Invalid input, please check your credentials");
+          return {success: false, error: error.response.data};
+        }else{
+          console.error("Server error: ", error.response.status, error.response.data);
+          toast.error("Server error occurred");
+          return { success: false, error: "Server error occurred" };
+        }
+    }else if (error.request) {
+      console.error("No response received: ", error.request);
+      toast.error("No response received from the server");
+      return { success: false, error: "No response received from the server"};
     }else {
-        console.log("An error occurred: ", error.message);
+      console.error("Request error: ", error.message);
+      toast.error("Request error occurred");
+      return { success: false, error: "Request error occurred"};
     }
   }
 }
 
-// Get Data Profile User
-export async function getDataProfile(id) {
-  const user = JSON.parse(localStorage.getItem("profileAdmin"));
-  const accessToken = user.result.accessToken;
-  const header = `Bearer ${accessToken}`;
-  try{
-    const res = await axios.get(`${baseURL}/user/${id}`, {
-      headers: {
-        Authorization: header,
-      },
-    });
-    return res.data;
-  }catch(error){
-    console.log(error);
-    return [];
-  }
-}
 
 // Add Data Profile User
 export async function AddDataProfile(userData) {
-  const user = JSON.parse(localStorage.getItem("profileAdmin"));
-  const accessToken = user.result;
-  const header = `Bearer ${accessToken}`;
+  const header = getAuthHeader();
   try{
     const res = await axios.post(`${baseURL}/user`,
     userData, 
@@ -71,6 +67,7 @@ export async function AddDataProfile(userData) {
         Authorization: header,
       },
     });
+    console.log(res);
     return res.data;
   }catch(error) {
     console.log(error);
@@ -78,11 +75,9 @@ export async function AddDataProfile(userData) {
 }
 
 export async function GetDataProfileUser() {
-  const user = JSON.parse(localStorage.getItem("profileAdmin"));
-  const accessToken = user.result.accessToken;
-  const header = `Bearer ${accessToken}`;
+  const header = getAuthHeader();
   try {
-    const res = await axios.get(`https://localhost:7043/v1/itsds/user/profile`, {
+    const res = await axios.get(`${baseURL}/user/profile`, {
       headers: {
         Authorization: header,
       },
@@ -95,12 +90,10 @@ export async function GetDataProfileUser() {
 
 
 //Update Data Profile User
-export async function UpdateDataProfile(id) {
-  const user = JSON.parse(localStorage.getItem("profielAdmin"));
-  const accessToken = user.result.accessToken;
-  const header = `Bearer ${accessToken}`;
+export async function UpdateDataProfile(id, data) {
+  const header = getAuthHeader();
   try{
-    const res = await axios.put(`${baseURL}/user/${id}`, {
+    const res = await axios.put(`${baseURL}/user/${id}`, data, {
       header: {
         Authorization: header,
       },
@@ -113,9 +106,7 @@ export async function UpdateDataProfile(id) {
 
 //Delete Data User
 export async function DeleteDataUser(id) {
-  const user = JSON.parse(localStorage.getItem("profileAdmin"));
-  const accessToken = user.result.accessToken;
-  const header = `Bearer ${accessToken}`;
+  const header = getAuthHeader();
   try{
     const res = await axios.delete(`${baseURL}/user/${id}`, {
       headers: {
@@ -130,21 +121,51 @@ export async function DeleteDataUser(id) {
 
 //Update profile User
 export async function UpdateProfileUser() {
-  const user = JSON.parse(localStorage.getItem("profileAdmin"));
-  const accessToken = user.result.accessToken;
-  const header = `Bearer ${accessToken}`;
-  console.log('token update profile ===',header);
+  const header = getAuthHeader();
   try{
     const res = await axios.patch(`${baseURL}/user/update-profile`, {
       headers: {
         Authorization: header,
       },
     });
-
-    console.log(res.data);
     return res.data;
   }catch(error){
     toast.error("BAD REQUEST ")
     console.log(error);
+  }
+}
+
+//Update User 
+export async function UpdateUser(id) {
+  const header = getAuthHeader();
+  console.log('token',header);
+  try{
+    const res = await axios.put(`${baseURL}/user/${id}`, {
+      headers: {
+        Authorization: header,
+        'Content-Type': 'application/json',
+      },
+    });
+    console.log(res);
+    return res.data;
+  }catch(error) {
+    toast.error("BAD REQUEST");
+    console.log(error);
+  }
+}
+
+//Get ID User
+export async function getUserById(id) {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/user/${id}`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data;
+  }catch(error){
+    console.log(error);
+    return [];
   }
 }

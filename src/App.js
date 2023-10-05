@@ -4,22 +4,21 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
   Profile,
-  AddJob,
-  AllJobs,
   Stats,
   SharedLayout,
 } from './pages/dashboard';
 import ForgetPassword from './pages/ForgetPassword';
 import Customer from './pages/dashboard/Customer';
 import { useSelector } from 'react-redux';
-import { toast } from "react-toastify";
+import Tickets from './pages/dashboard/Ticket';
+import Team from './pages/dashboard/Team';
 
 function App() {
+  const data = JSON.parse(sessionStorage.getItem("profile"));
   const user = useSelector((state) => state.auth);
-
-  const hasCustomerRole = user?.user?.role === 1;
-  const hasAdminRole = user?.user?.role === 0;
-  // console.log(user.user.role);
+  const hasCustomerRole = user?.user?.role === 1 || data?.result?.role === 1;
+  const hasAdminRole = user?.user?.role === 0 || data?.result?.role === 0;
+  console.log(hasCustomerRole);
   return (
     <BrowserRouter>
       <Routes>
@@ -31,8 +30,8 @@ function App() {
           }
         >
           <Route index element={<Stats />} />
-          <Route path='all-jobs' element={<AllJobs />} />
-          <Route path='add-job' element={<AddJob />} />
+          {(hasAdminRole) && <Route path='team' element={<Team />} />}
+          <Route path='ticket' element={<Tickets />} />
           {(hasCustomerRole || hasAdminRole) && <Route path='profile' element={<Profile />} />} 
           {hasAdminRole && <Route path='customer' element={<Customer />} />} 
           </Route>

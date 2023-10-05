@@ -32,8 +32,6 @@ function Login() {
       const userDataResponse = await LoginUser(data);
       if (userDataResponse && userDataResponse.isError === false && userDataResponse.result !== null) {
         dispatch(setUser(userDataResponse.result));
-        console.log('User role', userDataResponse.result.role) 
-        localStorage.setItem("profileAdmin",JSON.stringify(userDataResponse));
         if(userDataResponse.result.role === 0) {
           navigate("/home/customer");        
           toast.success("Login Success");

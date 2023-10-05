@@ -3,17 +3,15 @@ import { FaAlignLeft, FaUserCircle, FaCaretDown } from 'react-icons/fa';
 import Logo from './Logo';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { toggleSidebar, clearStore } from '../../features/user/userSlice';
 import { useNavigate} from 'react-router-dom';
 
 const Navbar = () => {
   const [showLogout, setShowLogout] = useState(false);
   const navigate = useNavigate();
 
-
-
   const logout = () => {
-    localStorage.removeItem('profileCustomer');
+    localStorage.removeItem('profileAdmin');
+    sessionStorage.removeItem('profile');
     localStorage.clear();
     setShowLogout(true);
     navigate('/');

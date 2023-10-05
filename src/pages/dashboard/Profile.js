@@ -37,7 +37,6 @@ import {
   getDataProfile,
 } from "../../app/api";
 import { toast } from "react-toastify";
-import { da } from "@faker-js/faker";
 
 const Profile = () => {
   const [data, setData] = useState({
@@ -64,6 +63,39 @@ const Profile = () => {
         [name]: value,
     }));
   };
+
+  const preset_key = "jrryfhjj";
+  const cloud_name = "daokakrxg";
+  const [imageUrl, setImageUrl] = useState();
+
+  const handleImageUpload = async(event) => {
+    const user = JSON.parse(localStorage.getItem("profileAdmin"));
+    const accessToken = user.result.accessToken;
+    const header = `Bearer ${accessToken}`;
+    const file = event.target.files[0];
+
+    if(file){
+      const formData = new FormData();
+      formData.append('avatar', file);
+      formData.append("upload_preset", preset_key);
+      formData.append("cloud_name", cloud_name);
+      console.log(file);
+    try{
+      const response = await axios.patch("https://localhost:7043/v1/itsds/user/uploadAvatar", formData, {
+        headers: {
+           Authorization: header,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      const { location } = response.data;
+      setImageUrl(location);
+      setData({...data, avatarUrl: location})
+    }catch(err){
+        console.error('Error uploading image', err);
+    }
+    }
+  }
+
 
   const [open, setOpen] = React.useState(false);
   const [openAdd, setOpenAdd] = React.useState(false);
@@ -141,8 +173,8 @@ const Profile = () => {
                     {data && data.lastName ? data.lastName : "N/A"}
                   </p>
                   <p className="text-muted mb-4">
-                    {data.result && data.result.address
-                      ? data.result.address
+                    {data.result && data.result.role
+                      ? data.result.role
                       : "N/A"}
                   </p>
                   <div className="d-flex justify-content-center mb-2">
@@ -166,7 +198,6 @@ const Profile = () => {
                     <MDBListGroupItem className="d-flex justify-content-between align-items-center p-3">
                       <MDBIcon
                         fab
-                        icon="github fa-lg"
                         style={{ color: "#333333" }}
                       />
                       <MDBCardText>
@@ -176,7 +207,6 @@ const Profile = () => {
                     <MDBListGroupItem className="d-flex justify-content-between align-items-center p-3">
                       <MDBIcon
                         fab
-                        icon="twitter fa-lg"
                         style={{ color: "#55acee" }}
                       />
                       <MDBCardText>@mdbootstrap</MDBCardText>
@@ -184,7 +214,6 @@ const Profile = () => {
                     <MDBListGroupItem className="d-flex justify-content-between align-items-center p-3">
                       <MDBIcon
                         fab
-                        icon="instagram fa-lg"
                         style={{ color: "#ac2bac" }}
                       />
                       <MDBCardText>mdbootstrap</MDBCardText>
@@ -192,7 +221,6 @@ const Profile = () => {
                     <MDBListGroupItem className="d-flex justify-content-between align-items-center p-3">
                       <MDBIcon
                         fab
-                        icon="facebook fa-lg"
                         style={{ color: "#3b5998" }}
                       />
                       <MDBCardText>mdbootstrap</MDBCardText>
@@ -206,7 +234,7 @@ const Profile = () => {
                 <MDBCardBody>
                   <MDBRow>
                     <MDBCol sm="3">
-                      <MDBCardText>UserName</MDBCardText>
+                      <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>UserName :</MDBCardText>
                     </MDBCol>
                     <MDBCol sm="9">
                       <MDBCardText className="text-muted">
@@ -217,7 +245,7 @@ const Profile = () => {
                   <hr />
                   <MDBRow>
                     <MDBCol sm="3">
-                      <MDBCardText>Email</MDBCardText>
+                      <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>Email :</MDBCardText>
                     </MDBCol>
                     <MDBCol sm="9">
                       <MDBCardText className="text-muted">
@@ -228,7 +256,7 @@ const Profile = () => {
                   <hr />
                   <MDBRow>
                     <MDBCol sm="3">
-                      <MDBCardText>Phone</MDBCardText>
+                      <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>Phone :</MDBCardText>
                     </MDBCol>
                     <MDBCol sm="9">
                       <MDBCardText className="text-muted">
@@ -239,7 +267,7 @@ const Profile = () => {
                   <hr />
                   <MDBRow>
                     <MDBCol sm="3">
-                      <MDBCardText>Role</MDBCardText>
+                      <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>Role :</MDBCardText>
                     </MDBCol>
                     <MDBCol sm="9">
                       <MDBCardText className="text-muted">
@@ -250,7 +278,7 @@ const Profile = () => {
                   <hr />
                   <MDBRow>
                     <MDBCol sm="3">
-                      <MDBCardText>Date Of Birth</MDBCardText>
+                      <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>Date Of Birth :</MDBCardText>
                     </MDBCol>
                     <MDBCol sm="9">
                       <MDBCardText className="text-muted">
@@ -261,7 +289,7 @@ const Profile = () => {
                   <hr />
                   <MDBRow>
                     <MDBCol sm="3">
-                      <MDBCardText>Team</MDBCardText>
+                      <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>Team :</MDBCardText>
                     </MDBCol>
                     <MDBCol sm="9">
                       <MDBCardText className="text-muted">
@@ -272,7 +300,7 @@ const Profile = () => {
                   <hr />
                   <MDBRow>
                     <MDBCol sm="3">
-                      <MDBCardText>Company</MDBCardText>
+                      <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>Company :</MDBCardText>
                     </MDBCol>
                     <MDBCol sm="9">
                       <MDBCardText className="text-muted">
@@ -304,26 +332,32 @@ const Profile = () => {
                       >
                         Website Markup
                       </MDBCardText>
+                    </MDBCardBody>
+                  </MDBCard>  
+                </MDBCol>
+                <MDBCol md="6">
+                  <MDBCard className="mb-4 mb-md-0">
+                    <MDBCardBody>
+                      <MDBCardText className="mb-4">
+                        <span className="text-primary font-italic me-1">
+                          assigment
+                        </span>{" "}
+                        Project Status
+                      </MDBCardText>
                       <MDBCardText
-                        className="mt-4 mb-1"
+                        className="mb-1"
                         style={{ fontSize: ".77rem" }}
                       >
-                        One Page
+                        Web Design
                       </MDBCardText>
                       <MDBCardText
                         className="mt-4 mb-1"
                         style={{ fontSize: ".77rem" }}
                       >
-                        Mobile Template
-                      </MDBCardText>
-                      <MDBCardText
-                        className="mt-4 mb-1"
-                        style={{ fontSize: ".77rem" }}
-                      >
-                        Backend API
+                        Website Markup
                       </MDBCardText>
                     </MDBCardBody>
-                  </MDBCard>
+                  </MDBCard>  
                 </MDBCol>
               </MDBRow>
             </MDBCol>
@@ -368,6 +402,9 @@ const Profile = () => {
                       fluid
                     />
                   )}
+                  <div>
+                    <input type="file" onChange={handleImageUpload}/>                
+                  </div>
                 </Grid>
                 {/* Right side with input fields */}
                 <Grid item xs={12} md={8}>

@@ -1,5 +1,5 @@
-import AddJob from './AddJob';
-import AllJobs from './AllJobs';
+import AddJob from './Ticket';
+import AllJobs from './Team';
 import Profile from './Profile';
 import SharedLayout from './SharedLayout';
 import Stats from './Stats';
