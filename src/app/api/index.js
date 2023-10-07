@@ -2,6 +2,9 @@ import axios from "axios";
 import { setUser } from "../../features/user/authSlice";
 import { toast } from "react-toastify";
 import { getAuthHeader } from "./auth";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { ResetTvSharp, RssFeed } from "@mui/icons-material";
+import { storage } from "../../firebase";
 //export const baseURL = process.env.REACT_APP_BASE_URL;
 export const baseURL = 'https://localhost:7043/v1/itsds';
 
@@ -85,24 +88,8 @@ export async function GetDataProfileUser() {
     return res.data.result;
   }catch(error) {
     console.log(error);
-  }
-}
-
-
-//Update Data Profile User
-export async function UpdateDataProfile(id, data) {
-  const header = getAuthHeader();
-  try{
-    const res = await axios.put(`${baseURL}/user/${id}`, data, {
-      header: {
-        Authorization: header,
-      },
-    });
-  }catch(error){
-    console.log(error);
-    return [];
-  }
-}
+  };
+};
 
 //Delete Data User
 export async function DeleteDataUser(id) {
@@ -136,21 +123,30 @@ export async function UpdateProfileUser() {
 }
 
 //Update User 
-export async function UpdateUser(id) {
+export async function UpdateUser(id, data) {
   const header = getAuthHeader();
-  console.log('token',header);
   try{
-    const res = await axios.put(`${baseURL}/user/${id}`, {
+    const res = await axios.put(`${baseURL}/user/${id}`, data,{
       headers: {
         Authorization: header,
         'Content-Type': 'application/json',
       },
     });
     console.log(res);
-    return res.data;
+    return res;
   }catch(error) {
-    toast.error("BAD REQUEST");
-    console.log(error);
+    if(error.response && error.response.status === 400){
+      const validationErrors = error.response.data.responseException.error;
+      if(validationErrors && validationErrors['$.dateOfBirth']) {
+        toast.error(validationErrors['$.dateOfBirth'][0]);
+      }
+      if(validationErrors && validationErrors.req) {
+        toast.error(validationErrors.req[0]);
+      }
+    }else{
+      toast.error("An error occurred while processing your request.");
+      console.log(error);
+    }
   }
 }
 
@@ -167,5 +163,27 @@ export async function getUserById(id) {
   }catch(error){
     console.log(error);
     return [];
+  }
+}
+
+//Upload image Profile
+export async function UploadImage(file) {
+  const header = getAuthHeader();
+  try{
+    const storageRef = ref(storage, 'images/'+ file.name);
+    await uploadBytes(storageRef, file);
+
+    const downloadURL = await getDownloadURL(storageRef);
+    const res = await axios.patch("https://localhost:7043/v1/itsds/user/uploadAvatarFirebase", {
+      downloadURL: downloadURL,
+    }, {
+      headers: {
+        Authorization: header,
+      },
+    });
+
+    return res.data;
+  }catch(error) {
+    console.log(error);
   }
 }

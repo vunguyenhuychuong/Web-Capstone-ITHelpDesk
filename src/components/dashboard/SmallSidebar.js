@@ -2,6 +2,7 @@ import Wrapper from '../../assets/wrappers/SmallSidebar';
 import { FaTimes } from 'react-icons/fa';
 //import Logo from './Logo';
 import NavLinks from './NavLinks';
+import Logo from './Logo';
 const SmallSidebar = () => {
 
   return (
@@ -16,7 +17,7 @@ const SmallSidebar = () => {
             <FaTimes />
           </button>
           <header>
-            {/* <Logo /> */}
+             <Logo /> 
           </header>
           <NavLinks/>
         </div>

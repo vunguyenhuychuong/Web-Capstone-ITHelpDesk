@@ -1,0 +1,8 @@
+.rounded-circle {
+    transition: border-color 0.3s ease; /* Smooth transition for the border-color property */
+    border: 2px solid transparent; /* Set an initial transparent border */
+  }
+  
+  .rounded-circle:hover {
+    border-color: grey; /* Change the border color to grey when hovered */
+  }

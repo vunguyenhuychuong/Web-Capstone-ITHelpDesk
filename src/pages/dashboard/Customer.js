@@ -1,46 +1,67 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import {
-  Dialog,DialogTitle,Paper,Button,DialogContent,TableRow,TableSortLabel,Box,Table,TableBody,TableCell,TableContainer,TableHead,TextField,TablePagination,IconButton,
+  Dialog,
+  DialogTitle,
+  Paper,
+  Button,
+  TableRow,
+  TableSortLabel,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  IconButton,
   Select,
   MenuItem,
   InputLabel,
+  Grid,
 } from "@mui/material";
 import {
   MDBBtn,
+  MDBCardBody,
+  MDBCardImage,
   MDBCol,
   MDBInput,
   MDBRow,
 } from "mdb-react-ui-kit";
-import { visuallyHidden } from "@mui/utils";
-import { AddDataProfile, DeleteDataUser, UpdateUser, getAllUser, getUserById } from "../../app/api";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import moment from "moment";
+import {
+  AddDataProfile,
+  DeleteDataUser,
+  UpdateUser,
+  getAllUser,
+  getUserById,
+} from "../../app/api";
 import { toast } from "react-toastify";
 import { headCells, roleOptions } from "./Admin/tableComlumn";
-import { Close } from "@mui/icons-material";
+import { Close, Delete } from "@mui/icons-material";
+import EditIcon from "@mui/icons-material/Edit";
+import { FaPlus } from "react-icons/fa";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 function EnhancedTableHead(props) {
-  const { order, orderBy } = props;
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding="checkbox">STT</TableCell>
+        <TableCell padding="checkbox" style={{ paddingLeft: "12px" }}>
+          {" "}
+          No
+        </TableCell>
         {headCells.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align="left"
-            padding={headCell.disablePadding ? "none" : "normal"}
-            sortDirection={orderBy === headCell.id ? order : false}
-          >
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : "asc"}
-            >
+          <TableCell key={headCell.id} align="left">
+            <TableSortLabel>
+              {headCell.icon &&
+                React.cloneElement(headCell.icon, {
+                  className: "headCellIcon",
+                })}
               {headCell.label}
-              {orderBy === headCell.id ? (
-                <Box component="span" sx={visuallyHidden}>
-                  {order === "desc" ? "sorted descending" : "sorted ascending"}
-                </Box>
-              ) : null}
             </TableSortLabel>
           </TableCell>
         ))}
@@ -55,8 +76,9 @@ export default function Customer() {
   const [openAdd, setOpenAdd] = React.useState(false);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [date, setDate] = useState(moment());
   const [rowsPerPage, setRowPerPage] = useState(5);
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, users.length - page * rowsPerPage);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [data, setData] = useState({
     id: 0,
     firstName: "",
@@ -68,10 +90,11 @@ export default function Customer() {
     phoneNumber: "",
     isActive: true,
     role: 0,
-    birth: "",
+    dateOfBirth: "",
     gender: 0,
-    createdAt:"",
-    modifiedAt: ""
+    createdAt: "",
+    modifiedAt: "",
+    avatarUrl: "",
   });
 
   const fetchDataUser = async () => {
@@ -97,7 +120,7 @@ export default function Customer() {
         password: data.password,
         email: data.email,
         role: data.role,
-        birth: data.birth,
+        dateOfBirth: data.dateOfBirth,
         gender: data.gender,
       });
       if (result.isError === false) {
@@ -108,7 +131,7 @@ export default function Customer() {
           password: "",
           email: "",
           role: 0,
-          birth: "",
+          dateOfBirth: "",
           gender: 0,
         });
         console.log(result);
@@ -131,26 +154,26 @@ export default function Customer() {
       const user = await getUserById(id);
       setData({
         id: user.result.id,
-        firstName: user.result.firstName || "", 
+        firstName: user.result.firstName || "",
         lastName: user.result.lastName || "",
         username: user.result.username || "",
         password: user.result.password || "",
         email: user.result.email || "",
         address: user.result.address || "",
         phoneNumber: user.result.phoneNumber || "",
-        isActive: user.result.isActive || true, 
-        role: user.result.role || 0, 
-        birth: user.result.birth || "",
-        gender: user.result.gender || 0, 
+        isActive: user.result.isActive || true,
+        role: user.result.role || 0,
         dateOfBirth: user.result.dateOfBirth || "",
+        gender: user.result.gender || 0,
+        avatarUrl: user.result.avatarUrl || "",
       });
     } catch (error) {
       toast.error("Can not get user id");
       console.log(error);
     }
-    setLoading(false);
     setOpen(true);
-  }
+    setLoading(false);
+  };
 
   const onDeleteUser = async (id) => {
     const shouldDelete = window.confirm("Are you sure you want to delete?");
@@ -180,11 +203,21 @@ export default function Customer() {
 
   const handleChange = React.useCallback((e) => {
     const { name, value } = e.target;
-    setData(prevData => ({
+    setData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   }, []);
+
+  const handleDateChange = (newDate) => {
+    const formattedDate = moment(newDate).format("YYYY-MM-DD");
+    console.log(formattedDate);
+    setDate(newDate);
+    setData((prevInputs) => ({
+      ...prevInputs,
+      dateOfBirth: formattedDate,
+    }));
+  };
 
   const handleClose = () => {
     setOpen(false);
@@ -196,83 +229,107 @@ export default function Customer() {
     setOpenAdd(true);
   };
 
-  const handleOpenEditUser = (id) => {
-    getUserById(id);
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+    console.log(selectedFile);
   };
 
   const onHandleEditUser = async () => {
-    try{
+    try {
+      let avatarUrl = data.avatarUrl;
+      if (selectedFile) {
+        const storage = getStorage();
+        const storageRef = ref(storage, "images/" + selectedFile.name);
+        await uploadBytes(storageRef, selectedFile);
+        avatarUrl = await getDownloadURL(storageRef);
+        console.log(avatarUrl);
+      }
+
+      const updatedData = {
+        ...data,
+        avatarUrl: avatarUrl,
+      };
+      setData(updatedData);
       const response = UpdateUser(data.id, data);
-      console.log(data);
       console.log(response);
       toast.success("User updated successfully");
-    }catch(error){
+      setOpen(false);
+      fetchDataUser();
+    } catch (error) {
       toast.error("Failed to update user");
       console.log(error);
     }
-  }
+  };
 
   return (
-    <Box sx={{ width: "100%" }}>
-      <Button variant="contained" color="primary" onClick={handleOpenAdd}>
-        Add
+    <Box
+      sx={{
+        width: "100%",
+        backgroundColor: "#eee",
+        p: 2,
+      }}
+    >
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{ mb: 2 }}
+        onClick={handleOpenAdd}
+      >
+        <FaPlus />
       </Button>
-      <Paper sx={{ width: "100%", mb: 2 }}>
-        <TableContainer>
-          <Table sx={{ minWidth: 750 }}>
-            <EnhancedTableHead />
-            <TableBody>
-              {users.map((user, index) => 
-                 (
+      {loading ? (
+        <div style={{ textAlign: "center" }}>Loading...</div>
+      ) : (
+        <Paper sx={{ width: "100%", mb: 2 }}>
+          <TableContainer>
+            <Table sx={{ minWidth: 750 }}>
+              <EnhancedTableHead />
+              <TableBody>
+                {users.map((user, index) => (
                   <TableRow
-                    key={`user-${index}`} 
+                    key={`user-${index}`}
                     hover
                     role="checkbox"
                     tabIndex={-1}
                     sx={{ cursor: "pointer" }}
                   >
                     <TableCell align="left">{user.id}</TableCell>
-                    <TableCell align="left">{user.avatar || "N/A"}</TableCell>
-                    <TableCell align="left">{user.firstName}</TableCell>
-                    <TableCell align="left">{user.lastName}</TableCell>
-                    <TableCell align="left">{user.username}</TableCell>
-                    <TableCell align="left">{user.email}</TableCell>
-                    <TableCell align="left">{user.phone || "N/A"}</TableCell>
-                    <TableCell align="left">{user.birth || "N/A"}</TableCell>
-                    <TableCell align="left">{user.gender || "N/A"}</TableCell>
+                    <TableCell align="left">{ "N/A"}</TableCell>
                     <TableCell align="left">
-                      <Button
-                        variant="contained"
+                      {user.firstName} {user.lastName}
+                    </TableCell>
+                    <TableCell align="left">{user.email}</TableCell>
+                    <TableCell align="left">{user.phoneNumber}</TableCell>
+                    <TableCell align="left">
+                      <EditIcon
+                        fontSize="small"
                         color="primary"
                         onClick={() => handleDetailUser(user.id)}
-                      >
-                        Edit
-                      </Button>
+                      />
                     </TableCell>
                     <TableCell align="left">
-                      <Button
-                        variant="contained"
-                        color="secondary"
+                      <Delete
+                        fontSize="small"
+                        color="error"
                         onClick={() => onDeleteUser(user.id)}
-                      >
-                        Delete
-                      </Button>
+                      />
                     </TableCell>
                   </TableRow>
                 ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={users.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Paper>
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={users.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Paper>
+      )}
       <Dialog open={openAdd} fullWidth maxWidth="lg">
         <DialogTitle className="text-center">
           <IconButton
@@ -281,60 +338,88 @@ export default function Customer() {
             aria-label="close"
             color="#3b71ca"
             style={{
-              position: 'absolute',
-              right: '32px',
-              top: '8px',
-              width: '36px',
-              height: '36px',
-              backgroundColor: '#2196f3',
-              borderRadius: '4px',
+              position: "absolute",
+              right: "32px",
+              top: "8px",
+              width: "36px",
+              height: "36px",
+              backgroundColor: "#2196f3",
+              borderRadius: "4px",
             }}
           >
-            <Close style={{ color: 'white' }} />
+            <Close style={{ color: "white" }} />
           </IconButton>
-          Create Team
+          Create Customer
         </DialogTitle>
-        <form style={{ margin: "0px 40px" }} className="custom-dialog ">         
+        <form style={{ margin: "0px 40px" }} className="custom-dialog ">
           <MDBRow>
             <MDBCol>
               <InputLabel>First Name</InputLabel>
-              <MDBInput id="firstName" name="firstName" value={data.firstName} onChange={handleChange}/>
+              <MDBInput
+                id="firstName"
+                name="firstName"
+                value={data.firstName}
+                onChange={handleChange}
+              />
             </MDBCol>
             <MDBCol>
-              <InputLabel >Last Name</InputLabel>
-              <MDBInput id="lastName" name="lastName" value={data.lastName} onChange={handleChange}/>
+              <InputLabel>Last Name</InputLabel>
+              <MDBInput
+                id="lastName"
+                name="lastName"
+                value={data.lastName}
+                onChange={handleChange}
+              />
             </MDBCol>
-          </MDBRow>  
+          </MDBRow>
           <MDBRow>
             <MDBCol>
-              <InputLabel >User Name</InputLabel>
-              <MDBInput id="username" name="username" value={data.username} onChange={handleChange}/>
+              <InputLabel>User Name</InputLabel>
+              <MDBInput
+                id="username"
+                name="username"
+                value={data.username}
+                onChange={handleChange}
+              />
             </MDBCol>
             <MDBCol>
               <InputLabel>Password</InputLabel>
-              <MDBInput id="password" name="password" value={data.password} onChange={handleChange}/>
+              <MDBInput
+                id="password"
+                name="password"
+                value={data.password}
+                onChange={handleChange}
+              />
             </MDBCol>
-          </MDBRow>  
+          </MDBRow>
           <MDBRow>
             <MDBCol>
               <InputLabel>Email</InputLabel>
-              <MDBInput id="email" name="email" value={data.email} onChange={handleChange}/>
+              <MDBInput
+                id="email"
+                name="email"
+                value={data.email}
+                onChange={handleChange}
+              />
             </MDBCol>
             <MDBCol>
               <InputLabel>Role</InputLabel>
               <Select
-                  id="role"
-                  onChange={handleChange}
-                  fullWidth
-                  margin="dense" // or margin="none"
-                  variant="outlined"
-                  style={{ height: '36px' }}
-                  displayEmpty
-                  renderValue={(value) => (value === '' ? <span>&nbsp;</span> : value)}>
+                id="role"
+                onChange={handleChange}
+                fullWidth
+                margin="dense" // or margin="none"
+                variant="outlined"
+                style={{ height: "36px" }}
+                displayEmpty
+                renderValue={(value) =>
+                  value === "" ? <span>&nbsp;</span> : value
+                }
+              >
                 {roleOptions.map((role) => (
-                <MenuItem key={role.id} value={role.id}>
-                  {role.name}
-                </MenuItem>
+                  <MenuItem key={role.id} value={role.id}>
+                    {role.name}
+                  </MenuItem>
                 ))}
               </Select>
             </MDBCol>
@@ -346,79 +431,157 @@ export default function Customer() {
           </div>
         </form>
       </Dialog>
-
       <Dialog open={open} fullWidth maxWidth="lg">
         <DialogTitle className="text-center">
-        <IconButton
+          <IconButton
             edge="end"
             onClick={handleClose}
             aria-label="close"
             color="#3b71ca"
             style={{
-              position: 'absolute',
-              right: '32px',
-              top: '8px',
-              width: '36px', // Set the width and height to create a square button
-              height: '36px',
-              backgroundColor: '#2196f3', // Set the background color to blue
-              borderRadius: '4px', // Optional: Add border-radius for rounded corners
+              position: "absolute",
+              right: "32px",
+              top: "8px",
+              width: "36px",
+              height: "36px",
+              backgroundColor: "#2196f3",
+              borderRadius: "4px",
             }}
           >
-            <Close style={{ color: 'white' }} />
+            <Close style={{ color: "white" }} />
           </IconButton>
           Create Team
         </DialogTitle>
-          {loading ? (
-            <div>loading...</div>
-          ) : (
-        <form style={{ margin: "0px 40px" }} className="custom-dialog ">         
-          <MDBRow>
-            <MDBCol>
-              <InputLabel>First Name</InputLabel>
-              <MDBInput id="firstName" name="firstName" value={data.firstName} onChange={handleChange}/>
-            </MDBCol>
-            <MDBCol>
-              <InputLabel >Last Name</InputLabel>
-              <MDBInput id="lastName" name="lastName" value={data.lastName} onChange={handleChange}/>
-            </MDBCol>
-          </MDBRow>
-          <MDBRow>
-            <MDBCol>
-              <InputLabel>Email</InputLabel>
-              <MDBInput id="email" name="email" value={data.email} onChange={handleChange}/>
-            </MDBCol>
-            <MDBCol>
-              <InputLabel>Phone Number</InputLabel>
-              <MDBInput id="phoneNumber" name="phoneNumber" value={data.phoneNumber} onChange={handleChange}/>
-            </MDBCol>
-          </MDBRow> 
-          <MDBRow>
-          <MDBCol>
-              <InputLabel>Gender</InputLabel>
-              <MDBInput id="gender" name="gender" value={data.gender} onChange={handleChange}/>
-            </MDBCol>
-            <MDBCol>
-              <InputLabel >IsActive</InputLabel>
-              <MDBInput id="isActive" name="isActive" value={data.isActive} onChange={handleChange}/>
-            </MDBCol>  
-          </MDBRow>  
-          <MDBRow>
-          <MDBCol>
-              <InputLabel>Date Of Birth</InputLabel>
-              <MDBInput id="dateOfBirth" name="dateOfBirth" value={data.dateOfBirth} onChange={handleChange}/>
-            </MDBCol>
-            <MDBCol>
-              <InputLabel>Address</InputLabel>
-              <MDBInput id="address" name="address" value={data.address} onChange={handleChange}/>
-            </MDBCol>  
-          </MDBRow>  
-          <div className="text-center customer-center-btn">
-            <MDBBtn className="mb-4 mt-4" type="button" onClick={onHandleEditUser}>
-              Edit
-            </MDBBtn>
-          </div>
-        </form>
-          )}  
+        {loading ? (
+          <div>loading...</div>
+        ) : (
+          <form style={{ margin: "0px 40px" }} className="custom-dialog ">
+            <MDBCardBody>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={4}>
+                  {data && data.avatarUrl ? (
+                    <MDBCardImage
+                      src={data.avatarUrl}
+                      alt="Avatar 1"
+                      className="rounded-circle"
+                      style={{ width: "150px" }}
+                      fluid
+                    />
+                  ) : (
+                    <MDBCardImage
+                      src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" // Add a default avatar image URL
+                      alt="avatar"
+                      className="rounded-circle"
+                      style={{ width: "150px" }}
+                      fluid
+                    />
+                  )}
+                  {/* Input field for uploading image */}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange} // Add your image change handler function
+                    style={{ marginTop: "10px" }} // Add some spacing between the image and input field
+                  />
+                </Grid>
+                <Grid item xs={12} md={8}>
+                  <MDBRow>
+                    <MDBCol>
+                      <InputLabel>First Name</InputLabel>
+                      <MDBInput
+                        id="firstName"
+                        name="firstName"
+                        value={data.firstName}
+                        onChange={handleChange}
+                      />
+                    </MDBCol>
+                    <MDBCol>
+                      <InputLabel>Last Name</InputLabel>
+                      <MDBInput
+                        id="lastName"
+                        name="lastName"
+                        value={data.lastName}
+                        onChange={handleChange}
+                      />
+                    </MDBCol>
+                  </MDBRow>
+                  <MDBRow>
+                    <MDBCol>
+                      <InputLabel>Email</InputLabel>
+                      <MDBInput
+                        id="email"
+                        name="email"
+                        value={data.email}
+                        onChange={handleChange}
+                      />
+                    </MDBCol>
+                    <MDBCol>
+                      <InputLabel>Phone Number</InputLabel>
+                      <MDBInput
+                        id="phoneNumber"
+                        name="phoneNumber"
+                        value={data.phoneNumber}
+                        onChange={handleChange}
+                      />
+                    </MDBCol>
+                  </MDBRow>
+                  <MDBRow>
+                    <MDBCol>
+                      <InputLabel>Gender</InputLabel>
+                      <MDBInput
+                        id="gender"
+                        name="gender"
+                        value={data.gender}
+                        onChange={handleChange}
+                      />
+                    </MDBCol>
+                    <MDBCol>
+                      <InputLabel>IsActive</InputLabel>
+                      <MDBInput
+                        id="isActive"
+                        name="isActive"
+                        value={data.isActive}
+                        onChange={handleChange}
+                      />
+                    </MDBCol>
+                  </MDBRow>
+                  <MDBRow>
+                    <MDBCol>
+                      <InputLabel>Date Of Birth</InputLabel>
+                      <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <DatePicker
+                          required
+                          fullWidth
+                          value={date}
+                          maxDate={moment()}
+                          onChange={(newValue) => handleDateChange(newValue)}
+                        />
+                      </LocalizationProvider>
+                    </MDBCol>
+                    <MDBCol>
+                      <InputLabel>Address</InputLabel>
+                      <MDBInput
+                        id="address"
+                        name="address"
+                        value={data.address}
+                        onChange={handleChange}
+                      />
+                    </MDBCol>
+                  </MDBRow>
+                  <div className="text-center customer-center-btn">
+                    <MDBBtn
+                      className="mb-4 mt-4"
+                      type="button"
+                      onClick={onHandleEditUser}
+                    >
+                      Edit
+                    </MDBBtn>
+                  </div>
+                </Grid>
+              </Grid>
+            </MDBCardBody>
+          </form>
+        )}
       </Dialog>
     </Box>
   );

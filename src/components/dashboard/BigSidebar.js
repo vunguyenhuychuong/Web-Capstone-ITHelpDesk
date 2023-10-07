@@ -1,6 +1,7 @@
 import NavLinks from './NavLinks';
 //import Logo from '../components/Logo';
 import Wrapper from '../../assets/wrappers/BigSidebar';
+import Logo from './Logo';
 
 const BigSidebar = () => {
   return (
@@ -17,7 +18,7 @@ const BigSidebar = () => {
       >
         <div className='content'>
           <header>
-            {/* <Logo /> */}
+             {/* <Logo /> */}
           </header>
           <NavLinks />
         </div>

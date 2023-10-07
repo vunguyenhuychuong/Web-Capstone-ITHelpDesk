@@ -24,6 +24,7 @@
     "cloudinary-react": "^1.8.1",
     "dayjs": "^1.11.10",
     "feather-icons": "^4.29.1",
+    "firebase": "^10.4.0",
     "framer-motion": "^10.16.4",
     "mdb-react-ui-kit": "^6.3.0",
     "moment": "^2.29.4",

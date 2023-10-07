@@ -53,4 +53,37 @@ export async function DeleteDataTeam(id) {
     }
 };
 
-//
+// Get Detail Team in system
+export async function getTeamById(id) {
+    const header = getAuthHeader();
+    try{
+        const res = await axios.get(`${baseURL}/team/${id}`,{
+            headers: {
+                Authorization: header,
+            },
+        });
+        return res.data;
+    }catch(error){
+        console.log(error);
+        return [];
+    }
+}
+
+
+//Update Team in system
+export async function UpdateTeam(id, data) {
+    const header = getAuthHeader();
+    console.log('token',header);
+    try{
+      const res = await axios.put(`${baseURL}/team/${id}`, data,{
+        headers: {
+          Authorization: header,
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log(res);
+      return res.data;
+    }catch(error) {
+      console.log(error);
+    }
+  }

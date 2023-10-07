@@ -16,7 +16,7 @@ import {
 import { toast } from "react-toastify";
 import Wrapper from "../../assets/wrappers/DashboardFormPage";
 import React, { useEffect, useState } from "react";
-import { AddTeam, DeleteDataTeam, getAllTeam } from "../../app/api/team";
+import { AddTeam, DeleteDataTeam, UpdateTeam, getAllTeam, getTeamById } from "../../app/api/team";
 import { Close, Description, Face, LocationCity } from "@mui/icons-material";
 import {
   MDBBtn,
@@ -29,6 +29,7 @@ const Team = () => {
   const [open, setOpen] = React.useState(false);
   const [openAdd, setOpenAdd] = React.useState(false);
   const [teams, setTeams] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
     id: 0,
     name: "",
@@ -76,6 +77,41 @@ const Team = () => {
       toast.error("Fail to create team");
     }
   }
+
+  const handleDetailTeam = async (id) => {
+    setLoading(true);
+    try{
+      const user = await getTeamById(id);
+      setData({
+        id: user.result.id,
+        name: user.result.name || "",
+        location: user.result.location || "",
+        description: user.result.description || "",
+        isActive: user.result.isActive || true,
+        managerId: user.result.managerId || 0,
+        createdAt: user.result.createdAt || "",
+        modifiedAt: user.result.modifiedAt || ""
+      })
+    }catch(error){
+      toast.error("Can not get team id");
+      console.log(error);
+    }
+    setLoading(false);
+    setOpen(true);
+  }
+
+  const onHandleEditTeam = async () => {
+    try{
+      const response = UpdateTeam(data.id, data);
+      console.log(response);
+      toast.success("Update Team successful");
+      setOpen(false);
+      fetchDataTeam();
+    }catch(error){
+      toast.error("Failed to update team");
+      console.log(error);
+    }
+  };
 
   const onDeleteTeam = async (id) => {
     const shouldDelete = window.confirm("Are you sure want to delete this team");
@@ -173,7 +209,14 @@ const Team = () => {
                   style={{ fontWeight: "bold", color: "#007bff" }}
                   align="left"
                 >
-                  
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography
+                  variant="subtitle1"
+                  style={{ fontWeight: "bold", color: "#007bff" }}
+                  align="left"
+                >
                 </Typography>
               </TableCell>
             </TableRow>
@@ -187,6 +230,9 @@ const Team = () => {
                 <TableCell align="left">{team.location}</TableCell>
                 <TableCell align="left">{team.description}</TableCell>
                 <TableCell align="left">{team.managerId}</TableCell>
+                <TableCell align="left">
+                  <Button variant="contained" color="primary" onClick={() => handleDetailTeam(team.id)}>Edit</Button>
+                </TableCell>
                 <TableCell align="left">
                   <Button variant="contained" color="secondary" onClick={() => onDeleteTeam(team.id)}>Delete</Button>
                 </TableCell>
@@ -243,6 +289,56 @@ const Team = () => {
             </MDBBtn>
           </div>
         </form>
+      </Dialog>
+
+      <Dialog open={open} fullWidth maxWidth="lg">
+        <DialogTitle className="text-center">
+        <IconButton
+            edge="end"
+            onClick={handleClose}
+            aria-label="close"
+            color="#3b71ca"
+            style={{
+              position: 'absolute',
+              right: '32px',
+              top: '8px',
+              width: '36px', // Set the width and height to create a square button
+              height: '36px',
+              backgroundColor: '#2196f3', // Set the background color to blue
+              borderRadius: '4px', // Optional: Add border-radius for rounded corners
+            }}
+          >
+            <Close style={{ color: 'white' }} />
+          </IconButton>
+          Create Team
+        </DialogTitle>
+          {loading ? (
+            <div>loading...</div>
+          ) : (
+        <form style={{ margin: "0px 40px" }} className="custom-dialog ">         
+          <MDBRow>
+            <MDBCol>
+              <InputLabel>Name</InputLabel>
+              <MDBInput id="name" name="name" value={data.name} onChange={handleChange}/>
+            </MDBCol>
+            <MDBCol>
+              <InputLabel>Location</InputLabel>
+              <MDBInput id="location" name="location" value={data.location} onChange={handleChange}/>
+            </MDBCol>
+          </MDBRow>
+          <MDBRow>
+            <MDBCol>
+              <InputLabel>Description</InputLabel>
+              <MDBInput id="description" name="description" value={data.description} onChange={handleChange}/>
+            </MDBCol>
+          </MDBRow> 
+          <div className="text-center customer-center-btn">
+            <MDBBtn className="mb-4 mt-4" type="button" onClick={onHandleEditTeam}>
+              Edit
+            </MDBBtn>
+          </div>
+        </form>
+          )}  
       </Dialog>
     </Wrapper>
   );

@@ -22,21 +22,23 @@ import {
   Grid,
   MenuItem,
 } from "@mui/material";
+import EditIcon from '@mui/icons-material/Edit';
+import CloseIcon from '@mui/icons-material/Close';
+import LockIcon from '@mui/icons-material/Lock';
 import axios from "axios";
-import dayjs from "dayjs";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { DateField } from "@mui/x-date-pickers/DateField";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import moment from "moment";
 import "../../assets/css/profile.css";
 import React, { useEffect, useState } from "react";
 import {
   GetDataProfileUser,
-  UpdateProfileUser,
-  getDataProfile,
 } from "../../app/api";
 import { toast } from "react-toastify";
+import { getAuthHeader } from "../../app/api/auth";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { genderOptions } from "./Admin/tableComlumn";
 
 const Profile = () => {
   const [data, setData] = useState({
@@ -49,12 +51,13 @@ const Profile = () => {
     dateOfBirth: "",
     gender: 0,
     team: "",
+    address: ""
   });
 
-  const genderOptions = [
-    { id: 0, name: "Male" },
-    { id: 1, name: "Female" },
-  ];
+  const [open, setOpen] = React.useState(false);
+  const [openAdd, setOpenAdd] = React.useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [date, setDate] = useState(moment());
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -64,41 +67,21 @@ const Profile = () => {
     }));
   };
 
-  const preset_key = "jrryfhjj";
-  const cloud_name = "daokakrxg";
-  const [imageUrl, setImageUrl] = useState();
+  const handleDateChange = (newDate) => {
+    const formattedDate = moment(newDate).format("YYYY-MM-DD");
+    setDate(newDate);
+    setData((prevInputs) => ({
+      ...prevInputs,
+      dateOfBirth: formattedDate,
+    }));
+  };
 
-  const handleImageUpload = async(event) => {
-    const user = JSON.parse(localStorage.getItem("profileAdmin"));
-    const accessToken = user.result.accessToken;
-    const header = `Bearer ${accessToken}`;
-    const file = event.target.files[0];
+   const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+    console.log(selectedFile);
+   };
+ 
 
-    if(file){
-      const formData = new FormData();
-      formData.append('avatar', file);
-      formData.append("upload_preset", preset_key);
-      formData.append("cloud_name", cloud_name);
-      console.log(file);
-    try{
-      const response = await axios.patch("https://localhost:7043/v1/itsds/user/uploadAvatar", formData, {
-        headers: {
-           Authorization: header,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      const { location } = response.data;
-      setImageUrl(location);
-      setData({...data, avatarUrl: location})
-    }catch(err){
-        console.error('Error uploading image', err);
-    }
-    }
-  }
-
-
-  const [open, setOpen] = React.useState(false);
-  const [openAdd, setOpenAdd] = React.useState(false);
   const handleClose = () => {
     setOpen(false);
     setOpenAdd(false);
@@ -118,10 +101,21 @@ const Profile = () => {
   }, []);
 
   const onHandleEditProfile = async () => {
-    const user = JSON.parse(localStorage.getItem("profileAdmin"));
-    const accessToken = user.result.accessToken;
-    const header = `Bearer ${accessToken}`;
     try{
+      const header = getAuthHeader();
+      let avatarUrl = data.avatarUrl;
+      if(selectedFile) {
+        const storage = getStorage();
+        const storageRef = ref(storage, 'images/' + selectedFile.name);
+        await uploadBytes(storageRef, selectedFile);
+        avatarUrl = await getDownloadURL(storageRef);
+      }
+      const updatedData = {
+        ...data,
+        avatarUrl: avatarUrl,
+      };
+      setData(updatedData);
+      
       const editProfile = await axios.patch('https://localhost:7043/v1/itsds/user/update-profile',{
         firstName: data.firstName,
         lastName: data.lastName,
@@ -129,7 +123,8 @@ const Profile = () => {
         phoneNumber: data.phoneNumber,
         gender: data.gender,
         dateOfBirth: data.dateOfBirth,
-        address: data.address
+        address: data.address,
+        avatarUrl: avatarUrl
       },
       {
         headers: {
@@ -155,15 +150,21 @@ const Profile = () => {
                     <MDBCardImage
                       src={data.avatarUrl}
                       alt="avatar"
-                      className="rounded-circle"
-                      style={{ width: "150px" }}
+                      className="rounded-circle border-hover" 
+                      style={{
+                        width: "150px",
+                        borderColor: "grey", // Set border color directly using inline style
+                        borderWidth: "2px",
+                        borderStyle: "solid",
+                        transition: "transform 0.3s ease, border-color 0.3s ease",
+                      }}
                       fluid
                     />
                   ) : (
                     <MDBCardImage
                       src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
                       alt="avatar"
-                      className="rounded-circle"
+                      className="rounded-circle border-hover"
                       style={{ width: "150px" }}
                       fluid
                     />
@@ -178,9 +179,9 @@ const Profile = () => {
                       : "N/A"}
                   </p>
                   <div className="d-flex justify-content-center mb-2">
-                    <MDBBtn onClick={handleOpenEditUser}>Edit</MDBBtn>
-                    <MDBBtn outline className="ms-1">
-                      Change password
+                    <MDBBtn onClick={handleOpenEditUser}><EditIcon /></MDBBtn>
+                    <MDBBtn outline className="ms-2">
+                    <LockIcon style={{ marginRight: '8px' }} />
                     </MDBBtn>
                   </div>
                 </MDBCardBody>
@@ -236,10 +237,13 @@ const Profile = () => {
                     <MDBCol sm="3">
                       <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>UserName :</MDBCardText>
                     </MDBCol>
-                    <MDBCol sm="9">
+                    <MDBCol sm="8">
                       <MDBCardText className="text-muted">
                         {data && data.username ? data.username : "Loading"}
                       </MDBCardText>
+                    </MDBCol>
+                    <MDBCol sm="1">
+                      <EditIcon fontSize="small" color="primary" onClick={handleOpenEditUser}/>
                     </MDBCol>
                   </MDBRow>
                   <hr />
@@ -247,10 +251,13 @@ const Profile = () => {
                     <MDBCol sm="3">
                       <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>Email :</MDBCardText>
                     </MDBCol>
-                    <MDBCol sm="9">
+                    <MDBCol sm="8">
                       <MDBCardText className="text-muted">
                         {data && data.email ? data.email : "Loading"}
                       </MDBCardText>
+                    </MDBCol>
+                    <MDBCol sm="1">
+                      <EditIcon fontSize="small" color="primary" onClick={handleOpenEditUser}/>
                     </MDBCol>
                   </MDBRow>
                   <hr />
@@ -258,10 +265,13 @@ const Profile = () => {
                     <MDBCol sm="3">
                       <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>Phone :</MDBCardText>
                     </MDBCol>
-                    <MDBCol sm="9">
+                    <MDBCol sm="8">
                       <MDBCardText className="text-muted">
                         {data && data.phoneNumber ? data.phoneNumber : "N/A"}
                       </MDBCardText>
+                    </MDBCol>
+                    <MDBCol sm="1">
+                      <EditIcon fontSize="small" color="primary" onClick={handleOpenEditUser}/>
                     </MDBCol>
                   </MDBRow>
                   <hr />
@@ -269,10 +279,13 @@ const Profile = () => {
                     <MDBCol sm="3">
                       <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>Role :</MDBCardText>
                     </MDBCol>
-                    <MDBCol sm="9">
+                    <MDBCol sm="8">
                       <MDBCardText className="text-muted">
-                        (098) 765-4321
+                      {data && data.role ? data.role : "N/A"}
                       </MDBCardText>
+                    </MDBCol>
+                    <MDBCol sm="1">
+                      <EditIcon fontSize="small" color="primary" onClick={handleOpenEditUser}/>
                     </MDBCol>
                   </MDBRow>
                   <hr />
@@ -280,10 +293,13 @@ const Profile = () => {
                     <MDBCol sm="3">
                       <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>Date Of Birth :</MDBCardText>
                     </MDBCol>
-                    <MDBCol sm="9">
+                    <MDBCol sm="8">
                       <MDBCardText className="text-muted">
                         {data && data.dateOfBirth ? data.dateOfBirth : "N/A"}
                       </MDBCardText>
+                    </MDBCol>
+                    <MDBCol sm="1">
+                      <EditIcon fontSize="small" color="primary" onClick={handleOpenEditUser}/>
                     </MDBCol>
                   </MDBRow>
                   <hr />
@@ -291,10 +307,13 @@ const Profile = () => {
                     <MDBCol sm="3">
                       <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>Team :</MDBCardText>
                     </MDBCol>
-                    <MDBCol sm="9">
+                    <MDBCol sm="8">
                       <MDBCardText className="text-muted">
                         {data && data.team ? data.team : "N/A"}
                       </MDBCardText>
+                    </MDBCol>
+                    <MDBCol sm="1">
+                      <EditIcon fontSize="small" color="primary" onClick={handleOpenEditUser}/>
                     </MDBCol>
                   </MDBRow>
                   <hr />
@@ -302,10 +321,13 @@ const Profile = () => {
                     <MDBCol sm="3">
                       <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>Company :</MDBCardText>
                     </MDBCol>
-                    <MDBCol sm="9">
+                    <MDBCol sm="8">
                       <MDBCardText className="text-muted">
                         {data && data.company ? data.company : "N/A"}
                       </MDBCardText>
+                    </MDBCol>
+                    <MDBCol sm="1">
+                      <EditIcon fontSize="small" color="primary" onClick={handleOpenEditUser}/>
                     </MDBCol>
                   </MDBRow>
                 </MDBCardBody>
@@ -375,7 +397,7 @@ const Profile = () => {
           Loading data...
         </div>
       )}
-      <Dialog open={openAdd} onClose={handleClose} maxWidth="md" fullWidth>
+      <Dialog open={openAdd} maxWidth="md" fullWidth>
         <DialogTitle className="text-center">
           Information about User
         </DialogTitle>
@@ -403,7 +425,7 @@ const Profile = () => {
                     />
                   )}
                   <div>
-                    <input type="file" onChange={handleImageUpload}/>                
+                    <input type="file" onChange={handleFileChange} />                
                   </div>
                 </Grid>
                 {/* Right side with input fields */}
@@ -467,29 +489,21 @@ const Profile = () => {
                     margin="normal"
                     value={data.address}
                     onChange={handleChange}
-
                   />
-                  <TextField
-                    name="dateOfBirth"
-                    fullWidth
-                    label="dateOfBirth"
-                    variant="outlined"
-                    margin="normal"
-                    value={data.dateOfBirth}
-                    onChange={handleChange}
-                  />
-                  {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={["DatePicker"]}>
+                  <Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <LocalizationProvider dateAdapter={AdapterMoment}>
                       <DatePicker
-                        name="dateOfBirth"
-                        label="Date Picker"
-                        format="YYYY/MM/DD"
-                        value={formInputs.dateOfBirth}
-                        onChange={handleChange}
+                      label="Date Export"
+                      required
+                      fullWidth
+                      value={date}
+                      maxDate={moment()}
+                      onChange={(newValue) => handleDateChange(newValue)}
                       />
-                    </DemoContainer>
-                  </LocalizationProvider> */}
-                  {/* Add more input fields as needed */}
+                    </LocalizationProvider>
+                </Grid>
+                </Grid>
                 </Grid>
               </Grid>
             </MDBCardBody>
@@ -498,8 +512,8 @@ const Profile = () => {
         );
         <DialogActions>
           <>
-            <Button onClick={onHandleEditProfile}>Submit</Button>
-            <Button onClose={handleClose}>Close</Button>
+            <Button onClick={onHandleEditProfile} variant="outlined" color="primary"><EditIcon /></Button>
+            <Button onClick={handleClose} variant="outlined" color="secondary"><CloseIcon /></Button>
           </>
         </DialogActions>
       </Dialog>

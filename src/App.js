@@ -12,6 +12,7 @@ import Customer from './pages/dashboard/Customer';
 import { useSelector } from 'react-redux';
 import Tickets from './pages/dashboard/Ticket';
 import Team from './pages/dashboard/Team';
+import AccessibleTabs1 from './pages/dashboard/Customer/AccessibleTabs';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -34,6 +35,7 @@ function App() {
           <Route path='ticket' element={<Tickets />} />
           {(hasCustomerRole || hasAdminRole) && <Route path='profile' element={<Profile />} />} 
           {hasAdminRole && <Route path='customer' element={<Customer />} />} 
+          <Route path='main' element={<AccessibleTabs1 />} />
           </Route>
         <Route path='login' element={<Login />} />
         <Route path='forgot-password' element={<ForgetPassword /> }  />
