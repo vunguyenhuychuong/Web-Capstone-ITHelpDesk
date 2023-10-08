@@ -1,0 +1,13 @@
+
+.narrow-input {
+    width: 60%; 
+}
+
+.public-DraftEditor-content {
+    border: 1px solid #333; /* Dark border color */
+}
+
+.public-DraftEditor-content {
+    min-height: 150px; /* Adjust the minimum height as needed */
+    height: auto; /* Allow the editor to grow in height based on content */
+}

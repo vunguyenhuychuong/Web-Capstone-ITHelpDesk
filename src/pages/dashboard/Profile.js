@@ -132,6 +132,7 @@ const Profile = () => {
         },
       });
       toast.success("Edit Successful");
+      setOpenAdd(false);
       console.log(editProfile);
     }catch(err){
       console.log(err);

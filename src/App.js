@@ -1,10 +1,9 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route} from 'react-router-dom';
 import { Landing, Error, Login} from './pages';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
   Profile,
-  Stats,
   SharedLayout,
 } from './pages/dashboard';
 import ForgetPassword from './pages/ForgetPassword';
@@ -13,6 +12,10 @@ import { useSelector } from 'react-redux';
 import Tickets from './pages/dashboard/Ticket';
 import Team from './pages/dashboard/Team';
 import AccessibleTabs1 from './pages/dashboard/Customer/AccessibleTabs';
+import Main from './pages/dashboard/Main';
+import Menu from './pages/dashboard/Customer/Menu';
+import ServiceCategories from './pages/dashboard/Customer/ServiceCategories';
+import RequestIssues from './pages/dashboard/Customer/Issue';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -30,12 +33,16 @@ function App() {
             <SharedLayout />  
           }
         >
-          <Route index element={<Stats />} />
+          {/* <Route index element={<Stats />} /> */}
           {(hasAdminRole) && <Route path='team' element={<Team />} />}
           <Route path='ticket' element={<Tickets />} />
           {(hasCustomerRole || hasAdminRole) && <Route path='profile' element={<Profile />} />} 
-          {hasAdminRole && <Route path='customer' element={<Customer />} />} 
+          {hasAdminRole && <Route path='customer' element={<Customer />} />}
+          {(hasCustomerRole) && <Route path='mains' element={<Main />} />} 
           <Route path='main' element={<AccessibleTabs1 />} />
+          <Route path='menu' element={<Menu />} />
+          {/* <Route path='issues' element={<RequestIssues />} /> */}
+          <Route path='categories' element={<ServiceCategories />} />
           </Route>
         <Route path='login' element={<Login />} />
         <Route path='forgot-password' element={<ForgetPassword /> }  />

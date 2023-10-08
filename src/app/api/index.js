@@ -3,7 +3,6 @@ import { setUser } from "../../features/user/authSlice";
 import { toast } from "react-toastify";
 import { getAuthHeader } from "./auth";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { ResetTvSharp, RssFeed } from "@mui/icons-material";
 import { storage } from "../../firebase";
 //export const baseURL = process.env.REACT_APP_BASE_URL;
 export const baseURL = 'https://localhost:7043/v1/itsds';

@@ -63,3 +63,18 @@ export const genderOptions = [
   { id: 0, name: "Male" },
   { id: 1, name: "Female" },
 ];
+
+export const priorityOption = [
+  { id: 0, name: "Low" },
+  { id: 1, name: "Normal" },
+  { id: 2, name: "Medium"},
+  { id: 3, name: "High"},
+  { id: 4, name: "Critical"},
+];
+
+export const CategoryOptions = [
+  { id: 0, name: "Others" },
+  { id: 1, name: "Cài Đặt Mạng" },
+  { id: 2, name: "Cài đặt ứng phần mềm quản lý" },
+  { id: 3, name: "Thiết bị phần cứng/Thay thế phụ kiện"}
+];

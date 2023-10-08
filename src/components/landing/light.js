@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import tw from "twin.macro";
 import styled from "styled-components";
 import logo from "../../assets/images/logo.svg";
+import { Link } from "react-router-dom";
 
 
 const Header = tw.header`
@@ -12,7 +13,7 @@ const Header = tw.header`
 
 export const NavLinks = tw.div`inline-block`;
 
-export const NavLink = tw.a`
+export const NavLink = tw(Link)`
   text-lg my-2 lg:text-sm lg:mx-6 lg:my-0
   font-semibold tracking-wide transition duration-300
   pb-1 border-b-2 border-transparent hover:border-gray-500 hocus:text-primary-500
@@ -51,13 +52,13 @@ export const DesktopNavLinks = tw.nav`
 export default ({ roundedHeaderButton = false, logoLink, links, className, collapseBreakpointClass = "lg" }) => {
   const defaultLinks = [
     <NavLinks key={1}>
-      <NavLink href="/#">About</NavLink>
-      <NavLink href="/#">Blog</NavLink>
-      <NavLink href="/#">Pricing</NavLink>
-      <NavLink href="/" tw="lg:ml-12!">
+      <NavLink to="/#">About</NavLink>
+      <NavLink to="/#">Blog</NavLink>
+      <NavLink to="/#">Pricing</NavLink>
+      <NavLink to="/" tw="lg:ml-12!">
       Contact Us
       </NavLink>
-      <PrimaryLink css={roundedHeaderButton && tw`rounded-full`}href="/login">Login</PrimaryLink>
+      <PrimaryLink css={roundedHeaderButton && tw`rounded-full`} to="/login">Login</PrimaryLink>
     </NavLinks>
   ];
 

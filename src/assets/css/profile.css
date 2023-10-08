@@ -25,3 +25,46 @@
     margin-right: 0.5rem;
 }
 
+
+.red-bg {
+  background-color: #a84632;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.red-bg svg {
+  width: 50px; /* Adjust the icon size as needed */
+  height: 150px; /* Adjust the icon size as needed */
+  color: white; /* Icon color */
+}
+
+.custom-green-bg {
+  background-color: #4caf50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Green background color */
+}
+
+.custom-grey-bg {
+  background-color: #73686c; /* Grey background color */
+}
+
+.custom-list-item {
+  width: 100%;
+}
+
+.custom-orange-bg{
+  background-color: #a88532;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Green background color */
+}
+
+.narrow-input {
+  width: 60%; 
+}
+

@@ -37,7 +37,7 @@ function Login() {
           toast.success("Login Success");
         }
         if(userDataResponse.result.role === 1) {
-          navigate("/home/profile");
+          navigate("/home/menu");
           toast.success("Login Success");
         }
       } else {

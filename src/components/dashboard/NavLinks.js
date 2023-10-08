@@ -9,7 +9,7 @@ const NavLinks = ({ toggleSidebar }) => {
   let filteredLink = [];
 
   if(roleUser === 1) {
-    filteredLink = links.filter(link => link.id === 1 || link.id === 4);
+    filteredLink = links.filter(link => link.id === 1 || link.id === 4 || link.id === 7);
   }else if(roleUser === 0) {
     filteredLink = links.filter(link => link.id === 2 || link.id === 3 || link.id === 5 || link.id === 4 || link.id === 6);
   }
