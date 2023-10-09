@@ -17,13 +17,14 @@ import { toast } from "react-toastify";
 import Wrapper from "../../assets/wrappers/DashboardFormPage";
 import React, { useEffect, useState } from "react";
 import { AddTeam, DeleteDataTeam, UpdateTeam, getAllTeam, getTeamById } from "../../app/api/team";
-import { Close, Description, Face, LocationCity } from "@mui/icons-material";
+import { Close, Delete, Description, Edit, Face, LocationCity } from "@mui/icons-material";
 import {
   MDBBtn,
   MDBCol,
   MDBInput,
   MDBRow,
 } from "mdb-react-ui-kit";
+import { FaPlus, FaTrash } from "react-icons/fa";
 
 const Team = () => {
   const [open, setOpen] = React.useState(false);
@@ -158,10 +159,10 @@ const Team = () => {
         <Button
           variant="contained"
           color="primary"
-          style={{ marginBottom: 20 }}
+          style={{ marginBottom: 20, height: '50px', width: '80px' }}
           onClick={handleOpenAdd}
         >
-          Add Team
+          <FaPlus />
         </Button>
       </div>
       <TableContainer component={Paper}>
@@ -231,10 +232,10 @@ const Team = () => {
                 <TableCell align="left">{team.description}</TableCell>
                 <TableCell align="left">{team.managerId}</TableCell>
                 <TableCell align="left">
-                  <Button variant="contained" color="primary" onClick={() => handleDetailTeam(team.id)}>Edit</Button>
+                  <Button variant="contained" color="primary" onClick={() => handleDetailTeam(team.id)}><Edit /></Button>
                 </TableCell>
                 <TableCell align="left">
-                  <Button variant="contained" color="secondary" onClick={() => onDeleteTeam(team.id)}>Delete</Button>
+                  <Button variant="contained" color="error" onClick={() => onDeleteTeam(team.id)}><Delete /></Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -334,7 +335,7 @@ const Team = () => {
           </MDBRow> 
           <div className="text-center customer-center-btn">
             <MDBBtn className="mb-4 mt-4" type="button" onClick={onHandleEditTeam}>
-              Edit
+              <Edit />
             </MDBBtn>
           </div>
         </form>

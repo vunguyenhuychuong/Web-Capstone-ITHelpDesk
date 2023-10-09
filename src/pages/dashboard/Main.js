@@ -19,10 +19,12 @@ import "../../assets/css/profile.css";
 import RequestIssues from "./Customer/Issue";
 import { Dialog } from "@mui/material";
 import { useState } from "react";
+import IssueList from "./Customer/IssueList";
 
 const Main = () => {
 
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogListOpen, setDialogListOpen] = useState(false);
 
   const handleOpenRequestTicket = (e) => {
     e.preventDefault();
@@ -30,8 +32,18 @@ const Main = () => {
   };
 
   const handleCloseRequestTicket = () => {
-    setDialogOpen(false); // Close the Dialog when needed (for example, when cancel button is clicked)
+    setDialogOpen(false); 
   };
+
+  const handleOpenListTicket = (e) => {
+    e.preventDefault();
+    setDialogListOpen(true);
+  }
+
+  const handleCloseListTicket = (e) => {
+    e.preventDefault();
+    setDialogListOpen(false);
+  }
 
   return (
     <section style={{ backgroundColor: "#eee" }}>
@@ -202,12 +214,13 @@ const Main = () => {
             <div className="d-flex align-items-center">
               <MDBCol md="12" style={{ backgroundColor: "#C0C0C0" }}>
                 <MDBCardText
-                  className="mb-4"
+                  className="mb-4 clickable-text"
                   style={{
                     fontWeight: "bold",
                     fontSize: "20px",
                     color: "#333",
                   }}
+                  onClick={handleOpenListTicket}
                 >
                   <AnnouncementSharp
                     style={{
@@ -304,6 +317,10 @@ const Main = () => {
         <RequestIssues onClose={handleCloseRequestTicket} />
         </MDBContainer>
       </section>
+      </Dialog>
+
+      <Dialog maxWidth="lg" fullWidth open={dialogListOpen} onClose={handleCloseListTicket}>
+        <IssueList />       
       </Dialog>
     </section>
   );

@@ -1,7 +1,7 @@
 import { MdQueryStats } from 'react-icons/md';
 import { FaAd, FaWpforms } from 'react-icons/fa';
 import { ImProfile } from 'react-icons/im';
-import { Category, Construction, Menu } from '@mui/icons-material';
+import { Category, Menu } from '@mui/icons-material';
 
 const links = [
   // { id: 1, text: 'stats', path: '/', icon: <IoBarChartSharp /> },
@@ -13,7 +13,6 @@ const links = [
   { id: 7, text: 'mains', path: 'mains', icon : <FaAd />},
   { id: 8, text: 'menu', path: 'menu', icon: <Menu />},
   { id: 9, text: 'categories', path: 'categories', icon: <Category />},
-  { id: 10, text: 'issues', path: 'issues', icon: <Construction /> }
 ];
 
 export default links;

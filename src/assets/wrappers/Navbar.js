@@ -17,6 +17,12 @@ const Wrapper = styled.nav`
     align-items: center;
     justify-content: space-between;
   }
+   .avatar {
+    width: 45px;
+    height: 45px;
+    margin-right: 10px; /* Adjust the margin-right property to control the spacing */
+    margin-left: -10px; /* Add a negative margin-left to compensate for the margin-right */
+  }
   .toggle-btn {
     background: transparent;
     border-color: transparent;
@@ -37,6 +43,12 @@ const Wrapper = styled.nav`
     gap: 0 0.5rem;
     position: relative;
     box-shadow: var(--shadow-2);
+    background-color: var(--primary-500); 
+    color: #fff; 
+    border: none; 
+    padding: 0.5rem 1rem; 
+    border-radius: 5px; 
+    cursor: pointer;
   }
 
   .dropdown {

@@ -69,7 +69,6 @@ export async function getTicketByTicketId(id) {
 //Create Ticket By Customer
 export async function createTicketByCustomer(data) {
     const header = getAuthHeader();
-    console.log(header);
     try{
         const res = await axios.post(`${baseURL}/ticket/customer/new`, data, {
             headers: {

@@ -68,3 +68,22 @@
   width: 60%; 
 }
 
+.admin {
+  color: green; /* Set the color for admin role */
+}
+
+.customer {
+  color: blue; /* Set the color for customer role */
+}
+
+.manager {
+  color: orange; /* Set the color for manager role */
+}
+
+.technician {
+  color: red; /* Set the color for technician role */
+}
+
+.accountant {
+  color: purple; /* Set the color for accountant role */
+}

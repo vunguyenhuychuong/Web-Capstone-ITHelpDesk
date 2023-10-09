@@ -39,11 +39,11 @@ import {
   getAllUser,
   getUserById,
 } from "../../app/api";
+import "../../assets/css/profile.css";
 import { toast } from "react-toastify";
-import { headCells, roleOptions } from "./Admin/tableComlumn";
-import { Close, Delete } from "@mui/icons-material";
+import { getRoleName, headCells, roleOptions } from "./Admin/tableComlumn";
+import { Close, Delete, PersonAdd } from "@mui/icons-material";
 import EditIcon from "@mui/icons-material/Edit";
-import { FaPlus } from "react-icons/fa";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 function EnhancedTableHead(props) {
@@ -251,10 +251,9 @@ export default function Customer() {
       };
       setData(updatedData);
       const response = UpdateUser(data.id, data);
-      console.log(response);
       toast.success("User updated successfully");
-      setOpen(false);
       fetchDataUser();
+      setOpen(false);
     } catch (error) {
       toast.error("Failed to update user");
       console.log(error);
@@ -275,7 +274,7 @@ export default function Customer() {
         sx={{ mb: 2 }}
         onClick={handleOpenAdd}
       >
-        <FaPlus />
+        <PersonAdd />
       </Button>
       {loading ? (
         <div style={{ textAlign: "center" }}>Loading...</div>
@@ -294,12 +293,26 @@ export default function Customer() {
                     sx={{ cursor: "pointer" }}
                   >
                     <TableCell align="left">{user.id}</TableCell>
-                    <TableCell align="left">{ "N/A"}</TableCell>
+                    <TableCell align="left">
+                      {user.avatarUrl && (
+                        <img
+                          src={user.avatarUrl}
+                          alt="Avatar"
+                          style={{ width: "50px", height: "50px" }}
+                        />
+                      )}
+                    </TableCell>
                     <TableCell align="left">
                       {user.firstName} {user.lastName}
                     </TableCell>
                     <TableCell align="left">{user.email}</TableCell>
                     <TableCell align="left">{user.phoneNumber}</TableCell>
+                    <TableCell
+                      align="left"
+                      className={getRoleName(user.role)}
+                    >
+                      {getRoleName(user.role)}
+                    </TableCell>
                     <TableCell align="left">
                       <EditIcon
                         fontSize="small"
@@ -469,7 +482,7 @@ export default function Customer() {
                     />
                   ) : (
                     <MDBCardImage
-                      src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" // Add a default avatar image URL
+                      src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
                       alt="avatar"
                       className="rounded-circle"
                       style={{ width: "150px" }}

@@ -7,7 +7,6 @@ import {
   MDBRow,
 } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
-import { EditorState, convertToRaw } from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "draft-js/dist/Draft.css";
 import { priorityOption } from "../Admin/tableComlumn";
@@ -16,7 +15,6 @@ import { toast } from "react-toastify";
 import { getAllCategories } from "../../../app/api/category";
 
 const RequestIssues = ({ onClose }) => {
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [data, setData] = useState({
     title: "",
     description: "",
@@ -79,18 +77,17 @@ const RequestIssues = ({ onClose }) => {
       });
       console.log(result);
       toast.success("Ticket created successfully");
+      onClose();
     } catch (error) {
       toast.error("Error");
       console.log("Please check data input", error);
     }
   };
 
-
-
   return (
     <section style={{ backgroundColor: "#eee" }}>
       <MDBContainer className="py-5">
-        <form>
+        <form method="post" onSubmit={handleSubmitTicket}>
           <MDBRow className="mb-4">
             <MDBCol md="2" className="text-center mt-2">
               <label htmlFor="form3Example2" className="narrow-input">

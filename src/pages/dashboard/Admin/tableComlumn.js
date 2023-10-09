@@ -35,6 +35,12 @@ export const headCells = [
     icon: <FaPhoneAlt />,
   },
   {
+    id: "Role",
+    numeric: false,
+    disablePadding: false,
+    label: "Role",
+  },
+  {
     id: "Edit",
     numeric: false,
     disablePadding: false,
@@ -67,12 +73,21 @@ export const priorityOption = [
   { id: "Critical", name: 4},
 ];
 
-// export const priorityOption = [
-//   { id: 0, name: "Low" },
-//   { id: 1, name: "Normal" },
-//   { id: 2, name: "Medium"},
-//   { id: 3, name: "High"},
-//   { id: 4, name: "Critical"},
-// ];
+export const getRoleName = (role) => {
+  switch (role) {
+    case 0:
+      return 'admin';
+    case 1:
+      return 'customer';
+    case 2:
+      return 'manager';
+    case 3:
+      return 'technician';
+    case 4:
+      return 'accountant';
+    default:
+      return ''; // Default class or empty string for unknown roles
+  }
+} 
 
 

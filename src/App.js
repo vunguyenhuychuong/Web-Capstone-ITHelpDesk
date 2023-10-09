@@ -32,7 +32,6 @@ function App() {
             <SharedLayout />  
           }
         >
-          {/* <Route index element={<Stats />} /> */}
           {(hasAdminRole) && <Route path='team' element={<Team />} />}
           <Route path='ticket' element={<Tickets />} />
           {(hasCustomerRole || hasAdminRole) && <Route path='profile' element={<Profile />} />} 
@@ -40,7 +39,6 @@ function App() {
           {(hasCustomerRole) && <Route path='mains' element={<Main />} />} 
           <Route path='main' element={<AccessibleTabs1 />} />
           <Route path='menu' element={<Menu />} />
-          {/* <Route path='issues' element={<RequestIssues />} /> */}
           <Route path='categories' element={<ServiceCategories />} />
           </Route>
         <Route path='login' element={<Login />} />
