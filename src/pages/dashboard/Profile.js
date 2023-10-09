@@ -39,6 +39,7 @@ import { toast } from "react-toastify";
 import { getAuthHeader } from "../../app/api/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { genderOptions } from "./Admin/tableComlumn";
+import ChangePassword from "../ChangePassword";
 
 const Profile = () => {
   const [data, setData] = useState({
@@ -57,6 +58,7 @@ const Profile = () => {
 
   const [open, setOpen] = React.useState(false);
   const [openAdd, setOpenAdd] = React.useState(false);
+  const [openChangePassword, setChangePassword] = React.useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [date, setDate] = useState(moment());
 
@@ -92,6 +94,16 @@ const Profile = () => {
     e.preventDefault();
     setOpenAdd(true);
   };
+
+  const handleOpenChangePW = (e) => {
+    e.preventDefault();
+    setChangePassword(true);
+  }
+
+  const handleCloseChangePW = (e) => {
+    setChangePassword(false);
+  }
+
 
   useEffect(() => {
     const fetchDataProfile = async () => {
@@ -154,7 +166,7 @@ const Profile = () => {
                       alt="avatar"
                       className="rounded-circle border-hover" 
                       style={{
-                        width: "150px",
+                        width: "140px",
                         borderColor: "grey", // Set border color directly using inline style
                         borderWidth: "2px",
                         borderStyle: "solid",
@@ -182,8 +194,8 @@ const Profile = () => {
                   </p>
                   <div className="d-flex justify-content-center mb-2">
                     <MDBBtn onClick={handleOpenEditUser}><EditIcon /></MDBBtn>
-                    <MDBBtn outline className="ms-2">
-                    <LockIcon style={{ marginRight: '8px' }} />
+                    <MDBBtn outline className="ms-2" onClick={handleOpenChangePW}>
+                      <LockIcon style={{ marginRight: '8px' }}  />
                     </MDBBtn>
                   </div>
                 </MDBCardBody>
@@ -518,6 +530,10 @@ const Profile = () => {
             <Button onClick={handleClose} variant="outlined" color="secondary"><CloseIcon /></Button>
           </>
         </DialogActions>
+      </Dialog>
+
+      <Dialog fullWidth open={openChangePassword} onClose={handleCloseChangePW}>
+        <ChangePassword />       
       </Dialog>
     </section>
   );

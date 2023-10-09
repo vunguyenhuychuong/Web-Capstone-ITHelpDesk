@@ -180,6 +180,7 @@ const RequestIssues = ({ onClose }) => {
                 name="description"
                 className="form-control"
                 value={data.description}
+                rows="4"
                 onChange={handleInputChange}
               />
             </MDBCol>

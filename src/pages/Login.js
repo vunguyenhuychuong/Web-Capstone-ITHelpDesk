@@ -40,6 +40,10 @@ function Login() {
           navigate("/home/menu");
           toast.success("Login Success");
         }
+        if(userDataResponse.result.role === 2) {
+          navigate("/home/listTicket");
+          toast.success("Login Success");
+        }
       } else {
         navigate("/login");
         toast.error("Login Fail");

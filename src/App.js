@@ -15,13 +15,14 @@ import AccessibleTabs1 from './pages/dashboard/Customer/AccessibleTabs';
 import Main from './pages/dashboard/Main';
 import Menu from './pages/dashboard/Customer/Menu';
 import ServiceCategories from './pages/dashboard/Customer/ServiceCategories';
+import IndexTicket from './pages/dashboard/Manager/IndexTicket';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
   const user = useSelector((state) => state.auth);
   const hasCustomerRole = user?.user?.role === 1 || data?.result?.role === 1;
   const hasAdminRole = user?.user?.role === 0 || data?.result?.role === 0;
-  console.log(hasCustomerRole);
+  const hasManagerRole = user?.user?.role === 2 || data?.result?.role === 2;
   return (
     <BrowserRouter>
       <Routes>
@@ -40,6 +41,7 @@ function App() {
           <Route path='main' element={<AccessibleTabs1 />} />
           <Route path='menu' element={<Menu />} />
           <Route path='categories' element={<ServiceCategories />} />
+          {(hasManagerRole) && <Route path='listTicket' element={<IndexTicket />} />}
           </Route>
         <Route path='login' element={<Login />} />
         <Route path='forgot-password' element={<ForgetPassword /> }  />
