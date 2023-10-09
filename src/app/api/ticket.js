@@ -71,7 +71,7 @@ export async function createTicketByCustomer(data) {
     const header = getAuthHeader();
     console.log(header);
     try{
-        const res = await axios.post(`https://localhost:7043/v1/itsds/ticket/customer/new`, data, {
+        const res = await axios.post(`${baseURL}/ticket/customer/new`, data, {
             headers: {
                 Authorization: header,
             },

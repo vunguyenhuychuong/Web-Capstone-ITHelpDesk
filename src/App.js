@@ -15,7 +15,6 @@ import AccessibleTabs1 from './pages/dashboard/Customer/AccessibleTabs';
 import Main from './pages/dashboard/Main';
 import Menu from './pages/dashboard/Customer/Menu';
 import ServiceCategories from './pages/dashboard/Customer/ServiceCategories';
-import RequestIssues from './pages/dashboard/Customer/Issue';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));

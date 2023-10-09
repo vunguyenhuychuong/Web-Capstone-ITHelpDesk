@@ -49,9 +49,10 @@ const Profile = () => {
     avatarUrl: "",
     phoneNumber: "",
     dateOfBirth: "",
-    gender: 0,
+    gender: "",
     team: "",
-    address: ""
+    address: "",
+    role: ""
   });
 
   const [open, setOpen] = React.useState(false);
@@ -437,7 +438,7 @@ const Profile = () => {
                     label="First Name"
                     variant="outlined"
                     margin="normal"
-                    value={data.firstName}
+                    value={data && data.firstName ? data.firstName : "" }
                     onChange={handleChange}
                   />
                   <TextField

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MDBBtn,
   MDBCol,
@@ -7,14 +7,13 @@ import {
   MDBRow,
 } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
-import { EditorState , convertToRaw} from "draft-js";
-import { Editor as DraftEditor } from "react-draft-wysiwyg";
+import { EditorState, convertToRaw } from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "draft-js/dist/Draft.css";
-import { CategoryOptions, priorityOption } from "../Admin/tableComlumn";
+import { priorityOption } from "../Admin/tableComlumn";
 import { createTicketByCustomer } from "../../../app/api/ticket";
 import { toast } from "react-toastify";
-
+import { getAllCategories } from "../../../app/api/category";
 
 const RequestIssues = ({ onClose }) => {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
@@ -26,26 +25,38 @@ const RequestIssues = ({ onClose }) => {
     attachmentUrl: "",
   });
 
+  const [dataCategories, setDataCategories] = useState([]);
+
+  const fetchCategory = async () => {
+    try {
+      const response = await getAllCategories();
+      const categoriesArray = Object.values(response);
+      setDataCategories(categoriesArray);
+    } catch (error) {
+      console.log("Error while fetching data", error);
+    } finally {
+    }
+  };
+
+  useEffect(() => {
+    fetchCategory();
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
-    // if (name === 'priority' || name === 'categoryId') {
-    //   const selectedOption = name === 'priority' ? priorityOption : CategoryOptions;
-    //   const selectedValue = selectedOption.find(option => option.name === value);
-    //   setData(prevData => ({
-    //     ...prevData,
-    //     [name]: selectedValue ? selectedValue.id : 1,
-    //   }));
-    // } else {
-    //   setData(prevData => ({
-    //     ...prevData,
-    //     [name]: value,
-    //   }));
-    // }
-    setData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    if (name === "priority") {
+      const priorityValue = parseInt(value, 10);
+      
+      setData((prevData) => ({
+        ...prevData,
+        [name]: priorityValue,
+      }));
+    } else {
+      setData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   const handleFileChange = (e) => {
@@ -53,17 +64,6 @@ const RequestIssues = ({ onClose }) => {
     setData((prevData) => ({
       ...prevData,
       attachmentUrl: file,
-    }));
-  };
-
-  const handleEditorStateChange = (newEditorState) => {
-    setEditorState(newEditorState);
-    // Convert the editor content to raw JSON and update the description in the state
-    const contentState = newEditorState.getCurrentContent();
-    const rawContentState = convertToRaw(contentState);
-    setData((prevData) => ({
-      ...prevData,
-      description: JSON.stringify(rawContentState),
     }));
   };
 
@@ -84,6 +84,8 @@ const RequestIssues = ({ onClose }) => {
       console.log("Please check data input", error);
     }
   };
+
+
 
   return (
     <section style={{ backgroundColor: "#eee" }}>
@@ -115,13 +117,13 @@ const RequestIssues = ({ onClose }) => {
                 id="priority"
                 name="priority"
                 className="form-select"
-                value={data.priority}
+                // value={data.priority}
                 onChange={handleInputChange}
               >
                 <option value="">Select Priority</option>
                 {priorityOption.map((priorityItem) => (
-                  <option key={priorityItem.id} value={priorityItem.id}>
-                    {priorityItem.name}
+                  <option key={priorityItem.id} value={priorityItem.name}>
+                    {priorityItem.id}
                   </option>
                 ))}
               </select>
@@ -141,12 +143,13 @@ const RequestIssues = ({ onClose }) => {
                 value={data.categoryId}
                 onChange={handleInputChange}
               >
-                <option value="">Select Category</option>
-                {CategoryOptions.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
+                {dataCategories
+                  .filter(category => category.id !== "") // Filter out the disabled option
+                  .map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
               </select>
             </MDBCol>
           </MDBRow>
@@ -174,34 +177,25 @@ const RequestIssues = ({ onClose }) => {
               </label>
             </MDBCol>
             <MDBCol md="10">
-              <DraftEditor
+              <textarea
+                type="text"
                 id="description"
                 name="description"
-                editorState={editorState}
+                className="form-control"
                 value={data.description}
-                onEditorStateChange={handleEditorStateChange}
-                toolbar={{
-                  options: [
-                    "inline",
-                    "blockType",
-                    "list",
-                    "textAlign",
-                    "link",
-                    "emoji",
-                    "remove",
-                    "history",
-                  ],
-                  inline: {
-                    options: ["bold", "italic", "underline", "strikethrough"],
-                  },
-                }}
+                onChange={handleInputChange}
               />
             </MDBCol>
           </MDBRow>
           <MDBRow className="mb-4">
             <MDBCol md="2"></MDBCol>
             <MDBCol md="10" className="text-end">
-              <MDBBtn small={true} color="primary" type="submit" onClick={handleSubmitTicket}>
+              <MDBBtn
+                small="true"
+                color="primary"
+                type="submit"
+                onClick={handleSubmitTicket}
+              >
                 Submit
               </MDBBtn>
               <MDBBtn color="danger" className="ms-2" onClick={onClose}>

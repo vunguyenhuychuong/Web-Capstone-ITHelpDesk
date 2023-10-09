@@ -1,10 +1,5 @@
-import { Email, Phone } from "@mui/icons-material";
+import { Email } from "@mui/icons-material";
 import {
-  FaImage,
-  FaUserEdit,
-  FaTrashAlt,
-  FaEnvelope,
-  FaPhone,
   FaImages,
   FaUser,
   FaPhoneAlt,
@@ -65,16 +60,19 @@ export const genderOptions = [
 ];
 
 export const priorityOption = [
-  { id: 0, name: "Low" },
-  { id: 1, name: "Normal" },
-  { id: 2, name: "Medium"},
-  { id: 3, name: "High"},
-  { id: 4, name: "Critical"},
+  { id: "Low", name: 0 },
+  { id: "Normal", name: 1 },
+  { id: "Medium", name: 2},
+  { id: "High", name: 3},
+  { id: "Critical", name: 4},
 ];
 
-export const CategoryOptions = [
-  { id: 0, name: "Others" },
-  { id: 1, name: "Cài Đặt Mạng" },
-  { id: 2, name: "Cài đặt ứng phần mềm quản lý" },
-  { id: 3, name: "Thiết bị phần cứng/Thay thế phụ kiện"}
-];
+// export const priorityOption = [
+//   { id: 0, name: "Low" },
+//   { id: 1, name: "Normal" },
+//   { id: 2, name: "Medium"},
+//   { id: 3, name: "High"},
+//   { id: 4, name: "Critical"},
+// ];
+
+
