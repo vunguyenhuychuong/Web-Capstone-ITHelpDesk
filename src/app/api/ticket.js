@@ -3,12 +3,16 @@ import { getAuthHeader } from "./auth";
 export const baseURL = "https://localhost:7043/v1/itsds";
 
 // Get All List ticket 
-export async function getAllTicket() {
+export async function getAllTicket(page = 1, pageSize = 10) {
     const header = getAuthHeader();
     try{
         const res = await axios.get(`${baseURL}/ticket`,{
             headers: {
                 Authorization: header,
+            },
+            params: {
+                page: page,
+                pageSize: pageSize,
             },
         });
         return res.data.result;
@@ -75,10 +79,27 @@ export async function createTicketByCustomer(data) {
                 Authorization: header,
             },
         });
-        console.log(res);
         return res.data.result;
     }catch(error){
         console.log(error);
         return [];
     }   
 };
+
+
+//Create Ticket By Manager
+export async function createTicketByManager(data) {
+    const header = getAuthHeader();
+    try{
+        const res = await axios.post(`${baseURL}/ticket/manager/new`, data, {
+            headers: {
+                Authorization: header,
+            },
+        });
+        console.log(res);
+        return res.data.result;
+    }catch(error){
+        console.log(error);
+        return [];
+    }
+}

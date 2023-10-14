@@ -15,7 +15,7 @@ import AccessibleTabs1 from './pages/dashboard/Customer/AccessibleTabs';
 import Main from './pages/dashboard/Main';
 import Menu from './pages/dashboard/Customer/Menu';
 import ServiceCategories from './pages/dashboard/Customer/ServiceCategories';
-import IndexTicket from './pages/dashboard/Manager/IndexTicket';
+import ManagersTabs from './pages/dashboard/Manager/ManagerTabs';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -41,7 +41,7 @@ function App() {
           <Route path='main' element={<AccessibleTabs1 />} />
           <Route path='menu' element={<Menu />} />
           <Route path='categories' element={<ServiceCategories />} />
-          {(hasManagerRole) && <Route path='listTicket' element={<IndexTicket />} />}
+          {(hasManagerRole) && <Route path='listTicket' element={<ManagersTabs />} />}
           </Route>
         <Route path='login' element={<Login />} />
         <Route path='forgot-password' element={<ForgetPassword /> }  />

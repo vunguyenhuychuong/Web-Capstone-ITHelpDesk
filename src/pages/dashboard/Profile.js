@@ -167,7 +167,7 @@ const Profile = () => {
                       className="rounded-circle border-hover" 
                       style={{
                         width: "140px",
-                        borderColor: "grey", // Set border color directly using inline style
+                        borderColor: "grey",
                         borderWidth: "2px",
                         borderStyle: "solid",
                         transition: "transform 0.3s ease, border-color 0.3s ease",

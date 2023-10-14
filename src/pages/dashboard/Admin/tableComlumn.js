@@ -88,6 +88,28 @@ export const getRoleName = (role) => {
     default:
       return ''; // Default class or empty string for unknown roles
   }
-} 
+};
+
+export const TicketStatusOptions = [
+  {id: 0, name: "Open"},
+  {id: 1, name: "Assigned"},
+  {id: 2, name: "In Progress"},
+  {id: 3, name: "On Hold"},
+  {id: 4, name: "Closed"},
+  {id: 5, name: "Cancelled"},
+];
+
+export const UrgencyOptions = [
+  {id: 0, name: "Low"},
+  {id: 1, name: "Medium"},
+  {id: 2, name: "High"},
+  {id: 3, name: "Urgent"},
+];
+
+export const ImpactOptions = [
+  {id: 0, name: "Low"},
+  {id: 1, name: "Medium"},
+  {id: 2, name: "High"},
+]
 
 

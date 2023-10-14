@@ -20,10 +20,11 @@ const RequestIssues = ({ onClose }) => {
     description: "",
     priority: 0,
     categoryId: 0,
-    attachmentUrl: "",
+    attachmentUrl: null,
   });
 
   const [dataCategories, setDataCategories] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchCategory = async () => {
     try {
@@ -67,6 +68,13 @@ const RequestIssues = ({ onClose }) => {
 
   const handleSubmitTicket = async (e) => {
     e.preventDefault();
+
+    if(!data.title || !data.priority || !data.categoryId ) {
+      toast.warning("Please fill out all fields");
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
       const result = await createTicketByCustomer({
         title: data.title,
@@ -81,12 +89,19 @@ const RequestIssues = ({ onClose }) => {
     } catch (error) {
       toast.error("Error");
       console.log("Please check data input", error);
+    }finally{
+      setIsSubmitting(false);
     }
   };
 
   return (
     <section style={{ backgroundColor: "#eee" }}>
       <MDBContainer className="py-5">
+        <MDBRow className="mb-4">
+          <MDBCol className="text-center">
+          <h2>Submit a New Ticket</h2>
+        </MDBCol>
+      </MDBRow>
         <form method="post" onSubmit={handleSubmitTicket}>
           <MDBRow className="mb-4">
             <MDBCol md="2" className="text-center mt-2">
@@ -95,9 +110,11 @@ const RequestIssues = ({ onClose }) => {
               </label>
             </MDBCol>
             <MDBCol md="10">
-              <MDBInput
+              <input
                 id="title"
+                type="text"
                 name="title"
+                className="form-control"
                 value={data.title}
                 onChange={handleInputChange}
               />
@@ -114,7 +131,6 @@ const RequestIssues = ({ onClose }) => {
                 id="priority"
                 name="priority"
                 className="form-select"
-                // value={data.priority}
                 onChange={handleInputChange}
               >
                 <option value="">Select Priority</option>
@@ -194,7 +210,7 @@ const RequestIssues = ({ onClose }) => {
                 type="submit"
                 onClick={handleSubmitTicket}
               >
-                Submit
+                 {isSubmitting ? 'Submitting...' : 'Submit'}
               </MDBBtn>
               <MDBBtn color="danger" className="ms-2" onClick={onClose}>
                 Cancel

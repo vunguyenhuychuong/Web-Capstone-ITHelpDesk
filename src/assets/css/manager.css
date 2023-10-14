@@ -1,0 +1,8 @@
+.manager-navbar-nav .btn {
+    margin-right: 0 !important;
+}
+
+.nav-btn {
+    margin-right: 10px; /* Add margin between buttons if needed */
+    padding: 10px 15px; /* Adjust padding as per your requirement */
+  }

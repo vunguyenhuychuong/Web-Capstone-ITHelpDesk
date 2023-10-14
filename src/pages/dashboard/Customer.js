@@ -13,7 +13,6 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   IconButton,
   Select,
   MenuItem,
@@ -41,7 +40,7 @@ import {
 } from "../../app/api";
 import "../../assets/css/profile.css";
 import { toast } from "react-toastify";
-import { getRoleName, headCells, roleOptions } from "./Admin/tableComlumn";
+import { genderOptions, getRoleName, headCells, roleOptions } from "./Admin/tableComlumn";
 import { Close, Delete, PersonAdd } from "@mui/icons-material";
 import EditIcon from "@mui/icons-material/Edit";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
@@ -74,10 +73,8 @@ export default function Customer() {
   const [users, setUsers] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [openAdd, setOpenAdd] = React.useState(false);
-  const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState(moment());
-  const [rowsPerPage, setRowPerPage] = useState(5);
   const [selectedFile, setSelectedFile] = useState(null);
   const [data, setData] = useState({
     id: 0,
@@ -99,16 +96,33 @@ export default function Customer() {
 
   const fetchDataUser = async () => {
     try {
-      const UserList = await getAllUser({ page, rowsPerPage });
+      const UserList = await getAllUser();
       setUsers(UserList);
     } catch (error) {
       console.log("Error while fetching data", error);
     }
   };
 
+  function findGenderOption(genderValue) {
+    return genderOptions.find(option => option.id === genderValue) || null;
+  }
+
   useEffect(() => {
     fetchDataUser();
-  }, []);
+
+    const defaultGenderOption = findGenderOption(data.gender);
+    if(defaultGenderOption) {
+      setData(prevData => ({
+        ...prevData,
+        gender: defaultGenderOption.id
+      }));
+    }else{
+      setData(prevData => ({
+        ...prevData,
+        gender: null
+      }));
+    }
+  }, [data.gender]);
 
   const onCreateUser = async (e) => {
     e.preventDefault();
@@ -192,15 +206,6 @@ export default function Customer() {
     }
   };
 
-  const handleChangePage = (e, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (e) => {
-    setRowPerPage(parseInt(e.target.value, 10));
-    setPage(0);
-  };
-
   const handleChange = React.useCallback((e) => {
     const { name, value } = e.target;
     setData((prevData) => ({
@@ -230,8 +235,15 @@ export default function Customer() {
   };
 
   const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-    console.log(selectedFile);
+    const file = e.target.files[0];
+    setSelectedFile(file);
+    if(file) {
+      const avatarUrl = URL.createObjectURL(file);
+      setData((prevInputs) => ({
+        ...prevInputs,
+        avatarUrl: avatarUrl
+      }));
+    }
   };
 
   const onHandleEditUser = async () => {
@@ -251,6 +263,7 @@ export default function Customer() {
       };
       setData(updatedData);
       const response = UpdateUser(data.id, data);
+      console.log(response);
       toast.success("User updated successfully");
       fetchDataUser();
       setOpen(false);
@@ -307,10 +320,7 @@ export default function Customer() {
                     </TableCell>
                     <TableCell align="left">{user.email}</TableCell>
                     <TableCell align="left">{user.phoneNumber}</TableCell>
-                    <TableCell
-                      align="left"
-                      className={getRoleName(user.role)}
-                    >
+                    <TableCell align="left" className={getRoleName(user.role)}>
                       {getRoleName(user.role)}
                     </TableCell>
                     <TableCell align="left">
@@ -332,15 +342,6 @@ export default function Customer() {
               </TableBody>
             </Table>
           </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={users.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
         </Paper>
       )}
       <Dialog open={openAdd} fullWidth maxWidth="lg">
@@ -421,7 +422,7 @@ export default function Customer() {
                 id="role"
                 onChange={handleChange}
                 fullWidth
-                margin="dense" // or margin="none"
+                margin="dense"
                 variant="outlined"
                 style={{ height: "36px" }}
                 displayEmpty
@@ -489,12 +490,11 @@ export default function Customer() {
                       fluid
                     />
                   )}
-                  {/* Input field for uploading image */}
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={handleFileChange} // Add your image change handler function
-                    style={{ marginTop: "10px" }} // Add some spacing between the image and input field
+                    onChange={handleFileChange}
+                    style={{ marginTop: "10px" }} 
                   />
                 </Grid>
                 <Grid item xs={12} md={8}>
@@ -541,12 +541,20 @@ export default function Customer() {
                   <MDBRow>
                     <MDBCol>
                       <InputLabel>Gender</InputLabel>
-                      <MDBInput
-                        id="gender"
+                      <Select
                         name="gender"
+                        fullWidth
+                        id="demo-simple-select"
+                        label="Gender"
                         value={data.gender}
                         onChange={handleChange}
-                      />
+                      >
+                        {genderOptions.map((gender) => (
+                          <MenuItem key={gender.id} value={gender.id}>
+                            {gender.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
                     </MDBCol>
                     <MDBCol>
                       <InputLabel>IsActive</InputLabel>
