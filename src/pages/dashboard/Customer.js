@@ -40,7 +40,7 @@ import {
 } from "../../app/api";
 import "../../assets/css/profile.css";
 import { toast } from "react-toastify";
-import { genderOptions, getRoleName, headCells, roleOptions } from "./Admin/tableComlumn";
+import { genderOptions, headCells, roleOptions } from "./Admin/tableComlumn";
 import { Close, Delete, PersonAdd } from "@mui/icons-material";
 import EditIcon from "@mui/icons-material/Edit";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
@@ -86,7 +86,7 @@ export default function Customer() {
     address: "",
     phoneNumber: "",
     isActive: true,
-    role: 0,
+    role: "",
     dateOfBirth: "",
     gender: 0,
     createdAt: "",
@@ -235,15 +235,8 @@ export default function Customer() {
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
-    if(file) {
-      const avatarUrl = URL.createObjectURL(file);
-      setData((prevInputs) => ({
-        ...prevInputs,
-        avatarUrl: avatarUrl
-      }));
-    }
+    setSelectedFile(e.target.files[0]);
+    console.log(selectedFile);
   };
 
   const onHandleEditUser = async () => {
@@ -254,7 +247,6 @@ export default function Customer() {
         const storageRef = ref(storage, "images/" + selectedFile.name);
         await uploadBytes(storageRef, selectedFile);
         avatarUrl = await getDownloadURL(storageRef);
-        console.log(avatarUrl);
       }
 
       const updatedData = {
@@ -262,14 +254,16 @@ export default function Customer() {
         avatarUrl: avatarUrl,
       };
       setData(updatedData);
-      const response = UpdateUser(data.id, data);
-      console.log(response);
+      console.log(data);
+      const response = await UpdateUser(data.id, updatedData);
       toast.success("User updated successfully");
       fetchDataUser();
       setOpen(false);
     } catch (error) {
       toast.error("Failed to update user");
-      console.log(error);
+      if(error.response) {
+        console.log('Server response error status', error.response.status);
+      }
     }
   };
 
@@ -320,8 +314,8 @@ export default function Customer() {
                     </TableCell>
                     <TableCell align="left">{user.email}</TableCell>
                     <TableCell align="left">{user.phoneNumber}</TableCell>
-                    <TableCell align="left" className={getRoleName(user.role)}>
-                      {getRoleName(user.role)}
+                    <TableCell align="left">
+                    {user.role}
                     </TableCell>
                     <TableCell align="left">
                       <EditIcon

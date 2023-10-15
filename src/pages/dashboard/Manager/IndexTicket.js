@@ -12,7 +12,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { getAllTicket } from "../../../app/api/ticket";
 import { getAllCategories } from "../../../app/api/category";
 import "../../../assets/css/manager.css";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaSearch } from "react-icons/fa";
 import { ContentCopy } from "@mui/icons-material";
 import CreateTicket from "./CreateTicket";
 import { Box, Dialog, Pagination } from "@mui/material";
@@ -25,17 +25,22 @@ const IndexTicket = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchAllTicket = useCallback(async () => {
     try {
-      const res = await getAllTicket(currentPage, pageSize);
+      let filter = "";
+      if (searchQuery) {
+        filter = `title="${encodeURIComponent(searchQuery)}"`;
+      }
+      const res = await getAllTicket(searchQuery, currentPage, pageSize);
       setDataTickets(res);
       setIsLoading(false);
     } catch (error) {
       console.log("Error while fetching data", error);
       setIsLoading(false);
     }
-  }, [currentPage, pageSize]);
+  }, [currentPage, pageSize, searchQuery]);
 
   const fetchAllCategories = async () => {
     try {
@@ -54,17 +59,17 @@ const IndexTicket = () => {
     const newSize = parseInt(event.target.value);
     setPageSize(newSize);
     setCurrentPage(1);
-  }
+  };
 
   const handleOpenRequestTicket = (e) => {
     e.preventDefault();
     setDialogOpen(true);
-  }
-  
+  };
+
   const handleCloseRequestTicket = (e) => {
     e.preventDefault();
     setDialogOpen(false);
-  }
+  };
 
   const getCategoryNameById = (categoryId) => {
     const category = dataCategories.find((cat) => cat.id === categoryId);
@@ -74,7 +79,6 @@ const IndexTicket = () => {
   useEffect(() => {
     fetchAllTicket();
     fetchAllCategories();
-
     setTotalPages(4);
   }, [fetchAllTicket]);
 
@@ -86,12 +90,36 @@ const IndexTicket = () => {
       >
         <MDBNavbar expand="lg" light bgColor="inherit">
           <MDBContainer fluid>
-            <MDBNavbarBrand style={{ fontWeight: 'bold', fontSize: '24px' }}><ContentCopy style={{ marginRight: '20px' }} /> All Request</MDBNavbarBrand>
-              <MDBNavbarNav className="ms-auto manager-navbar-nav">
-                <MDBBtn color="#eee" style={{ fontWeight: 'bold', fontSize: '20px' }} onClick={handleOpenRequestTicket}>
-                 <FaPlus /> New
-                </MDBBtn>
-              </MDBNavbarNav>
+            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
+              <ContentCopy style={{ marginRight: "20px" }} /> All Request
+            </MDBNavbarBrand>
+            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+              <MDBBtn
+                color="#eee"
+                style={{ fontWeight: "bold", fontSize: "20px" }}
+                onClick={handleOpenRequestTicket}
+              >
+                <FaPlus /> New
+              </MDBBtn>
+              <div className="input-wrapper">
+                <FaSearch id="search-icon" />
+                <input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="input-search"
+                  placeholder="Type to search..."
+                />
+              </div>
+              <div style={{ textAlign: "center", marginTop: "10px" }}>
+                <label>Items per page: </label>
+                <select value={pageSize} onChange={handleChangePageSize}>
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                </select>
+              </div>
+            </MDBNavbarNav>
           </MDBContainer>
         </MDBNavbar>
         {isLoading ? (
@@ -176,7 +204,6 @@ const IndexTicket = () => {
           </MDBTable>
         )}
       </MDBContainer>
-
       <Box display="flex" justifyContent="center" mt={2}>
         <Pagination
           count={totalPages}
@@ -184,17 +211,12 @@ const IndexTicket = () => {
           onChange={handleChangePage}
         />
       </Box>
-
-      <div style={{ textAlign: "center", marginTop: "10px" }}>
-        <label>Items per page: </label>
-        <select value={pageSize} onChange={handleChangePageSize}>
-          <option value={10}>10</option>
-          <option value={20}>20</option>
-          <option value={50}>50</option>
-        </select>
-      </div>
-
-      <Dialog maxWidth="lg" fullWidth open={dialogOpen} onClose={handleCloseRequestTicket}>
+      <Dialog
+        maxWidth="lg"
+        fullWidth
+        open={dialogOpen}
+        onClose={handleCloseRequestTicket}
+      >
         <CreateTicket onClose={handleCloseRequestTicket} />
       </Dialog>
     </section>

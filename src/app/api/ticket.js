@@ -3,18 +3,25 @@ import { getAuthHeader } from "./auth";
 export const baseURL = "https://localhost:7043/v1/itsds";
 
 // Get All List ticket 
-export async function getAllTicket(page = 1, pageSize = 10) {
+export async function getAllTicket(searchQuery = "",page = 1, pageSize = 5) {
     const header = getAuthHeader();
     try{
+
+        const encodedSearchQuery =  encodeURIComponent(searchQuery);
+        const filter = encodedSearchQuery ? `title="${encodedSearchQuery}"` : undefined;
+        const params = {
+            filter : filter,
+            page: page,
+            pageSize: pageSize,  
+        };
+
         const res = await axios.get(`${baseURL}/ticket`,{
             headers: {
                 Authorization: header,
             },
-            params: {
-                page: page,
-                pageSize: pageSize,
-            },
+            params: params,
         });
+        console.log(res);
         return res.data.result;
     }catch(error){
         console.log(error);
