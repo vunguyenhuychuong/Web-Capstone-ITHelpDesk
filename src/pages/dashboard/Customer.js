@@ -6,7 +6,6 @@ import {
   Paper,
   Button,
   TableRow,
-  TableSortLabel,
   Box,
   Table,
   TableBody,
@@ -18,6 +17,9 @@ import {
   MenuItem,
   InputLabel,
   Grid,
+  Typography,
+  Pagination,
+  FormControl,
 } from "@mui/material";
 import {
   MDBBtn,
@@ -40,34 +42,18 @@ import {
 } from "../../app/api";
 import "../../assets/css/profile.css";
 import { toast } from "react-toastify";
-import { genderOptions, headCells, roleOptions } from "./Admin/tableComlumn";
-import { Close, Delete, PersonAdd } from "@mui/icons-material";
+import { genderOptions, roleOptions } from "./Admin/tableComlumn";
+import {
+  ArrowDropDown,
+  ArrowDropUp,
+  Close,
+  Delete,
+  PersonAdd,
+} from "@mui/icons-material";
 import EditIcon from "@mui/icons-material/Edit";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-
-function EnhancedTableHead(props) {
-  return (
-    <TableHead>
-      <TableRow>
-        <TableCell padding="checkbox" style={{ paddingLeft: "12px" }}>
-          {" "}
-          No
-        </TableCell>
-        {headCells.map((headCell) => (
-          <TableCell key={headCell.id} align="left">
-            <TableSortLabel>
-              {headCell.icon &&
-                React.cloneElement(headCell.icon, {
-                  className: "headCellIcon",
-                })}
-              {headCell.label}
-            </TableSortLabel>
-          </TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
-  );
-}
+import { useCallback } from "react";
+import { FaSearch } from "react-icons/fa";
 
 export default function Customer() {
   const [users, setUsers] = useState([]);
@@ -76,6 +62,13 @@ export default function Customer() {
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState(moment());
   const [selectedFile, setSelectedFile] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchField, setSearchField] = useState("lastName");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortDirection, setSortDirection] = useState("asc");
+  const [sortBy, setSortBy] = useState("id");
   const [data, setData] = useState({
     id: 0,
     firstName: "",
@@ -86,7 +79,7 @@ export default function Customer() {
     address: "",
     phoneNumber: "",
     isActive: true,
-    role: "",
+    role: 0,
     dateOfBirth: "",
     gender: 0,
     createdAt: "",
@@ -94,39 +87,95 @@ export default function Customer() {
     avatarUrl: "",
   });
 
-  const fetchDataUser = async () => {
+  const clearFormData = () => {
+  setData({
+    id: 0,
+    firstName: "",
+    lastName: "",
+    username: "",
+    password: "",
+    email: "",
+    address: "",
+    phoneNumber: "",
+    isActive: true,
+    role: 0,
+    dateOfBirth: "",
+    gender: 0,
+    createdAt: "",
+    modifiedAt: "",
+    avatarUrl: "",
+  });
+};
+
+  const fetchDataUser = useCallback(async () => {
     try {
-      const UserList = await getAllUser();
+      let filter = "";
+      if (searchQuery) {
+        filter = `lastName="${encodeURIComponent(searchQuery)}"`;
+      }
+      const UserList = await getAllUser(
+        searchField,
+        searchQuery,
+        currentPage,
+        pageSize,
+        sortBy,
+        sortDirection
+      );
       setUsers(UserList);
     } catch (error) {
       console.log("Error while fetching data", error);
     }
+  }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection]);
+
+  const handleChangePage = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  const handleChangePageSize = (event) => {
+    const newSize = parseInt(event.target.value);
+    setPageSize(newSize);
+    setCurrentPage(1);
+  };
+
+  const handleSortChange = (field) => {
+    if (sortBy === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortDirection("asc");
+    }
   };
 
   function findGenderOption(genderValue) {
-    return genderOptions.find(option => option.id === genderValue) || null;
+    return genderOptions.find((option) => option.id === genderValue) || null;
   }
 
   useEffect(() => {
     fetchDataUser();
 
+    if (data.dateOfBirth) {
+      setDate(moment(data.dateOfBirth));
+    }
+
     const defaultGenderOption = findGenderOption(data.gender);
-    if(defaultGenderOption) {
-      setData(prevData => ({
+    if (defaultGenderOption) {
+      setData((prevData) => ({
         ...prevData,
-        gender: defaultGenderOption.id
+        gender: defaultGenderOption.id,
       }));
-    }else{
-      setData(prevData => ({
+    } else {
+      setData((prevData) => ({
         ...prevData,
-        gender: null
+        gender: null,
       }));
     }
-  }, [data.gender]);
+    setTotalPages(10);
+  }, [data.gender,fetchDataUser,data.dateOfBirth]);
 
   const onCreateUser = async (e) => {
     e.preventDefault();
     try {
+      const roleValue = parseInt(data.role, 10);
       const result = await AddDataProfile({
         firstName: data.firstName,
         lastName: data.lastName,
@@ -144,7 +193,7 @@ export default function Customer() {
           username: "",
           password: "",
           email: "",
-          role: 0,
+          role: roleValue,
           dateOfBirth: "",
           gender: 0,
         });
@@ -231,6 +280,7 @@ export default function Customer() {
 
   const handleOpenAdd = (e) => {
     e.preventDefault();
+    clearFormData();
     setOpenAdd(true);
   };
 
@@ -261,8 +311,8 @@ export default function Customer() {
       setOpen(false);
     } catch (error) {
       toast.error("Failed to update user");
-      if(error.response) {
-        console.log('Server response error status', error.response.status);
+      if (error.response) {
+        console.log("Server response error status", error.response.status);
       }
     }
   };
@@ -275,21 +325,162 @@ export default function Customer() {
         p: 2,
       }}
     >
-      <Button
-        variant="contained"
-        color="primary"
-        sx={{ mb: 2 }}
-        onClick={handleOpenAdd}
-      >
-        <PersonAdd />
-      </Button>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ mb: 2, marginRight: 2 }}
+          onClick={handleOpenAdd}
+        >
+          <PersonAdd />
+        </Button>
+        <FormControl
+          variant="outlined"
+          style={{ minWidth: 120, marginRight: 10 }}
+        >
+          <InputLabel htmlFor="search-field">Search Field</InputLabel>
+          <Select
+            value={searchField}
+            onChange={(e) => setSearchField(e.target.value)}
+            label="Search Field"
+            inputProps={{
+              name: "searchField",
+              id: "search-field",
+            }}
+          >
+            <MenuItem value="id">Id</MenuItem>
+            <MenuItem value="firstName">FirstName</MenuItem>
+            <MenuItem value="lastName">LastName</MenuItem>
+            <MenuItem value="username">UserName</MenuItem>
+            <MenuItem value="phoneNumber">PhoneNumber</MenuItem>
+          </Select>
+        </FormControl>
+        <div className="input-wrapper">
+          <FaSearch id="search-icon" />
+          <input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                fetchDataUser();
+              }
+            }}
+            className="input-search"
+            placeholder="Type to search..."
+          />
+        </div>
+      </div>
       {loading ? (
         <div style={{ textAlign: "center" }}>Loading...</div>
       ) : (
         <Paper sx={{ width: "100%", mb: 2 }}>
           <TableContainer>
             <Table sx={{ minWidth: 750 }}>
-              <EnhancedTableHead />
+              <TableHead>
+                <TableRow>
+                  <TableCell onClick={() => handleSortChange("id")}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{
+                        fontWeight: "bold",
+                        color: "#007bff",
+                        cursor: "pointer",
+                      }}
+                    >
+                      No{" "}
+                      {sortBy === "id" &&
+                        (sortDirection === "asc" ? (
+                          <ArrowDropDown />
+                        ) : (
+                          <ArrowDropUp />
+                        ))}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      variant="subtitle1"
+                      style={{
+                        fontWeight: "bold",
+                        color: "#007bff",
+                        cursor: "pointer",
+                      }}
+                      align="left"
+                    >
+                      {" "}
+                      Avatar{" "}
+                    </Typography>
+                  </TableCell>
+                  <TableCell onClick={() => handleSortChange("firstName")}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{ fontWeight: "bold", color: "#007bff" }}
+                      align="left"
+                    >
+                      Name{" "}
+                      {sortBy === "firstName" &&
+                        (sortDirection === "asc" ? (
+                          <ArrowDropDown />
+                        ) : (
+                          <ArrowDropUp />
+                        ))}
+                    </Typography>
+                  </TableCell>
+                  <TableCell onClick={() => handleSortChange("email")}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{ fontWeight: "bold", color: "#007bff" }}
+                      align="left"
+                    >
+                      Email{" "}
+                      {sortBy === "email" &&
+                        (sortDirection === "asc" ? (
+                          <ArrowDropDown />
+                        ) : (
+                          <ArrowDropUp />
+                        ))}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      variant="subtitle1"
+                      style={{ fontWeight: "bold", color: "#007bff" }}
+                      align="left"
+                    >
+                      Phone Number
+                    </Typography>
+                  </TableCell>
+                  <TableCell onClick={() => handleSortChange("role")}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{ fontWeight: "bold", color: "#007bff" }}
+                      align="left"
+                    >
+                      Role{" "}
+                      {sortBy === "role" &&
+                        (sortDirection === "asc" ? (
+                          <ArrowDropDown />
+                        ) : (
+                          <ArrowDropUp />
+                        ))}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      variant="subtitle1"
+                      style={{ fontWeight: "bold", color: "#007bff" }}
+                      align="left"
+                    ></Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography
+                      variant="subtitle1"
+                      style={{ fontWeight: "bold", color: "#007bff" }}
+                      align="left"
+                    ></Typography>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
               <TableBody>
                 {users.map((user, index) => (
                   <TableRow
@@ -314,9 +505,7 @@ export default function Customer() {
                     </TableCell>
                     <TableCell align="left">{user.email}</TableCell>
                     <TableCell align="left">{user.phoneNumber}</TableCell>
-                    <TableCell align="left">
-                    {user.role}
-                    </TableCell>
+                    <TableCell align="left">{user.role}</TableCell>
                     <TableCell align="left">
                       <EditIcon
                         fontSize="small"
@@ -338,6 +527,22 @@ export default function Customer() {
           </TableContainer>
         </Paper>
       )}
+      <div style={{ textAlign: "center", marginTop: "10px" }}>
+        <label>Items per page: </label>
+        <select value={pageSize} onChange={handleChangePageSize}>
+          <option value={5}>5</option>
+          <option value={10}>10</option>
+          <option value={20}>20</option>
+          <option value={50}>50</option>
+        </select>
+      </div>
+      <Box display="flex" justifyContent="center" mt={2}>
+        <Pagination
+          count={totalPages}
+          page={currentPage}
+          onChange={handleChangePage}
+        />
+      </Box>
       <Dialog open={openAdd} fullWidth maxWidth="lg">
         <DialogTitle className="text-center">
           <IconButton
@@ -425,7 +630,7 @@ export default function Customer() {
                 }
               >
                 {roleOptions.map((role) => (
-                  <MenuItem key={role.id} value={role.id}>
+                  <MenuItem key={role.id} value={role.name}>
                     {role.name}
                   </MenuItem>
                 ))}
@@ -488,7 +693,7 @@ export default function Customer() {
                     type="file"
                     accept="image/*"
                     onChange={handleFileChange}
-                    style={{ marginTop: "10px" }} 
+                    style={{ marginTop: "10px" }}
                   />
                 </Grid>
                 <Grid item xs={12} md={8}>

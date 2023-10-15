@@ -4,24 +4,32 @@ import { toast } from "react-toastify";
 import { getAuthHeader } from "./auth";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase";
-//export const baseURL = process.env.REACT_APP_BASE_URL;
 export const baseURL = 'https://localhost:7043/v1/itsds';
 
 // Get all users in system
-export async function getAllUser() {
+export async function getAllUser(searchField, searchQuery, page = 1, pageSize = 5, sortBy = "id", sortDirection = "asc") {
   const header = getAuthHeader();
   try {
+    const encodedSearchQuery = encodeURIComponent(searchQuery);
+    const filter = `${searchField}.contains("${searchQuery}")`;
+    const params = {
+      filter: filter,
+      page: page,
+      pageSize: pageSize,
+      sort: `${sortBy} ${sortDirection}` 
+    };
     const res = await axios.get(`${baseURL}/user`, {
       headers: {
         Authorization: header,
       },
+      params: params,
     });
     return res.data.result;
   } catch (error) {
     console.log(error);
     return [];
   }
-}
+};
 
 // Login User
 export async function LoginUser(data) {
