@@ -9,7 +9,6 @@ export async function getAllTeam(searchField,searchQuery,page = 1, pageSize = 5,
     const header = getAuthHeader();
     try{
         const filter = `${searchField}.contains("${searchQuery}")`;
-        console.log(filter);
         const params = {
             filter : filter,
             page: page,

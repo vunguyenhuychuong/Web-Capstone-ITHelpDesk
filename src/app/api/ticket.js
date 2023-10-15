@@ -3,19 +3,17 @@ import { getAuthHeader } from "./auth";
 export const baseURL = "https://localhost:7043/v1/itsds";
 
 // Get All List ticket 
-export async function getAllTicket(searchQuery = "",page = 1, pageSize = 5) {
+export async function getAllTicket(searchField, searchQuery, page = 1, pageSize = 5, sortBy = "id", sortDirection = "asc") {
     const header = getAuthHeader();
-    try{
-
-        const encodedSearchQuery =  encodeURIComponent(searchQuery);
-        const filter = encodedSearchQuery ? `title="${encodedSearchQuery}"` : undefined;
+    try {
+        const filter = `${searchField}.contains("${searchQuery}")`;
         const params = {
-            filter : filter,
+            filter: filter,
             page: page,
-            pageSize: pageSize,  
+            pageSize: pageSize,
+            sort: `${sortBy} ${sortDirection}`
         };
-
-        const res = await axios.get(`${baseURL}/ticket`,{
+        const res = await axios.get(`${baseURL}/ticket`, {
             headers: {
                 Authorization: header,
             },
@@ -23,7 +21,7 @@ export async function getAllTicket(searchQuery = "",page = 1, pageSize = 5) {
         });
         console.log(res);
         return res.data.result;
-    }catch(error){
+    } catch (error) {
         console.log(error);
         return [];
     }

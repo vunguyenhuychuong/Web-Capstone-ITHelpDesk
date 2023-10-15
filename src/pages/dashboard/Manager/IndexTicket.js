@@ -13,9 +13,17 @@ import { getAllTicket } from "../../../app/api/ticket";
 import { getAllCategories } from "../../../app/api/category";
 import "../../../assets/css/manager.css";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import { ContentCopy } from "@mui/icons-material";
+import { ArrowDropDown, ArrowDropUp, ContentCopy } from "@mui/icons-material";
 import CreateTicket from "./CreateTicket";
-import { Box, Dialog, Pagination } from "@mui/material";
+import {
+  Box,
+  Dialog,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Pagination,
+  Select,
+} from "@mui/material";
 
 const IndexTicket = () => {
   const [dataTickets, setDataTickets] = useState([]);
@@ -25,7 +33,10 @@ const IndexTicket = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchField, setSearchField] = useState("title");
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortDirection, setSortDirection] = useState("asc");
+  const [sortBy, setSortBy] = useState("id");
 
   const fetchAllTicket = useCallback(async () => {
     try {
@@ -33,14 +44,21 @@ const IndexTicket = () => {
       if (searchQuery) {
         filter = `title="${encodeURIComponent(searchQuery)}"`;
       }
-      const res = await getAllTicket(searchQuery, currentPage, pageSize);
+      const res = await getAllTicket(
+        searchField,
+        searchQuery,
+        currentPage,
+        pageSize,
+        sortBy,
+        sortDirection
+      );
       setDataTickets(res);
       setIsLoading(false);
     } catch (error) {
       console.log("Error while fetching data", error);
       setIsLoading(false);
     }
-  }, [currentPage, pageSize, searchQuery]);
+  }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection]);
 
   const fetchAllCategories = async () => {
     try {
@@ -59,6 +77,15 @@ const IndexTicket = () => {
     const newSize = parseInt(event.target.value);
     setPageSize(newSize);
     setCurrentPage(1);
+  };
+
+  const handleSortChange = (field) => {
+    if (sortBy === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortDirection("asc");
+    }
   };
 
   const handleOpenRequestTicket = (e) => {
@@ -101,11 +128,38 @@ const IndexTicket = () => {
               >
                 <FaPlus /> New
               </MDBBtn>
+              <FormControl
+                variant="outlined"
+                style={{ minWidth: 120, marginRight: 10 }}
+              >
+                <InputLabel htmlFor="search-field">Search Field</InputLabel>
+                <Select
+                  value={searchField}
+                  onChange={(e) => setSearchField(e.target.value)}
+                  label="Search Field"
+                  inputProps={{
+                    name: "searchField",
+                    id: "search-field",
+                  }}
+                >
+                  <MenuItem value="requesterId">RequesterId</MenuItem>
+                  <MenuItem value="title">Title</MenuItem>
+                  <MenuItem value="description">Description</MenuItem>
+                  <MenuItem value="priority">Priority</MenuItem>
+                  <MenuItem value="impact">Impact</MenuItem>
+                </Select>
+              </FormControl>
               <div className="input-wrapper">
                 <FaSearch id="search-icon" />
                 <input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      fetchAllTicket();
+                    }
+                  }}
                   className="input-search"
                   placeholder="Type to search..."
                 />
@@ -131,14 +185,63 @@ const IndexTicket = () => {
             style={{ border: "0.05px solid #50545c" }}
           >
             <MDBTableHead className="bg-light">
-              <tr style={{ fontSize: "1.2rem" }}>
-                <th style={{ fontWeight: "bold" }}>ID</th>
-                <th style={{ fontWeight: "bold" }}>Subject</th>
-                <th style={{ fontWeight: "bold" }}>Description</th>
-                <th style={{ fontWeight: "bold" }}>Category</th>
-                <th style={{ fontWeight: "bold" }}>Priority</th>
-                <th style={{ fontWeight: "bold" }}>Status</th>
-                <th style={{ fontWeight: "bold" }}>CreatedDate</th>
+              <tr style={{ fontSize: "1.2rem"}}>
+                <th style={{ fontWeight: "bold"  }} onClick={() => handleSortChange("id")}>ID
+                {" "}{sortBy === "id" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th style={{ fontWeight: "bold"  }} onClick={() => handleSortChange("title")}>Title
+                {" "}{sortBy === "title" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th style={{ fontWeight: "bold"  }} onClick={() => handleSortChange("description")}>Description
+                {" "}{sortBy === "description" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th style={{ fontWeight: "bold"  }} onClick={() => handleSortChange("categoryId")}>Category
+                {" "}{sortBy === "categoryId" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th style={{ fontWeight: "bold" }} onClick={() => handleSortChange("priority")}>Priority
+                {" "}{sortBy === "priority" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th style={{ fontWeight: "bold"}} onClick={() => handleSortChange("ticketStatus")}>Status
+                {" "}{sortBy === "ticketStatus" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th style={{ fontWeight: "bold"}} onClick={() => handleSortChange("createdAt")}>Date
+                {" "}{sortBy === "createdAt" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
               </tr>
             </MDBTableHead>
             <MDBTableBody className="bg-light">
