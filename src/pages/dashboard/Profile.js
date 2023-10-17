@@ -104,14 +104,17 @@ const Profile = () => {
     setChangePassword(false);
   }
 
+  const fetchDataProfile = async () => {
+    const profile = await GetDataProfileUser();
+    setData(profile);
+  };
 
   useEffect(() => {
-    const fetchDataProfile = async () => {
-      const profile = await GetDataProfileUser();
-      setData(profile);
-    };
     fetchDataProfile();
-  }, []);
+    if(data.dateOfBirth){
+      setDate(moment(data.dateOfBirth));
+    }
+  }, [data.dateOfBirth]);
 
   const onHandleEditProfile = async () => {
     try{

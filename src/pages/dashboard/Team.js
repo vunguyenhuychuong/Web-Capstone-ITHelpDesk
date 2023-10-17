@@ -67,6 +67,20 @@ const Team = () => {
     deletedAt: "",
   });
 
+  const clearFormData = () => {
+    setData({
+      id: 0,
+      name: "",
+      location: "",
+      description: "",
+      managerId: 0,
+      isActive: true,
+      createdAt: "",
+      modifiedAt: "",
+      deletedAt: "",
+    });
+  };
+
   const fetchDataTeam = useCallback(async () => {
     try {
       let filter = "";
@@ -202,12 +216,14 @@ const Team = () => {
 
   const handleOpenAdd = (e) => {
     e.preventDefault();
+    clearFormData();
     setOpenAdd(true);
   };
 
   const handleClose = () => {
     setOpen(false);
     setOpenAdd(false);
+    fetchDataTeam();
   };
 
   return (
@@ -241,12 +257,10 @@ const Team = () => {
             }}
           >
             <MenuItem value="name">Name</MenuItem>
-            <MenuItem value="location">Location</MenuItem>
-            <MenuItem value="description">Description</MenuItem>
+            <MenuItem value="location">location</MenuItem>
+            <MenuItem value="description">description</MenuItem>
           </Select>
         </FormControl>
-
-        {/* ... (Add input field for search query) */}
         <TextField
           variant="outlined"
           label="Search"
@@ -292,7 +306,7 @@ const Team = () => {
                   }}
                   align="left"
                 >
-                  <LocationCity style={{ marginRight: 3 }} /> Location{" "}
+                  <LocationCity style={{ marginRight: 3 }} /> District{" "}
                   {sortBy === "location" &&
                     (sortDirection === "asc" ? (
                       <ArrowDropDown />
@@ -301,13 +315,13 @@ const Team = () => {
                     ))}
                 </Typography>
               </TableCell>
-              <TableCell>
+              <TableCell onClick={() => handleSortChange("description")}>
                 <Typography
                   variant="subtitle1"
                   style={{ fontWeight: "bold", color: "#007bff" }}
                   align="left"
                 >
-                  <Description style={{ marginRight: 3 }} /> Description{" "}
+                  <Description style={{ marginRight: 3 }} /> City{" "}
                   {sortBy === "description" &&
                     (sortDirection === "asc" ? (
                       <ArrowDropDown />
@@ -338,10 +352,10 @@ const Team = () => {
             {teams.map((team) => (
               <TableRow key={team.id}>
                 <TableCell component="th" scope="row">
-                  {team.name}
+                  {team.description}
                 </TableCell>
+                <TableCell align="left">{team.name}</TableCell>
                 <TableCell align="left">{team.location}</TableCell>
-                <TableCell align="left">{team.description}</TableCell>
                 <TableCell align="left">{team.managerId}</TableCell>
                 <TableCell align="left">
                   <div style={{ display: "flex", gap: "10px" }}>

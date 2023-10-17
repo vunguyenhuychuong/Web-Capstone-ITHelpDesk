@@ -3,6 +3,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import IndexTicket from './IndexTicket';
+import LoadingSkeleton from '../../../components/iconify/LoadingSkeleton';
 
 export default function ManagersTabs() {
   const [value, setValue] = React.useState(0);
@@ -23,7 +24,7 @@ export default function ManagersTabs() {
         <Tab label="Projects" />
       </Tabs>
       <Box role="tabpanel" hidden={value !== 0}>
-        <IndexTicket />
+        {value === 0 ? <IndexTicket /> : <LoadingSkeleton /> } 
       </Box>
     </Box>
   );

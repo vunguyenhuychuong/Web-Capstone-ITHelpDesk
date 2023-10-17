@@ -9,27 +9,30 @@ import {
   MDBTableHead,
 } from "mdb-react-ui-kit";
 import React, { useCallback, useEffect, useState } from "react";
-import { getAllTicket } from "../../../app/api/ticket";
+import { deleteTicketByManager, getAllTicket } from "../../../app/api/ticket";
 import { getAllCategories } from "../../../app/api/category";
 import "../../../assets/css/manager.css";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import { ArrowDropDown, ArrowDropUp, ContentCopy } from "@mui/icons-material";
+import { ArrowDropDown, ArrowDropUp, ContentCopy, Delete, Edit } from "@mui/icons-material";
 import CreateTicket from "./CreateTicket";
 import {
   Box,
   Dialog,
   FormControl,
-  InputLabel,
   MenuItem,
   Pagination,
   Select,
 } from "@mui/material";
+import { toast } from "react-toastify";
+import LoadingSkeleton from "../../../components/iconify/LoadingSkeleton";
+import EditTicket from "./EditTicket";
 
 const IndexTicket = () => {
   const [dataTickets, setDataTickets] = useState([]);
   const [dataCategories, setDataCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogEdit, setDialogEdit] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
@@ -37,6 +40,9 @@ const IndexTicket = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
   const [sortBy, setSortBy] = useState("id");
+  const [selectedTickets, setSelectedTickets] = useState([]);
+  const [selectedTicketId, setSelectedTicketId] = useState(null);
+  const [selectedTicketData, setSelectedTicketData] = useState(null);
 
   const fetchAllTicket = useCallback(async () => {
     try {
@@ -69,6 +75,51 @@ const IndexTicket = () => {
     }
   };
 
+  const handleSelectTicket = (ticketId) => {
+    if (selectedTickets.includes(ticketId)) {
+      setSelectedTickets(selectedTickets.filter((id) => id !== ticketId));
+    } else {
+      setSelectedTickets([...selectedTickets, ticketId]);
+    }
+  };
+
+  const handleSelectAllTickets = () => {
+    if (selectedTickets.length === dataTickets.length) {
+      setSelectedTickets([]);
+    } else {
+      setSelectedTickets(dataTickets.map((ticket) => ticket.id));
+    }
+  };
+
+  const handleDeleteSelectedTickets = async (id) => {
+    try{
+      if(selectedTickets.length === 0) {
+        return;
+      }
+      const deletePromises = selectedTickets.map(async (ticketId) => {
+        try{
+          const res = await deleteTicketByManager(ticketId);
+          if(res.isError) {
+            toast.error(`Error deleting ticket with ID ${ticketId}: `, res.message);
+          }
+          toast.success(`Delete ticket with ID successful ${ticketId}`);
+          return ticketId;
+        }catch(error){
+          toast.error(`Error deleting ticket with ID ${ticketId}: `, error);
+          return null;
+        }
+      });
+
+      const deletedTicketIds = await Promise.all(deletePromises);
+      const updatedTickets = dataTickets.filter((ticket) => !deletedTicketIds.includes(ticket.id));
+      setDataTickets(updatedTickets);
+      setSelectedTickets([]);
+      
+    }catch(error){
+      toast.error("Failed to delete selected tickets, Please try again later");
+    }
+  }
+
   const handleChangePage = (event, value) => {
     setCurrentPage(value);
   };
@@ -93,9 +144,22 @@ const IndexTicket = () => {
     setDialogOpen(true);
   };
 
+  const handleOpenEditTicket = (e, ticketId) => {
+    e.preventDefault();
+    setSelectedTicketId(ticketId);
+    const ticketData = dataTickets.find((ticket) => ticket.id === ticketId);
+    setSelectedTicketData(ticketData);
+    setDialogEdit(true);
+  };
+
   const handleCloseRequestTicket = (e) => {
     e.preventDefault();
     setDialogOpen(false);
+  };
+
+  const handleCloseEditTicket = (e) => {
+    e.preventDefault();
+    setDialogEdit(false);
   };
 
   const getCategoryNameById = (categoryId) => {
@@ -111,7 +175,10 @@ const IndexTicket = () => {
 
   return (
     <section style={{ backgroundColor: "#FFF" }}>
-      <MDBContainer
+      {isLoading ? (
+        <LoadingSkeleton />
+      ) : (
+        <MDBContainer
         className="py-5"
         style={{ paddingLeft: 20, paddingRight: 20, maxWidth: "100%" }}
       >
@@ -128,15 +195,17 @@ const IndexTicket = () => {
               >
                 <FaPlus /> New
               </MDBBtn>
+              <MDBBtn color="eee" style={{ fontWeight: "bold", fontSize: "20px" }}  onClick={handleDeleteSelectedTickets} >
+                <Delete /> Delete 
+              </MDBBtn>
               <FormControl
                 variant="outlined"
-                style={{ minWidth: 120, marginRight: 10 }}
+                style={{ minWidth: 120, marginRight: 10 , marginTop: 10, marginLeft: 10}}
+                size="small"
               >
-                <InputLabel htmlFor="search-field">Search Field</InputLabel>
                 <Select
                   value={searchField}
                   onChange={(e) => setSearchField(e.target.value)}
-                  label="Search Field"
                   inputProps={{
                     name: "searchField",
                     id: "search-field",
@@ -164,14 +233,16 @@ const IndexTicket = () => {
                   placeholder="Type to search..."
                 />
               </div>
-              <div style={{ textAlign: "center", marginTop: "10px" }}>
-                <label>Items per page: </label>
-                <select value={pageSize} onChange={handleChangePageSize}>
-                  <option value={5}>5</option>
-                  <option value={10}>10</option>
-                  <option value={20}>20</option>
-                  <option value={50}>50</option>
-                </select>
+              <div style={{ textAlign: "center" }}>
+                <label style={{ fontWeight: 'bold', marginTop: '15px' }}>Items per page: </label>
+                <FormControl sx={{ m: 1, minWidth: 120 }} size="small"> 
+                <Select value={pageSize} onChange={handleChangePageSize} className="select">
+                  <MenuItem  value={5}>5</MenuItem >
+                  <MenuItem  value={10}>10</MenuItem >
+                  <MenuItem  value={20}>20</MenuItem >
+                  <MenuItem  value={50}>50</MenuItem >
+                </Select>
+                </FormControl>   
               </div>
             </MDBNavbarNav>
           </MDBContainer>
@@ -185,57 +256,95 @@ const IndexTicket = () => {
             style={{ border: "0.05px solid #50545c" }}
           >
             <MDBTableHead className="bg-light">
-              <tr style={{ fontSize: "1.2rem"}}>
-                <th style={{ fontWeight: "bold"  }} onClick={() => handleSortChange("id")}>ID
-                {" "}{sortBy === "id" &&
+              <tr style={{ fontSize: "1.2rem" }}>
+                <th style={{ fontWeight: "bold" }}>
+                  <input
+                    type="checkbox"
+                    checked={selectedTickets.length === dataTickets.length}
+                    onChange={handleSelectAllTickets}
+                  />
+                </th>
+                <th style={{ fontWeight: "bold" }}>
+                  Edit
+                </th>
+                <th
+                  style={{ fontWeight: "bold" }}
+                  onClick={() => handleSortChange("id")}
+                >
+                  ID{" "}
+                  {sortBy === "id" &&
                     (sortDirection === "asc" ? (
                       <ArrowDropDown />
                     ) : (
                       <ArrowDropUp />
                     ))}
                 </th>
-                <th style={{ fontWeight: "bold"  }} onClick={() => handleSortChange("title")}>Title
-                {" "}{sortBy === "title" &&
+                <th
+                  style={{ fontWeight: "bold" }}
+                  onClick={() => handleSortChange("title")}
+                >
+                  Title{" "}
+                  {sortBy === "title" &&
                     (sortDirection === "asc" ? (
                       <ArrowDropDown />
                     ) : (
                       <ArrowDropUp />
                     ))}
                 </th>
-                <th style={{ fontWeight: "bold"  }} onClick={() => handleSortChange("description")}>Description
-                {" "}{sortBy === "description" &&
+                <th
+                  style={{ fontWeight: "bold" }}
+                  onClick={() => handleSortChange("description")}
+                >
+                  Description{" "}
+                  {sortBy === "description" &&
                     (sortDirection === "asc" ? (
                       <ArrowDropDown />
                     ) : (
                       <ArrowDropUp />
                     ))}
                 </th>
-                <th style={{ fontWeight: "bold"  }} onClick={() => handleSortChange("categoryId")}>Category
-                {" "}{sortBy === "categoryId" &&
+                <th
+                  style={{ fontWeight: "bold" }}
+                  onClick={() => handleSortChange("categoryId")}
+                >
+                  Category{" "}
+                  {sortBy === "categoryId" &&
                     (sortDirection === "asc" ? (
                       <ArrowDropDown />
                     ) : (
                       <ArrowDropUp />
                     ))}
                 </th>
-                <th style={{ fontWeight: "bold" }} onClick={() => handleSortChange("priority")}>Priority
-                {" "}{sortBy === "priority" &&
+                <th
+                  style={{ fontWeight: "bold" }}
+                  onClick={() => handleSortChange("priority")}
+                >
+                  Priority{" "}
+                  {sortBy === "priority" &&
                     (sortDirection === "asc" ? (
                       <ArrowDropDown />
                     ) : (
                       <ArrowDropUp />
                     ))}
                 </th>
-                <th style={{ fontWeight: "bold"}} onClick={() => handleSortChange("ticketStatus")}>Status
-                {" "}{sortBy === "ticketStatus" &&
+                <th
+                  style={{ fontWeight: "bold" }}
+                  onClick={() => handleSortChange("ticketStatus")}
+                >
+                  Status{" "}
+                  {sortBy === "ticketStatus" &&
                     (sortDirection === "asc" ? (
                       <ArrowDropDown />
                     ) : (
                       <ArrowDropUp />
                     ))}
                 </th>
-                <th style={{ fontWeight: "bold"}} onClick={() => handleSortChange("createdAt")}>Date
-                {" "}{sortBy === "createdAt" &&
+                <th
+                  style={{ fontWeight: "bold" }}
+                  onClick={() => handleSortChange("createdAt")}
+                >
+                  Date{" "}
+                  {sortBy === "createdAt" &&
                     (sortDirection === "asc" ? (
                       <ArrowDropDown />
                     ) : (
@@ -247,6 +356,7 @@ const IndexTicket = () => {
             <MDBTableBody className="bg-light">
               {dataTickets.map((ticket, index) => {
                 const createdAtDate = new Date(ticket.createdAt);
+                const isSelected = selectedTickets.includes(ticket.id);
                 const formattedDate = `${String(
                   createdAtDate.getDate()
                 ).padStart(2, "0")}/${String(
@@ -259,6 +369,16 @@ const IndexTicket = () => {
 
                 return (
                   <tr key={index}>
+                    <td>
+                      <input 
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => handleSelectTicket(ticket.id)}
+                      />
+                    </td>
+                    <td>
+                      <Edit onClick={(e) => handleOpenEditTicket(e, ticket.id)} />
+                    </td>
                     <td>{ticket.requesterId}</td>
                     <td>{ticket.title}</td>
                     <td>{ticket.description}</td>
@@ -307,6 +427,7 @@ const IndexTicket = () => {
           </MDBTable>
         )}
       </MDBContainer>
+      )} 
       <Box display="flex" justifyContent="center" mt={2}>
         <Pagination
           count={totalPages}
@@ -321,6 +442,15 @@ const IndexTicket = () => {
         onClose={handleCloseRequestTicket}
       >
         <CreateTicket onClose={handleCloseRequestTicket} />
+      </Dialog>
+
+      <Dialog
+        maxWidth="lg"
+        fullWidth
+        open={dialogEdit}
+        onClose={handleCloseEditTicket}
+      >
+        <EditTicket selectedTicketData={selectedTicketData}  onClose={handleCloseEditTicket} />
       </Dialog>
     </section>
   );

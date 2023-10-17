@@ -1,5 +1,4 @@
 import {
-  MDBBtn,
   MDBContainer,
   MDBTable,
   MDBTableBody,

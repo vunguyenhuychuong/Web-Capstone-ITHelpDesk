@@ -28,6 +28,20 @@ export async function getAllTeam(searchField,searchQuery,page = 1, pageSize = 5,
     }
 };
 
+export async function getAllTeams() {
+    const header = getAuthHeader();
+    try{
+        const res = await axios.get(`${baseURL}/team`,{
+            headers: {
+                Authorization: header,
+            },
+        });
+        return res.data.result;
+    }catch(error) {
+        console.log(error);
+        return [];
+    }
+}
 
 //Add Team in system
 export async function AddTeam(teamData) {

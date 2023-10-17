@@ -3,7 +3,6 @@ import {
   MDBBtn,
   MDBCol,
   MDBContainer,
-  MDBInput,
   MDBRow,
 } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";

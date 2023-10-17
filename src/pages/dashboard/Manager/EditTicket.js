@@ -9,14 +9,14 @@ import {
   UrgencyOptions,
   priorityOption,
 } from "../Admin/tableComlumn";
-import { createTicketByManager } from "../../../app/api/ticket";
+import { createTicketByManager, getTicketByTicketId } from "../../../app/api/ticket";
 import { toast } from "react-toastify";
 import CategoryApi from "../../../app/api/category";
 import { getAllServices } from "../../../app/api/service";
 import ModeApi from "../../../app/api/mode";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
-const CreateTicket = ({ onClose }) => {
+const EditTicket = ({ onClose , selectedTicketData  }) => {
   const [data, setData] = useState({
     requesterId: 0,
     title: "",
@@ -53,8 +53,20 @@ const CreateTicket = ({ onClose }) => {
   };
 
   useEffect(() => {
+    if(selectedTicketData) {
+      setData((prevData) => ({
+        ...prevData,
+        requesterId: selectedTicketData.requesterId,
+        title: selectedTicketData.title,
+        description: selectedTicketData.description,
+        categoryId: selectedTicketData.categoryId,
+        priority: selectedTicketData.priority,
+        ticketStatus: selectedTicketData.ticketStatus,
+      }))
+    }
     fetchDataManager();
-  }, []);
+    
+  }, [selectedTicketData]);
 
 const handleInputChange = (e) => {
   const { name, value } = e.target;
@@ -75,68 +87,23 @@ const handleInputChange = (e) => {
     console.log(selectedFile);
   };
 
-  const handleSubmitTicket = async (e) => {
-    e.preventDefault();
+  const onHandleEditTicket = async () => {
+    // try{
+    //   const response = 
+    // }catch(error){
 
-    // if (data.categoryId === 0 || data.modeId === 0 || data.serviceId === 0) {
-    //   toast.warning("Please select a category, mode, and service.");
-    //   return;
     // }
-
-    // if (!data.title || !data.priority || !data.categoryId || !data.teamId || !data.ticketStatus || !data.impact || !data.urgency) {
-    //   toast.warning("Please fill out all fields");
-    //   return;
-    // }
-
-    setIsSubmitting(true);
-    try {
-      let attachmentUrl = data.attachmentUrl;
-      if (selectedFile) {
-        const storage = getStorage();
-        const storageRef = ref(storage, "images/" + selectedFile.name);
-        await uploadBytes(storageRef, selectedFile);
-        attachmentUrl = await getDownloadURL(storageRef);
-      }
-
-      const updatedData = {
-        ...data,
-        attachmentUrl: attachmentUrl,
-      };
-      setData(updatedData);
-      const result = await createTicketByManager({
-        requesterId: data.requesterId,
-        title: data.title,
-        description: data.description,
-        modeId: data.modeId,
-        serviceId: data.serviceId,
-        impactDetail: data.impactDetail,
-        ticketStatus: data.ticketStatus,
-        priority: data.priority,
-        impact: data.impact,
-        urgency: data.urgency,
-        categoryId: data.categoryId,
-        attachmentUrl: data.attachmentUrl,
-      });
-      console.log(result.data.isError);
-      toast.success("Ticket created successfully");
-      fetchDataManager();
-      onClose();
-    } catch (error) {
-      console.log("Please check data input", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  }
 
   return (
     <section style={{ backgroundColor: "#eee" }}>
       <MDBContainer className="py-5">
         <MDBRow className="mb-4">
           <MDBCol className="text-center">
-            <h2>Submit a New Ticket</h2>
+            <h2>Edit Ticket</h2>
           </MDBCol>
         </MDBRow>
-        <form method="post" onSubmit={handleSubmitTicket}>
+        <form method="post">
           <MDBRow className="mb-4"></MDBRow>
           <MDBRow className="mb-4">
             <MDBCol md="2" className="text-center mt-2">
@@ -380,7 +347,7 @@ const handleInputChange = (e) => {
                 small="true"
                 color="primary"
                 type="submit"
-                onClick={handleSubmitTicket}
+                
               >
                 {isSubmitting ? "Submitting..." : "Submit"}
               </MDBBtn>
@@ -395,4 +362,4 @@ const handleInputChange = (e) => {
   );
 };
 
-export default CreateTicket;
+export default EditTicket;

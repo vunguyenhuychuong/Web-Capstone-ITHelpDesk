@@ -65,12 +65,20 @@ export const genderOptions = [
   { id: 1, name: "Female" },
 ];
 
+// export const priorityOption = [
+//   { id: "Low", name: 0 },
+//   { id: "Normal", name: 1 },
+//   { id: "Medium", name: 2},
+//   { id: "High", name: 3},
+//   { id: "Critical", name: 4},
+// ];
+
 export const priorityOption = [
-  { id: "Low", name: 0 },
-  { id: "Normal", name: 1 },
-  { id: "Medium", name: 2},
-  { id: "High", name: 3},
-  { id: "Critical", name: 4},
+  { id: 0, name: "Low" },
+  { id: 1, name: "Normal" },
+  { id: 2, name: "Medium"},
+  { id: 3, name: "High"},
+  { id: 4, name: "Critical"},
 ];
 
 export const getRoleName = (role) => {

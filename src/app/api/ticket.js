@@ -19,7 +19,6 @@ export async function getAllTicket(searchField, searchQuery, page = 1, pageSize 
             },
             params: params,
         });
-        console.log(res);
         return res.data.result;
     } catch (error) {
         console.log(error);
@@ -107,4 +106,23 @@ export async function createTicketByManager(data) {
         console.log(error);
         return [];
     }
-}
+};
+
+//Delete Ticket By Manager
+export async function deleteTicketByManager(ticketIds) {
+    const header = getAuthHeader();
+    try{
+        const res = await axios.delete(`${baseURL}/ticket/manager/${ticketIds}`, {
+            headers: {
+                Authorization: header,
+            },
+            data: {
+                ticketIds: ticketIds,
+            },
+        });
+        return res.data.result;
+    }catch(error) {
+        console.log("Error deleting tickets:", error);
+        throw error;
+    }
+};
