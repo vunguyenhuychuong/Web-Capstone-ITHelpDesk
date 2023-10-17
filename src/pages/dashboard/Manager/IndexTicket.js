@@ -158,7 +158,6 @@ const IndexTicket = () => {
   };
 
   const handleCloseEditTicket = (e) => {
-    e.preventDefault();
     setDialogEdit(false);
   };
 

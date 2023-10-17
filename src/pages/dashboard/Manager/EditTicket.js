@@ -9,12 +9,14 @@ import {
   UrgencyOptions,
   priorityOption,
 } from "../Admin/tableComlumn";
-import { createTicketByManager, getTicketByTicketId } from "../../../app/api/ticket";
-import { toast } from "react-toastify";
 import CategoryApi from "../../../app/api/category";
 import { getAllServices } from "../../../app/api/service";
 import ModeApi from "../../../app/api/mode";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import axios from "axios";
+import { baseURL, editTicketByManager } from "../../../app/api/ticket";
+import { getAuthHeader } from "../../../app/api/auth";
+import { toast } from "react-toastify";
 
 const EditTicket = ({ onClose , selectedTicketData  }) => {
   const [data, setData] = useState({
@@ -61,6 +63,7 @@ const EditTicket = ({ onClose , selectedTicketData  }) => {
         description: selectedTicketData.description,
         categoryId: selectedTicketData.categoryId,
         priority: selectedTicketData.priority,
+        impactDetail: selectedTicketData.impactDetail,
         ticketStatus: selectedTicketData.ticketStatus,
       }))
     }
@@ -87,13 +90,25 @@ const handleInputChange = (e) => {
     console.log(selectedFile);
   };
 
-  const onHandleEditTicket = async () => {
-    // try{
-    //   const response = 
-    // }catch(error){
-
-    // }
-  }
+  const onHandleEditTicket = async (e) => {
+    e.preventDefault(); 
+    setIsSubmitting(true);
+    try {
+      const response = await axios.put(
+        `https://localhost:7043/v1/itsds/ticket/manager/${selectedTicketData.id}`,
+        data,
+        {
+          headers: {
+            Authorization: getAuthHeader(),
+          },
+        }
+      );
+      toast.success('Ticket updated successfully');  
+      onClose();
+    }finally{
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <section style={{ backgroundColor: "#eee" }}>
@@ -103,7 +118,7 @@ const handleInputChange = (e) => {
             <h2>Edit Ticket</h2>
           </MDBCol>
         </MDBRow>
-        <form method="post">
+        <form onSubmit={(e) => e.preventDefault()}>
           <MDBRow className="mb-4"></MDBRow>
           <MDBRow className="mb-4">
             <MDBCol md="2" className="text-center mt-2">
@@ -347,9 +362,9 @@ const handleInputChange = (e) => {
                 small="true"
                 color="primary"
                 type="submit"
-                
+                onClick={onHandleEditTicket}
               >
-                {isSubmitting ? "Submitting..." : "Submit"}
+                Edit
               </MDBBtn>
               <MDBBtn color="danger" className="ms-2" onClick={onClose}>
                 Cancel

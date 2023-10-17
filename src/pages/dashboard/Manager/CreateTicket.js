@@ -71,23 +71,16 @@ const handleInputChange = (e) => {
 };
 
   const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-    console.log(selectedFile);
+    const file = e.target.files[0];
+    setSelectedFile(file);
   };
 
   const handleSubmitTicket = async (e) => {
     e.preventDefault();
-
-    // if (data.categoryId === 0 || data.modeId === 0 || data.serviceId === 0) {
-    //   toast.warning("Please select a category, mode, and service.");
-    //   return;
-    // }
-
-    // if (!data.title || !data.priority || !data.categoryId || !data.teamId || !data.ticketStatus || !data.impact || !data.urgency) {
+    // if (!data.title || !data.priority || data.categoryId === 0 || data.modeId === 0 || data.serviceId === 0) {
     //   toast.warning("Please fill out all fields");
     //   return;
     // }
-
     setIsSubmitting(true);
     try {
       let attachmentUrl = data.attachmentUrl;
@@ -102,6 +95,7 @@ const handleInputChange = (e) => {
         ...data,
         attachmentUrl: attachmentUrl,
       };
+      console.log(updatedData);
       setData(updatedData);
       const result = await createTicketByManager({
         requesterId: data.requesterId,
@@ -115,12 +109,12 @@ const handleInputChange = (e) => {
         impact: data.impact,
         urgency: data.urgency,
         categoryId: data.categoryId,
-        attachmentUrl: data.attachmentUrl,
+        attachmentUrl: attachmentUrl,
       });
-      console.log(result.data.isError);
+      console.log(result);
       toast.success("Ticket created successfully");
-      fetchDataManager();
       onClose();
+      fetchDataManager();
     } catch (error) {
       console.log("Please check data input", error);
     } finally {
