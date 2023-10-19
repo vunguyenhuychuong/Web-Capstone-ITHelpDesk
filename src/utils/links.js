@@ -13,7 +13,8 @@ const links = [
   { id: 7, text: 'mains', path: 'mains', icon : <FaWpforms />},
   { id: 8, text: 'menu', path: 'menu', icon: <Menu />},
   { id: 9, text: 'categories', path: 'categories', icon: <Category />},
-  { id: 10, text: 'listTicket', path: 'listTicket', icon: <FaTicketAlt />}
+  { id: 10, text: 'listTicket', path: 'listTicket', icon: <FaTicketAlt />},
+  { id: 11, text: 'customerTicket', path: 'customerTicket', icon: <FaTicketAlt />},
 ];
 
 export default links;

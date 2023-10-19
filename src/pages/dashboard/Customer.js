@@ -48,6 +48,7 @@ import {
   ArrowDropUp,
   Close,
   Delete,
+  DeleteForeverOutlined,
   PersonAdd,
 } from "@mui/icons-material";
 import EditIcon from "@mui/icons-material/Edit";
@@ -69,6 +70,8 @@ export default function Customer() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
   const [sortBy, setSortBy] = useState("id");
+  const [selectedTickets, setSelectedTickets] = useState([]);
+  const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [data, setData] = useState({
     id: 0,
     firstName: "",
@@ -88,24 +91,24 @@ export default function Customer() {
   });
 
   const clearFormData = () => {
-  setData({
-    id: 0,
-    firstName: "",
-    lastName: "",
-    username: "",
-    password: "",
-    email: "",
-    address: "",
-    phoneNumber: "",
-    isActive: true,
-    role: 0,
-    dateOfBirth: "",
-    gender: 0,
-    createdAt: "",
-    modifiedAt: "",
-    avatarUrl: "",
-  });
-};
+    setData({
+      id: 0,
+      firstName: "",
+      lastName: "",
+      username: "",
+      password: "",
+      email: "",
+      address: "",
+      phoneNumber: "",
+      isActive: true,
+      role: 0,
+      dateOfBirth: "",
+      gender: 0,
+      createdAt: "",
+      modifiedAt: "",
+      avatarUrl: "",
+    });
+  };
 
   const fetchDataUser = useCallback(async () => {
     try {
@@ -131,6 +134,57 @@ export default function Customer() {
     setCurrentPage(value);
   };
 
+  const handleSelectTicket = (userId) => {
+    if (selectedTickets.includes(userId)) {
+      setSelectedTickets(selectedTickets.filter((id) => id !== userId));
+    } else {
+      setSelectedTickets([...selectedTickets, userId]);
+    }
+  };
+
+  const handleSelectAllTickets = () => {
+    if (selectedTickets.length === data.length) {
+      setSelectedTickets([]);
+    } else {
+      setSelectedTickets(data.map((user) => user.id));
+    }
+  };
+
+  const handleDeleteSelectedUser = async () => {
+    try {
+      if (selectedTickets.length === 0) {
+        toast.info("No users selected for deletion.");
+        return;
+      }
+      const confirmed = window.confirm("Are you sure you want to delete selected users?");
+      if (!confirmed) {
+        return;
+      }
+      const deletePromises = selectedTickets.map(async (userId) => {
+        try {
+          const res = await DeleteDataUser(userId);
+          if (res.isError) {
+            toast.error(`Error deleting user with ID ${userId}: ${res.message}`);
+          } else {
+            toast.success(`User with ID ${userId} deleted successfully`);
+          }
+          return userId;
+        } catch (error) {
+          toast.error(`Error deleting user with ID ${userId}: ${error.message}`);
+          return null;
+        }
+      });
+  
+      const deletedUserIds = await Promise.all(deletePromises);
+      const updatedUsers = users.filter((user) => !deletedUserIds.includes(user.id));
+      setUsers(updatedUsers);
+      setSelectedTickets([]);
+    } catch (error) {
+      console.error("Error deleting selected users:", error);
+      toast.error("Failed to delete selected users. Please try again later.");
+    }
+  };
+  
   const handleChangePageSize = (event) => {
     const newSize = parseInt(event.target.value);
     setPageSize(newSize);
@@ -170,7 +224,7 @@ export default function Customer() {
       }));
     }
     setTotalPages(10);
-  }, [data.gender,fetchDataUser,data.dateOfBirth]);
+  }, [data.gender, fetchDataUser, data.dateOfBirth]);
 
   const onCreateUser = async (e) => {
     e.preventDefault();
@@ -304,7 +358,6 @@ export default function Customer() {
         avatarUrl: avatarUrl,
       };
       setData(updatedData);
-      console.log(data);
       const response = await UpdateUser(data.id, updatedData);
       toast.success("User updated successfully");
       fetchDataUser();
@@ -333,6 +386,14 @@ export default function Customer() {
           onClick={handleOpenAdd}
         >
           <PersonAdd />
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ mb: 2, marginRight: 2 }}
+          onClick={handleDeleteSelectedUser}
+        >
+          <DeleteForeverOutlined />
         </Button>
         <FormControl
           variant="outlined"
@@ -388,13 +449,11 @@ export default function Customer() {
                         cursor: "pointer",
                       }}
                     >
-                      No{" "}
-                      {sortBy === "id" &&
-                        (sortDirection === "asc" ? (
-                          <ArrowDropDown />
-                        ) : (
-                          <ArrowDropUp />
-                        ))}
+                      <input
+                        type="checkbox"
+                        checked={selectedTickets.length === data.length}
+                        onChange={handleSelectAllTickets}
+                      />
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -482,46 +541,55 @@ export default function Customer() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {users.map((user, index) => (
-                  <TableRow
-                    key={`user-${index}`}
-                    hover
-                    role="checkbox"
-                    tabIndex={-1}
-                    sx={{ cursor: "pointer" }}
-                  >
-                    <TableCell align="left">{user.id}</TableCell>
-                    <TableCell align="left">
-                      {user.avatarUrl && (
-                        <img
-                          src={user.avatarUrl}
-                          alt="Avatar"
-                          style={{ width: "50px", height: "50px" }}
+                {users.map((user, index) => {
+                  const isSelected = selectedTickets.includes(user.id);
+                  return (
+                    <TableRow
+                      key={`user-${index}`}
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      sx={{ cursor: "pointer" }}
+                    >
+                      <TableCell align="left">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => handleSelectTicket(user.id)}
                         />
-                      )}
-                    </TableCell>
-                    <TableCell align="left">
-                      {user.firstName} {user.lastName}
-                    </TableCell>
-                    <TableCell align="left">{user.email}</TableCell>
-                    <TableCell align="left">{user.phoneNumber}</TableCell>
-                    <TableCell align="left">{user.role}</TableCell>
-                    <TableCell align="left">
-                      <EditIcon
-                        fontSize="small"
-                        color="primary"
-                        onClick={() => handleDetailUser(user.id)}
-                      />
-                    </TableCell>
-                    <TableCell align="left">
-                      <Delete
-                        fontSize="small"
-                        color="error"
-                        onClick={() => onDeleteUser(user.id)}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      </TableCell>
+                      <TableCell align="left">
+                        {user.avatarUrl && (
+                          <img
+                            src={user.avatarUrl}
+                            alt="Avatar"
+                            style={{ width: "50px", height: "50px" }}
+                          />
+                        )}
+                      </TableCell>
+                      <TableCell align="left">
+                        {user.firstName} {user.lastName}
+                      </TableCell>
+                      <TableCell align="left">{user.email}</TableCell>
+                      <TableCell align="left">{user.phoneNumber}</TableCell>
+                      <TableCell align="left">{user.role}</TableCell>
+                      <TableCell align="left">
+                        <EditIcon
+                          fontSize="small"
+                          color="primary"
+                          onClick={() => handleDetailUser(user.id)}
+                        />
+                      </TableCell>
+                      <TableCell align="left">
+                        <Delete
+                          fontSize="small"
+                          color="error"
+                          onClick={() => onDeleteUser(user.id)}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>

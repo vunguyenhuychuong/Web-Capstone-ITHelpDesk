@@ -65,14 +65,6 @@ export const genderOptions = [
   { id: 1, name: "Female" },
 ];
 
-// export const priorityOption = [
-//   { id: "Low", name: 0 },
-//   { id: "Normal", name: 1 },
-//   { id: "Medium", name: 2},
-//   { id: "High", name: 3},
-//   { id: "Critical", name: 4},
-// ];
-
 export const priorityOption = [
   { id: 0, name: "Low" },
   { id: 1, name: "Normal" },

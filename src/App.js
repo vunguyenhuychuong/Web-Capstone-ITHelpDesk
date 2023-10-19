@@ -11,11 +11,11 @@ import Customer from './pages/dashboard/Customer';
 import { useSelector } from 'react-redux';
 import Tickets from './pages/dashboard/Ticket';
 import Team from './pages/dashboard/Team';
-import AccessibleTabs1 from './pages/dashboard/Customer/AccessibleTabs';
-import Main from './pages/dashboard/Main';
-import Menu from './pages/dashboard/Customer/Menu';
-import ServiceCategories from './pages/dashboard/Customer/ServiceCategories';
 import ManagersTabs from './pages/dashboard/Manager/ManagerTabs';
+import AccessibleTabs1 from './pages/dashboard/Customer/CustomerTabs';
+import Menu from './pages/dashboard/Customer/Menu';
+import Main from './pages/dashboard/Customer/Home';
+import IssueList from './pages/dashboard/Customer/IssueList';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -40,7 +40,7 @@ function App() {
           {(hasCustomerRole) && <Route path='mains' element={<Main />} />} 
           <Route path='main' element={<AccessibleTabs1 />} />
           <Route path='menu' element={<Menu />} />
-          <Route path='categories' element={<ServiceCategories />} />
+          <Route path='customerTicket' element={<IssueList />} />
           {(hasManagerRole) && <Route path='listTicket' element={<ManagersTabs />} />}
           </Route>
         <Route path='login' element={<Login />} />

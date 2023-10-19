@@ -16,7 +16,7 @@ import { getAllServices } from "../../../app/api/service";
 import ModeApi from "../../../app/api/mode";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
-const CreateTicket = ({ onClose }) => {
+const CreateTicket = ({ onClose , onTicketCreated }) => {
   const [data, setData] = useState({
     requesterId: 0,
     title: "",

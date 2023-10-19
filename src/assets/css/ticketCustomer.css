@@ -1,0 +1,35 @@
+.scrollable-list {
+    max-height: 400px; /* Set the maximum height of the list */
+    overflow-y: auto; /* Enable vertical scrolling */
+  }
+  
+  /* Optional: To customize the appearance of scrollbar */
+  .scrollable-list::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .scrollable-list::-webkit-scrollbar-thumb {
+    background-color: #888;
+  }
+  
+  .scrollable-list::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+.ticket-title {
+  font-weight: bold;
+  font-size: 18px;
+  color: #333;
+  display: block; /* Ensure it's a block element */
+}
+
+/* Custom styles for ticket descriptions */
+.ticket-description {
+  font-size: 14px;
+  color: #666;
+  display: block; /* Ensure it's a block element */
+}
+
+.custom-padding {
+  padding-left: 20px;
+}

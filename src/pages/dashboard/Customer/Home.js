@@ -15,35 +15,47 @@ import {
   ContactSupport,
   Warning,
 } from "@mui/icons-material";
-import "../../assets/css/profile.css";
-import RequestIssues from "./Customer/Issue";
+import "../../../assets/css/profile.css";
+import "../../../assets/css/ticketCustomer.css";
 import { Dialog } from "@mui/material";
 import { useState } from "react";
-import IssueList from "./Customer/IssueList";
+import { getTicketByUserId } from "../../../app/api/ticket";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { FaArrowLeft } from "react-icons/fa";
+import {  useNavigate } from "react-router-dom";
+import RequestIssues from "./RequestIssues";
+
 
 const Main = () => {
-
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogListOpen, setDialogListOpen] = useState(false);
-
+  const navigate = useNavigate();
+  const [tickets, setTickets] = useState([]);
+  const user = useSelector((state) => state.auth);
   const handleOpenRequestTicket = (e) => {
     e.preventDefault();
     setDialogOpen(true);
   };
 
   const handleCloseRequestTicket = () => {
-    setDialogOpen(false); 
+    setDialogOpen(false);
   };
 
-  const handleOpenListTicket = (e) => {
-    e.preventDefault();
-    setDialogListOpen(true);
-  }
+  const handleOpenListTicket = () => {
+    navigate(`/home/customerTicket`);
+  };
 
-  const handleCloseListTicket = (e) => {
-    e.preventDefault();
-    setDialogListOpen(false);
-  }
+  useEffect(() => {
+    const fetchDataTicketByUserId = async () => {
+      try {
+        const response = await getTicketByUserId(user.user.id);
+        setTickets(response);
+      } catch (error) {
+        console.log("Error fetching tickets", error);
+      }
+    };
+    fetchDataTicketByUserId();
+  }, [user.user.id]);
 
   return (
     <section style={{ backgroundColor: "#eee" }}>
@@ -77,12 +89,12 @@ const Main = () => {
                   >
                     I am facing an Issue
                   </MDBCardText>
-                    <MDBBtn
-                      style={{ backgroundColor: "#a84632", color: "white" }}
-                      onClick={handleOpenRequestTicket}
-                    >
-                      Report an issue
-                    </MDBBtn>
+                  <MDBBtn
+                    style={{ backgroundColor: "#a84632", color: "white" }}
+                    onClick={handleOpenRequestTicket}
+                  >
+                    Report an issue
+                  </MDBBtn>
                 </MDBCol>
               </div>
             </MDBCard>
@@ -144,72 +156,58 @@ const Main = () => {
         </MDBRow>
       </MDBContainer>
 
-      <MDBRow>
-        <MDBCol md="3">
+      <MDBRow className="justify-content-end">
+        <MDBCol md="5">
           <MDBCard className="mt-8 mb-md-0">
             <div className="d-flex align-items-center">
-              <MDBCol md="12" style={{ backgroundColor: "#C0C0C0" }}>
-                <MDBCardText
-                  className="mb-4 ml-2"
-                  style={{
-                    fontWeight: "bold",
-                    fontSize: "20px",
-                    color: "#333",
-                  }}
+              <MDBCol
+                md="12"
+                className="my-request-summary pl-3"
+                style={{ backgroundColor: "#C0C0C0" }}
+              >
+                <MDBCol
+                  md="12"
+                  className="my-request-summary"
+                  style={{ backgroundColor: "#C0C0C0" }}
                 >
-                  {" "}
-                  Popular Solutions
-                </MDBCardText>
-                <div className="input-group mb-3 ml-2">
-                  <input
-                    type="search"
-                    className="form-control"
-                    placeholder="Search Solutions"
-                    aria-label="Search Solutions"
-                    aria-describedby="button-search"
-                  />
-                  <button
-                    className="btn btn-primary"
-                    type="button"
-                    id="button-search"
-                  >
-                    Search
-                  </button>
+                  <div className="d-flex justify-content-between align-items-center">
+                    <MDBCardText
+                      className="mb-4 card-text"
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: "20px",
+                        color: "#333",
+                      }}
+                    >
+                      My Request Summary
+                    </MDBCardText>
+                    <button className="btn btn-primary"onClick={handleOpenListTicket}>Show All</button>
+                  </div>
+                </MDBCol>
+                <div className="scrollable-list">
+                  <MDBListGroup className="rounded-3">
+                    {tickets.map((ticket, index) => (
+                      <MDBListGroupItem key={ticket.id} className="d-flex justify-content-between align-items-center p-3">
+                        <div key={ticket.id}>
+                          <MDBCardText className="ticket-title">
+                            Title: {ticket.title}
+                          </MDBCardText>
+                          <MDBCardText
+                            small
+                            className="text-muted ticket-description"
+                          >
+                            {ticket.description}
+                          </MDBCardText>
+                        </div>
+                      </MDBListGroupItem>
+                    ))}
+                  </MDBListGroup>
                 </div>
-                <MDBListGroup className="rounded-3">
-                  <MDBListGroupItem className="d-flex justify-content-between align-items-center p-3">
-                    <div>
-                      <MDBCardText>Server Crash</MDBCardText>
-                      <MDBCardText small className="text-muted">
-                        When a server fails, the first two questions you need to
-                        ask yourself
-                      </MDBCardText>
-                    </div>
-                  </MDBListGroupItem>
-                  <MDBListGroupItem className="d-flex justify-content-between align-items-center p-3">
-                    <div>
-                      <MDBCardText>Printer Configuration</MDBCardText>
-                      <MDBCardText small className="text-muted">
-                        In most cases, setting up and configuring a printer in
-                        Windows 7 or 8
-                      </MDBCardText>
-                    </div>
-                  </MDBListGroupItem>
-                  <MDBListGroupItem className="d-flex justify-content-between align-items-center p-3">
-                    <div>
-                      <MDBCardText>Steps to prevent system Updates</MDBCardText>
-                      <MDBCardText small className="text-muted">
-                        Option 1, Disable the Windows Updates ServiceWindows
-                        Update essential
-                      </MDBCardText>
-                    </div>
-                  </MDBListGroupItem>
-                </MDBListGroup>
               </MDBCol>
             </div>
           </MDBCard>
         </MDBCol>
-        <MDBCol md="6">
+        <MDBCol md="5">
           <MDBCard className="mt-8 mb-md-0">
             <div className="d-flex align-items-center">
               <MDBCol md="12" style={{ backgroundColor: "#C0C0C0" }}>
@@ -220,7 +218,6 @@ const Main = () => {
                     fontSize: "20px",
                     color: "#333",
                   }}
-                  onClick={handleOpenListTicket}
                 >
                   <AnnouncementSharp
                     style={{
@@ -264,7 +261,7 @@ const Main = () => {
             </div>
           </MDBCard>
         </MDBCol>
-        <MDBCol md="3">
+        <MDBCol md="2">
           <MDBCard className="mt-8 mb-md-0">
             <div className="d-flex align-items-center">
               <MDBCol md="12" style={{ backgroundColor: "#C0C0C0" }}>
@@ -311,16 +308,25 @@ const Main = () => {
         </MDBCol>
       </MDBRow>
 
-      <Dialog maxWidth="lg" fullWidth open={dialogOpen} onClose={handleCloseRequestTicket}>
-      <section style={{ backgroundColor: "#eee" }}>
-        <MDBContainer className="py-5">
-        <RequestIssues onClose={handleCloseRequestTicket} />
-        </MDBContainer>
-      </section>
-      </Dialog>
-
-      <Dialog maxWidth="lg" fullWidth open={dialogListOpen} onClose={handleCloseListTicket}>
-        <IssueList />       
+      <Dialog
+        maxWidth="lg"
+        fullWidth
+        open={dialogOpen}
+        onClose={handleCloseRequestTicket}
+      >
+        <section style={{ backgroundColor: "#C0C0C0" }}>
+          <MDBContainer className="py-5">
+          <MDBRow className="mb-4 custom-padding">
+            <MDBCol className="text-left-corner d-flex align-items-center">
+              <button className="btn btn-light">
+                <FaArrowLeft style={{ fontSize: 20 }}/>
+              </button>
+              <h2 className="ms-3" style={{ fontFamily: 'Arial, sans-serif' }}>Add Request</h2>
+            </MDBCol>
+          </MDBRow>
+            <RequestIssues onClose={handleCloseRequestTicket} />
+          </MDBContainer>
+        </section>
       </Dialog>
     </section>
   );

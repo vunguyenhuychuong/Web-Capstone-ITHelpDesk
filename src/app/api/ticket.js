@@ -33,6 +33,30 @@ export async function getAllTicket(
   }
 }
 
+//Get Ticket User By Id Pagination
+export async function getTicketByUserIdPagination(searchField, searchQuery, page = 1, pageSize = 5, sortBy = "id", sortDirection = "asc", id) {
+  const header = getAuthHeader();
+  try {
+    const filter = `${searchField}.contains("${searchQuery}")`;
+    const params = {
+      filter: filter,
+      page: page,
+      pageSize: pageSize,
+      sort: `${sortBy} ${sortDirection}`,
+    }
+    const res = await axios.get(`${baseURL}/ticket/user/${id}`, {
+      headers: {
+        Authorization: header,
+      },
+      params: params,
+    });
+    return res.data.result;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+};
+
 //Get Ticket User By Id
 export async function getTicketByUserId(id) {
   const header = getAuthHeader();
@@ -47,7 +71,7 @@ export async function getTicketByUserId(id) {
     console.log(error);
     return [];
   }
-}
+};
 
 // Get Ticket Team By TeamId
 export async function getTicketByTeamId(id) {
@@ -95,7 +119,22 @@ export async function createTicketByCustomer(data) {
     console.log(error);
     return [];
   }
-}
+};
+
+//Edit Ticket By Customer
+export async function editTicketByCustomer(ticketId, data) {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.put(`${baseURL}/ticket/customer/${ticketId}`, JSON.stringify(data),{
+      headers: {
+        Authorization: header,
+      },
+    })
+    return res.data;
+  }catch(error){
+    console.log(error);
+  }
+};
 
 //Create Ticket By Manager
 export async function createTicketByManager(data) {
@@ -152,4 +191,6 @@ export async function editTicketByManager(ticketId, data) {
     console.log("Error editing ticket:", error);
     throw error;
   }
-}
+};
+
+

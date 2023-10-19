@@ -104,3 +104,25 @@
   width: 100%;
   margin-left: 8px;
 }
+
+.my-request-summary .card-text {
+  padding-left: 20px; /* Adjust the padding value according to your preference */
+  padding-top: 20px;
+}
+
+.my-request-summary .btn-primary {
+  font-weight: bold;
+  font-size: 16px;
+  color: white;
+  background-color: #999999; /* Primary color */
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+.my-request-summary .btn-primary:hover {
+  background-color: #3399CC; /* Darker shade of primary color on hover */
+}
+
+

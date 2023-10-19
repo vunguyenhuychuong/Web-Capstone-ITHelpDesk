@@ -111,7 +111,7 @@ export async function DeleteDataUser(id) {
   }catch(error) {
     console.log(error);
   }
-}
+};
 
 //Update profile User
 export async function UpdateProfileUser() {

@@ -17,7 +17,6 @@ import { useSelector } from "react-redux";
   const Menu = () => {
 
     const user = useSelector((state) => state.auth);
-    console.log(user);
     return (
       <section style={{ backgroundColor: "#eee" }}>
         <MDBContainer className="py-5">
