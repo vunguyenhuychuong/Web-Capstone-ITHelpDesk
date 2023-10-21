@@ -91,12 +91,12 @@ export const getRoleName = (role) => {
 };
 
 export const TicketStatusOptions = [
-  {id: 0, name: "Open"},
-  {id: 1, name: "Assigned"},
-  {id: 2, name: "In Progress"},
-  {id: 3, name: "On Hold"},
-  {id: 4, name: "Closed"},
-  {id: 5, name: "Cancelled"},
+  {id: 0, name: "Open", colorClass: "bg-primary"},
+  {id: 1, name: "Assigned", colorClass: "bg-info"},
+  {id: 2, name: "In Progress", colorClass: "bg-info"},
+  {id: 3, name: "On Hold", colorClass: "bg-warning"},
+  {id: 4, name: "Closed", colorClass: "bg-danger"},
+  {id: 5, name: "Cancelled", colorClass: "bg-dark"},
 ];
 
 export const UrgencyOptions = [

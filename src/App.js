@@ -16,6 +16,7 @@ import AccessibleTabs1 from './pages/dashboard/Customer/CustomerTabs';
 import Menu from './pages/dashboard/Customer/Menu';
 import Main from './pages/dashboard/Customer/Home';
 import IssueList from './pages/dashboard/Customer/IssueList';
+import DetailTicket from './pages/dashboard/Manager/DetailTicket';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -33,6 +34,7 @@ function App() {
             <SharedLayout />  
           }
         >
+          <Route index element={<AccessibleTabs1 />} />
           {(hasAdminRole) && <Route path='team' element={<Team />} />}
           <Route path='ticket' element={<Tickets />} />
           {(hasCustomerRole || hasAdminRole) && <Route path='profile' element={<Profile />} />} 
@@ -41,6 +43,7 @@ function App() {
           <Route path='main' element={<AccessibleTabs1 />} />
           <Route path='menu' element={<Menu />} />
           <Route path='customerTicket' element={<IssueList />} />
+          <Route path='detailTicket/:ticketId' element={<DetailTicket />} />
           {(hasManagerRole) && <Route path='listTicket' element={<ManagersTabs />} />}
           </Route>
         <Route path='login' element={<Login />} />

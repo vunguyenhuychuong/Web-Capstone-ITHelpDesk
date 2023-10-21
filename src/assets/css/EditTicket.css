@@ -1,0 +1,139 @@
+.edit-ticket-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px; /* Add padding as needed */
+  }
+  
+  .left-box {
+    flex: 1;
+    background-color: #f0f0f0; /* Example background color */
+    padding: 0 10px 0px 10px; /* Add padding as needed */
+  }
+  
+  .middle-box {
+    flex: 2;
+    background-color: #ffffff; /* Example background color */
+    padding: 20px; /* Add padding as needed */
+  }
+  
+  .right-box {
+    flex: 1;
+    background-color: #f0f0f0; /* Example background color */
+  }
+
+  .description-label {
+    float: left;
+    width: 100%;
+    margin-bottom: 10px; /* Adjust margin as needed */
+    font-size: 20px;
+    border: 0.8px solid #ccc;
+    padding: 5px;
+    font-weight: bold;
+  }
+
+  .grey-background {
+    background-color: #eeeeee; /* Grey background color */
+    color: #333333; /* Text color */
+    border: 1px solid #cccccc; /* Border color */
+    border-radius: 5px; /* Optional: Add border-radius for rounded corners */
+    padding: 10px; /* Optional: Add padding as needed */
+  }
+
+  .icon-label {
+    float: left;
+    width: 100%;
+    margin-bottom: 10px; /* Adjust margin as needed */
+    font-size: 20px;
+    border: 0.8px solid #aca5a5;
+    padding: 5px 10px;
+    font-weight: bold;
+    width: fit-content;
+    background-color: #CCCCCC;
+  }
+
+
+
+.edit-label,
+.custom-select {
+    float: left;
+    width: fit-content;
+    margin-bottom: 10px;
+    font-size: 20px;
+    border: 0.8px solid #aca5a5;
+    padding: 5px 10px;
+    height: 40px;
+    font-weight: bold;
+    background-color: #CCCCCC;
+    line-height: 34px; /* Set the line-height to match the height of the elements */
+}
+
+.custom-select {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+  
+  .narrow-input {
+    margin-right: 1px; /* Add some space between label and text */
+  }
+
+  .status-container {
+    display: flex;
+    margin-bottom: 10px;
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .status-badge {
+    width: 20px; /* Adjust the width of the square as needed */
+    height: 20px; /* Adjust the height of the square as needed */
+    margin-right: 10px; /* Adjust the spacing between the square and text as needed */
+    border-radius: 3px; /* Adjust border-radius for a rounded square */
+  }
+
+  .bold-text {
+    font-weight: bold;
+}
+
+.border-box {
+    border: 1px solid #cccccc; /* Border color and width */
+    border-radius: 1px; /* Optional: Add border-radius for rounded corners */
+    background-color:#DDDDDD ;
+}
+
+.heading-padding {
+    padding-top: 7px; /* Adjust the top padding as needed */
+    padding-bottom: 7px; /* Adjust the bottom padding as needed */
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.gray-background {
+  background-color: #C0C0C0 !important; /* or any other shade of gray you prefer */
+  text-align: right;
+  font-size: 18px;
+}
+
+.align-left {
+  text-align: left;
+  font-size: 18px;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.img-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+}
+
+.icon-container {
+  padding-left: 10px; /* Adjust the padding value as needed */
+}
+

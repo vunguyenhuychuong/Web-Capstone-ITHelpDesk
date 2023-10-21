@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { MDBBtn, MDBCol, MDBContainer, MDBRow } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
+import "../../../assets/css/EditTicket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "draft-js/dist/Draft.css";
 import {
@@ -14,11 +15,19 @@ import { getAllServices } from "../../../app/api/service";
 import ModeApi from "../../../app/api/mode";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import axios from "axios";
-import { baseURL, editTicketByManager } from "../../../app/api/ticket";
+import {
+  baseURL,
+  editTicketByManager,
+  getTicketByTicketId,
+} from "../../../app/api/ticket";
 import { getAuthHeader } from "../../../app/api/auth";
 import { toast } from "react-toastify";
+import { FaTicketAlt } from "react-icons/fa";
+import { ArrowBack, ChatOutlined } from "@mui/icons-material";
+import { useParams } from "react-router-dom";
 
-const EditTicket = ({ onClose , selectedTicketData  }) => {
+const EditTicket = () => {
+  const { ticketId } = useParams();
   const [data, setData] = useState({
     requesterId: 0,
     title: "",
@@ -32,6 +41,8 @@ const EditTicket = ({ onClose , selectedTicketData  }) => {
     urgency: 0,
     categoryId: 1,
     attachmentUrl: "",
+    scheduledStartTime: "",
+    scheduledEndTime: "",
   });
 
   const [dataCategories, setDataCategories] = useState([]);
@@ -55,35 +66,48 @@ const EditTicket = ({ onClose , selectedTicketData  }) => {
   };
 
   useEffect(() => {
-    if(selectedTicketData) {
-      setData((prevData) => ({
-        ...prevData,
-        requesterId: selectedTicketData.requesterId,
-        title: selectedTicketData.title,
-        description: selectedTicketData.description,
-        categoryId: selectedTicketData.categoryId,
-        priority: selectedTicketData.priority,
-        impactDetail: selectedTicketData.impactDetail,
-        ticketStatus: selectedTicketData.ticketStatus,
-      }))
-    }
+    const fetchTicketData = async () => {
+      try {
+        const ticketData = await getTicketByTicketId(ticketId);
+        setData((prevData) => ({
+          ...prevData,
+          requesterId: ticketData.requesterId,
+          title: ticketData.title,
+          description: ticketData.description,
+          categoryId: ticketData.categoryId,
+          priority: ticketData.priority,
+          impactDetail: ticketData.impactDetail,
+          ticketStatus: ticketData.ticketStatus,
+          scheduledStartTime: ticketData.scheduledStartTime,
+          scheduledEndTime: ticketData.scheduledEndTime,
+        }));
+      } catch (error) {
+        console.error("Error fetching ticket data: ", error);
+      }
+    };
+    fetchTicketData();
     fetchDataManager();
-    
-  }, [selectedTicketData]);
+  }, [ticketId]);
 
-const handleInputChange = (e) => {
-  const { name, value } = e.target;
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
 
-  if (name === "categoryId" || name === "modeId" || name === "serviceId") {
-    const selectedValue = parseInt(value, 10);
-    setData((prevData) => ({ ...prevData, [name]: selectedValue }));
-  } else if (name === "priority" || name === "requesterId" || name === "impact" || name === "ticketStatus" || name === "urgency") {
-    const numericValue = parseInt(value, 10);
-    setData((prevData) => ({ ...prevData, [name]: numericValue }));
-  } else {
-    setData((prevData) => ({ ...prevData, [name]: value }));
-  }
-};
+    if (name === "categoryId" || name === "modeId" || name === "serviceId") {
+      const selectedValue = parseInt(value, 10);
+      setData((prevData) => ({ ...prevData, [name]: selectedValue }));
+    } else if (
+      name === "priority" ||
+      name === "requesterId" ||
+      name === "impact" ||
+      name === "ticketStatus" ||
+      name === "urgency"
+    ) {
+      const numericValue = parseInt(value, 10);
+      setData((prevData) => ({ ...prevData, [name]: numericValue }));
+    } else {
+      setData((prevData) => ({ ...prevData, [name]: value }));
+    }
+  };
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -91,11 +115,11 @@ const handleInputChange = (e) => {
   };
 
   const onHandleEditTicket = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
     setIsSubmitting(true);
     try {
       const response = await axios.put(
-        `https://localhost:7043/v1/itsds/ticket/manager/${selectedTicketData.id}`,
+        `https://localhost:7043/v1/itsds/ticket/manager/${ticketId.id}`,
         data,
         {
           headers: {
@@ -103,23 +127,87 @@ const handleInputChange = (e) => {
           },
         }
       );
-      toast.success('Ticket updated successfully');  
-      onClose();
-    }finally{
+      toast.success("Ticket updated successfully");
+    } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <section style={{ backgroundColor: "#eee" }}>
-      <MDBContainer className="py-5">
+    <section
+      style={{ backgroundColor: "#DDDDDD" }}
+      className="edit-ticket-container"
+    >
+      <div className="left-box">{/* Content for the left box */}</div>
+      <MDBContainer>
+        <MDBCol md="12" className="text-start mt-2">
+          <MDBRow>
+            <MDBCol md="1" className="mt-2">
+              <div className="d-flex align-items-center">
+                <button type="button" className="btn btn-link icon-label">
+                  <ArrowBack />
+                </button>
+              </div>
+            </MDBCol>
+            <MDBCol md="1" className="mt-2">
+              <div className="d-flex align-items-center">
+                <button
+                  type="button"
+                  className="btn btn-link narrow-input icon-label"
+                >
+                  Edit
+                </button>
+                <select className="btn btn-link narrow-input custom-select">
+                  <option value="1">Assign</option>
+                  <option value="2">Not Assign</option>
+                  <option value="3">On Hold</option>
+                </select>
+              </div>
+            </MDBCol>
+          </MDBRow>
+        </MDBCol>
         <MDBRow className="mb-4">
-          <MDBCol className="text-center">
-            <h2>Edit Ticket</h2>
+          <MDBCol
+            md="6"
+            className="mt-2"
+            style={{ display: "flex", alignItems: "center" }}
+          >
+            <div className="circular-container" style={{ marginRight: "10px" }}>
+              <FaTicketAlt size="2em" color="#007bff" />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <span style={{ marginBottom: "5px" }}>
+                #{data.requesterId} Name User
+              </span>
+              <span style={{ fontSize: "0.8em" }}>
+                by Guest <ChatOutlined color="#007bff" /> on
+                {data.scheduledStartTime} | DueBy: {data.scheduledEndTime}
+              </span>
+            </div>
           </MDBCol>
         </MDBRow>
         <form onSubmit={(e) => e.preventDefault()}>
-          <MDBRow className="mb-4"></MDBRow>
+          <MDBRow className="mb-4">
+            <MDBCol md="12" className="text-start mt-2">
+              <label
+                htmlFor="form3Example2"
+                className="narrow-input description-label"
+              >
+                Description
+              </label>
+            </MDBCol>
+            <MDBCol md="12">
+              <textarea
+                type="text"
+                id="description"
+                name="description"
+                className="form-control"
+                value={data.description}
+                rows="4"
+                onChange={handleInputChange}
+              />
+            </MDBCol>
+          </MDBRow>
           <MDBRow className="mb-4">
             <MDBCol md="2" className="text-center mt-2">
               <label htmlFor="requesterId" className="narrow-input">
@@ -135,6 +223,7 @@ const handleInputChange = (e) => {
                 className="form-control"
                 value={data.requesterId}
                 onChange={handleInputChange}
+                disabled
               />
             </MDBCol>
             <MDBCol md="2" className="text-center mt-2">
@@ -290,9 +379,11 @@ const handleInputChange = (e) => {
                 className="form-select"
                 onChange={handleInputChange}
               >
-                <option value="">Select Priority</option>
                 {priorityOption.map((priorityItem) => (
-                  <option key={priorityItem.id} value={parseInt(priorityItem.id, 10)}>
+                  <option
+                    key={priorityItem.id}
+                    value={parseInt(priorityItem.id, 10)}
+                  >
                     {priorityItem.name}
                   </option>
                 ))}
@@ -338,24 +429,6 @@ const handleInputChange = (e) => {
             </MDBCol>
           </MDBRow>
           <MDBRow className="mb-4">
-            <MDBCol md="2" className="text-center mt-2">
-              <label htmlFor="form3Example2" className="narrow-input">
-                Description
-              </label>
-            </MDBCol>
-            <MDBCol md="10">
-              <textarea
-                type="text"
-                id="description"
-                name="description"
-                className="form-control"
-                value={data.description}
-                rows="4"
-                onChange={handleInputChange}
-              />
-            </MDBCol>
-          </MDBRow>
-          <MDBRow className="mb-4">
             <MDBCol md="2"></MDBCol>
             <MDBCol md="10" className="text-end">
               <MDBBtn
@@ -366,13 +439,14 @@ const handleInputChange = (e) => {
               >
                 Edit
               </MDBBtn>
-              <MDBBtn color="danger" className="ms-2" onClick={onClose}>
+              <MDBBtn color="danger" className="ms-2">
                 Cancel
               </MDBBtn>
             </MDBCol>
           </MDBRow>
         </form>
       </MDBContainer>
+      <div className="right-box">{/* Content for the right box */}</div>
     </section>
   );
 };

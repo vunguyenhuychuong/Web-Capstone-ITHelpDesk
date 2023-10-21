@@ -36,6 +36,7 @@ export async function getAllTeams() {
                 Authorization: header,
             },
         });
+        console.log(res);
         return res.data.result;
     }catch(error) {
         console.log(error);

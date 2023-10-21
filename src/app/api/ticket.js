@@ -13,7 +13,7 @@ export async function getAllTicket(
 ) {
   const header = getAuthHeader();
   try {
-    const filter = `${searchField}.contains("${searchQuery}")`;
+    let filter = `${searchField}.contains("${searchQuery}")`;
     const params = {
       filter: filter,
       page: page,
@@ -31,7 +31,7 @@ export async function getAllTicket(
     console.log(error);
     return [];
   }
-}
+};
 
 //Get Ticket User By Id Pagination
 export async function getTicketByUserIdPagination(searchField, searchQuery, page = 1, pageSize = 5, sortBy = "id", sortDirection = "asc", id) {
@@ -98,6 +98,7 @@ export async function getTicketByTicketId(id) {
         Authorization: header,
       },
     });
+    console.log(res);
     return res.data.result;
   } catch (error) {
     console.log(error);

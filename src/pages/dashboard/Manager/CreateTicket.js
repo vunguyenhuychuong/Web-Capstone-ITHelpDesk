@@ -111,7 +111,6 @@ const handleInputChange = (e) => {
         categoryId: data.categoryId,
         attachmentUrl: attachmentUrl,
       });
-      console.log(result);
       toast.success("Ticket created successfully");
       onClose();
       fetchDataManager();
@@ -135,7 +134,7 @@ const handleInputChange = (e) => {
           <MDBRow className="mb-4">
             <MDBCol md="2" className="text-center mt-2">
               <label htmlFor="requesterId" className="narrow-input">
-                Requester Id
+              <span style={{ color: "red" }}>*</span>Requester Id
               </label>
             </MDBCol>
             <MDBCol md="3">
@@ -151,7 +150,7 @@ const handleInputChange = (e) => {
             </MDBCol>
             <MDBCol md="2" className="text-center mt-2">
               <label htmlFor="title" className="narrow-input">
-                Title
+              <span style={{ color: "red" }}>*</span>Title
               </label>
             </MDBCol>
             <MDBCol md="5">
@@ -168,7 +167,7 @@ const handleInputChange = (e) => {
           <MDBRow className="mb-4">
             <MDBCol md="2" className="text-center mt-2">
               <label htmlFor="requestId" className="narrow-input">
-                Mode Id
+              <span style={{ color: "red" }}>*</span>Mode Id
               </label>
             </MDBCol>
             <MDBCol md="3">
@@ -190,7 +189,7 @@ const handleInputChange = (e) => {
             </MDBCol>
             <MDBCol md="2" className="text-center mt-2">
               <label htmlFor="title" className="narrow-input">
-                Service
+              <span style={{ color: "red" }}>*</span>Service
               </label>
             </MDBCol>
             <MDBCol md="5">
@@ -228,7 +227,7 @@ const handleInputChange = (e) => {
             </MDBCol>
             <MDBCol md="2" className="text-center mt-2">
               <label htmlFor="title" className="narrow-input">
-                Ticket Status
+              <span style={{ color: "red" }}>*</span>Ticket Status
               </label>
             </MDBCol>
             <MDBCol md="5">
@@ -250,7 +249,7 @@ const handleInputChange = (e) => {
           <MDBRow className="mb-4">
             <MDBCol md="2" className="text-center mt-2">
               <label htmlFor="requestId" className="narrow-input">
-                Impact
+              <span style={{ color: "red" }}>*</span>Impact
               </label>
             </MDBCol>
             <MDBCol md="3">
@@ -270,7 +269,7 @@ const handleInputChange = (e) => {
             </MDBCol>
             <MDBCol md="2" className="text-center mt-2">
               <label htmlFor="title" className="narrow-input">
-                Urgency
+              <span style={{ color: "red" }}>*</span>Urgency
               </label>
             </MDBCol>
             <MDBCol md="5">
@@ -302,7 +301,6 @@ const handleInputChange = (e) => {
                 className="form-select"
                 onChange={handleInputChange}
               >
-                <option value="">Select Priority</option>
                 {priorityOption.map((priorityItem) => (
                   <option key={priorityItem.id} value={parseInt(priorityItem.id, 10)}>
                     {priorityItem.name}
@@ -312,7 +310,7 @@ const handleInputChange = (e) => {
             </MDBCol>
             <MDBCol md="2" className="text-center mt-2">
               <label htmlFor="title" className="narrow-input">
-                Category
+              <span style={{ color: "red" }}>*</span>Category
               </label>
             </MDBCol>
             <MDBCol md="5">
@@ -374,7 +372,7 @@ const handleInputChange = (e) => {
                 small="true"
                 color="primary"
                 type="submit"
-                onClick={handleSubmitTicket}
+                disabled={isSubmitting}
               >
                 {isSubmitting ? "Submitting..." : "Submit"}
               </MDBBtn>

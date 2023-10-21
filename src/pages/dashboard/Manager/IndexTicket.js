@@ -25,7 +25,7 @@ import {
 } from "@mui/material";
 import { toast } from "react-toastify";
 import LoadingSkeleton from "../../../components/iconify/LoadingSkeleton";
-import EditTicket from "./EditTicket";
+import { useNavigate } from "react-router-dom";
 
 const IndexTicket = () => {
   const [dataTickets, setDataTickets] = useState([]);
@@ -43,6 +43,7 @@ const IndexTicket = () => {
   const [selectedTickets, setSelectedTickets] = useState([]);
   const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [selectedTicketData, setSelectedTicketData] = useState(null);
+  const navigate = useNavigate();
 
   const fetchAllTicket = useCallback(async () => {
     try {
@@ -74,7 +75,6 @@ const IndexTicket = () => {
       console.log("Error while fetching data", error);
     }
   };
-
   const handleSelectTicket = (ticketId) => {
     if (selectedTickets.includes(ticketId)) {
       setSelectedTickets(selectedTickets.filter((id) => id !== ticketId));
@@ -144,12 +144,13 @@ const IndexTicket = () => {
     setDialogOpen(true);
   };
 
-  const handleOpenEditTicket = (e, ticketId) => {
-    e.preventDefault();
+  const handleOpenEditTicket = (ticketId) => {
     setSelectedTicketId(ticketId);
     const ticketData = dataTickets.find((ticket) => ticket.id === ticketId);
     setSelectedTicketData(ticketData);
-    setDialogEdit(true);
+    console.log(ticketData);
+    navigate(`/home/detailTicket/${ticketId}`);
+    //setDialogEdit(true);
   };
 
   const handleCloseRequestTicket = (e) => {
@@ -215,6 +216,7 @@ const IndexTicket = () => {
                   <MenuItem value="description">Description</MenuItem>
                   <MenuItem value="priority">Priority</MenuItem>
                   <MenuItem value="impact">Impact</MenuItem>
+                  <MenuItem value="ticketStatus">ticketStatus</MenuItem>
                 </Select>
               </FormControl>
               <div className="input-wrapper">
@@ -376,7 +378,7 @@ const IndexTicket = () => {
                       />
                     </td>
                     <td>
-                      <Edit onClick={(e) => handleOpenEditTicket(e, ticket.id)} />
+                      <Edit onClick={() => handleOpenEditTicket(ticket.id)} />
                     </td>
                     <td>{ticket.requesterId}</td>
                     <td>{ticket.title}</td>
@@ -443,15 +445,17 @@ const IndexTicket = () => {
         <CreateTicket onClose={handleCloseRequestTicket} />
       </Dialog>
 
-      <Dialog
+      {/* <Dialog
         maxWidth="lg"
         fullWidth
         open={dialogEdit}
         onClose={handleCloseEditTicket}
       >
+        
         <EditTicket selectedTicketData={selectedTicketData}  onClose={handleCloseEditTicket} />
-      </Dialog>
+      </Dialog> */}
     </section>
+    
   );
 };
 

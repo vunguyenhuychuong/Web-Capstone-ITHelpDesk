@@ -15,6 +15,7 @@ const links = [
   { id: 9, text: 'categories', path: 'categories', icon: <Category />},
   { id: 10, text: 'listTicket', path: 'listTicket', icon: <FaTicketAlt />},
   { id: 11, text: 'customerTicket', path: 'customerTicket', icon: <FaTicketAlt />},
+  { id: 12, text: 'detailTicket', path: 'detailTicket', icon: <FaTicketAlt />}
 ];
 
 export default links;
