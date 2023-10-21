@@ -9,7 +9,6 @@ import {
 import ForgetPassword from './pages/ForgetPassword';
 import Customer from './pages/dashboard/Customer';
 import { useSelector } from 'react-redux';
-import Tickets from './pages/dashboard/Ticket';
 import Team from './pages/dashboard/Team';
 import ManagersTabs from './pages/dashboard/Manager/ManagerTabs';
 import AccessibleTabs1 from './pages/dashboard/Customer/CustomerTabs';
@@ -36,8 +35,7 @@ function App() {
         >
           <Route index element={<AccessibleTabs1 />} />
           {(hasAdminRole) && <Route path='team' element={<Team />} />}
-          <Route path='ticket' element={<Tickets />} />
-          {(hasCustomerRole || hasAdminRole) && <Route path='profile' element={<Profile />} />} 
+          {(hasCustomerRole || hasAdminRole || hasManagerRole) && <Route path='profile' element={<Profile />} />} 
           {hasAdminRole && <Route path='customer' element={<Customer />} />}
           {(hasCustomerRole) && <Route path='mains' element={<Main />} />} 
           <Route path='main' element={<AccessibleTabs1 />} />

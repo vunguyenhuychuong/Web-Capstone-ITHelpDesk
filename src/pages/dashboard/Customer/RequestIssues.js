@@ -65,6 +65,10 @@ const RequestIssues = ({ onClose, fetchDataTicketByUserId }) => {
   const handleSubmitTicket = async (e) => {
     e.preventDefault();
 
+    if(!data.title){
+      toast.warning("Title is required");
+      return;
+    }
     setIsSubmitting(true);
     try {
         const result = await createTicketByCustomer({
@@ -74,11 +78,14 @@ const RequestIssues = ({ onClose, fetchDataTicketByUserId }) => {
         categoryId: data.categoryId,
         attachmentUrl: data.attachmentUrl,
       });
-      toast.success("Ticket created successfully");
-      fetchDataTicketByUserId();
-      onClose();
+      if(result === "Create Successfully") {
+        toast.success("Ticket created successfully");
+        fetchDataTicketByUserId();
+        onClose();
+      }else{
+        toast.error("Error occurred while creating the ticket" , result);
+      }
     } catch (error) {
-      toast.error("Error");
       console.log("Please check data input", error);
     } finally {
       setIsSubmitting(false);
@@ -87,7 +94,7 @@ const RequestIssues = ({ onClose, fetchDataTicketByUserId }) => {
 
   return (
     <section style={{ backgroundColor: "#eee" }}>
-      <MDBContainer className="py-5">
+      <MDBContainer  style={{ width: "100%" }}>
         <form method="post" onSubmit={handleSubmitTicket}>
           <MDBRow className="mb-4">
             <MDBCol md="2" className="text-center mt-2">

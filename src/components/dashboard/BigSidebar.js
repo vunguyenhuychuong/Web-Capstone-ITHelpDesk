@@ -1,5 +1,5 @@
 import NavLinks from './NavLinks';
-//import Logo from '../components/Logo';
+import '../../assets/css/Logo.css'
 import Wrapper from '../../assets/wrappers/BigSidebar';
 import Logo from './Logo';
 
@@ -7,21 +7,16 @@ const BigSidebar = () => {
   return (
     <Wrapper>
       <div
-        // className={
-        //   isSidebarOpen
-        //     ? 'sidebar-container '
-        //     : 'sidebar-container show-sidebar'
-        // }
         className={
           'sidebar-container show-sidebar'
         }
       >
         <div className='content'>
           <header>
-             {/* <Logo /> */}
+             <Logo />
           </header>
-          <NavLinks />
         </div>
+        <NavLinks />
       </div>
     </Wrapper>
   );

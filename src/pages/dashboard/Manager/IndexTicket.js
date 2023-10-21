@@ -32,7 +32,6 @@ const IndexTicket = () => {
   const [dataCategories, setDataCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogEdit, setDialogEdit] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
@@ -150,7 +149,6 @@ const IndexTicket = () => {
     setSelectedTicketData(ticketData);
     console.log(ticketData);
     navigate(`/home/detailTicket/${ticketId}`);
-    //setDialogEdit(true);
   };
 
   const handleCloseRequestTicket = (e) => {
@@ -158,9 +156,7 @@ const IndexTicket = () => {
     setDialogOpen(false);
   };
 
-  const handleCloseEditTicket = (e) => {
-    setDialogEdit(false);
-  };
+
 
   const getCategoryNameById = (categoryId) => {
     const category = dataCategories.find((cat) => cat.id === categoryId);

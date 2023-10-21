@@ -314,8 +314,6 @@ const Main = () => {
         open={dialogOpen}
         onClose={handleCloseRequestTicket}
       >
-        <section style={{ backgroundColor: "#C0C0C0" }}>
-          <MDBContainer className="py-5">
           <MDBRow className="mb-4 custom-padding">
             <MDBCol className="text-left-corner d-flex align-items-center">
               <button className="btn btn-light">
@@ -325,8 +323,6 @@ const Main = () => {
             </MDBCol>
           </MDBRow>
             <RequestIssues onClose={handleCloseRequestTicket} />
-          </MDBContainer>
-        </section>
       </Dialog>
     </section>
   );

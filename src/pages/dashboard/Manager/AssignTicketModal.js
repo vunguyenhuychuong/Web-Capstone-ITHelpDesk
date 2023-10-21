@@ -36,6 +36,7 @@ const AssignTicketModal = ({ open, onClose, ticketId }) => {
       };
 
       const res = await createAssignTicket(ticketId, data);
+      console.log(res);
       toast.success(`Assigned Ticket${ticketId} successful`);
     }catch(error){
       console.log("Error while assigning ticket", error);

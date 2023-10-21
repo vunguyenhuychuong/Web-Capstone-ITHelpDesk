@@ -30,23 +30,45 @@ function Login() {
     try {
       dispatch(clearError()); 
       const userDataResponse = await LoginUser(data);
+      console.log(userDataResponse);
       if (userDataResponse && userDataResponse.isError === false && userDataResponse.result !== null) {
+        const { role, firstName, lastName } = userDataResponse.result;
         dispatch(setUser(userDataResponse.result));
-        if(userDataResponse.result.role === 0) {
-          navigate("/home/customer");        
-          toast.success("Login Success");
-        }
-        if(userDataResponse.result.role === 1) {
-          navigate("/home/menu");
-          toast.success("Login Success");
-        }
-        if(userDataResponse.result.role === 2) {
-          navigate("/home/listTicket");
-          toast.success("Login Success");
+        switch (role) {
+          case 0:
+            navigate("/home/customer");
+            toast.success(`Welcome Admin: ${lastName} ${firstName}`,{
+              autoClose: 1000,
+              hideProgressBar: false,
+            });
+            break;
+          case 1:
+            navigate("/home/menu");
+            toast.success(`Welcome User: ${lastName} ${firstName}`,{
+              autoClose: 1000,
+              hideProgressBar: false,
+            });
+            break;
+          case 2:
+            navigate("/home/listTicket");
+            toast.success(`Welcome Manager: ${lastName} ${firstName}`,{
+              autoClose: 1000,
+              hideProgressBar: false,
+            });
+            break;
+          default:
+            navigate("/login");
+            toast.error("Login Fail",{
+              autoClose: 1000,
+              hideProgressBar: false,
+            });
         }
       } else {
         navigate("/login");
-        toast.error("Login Fail");
+        toast.error("Login Fail",{
+          autoClose: 1000,
+          hideProgressBar: false,
+        });
       }
     } catch (error) {
       dispatch(setError(error.message || 'An error occurred during login.'));

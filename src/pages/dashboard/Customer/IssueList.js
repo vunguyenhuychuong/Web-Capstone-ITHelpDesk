@@ -32,6 +32,7 @@ const IssueList = () => {
   const fetchDataListTicket = async (userId) => {
     try {
       const response = await getTicketByUserId(userId);
+      console.log(response);
       setDataListTickets(response);
     } catch (error) {
       console.log(error);

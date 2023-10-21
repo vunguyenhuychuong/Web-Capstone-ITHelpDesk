@@ -78,6 +78,10 @@ const Wrapper = styled.nav`
     display: none;
     margin: 0;
   }
+  .icons-wrapper {
+    display: flex;
+    gap: 0.5rem; /* Adjust the gap between the icons if needed */
+  }
   @media (min-width: 992px) {
     position: sticky;
     top: 0;

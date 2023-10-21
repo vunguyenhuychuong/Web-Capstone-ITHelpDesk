@@ -4,6 +4,7 @@ import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import IndexTicket from './IndexTicket';
 import LoadingSkeleton from '../../../components/iconify/LoadingSkeleton';
+import AssignTicketList from './AssignTicketList';
 
 export default function ManagersTabs() {
   const [value, setValue] = React.useState(0);
@@ -12,7 +13,7 @@ export default function ManagersTabs() {
   };
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: '100%', backgroundColor: "#EEEEEE" }}>
       <Tabs
         onChange={handleTabChange}
         value={value}
@@ -25,6 +26,9 @@ export default function ManagersTabs() {
       </Tabs>
       <Box role="tabpanel" hidden={value !== 0}>
         {value === 0 ? <IndexTicket /> : <LoadingSkeleton /> } 
+      </Box>
+      <Box role="tabpanel" hidden={value !== 1}>
+        {value === 1 ? <AssignTicketList /> : null} {/* Render AssignTicketList component */}
       </Box>
     </Box>
   );
