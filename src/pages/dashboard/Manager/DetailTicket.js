@@ -341,7 +341,7 @@ const DetailTicket = () => {
         <MDBRow className="border-box">
           <MDBCol md="12">
             <div className="d-flex">
-              <h2 className="heading-padding">More Properties</h2>
+              <h2 className="heading-padding">More</h2>
             </div>
           </MDBCol>
         </MDBRow>
@@ -349,7 +349,7 @@ const DetailTicket = () => {
           <MDBRow className="mb-4">
             <MDBCol md="12" className="mt-2 text-box">
               <div className="status-container">
-                <label>Status : </label>
+                <label>Status</label>
                 <div
                   className={`status-badge ${
                     TicketStatusOptions[data.ticketStatus]?.colorClass ||
@@ -364,31 +364,32 @@ const DetailTicket = () => {
           <MDBRow className="mb-4">
             <MDBCol md="12" className="text-box">
               <label htmlFor="title" className="narrow-input">
-                Priority :{" "}
+                Priority: 
+                <div>
                 {priorityOption.find(
                   (priority) => priority.id === data.priority
                 )?.name || "Unknown Priority"}
+                </div>
               </label>
             </MDBCol>
           </MDBRow>
           <MDBRow className="mb-4">
-            <MDBCol md="12" className="mt-2">
+            {/* <MDBCol md="12" className="mt-2">
               <label htmlFor="title" className="narrow-input">
                 Category :
                 {dataCategories.find(
                   (category) => category.id === data.categoryId
                 )?.name || "Unknown Category"}
               </label>
-            </MDBCol>
+            </MDBCol> */}
           </MDBRow>
         </MDBRow>
         <MDBRow className="mb-4">
           <MDBCol md="12" className=" mt-2">
             <label className="narrow-input description-label">
-              Share :{" "}
               <FaPlus
                 style={{ color: "#3399FF", marginLeft: 10, marginBottom: 5 }}
-              />{" "}
+              />
               Share Request
             </label>
           </MDBCol>

@@ -3,20 +3,6 @@ import { getAuthHeader } from "./auth";
 import axiosClient from "./axiosClient";
 export const baseURL = "https://localhost:7043/v1/itsds";
 const AssignApi = {
-  getAllAssigns: async () => {
-    const header = getAuthHeader();
-    try {
-      const res = await axiosClient.get(`${baseURL}/assign`, {
-        headers: {
-          Authorization: header,
-        },
-      });
-      return res.result;
-    } catch (error) {
-      console.log(error);
-      return [];
-    }
-  },
   getAllAssignByTechnician: async (id) => {
     const header = getAuthHeader();
     try {
@@ -82,11 +68,25 @@ export async function createAssignTicket(ticketId, data) {
           },
         }
       );
-      console.log("API Response:", res.data);
       return res.data;
     } catch (error) {
       console.log(error);
     }
+}
+
+export async function getAllAssigns ()  {
+  const header = getAuthHeader();
+  try {
+    const res = await axiosClient.get(`${baseURL}/assign`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.result;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
 }
 
 export default AssignApi;

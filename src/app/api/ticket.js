@@ -104,7 +104,7 @@ export async function getTicketByTicketId(id) {
     console.log(error);
     return [];
   }
-}
+};
 
 //Create Ticket By Customer
 export async function createTicketByCustomer(data) {

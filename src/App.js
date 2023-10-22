@@ -16,6 +16,7 @@ import Menu from './pages/dashboard/Customer/Menu';
 import Main from './pages/dashboard/Customer/Home';
 import IssueList from './pages/dashboard/Customer/IssueList';
 import DetailTicket from './pages/dashboard/Manager/DetailTicket';
+import Unauthorize from './pages/Unauthorize';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -46,7 +47,8 @@ function App() {
           </Route>
         <Route path='login' element={<Login />} />
         <Route path='forgot-password' element={<ForgetPassword /> }  />
-        <Route path='*' element={<Error />} />
+        <Route path='unauthorize' element={<Unauthorize />} />
+        <Route path='*' element={<Error  />} />
       </Routes>
       <ToastContainer position='top-center' />
     </BrowserRouter>

@@ -25,7 +25,7 @@
     float: left;
     width: 100%;
     margin-bottom: 10px; /* Adjust margin as needed */
-    font-size: 20px;
+    font-size: 16px;
     border: 0.8px solid #ccc;
     padding: 5px;
     font-weight: bold;
@@ -72,10 +72,16 @@
     border-radius: 4px;
 }
 
-  
-  .narrow-input {
-    margin-right: 1px; /* Add some space between label and text */
-  }
+.text-box {
+  display: flex; /* Use flexbox layout for the parent container */
+  align-items: center; /* Center items vertically within the parent container */
+}
+
+.narrow-input {
+  display: flex; /* Use flexbox layout for the child elements */
+  align-items: center; /* Center items vertically within the child elements */
+  margin-right: 10px; /* Optional: Add some space between the label and the priority text */
+}
 
   .status-container {
     display: flex;

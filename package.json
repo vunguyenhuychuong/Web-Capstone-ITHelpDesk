@@ -25,6 +25,7 @@
     "dayjs": "^1.11.10",
     "feather-icons": "^4.29.1",
     "firebase": "^10.4.0",
+    "flowbite-react": "^0.6.4",
     "framer-motion": "^10.16.4",
     "mdb-react-ui-kit": "^6.3.0",
     "moment": "^2.29.4",

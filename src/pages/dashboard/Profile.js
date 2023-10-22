@@ -32,9 +32,7 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment from "moment";
 import "../../assets/css/profile.css";
 import React, { useEffect, useState } from "react";
-import {
-  GetDataProfileUser,
-} from "../../app/api";
+import { GetDataProfileUser } from "../../app/api";
 import { toast } from "react-toastify";
 import { getAuthHeader } from "../../app/api/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";

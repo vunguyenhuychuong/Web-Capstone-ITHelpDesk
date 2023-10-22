@@ -2,9 +2,8 @@ import React from "react";
 import { motion } from "framer-motion";
 import tw from "twin.macro";
 import styled from "styled-components";
-import logo from "../../assets/images/logo.svg";
+import logo from "../../assets/images/icon.png";
 import { Link } from "react-router-dom";
-
 
 const Header = tw.header`
   flex justify-between items-center
@@ -49,25 +48,33 @@ export const DesktopNavLinks = tw.nav`
   hidden lg:flex flex-1 justify-between items-center
 `;
 
-export default ({ roundedHeaderButton = false, logoLink, links, className, collapseBreakpointClass = "lg" }) => {
+export default ({
+  roundedHeaderButton = false,
+  logoLink,
+  links,
+  className,
+  collapseBreakpointClass = "lg",
+}) => {
   const defaultLinks = [
     <NavLinks key={1}>
       <NavLink to="/#">About</NavLink>
       <NavLink to="/#">Blog</NavLink>
       <NavLink to="/#">Pricing</NavLink>
       <NavLink to="/" tw="lg:ml-12!">
-      Contact Us
+        Contact Us
       </NavLink>
-      <PrimaryLink css={roundedHeaderButton && tw`rounded-full`} to="/login">Login</PrimaryLink>
-    </NavLinks>
+      <PrimaryLink css={roundedHeaderButton && tw`rounded-full`} to="/login">
+        Login
+      </PrimaryLink>
+    </NavLinks>,
   ];
 
-  const collapseBreakpointCss = collapseBreakPointCssMap[collapseBreakpointClass];
+  const collapseBreakpointCss =
+    collapseBreakPointCssMap[collapseBreakpointClass];
 
   const defaultLogoLink = (
-    <LogoLink href="/">
-      <img src={logo} alt="logo" />
-      Treact
+    <LogoLink href="/" style={{ width: "100px", height: "50px" }}>
+      <img src={logo} alt="logo" style={{ width: "100%", height: "100%" }} />
     </LogoLink>
   );
 
@@ -98,21 +105,21 @@ const collapseBreakPointCssMap = {
   sm: {
     mobileNavLinks: tw`sm:hidden`,
     desktopNavLinks: tw`sm:flex`,
-    mobileNavLinksContainer: tw`sm:hidden`
+    mobileNavLinksContainer: tw`sm:hidden`,
   },
   md: {
     mobileNavLinks: tw`md:hidden`,
     desktopNavLinks: tw`md:flex`,
-    mobileNavLinksContainer: tw`md:hidden`
+    mobileNavLinksContainer: tw`md:hidden`,
   },
   lg: {
     mobileNavLinks: tw`lg:hidden`,
     desktopNavLinks: tw`lg:flex`,
-    mobileNavLinksContainer: tw`lg:hidden`
+    mobileNavLinksContainer: tw`lg:hidden`,
   },
   xl: {
     mobileNavLinks: tw`lg:hidden`,
     desktopNavLinks: tw`lg:flex`,
-    mobileNavLinksContainer: tw`lg:hidden`
-  }
+    mobileNavLinksContainer: tw`lg:hidden`,
+  },
 };

@@ -21,7 +21,7 @@ export default function ManagersTabs() {
         selectionFollowsFocus
       >
         <Tab label="Requests" />
-        <Tab label="Problems" />
+        <Tab label="Assign" />
         <Tab label="Projects" />
       </Tabs>
       <Box role="tabpanel" hidden={value !== 0}>
