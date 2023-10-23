@@ -17,6 +17,8 @@ import Main from './pages/dashboard/Customer/Home';
 import IssueList from './pages/dashboard/Customer/IssueList';
 import DetailTicket from './pages/dashboard/Manager/DetailTicket';
 import Unauthorize from './pages/Unauthorize';
+import ServiceList from './pages/dashboard/ServicePack/ServiceList';
+import ModeList from './pages/dashboard/Mode/ModeList';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -41,6 +43,8 @@ function App() {
           {(hasCustomerRole) && <Route path='mains' element={<Main />} />} 
           <Route path='main' element={<AccessibleTabs1 />} />
           <Route path='menu' element={<Menu />} />
+          <Route path='service' element={<ServiceList />} />
+          <Route path='mode' element={<ModeList />} />
           <Route path='customerTicket' element={<IssueList />} />
           <Route path='detailTicket/:ticketId' element={<DetailTicket />} />
           {(hasManagerRole) && <Route path='listTicket' element={<ManagersTabs />} />}
