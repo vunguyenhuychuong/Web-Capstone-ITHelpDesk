@@ -3,14 +3,28 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import {Button, CircularProgress, Container,Typography, Box, Grid, TextField, Link, FormControlLabel,Paper, Checkbox } from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  Container,
+  Typography,
+  Box,
+  Grid,
+  TextField,
+  Link,
+  FormControlLabel,
+  Paper,
+  Checkbox,
+} from "@mui/material";
 import { setUser, setError, clearError } from "../features/user/authSlice";
 import { LoginUser } from "../app/api";
+import LoginPage from "../assets/images/loginpage.png";
+import logoAvatar from "../assets/images/icon.png";
 
 function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [data, setData] = useState({ username: '', password: '' });
+  const [data, setData] = useState({ username: "", password: "" });
 
   const usernameRegex = /^[a-zA-Z0-9_]+$/;
   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
@@ -28,50 +42,54 @@ function Login() {
     // }
     setLoading(true);
     try {
-      dispatch(clearError()); 
+      dispatch(clearError());
       const userDataResponse = await LoginUser(data);
       console.log(userDataResponse);
-      if (userDataResponse && userDataResponse.isError === false && userDataResponse.result !== null) {
+      if (
+        userDataResponse &&
+        userDataResponse.isError === false &&
+        userDataResponse.result !== null
+      ) {
         const { role, firstName, lastName } = userDataResponse.result;
         dispatch(setUser(userDataResponse.result));
         switch (role) {
           case 0:
             navigate("/home/customer");
-            toast.success(`Welcome Admin: ${lastName} ${firstName}`,{
+            toast.success(`Welcome Admin: ${lastName} ${firstName}`, {
               autoClose: 1000,
               hideProgressBar: false,
             });
             break;
           case 1:
             navigate("/home/menu");
-            toast.success(`Welcome User: ${lastName} ${firstName}`,{
+            toast.success(`Welcome User: ${lastName} ${firstName}`, {
               autoClose: 1000,
               hideProgressBar: false,
             });
             break;
           case 2:
             navigate("/home/listTicket");
-            toast.success(`Welcome Manager: ${lastName} ${firstName}`,{
+            toast.success(`Welcome Manager: ${lastName} ${firstName}`, {
               autoClose: 1000,
               hideProgressBar: false,
             });
             break;
           default:
             navigate("/login");
-            toast.error("Login Fail",{
+            toast.error("Login Fail", {
               autoClose: 1000,
               hideProgressBar: false,
             });
         }
       } else {
         navigate("/login");
-        toast.error("Login Fail",{
+        toast.error("Login Fail", {
           autoClose: 1000,
           hideProgressBar: false,
         });
       }
     } catch (error) {
-      dispatch(setError(error.message || 'An error occurred during login.'));
+      dispatch(setError(error.message || "An error occurred during login."));
     } finally {
       setLoading(false);
     }
@@ -100,7 +118,7 @@ function Login() {
             sm={4}
             md={6}
             sx={{
-              backgroundImage: "url(https://wpmanageninja.com/wp-content/uploads/2021/03/Untitled-design-1-1.png)",
+              backgroundImage: `url(${LoginPage})`,
               backgroundRepeat: "no-repeat",
               backgroundColor: (t) =>
                 t.palette.mode === "light"
@@ -129,13 +147,24 @@ function Login() {
               }}
             >
               <Typography component="h1" variant="h5">
+                <img
+                  src={logoAvatar}
+                  alt="Logo"
+                  style={{
+                    maxWidth: "100%",
+                    height: "auto",
+                    maxWidth: "200px",
+                  }} // Adjust the maxWidth as per your requirement
+                />{" "}
+              </Typography>
+              <Typography
+                component="h1"
+                variant="h5"
+                sx={{ fontWeight: "bold", fontSize: "24px" }}
+              >
                 Login Page
               </Typography>
-              <Box
-                component="form"
-                noValidate
-                sx={{ mt: 1 }}
-              >
+              <Box component="form" noValidate sx={{ mt: 1 }}>
                 <TextField
                   margin="normal"
                   required
@@ -171,7 +200,7 @@ function Login() {
                   disabled={loading}
                   onClick={handleLogin}
                 >
-                  {loading ? <CircularProgress size={24} /> : 'Login' }
+                  {loading ? <CircularProgress size={24} /> : "Login"}
                 </Button>
                 <Grid container>
                   <Grid item xs>

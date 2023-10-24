@@ -1,4 +1,4 @@
-import { Email } from "@mui/icons-material";
+import { Cancel, Create, DoDisturb, Email, HighlightOff, Info, Pending } from "@mui/icons-material";
 import {
   FaImages,
   FaUser,
@@ -73,6 +73,21 @@ export const priorityOption = [
   { id: 4, name: "Critical"},
 ];
 
+export const priorityOptions = [
+  { id: 0, name: "Low", colorClass: "bg-primary", fontSize: '14px' },
+  { id: 1, name: "Normal", colorClass: "bg-info", fontSize: '14px' },
+  { id: 2, name: "Medium", colorClass: "bg-secondary", fontSize: '14px' },
+  { id: 3, name: "High", colorClass: "bg-warning", fontSize: '14px' },
+  { id: 4, name: "Critical", colorClass: "bg-danger", fontSize: '14px' },
+];
+
+export const getPriorityOptionById = (priorityId) => {
+  return priorityOptions.find((option) => option.id === priorityId) || {
+    name: "Unknown",
+    colorClass: "bg-secondary",
+  };
+};
+
 export const getRoleName = (role) => {
   switch (role) {
     case 0:
@@ -106,12 +121,84 @@ export const ImpactOptions = [
 ]
 
 export const TicketStatusOptions = [
-  {id: 0, name: "Open", colorClass: "bg-primary"},
-  {id: 1, name: "Assigned", colorClass: "bg-info"},
-  {id: 2, name: "In Progress", colorClass: "bg-info"},
-  {id: 3, name: "On Hold", colorClass: "bg-warning"},
-  {id: 4, name: "Closed", colorClass: "bg-danger"},
-  {id: 5, name: "Cancelled", colorClass: "bg-dark"},
+  {
+    id: 0,
+    name: "Open",
+    icon: <Info style={{ color: '#3399FF' }} />,
+    badgeStyle: {
+      backgroundColor: 'white',
+      border: '2px solid #3399FF',
+      borderRadius: '16px',
+      padding: '5px',
+      display: 'flex',
+      alignItems: 'center',
+    }
+  },
+  {
+    id: 1,
+    name: "Assigned",
+    icon: <Create style={{ color: '#FF9933' }} />,
+    badgeStyle: {
+      backgroundColor: 'white',
+      border: '2px solid #FF9933',
+      borderRadius: '16px',
+      padding: '5px',
+      display: 'flex',
+      alignItems: 'center',
+    }
+  },
+  {
+    id: 2,
+    name: "Progressing",
+    icon: <Pending style={{ color: '#339999' }} />,
+    badgeStyle: {
+      backgroundColor: 'white',
+      border: '2px solid #339999',
+      borderRadius: '16px',
+      padding: '5px',
+      display: 'flex',
+      alignItems: 'center',
+    }
+  },
+  {
+    id: 3,
+    name: "On Hold",
+    icon: <DoDisturb style={{ color: '#330000' }} />,
+    badgeStyle: {
+      backgroundColor: 'white',
+      border: '2px solid #330000',
+      borderRadius: '16px',
+      padding: '5px',
+      display: 'flex',
+      alignItems: 'center',
+    }
+  },
+  {
+    id: 4,
+    name: "Closed",
+    icon: <HighlightOff style={{ color: '#888888' }} />,
+    badgeStyle: {
+      backgroundColor: 'white',
+      border: '2px solid #888888',
+      borderRadius: '16px',
+      padding: '5px',
+      display: 'flex',
+      alignItems: 'center',
+    }
+  },
+  {
+    id: 5,
+    name: "Cancelled",
+    icon: <Cancel style={{ color: '#CC3333' }} />,
+    badgeStyle: {
+      backgroundColor: 'white',
+      border: '2px solid #CC3333',
+      borderRadius: '16px',
+      padding: '5px',
+      display: 'flex',
+      alignItems: 'center',
+    }
+  }
 ];
 
 

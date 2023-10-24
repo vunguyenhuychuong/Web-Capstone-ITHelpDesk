@@ -9,7 +9,6 @@ import {
 import ForgetPassword from './pages/ForgetPassword';
 import Customer from './pages/dashboard/Customer';
 import { useSelector } from 'react-redux';
-import Team from './pages/dashboard/Team';
 import ManagersTabs from './pages/dashboard/Manager/ManagerTabs';
 import AccessibleTabs1 from './pages/dashboard/Customer/CustomerTabs';
 import Menu from './pages/dashboard/Customer/Menu';
@@ -19,6 +18,7 @@ import DetailTicket from './pages/dashboard/Manager/DetailTicket';
 import Unauthorize from './pages/Unauthorize';
 import ServiceList from './pages/dashboard/ServicePack/ServiceList';
 import ModeList from './pages/dashboard/Mode/ModeList';
+import Team from './pages/dashboard/Team/Team';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -37,7 +37,7 @@ function App() {
           }
         >
           <Route index element={<AccessibleTabs1 />} />
-          {(hasAdminRole) && <Route path='team' element={<Team />} />}
+          {(hasAdminRole || hasManagerRole) && <Route path='team' element={<Team />} />}
           {(hasCustomerRole || hasAdminRole || hasManagerRole) && <Route path='profile' element={<Profile />} />} 
           {hasAdminRole && <Route path='customer' element={<Customer />} />}
           {(hasCustomerRole) && <Route path='mains' element={<Main />} />} 

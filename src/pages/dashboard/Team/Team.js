@@ -7,7 +7,6 @@ import {
   TableRow,
   TableBody,
   Typography,
-  Button,
   Dialog,
   DialogTitle,
   IconButton,
@@ -18,9 +17,9 @@ import {
   MenuItem,
   FormControl,
   Select,
+  Checkbox,
 } from "@mui/material";
 import { toast } from "react-toastify";
-import Wrapper from "../../assets/wrappers/DashboardFormPage";
 import React, { useEffect, useState } from "react";
 import {
   AddTeam,
@@ -28,20 +27,29 @@ import {
   UpdateTeam,
   getAllTeam,
   getTeamById,
-} from "../../app/api/team";
+} from "../../../app/api/team";
 import {
   ArrowDropDown,
   ArrowDropUp,
   Close,
+  ContentCopy,
   Delete,
-  Description,
   Edit,
-  Face,
-  LocationCity,
 } from "@mui/icons-material";
-import { MDBBtn, MDBCol, MDBInput, MDBRow } from "mdb-react-ui-kit";
+import {
+  MDBBtn,
+  MDBCol,
+  MDBContainer,
+  MDBInput,
+  MDBNavbar,
+  MDBNavbarBrand,
+  MDBNavbarNav,
+  MDBRow,
+} from "mdb-react-ui-kit";
 import { FaPlus } from "react-icons/fa";
 import { useCallback } from "react";
+import PageSizeSelector from "../Pagination/Pagination";
+
 
 const Team = () => {
   const [open, setOpen] = React.useState(false);
@@ -119,7 +127,6 @@ const Team = () => {
           description: "",
         });
       }
-      console.log(result);
       toast.success("Team created successfully");
       setOpenAdd(false);
       fetchDataTeam();
@@ -227,169 +234,180 @@ const Team = () => {
   };
 
   return (
-    <Wrapper style={{ backgroundColor: "#eee" }}>
-      <div style={{ marginBottom: 20 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          style={{
-            marginBottom: 20,
-            height: "50px",
-            width: "80px",
-            marginRight: "10px",
-          }}
-          onClick={handleOpenAdd}
-        >
-          <FaPlus />
-        </Button>
-        <FormControl
-          variant="outlined"
-          style={{ minWidth: 120, marginRight: 10 }}
-        >
-          <InputLabel htmlFor="search-field">Search Field</InputLabel>
-          <Select
-            value={searchField}
-            onChange={(e) => setSearchField(e.target.value)}
-            label="Search Field"
-            inputProps={{
-              name: "searchField",
-              id: "search-field",
-            }}
-          >
-            <MenuItem value="name">Name</MenuItem>
-            <MenuItem value="location">location</MenuItem>
-            <MenuItem value="description">description</MenuItem>
-          </Select>
-        </FormControl>
-        <TextField
-          variant="outlined"
-          label="Search"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              fetchDataTeam();
-            }
-          }}
-        />
-      </div>
-      <TableContainer component={Paper}>
-        <Table arial-label="arial-label">
-          <TableHead>
-            <TableRow>
-              <TableCell onClick={() => handleSortChange("name")}>
-                <Typography
-                  variant="subtitle1"
-                  style={{
-                    fontWeight: "bold",
-                    color: "#007bff",
-                    cursor: "pointer",
+    <section style={{ backgroundColor: "#FFF" }}>
+      <MDBContainer
+        className="py-5"
+        style={{ paddingLeft: 20, paddingRight: 20, maxWidth: "100%" }}
+      >
+        <MDBNavbar expand="lg" light bgColor="inherit">
+          <MDBContainer fluid>
+            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
+              <ContentCopy style={{ marginRight: "20px" }} /> All Team
+            </MDBNavbarBrand>
+            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+              <MDBBtn
+                color="#eee"
+                style={{ fontWeight: "bold", fontSize: "20px" }}
+              >
+                <FaPlus onClick={handleOpenAdd} /> New
+              </MDBBtn>
+              <MDBBtn
+                color="eee"
+                style={{ fontWeight: "bold", fontSize: "20px" }}
+              >
+                <Delete /> Delete
+              </MDBBtn>
+              <FormControl
+                variant="outlined"
+                style={{ minWidth: 120, marginRight: 10 }}
+              >
+                <InputLabel htmlFor="search-field">Search Field</InputLabel>
+                <Select
+                  value={searchField}
+                  onChange={(e) => setSearchField(e.target.value)}
+                  label="Search Field"
+                  inputProps={{
+                    name: "searchField",
+                    id: "search-field",
                   }}
                 >
-                  <Face style={{ marginLeft: 3 }} /> Name{" "}
-                  {sortBy === "name" &&
-                    (sortDirection === "asc" ? (
-                      <ArrowDropDown />
-                    ) : (
-                      <ArrowDropUp />
-                    ))}
-                </Typography>
-              </TableCell>
-              <TableCell onClick={() => handleSortChange("location")}>
-                <Typography
-                  variant="subtitle1"
-                  style={{
-                    fontWeight: "bold",
-                    color: "#007bff",
-                    cursor: "pointer",
-                  }}
-                  align="left"
-                >
-                  <LocationCity style={{ marginRight: 3 }} /> District{" "}
-                  {sortBy === "location" &&
-                    (sortDirection === "asc" ? (
-                      <ArrowDropDown />
-                    ) : (
-                      <ArrowDropUp />
-                    ))}
-                </Typography>
-              </TableCell>
-              <TableCell onClick={() => handleSortChange("description")}>
-                <Typography
-                  variant="subtitle1"
-                  style={{ fontWeight: "bold", color: "#007bff" }}
-                  align="left"
-                >
-                  <Description style={{ marginRight: 3 }} /> City{" "}
-                  {sortBy === "description" &&
-                    (sortDirection === "asc" ? (
-                      <ArrowDropDown />
-                    ) : (
-                      <ArrowDropUp />
-                    ))}
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography
-                  variant="subtitle1"
-                  style={{ fontWeight: "bold", color: "#007bff" }}
-                  align="left"
-                >
-                  ManagerID
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography
-                  variant="subtitle1"
-                  style={{ fontWeight: "bold", color: "#007bff" }}
-                  align="left"
-                ></Typography>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {teams.map((team) => (
-              <TableRow key={team.id}>
-                <TableCell component="th" scope="row">
-                  {team.description}
+                  <MenuItem value="name">Name</MenuItem>
+                  <MenuItem value="location">location</MenuItem>
+                  <MenuItem value="description">description</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField
+                variant="outlined"
+                label="Search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    fetchDataTeam();
+                  }
+                }}
+              />
+              <PageSizeSelector
+                pageSize={pageSize}
+                handleChangePageSize={handleChangePageSize}
+              />
+            </MDBNavbarNav>
+          </MDBContainer>
+        </MDBNavbar>
+        <TableContainer component={Paper}>
+          <Table arial-label="arial-label">
+            <TableHead>
+              <TableRow>
+                <TableCell style={{ paddingLeft: "16px" }} padding="checkbox">
+                  <Checkbox />
                 </TableCell>
-                <TableCell align="left">{team.name}</TableCell>
-                <TableCell align="left">{team.location}</TableCell>
-                <TableCell align="left">{team.managerId}</TableCell>
-                <TableCell align="left">
-                  <div style={{ display: "flex", gap: "10px" }}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => handleDetailTeam(team.id)}
-                    >
-                      <Edit />
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="error"
-                      onClick={() => onDeleteTeam(team.id)}
-                    >
-                      <Delete />
-                    </Button>
-                  </div>
+                <TableCell
+                  style={{
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                  }}
+                >
+                  Edit
+                </TableCell>
+                <TableCell
+                  style={{
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                  }}
+                >
+                  Delete
+                </TableCell>
+                <TableCell onClick={() => handleSortChange("name")}>
+                  <Typography
+                    variant="subtitle1"
+                    style={{
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Name
+                    {sortBy === "name" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </Typography>
+                </TableCell>
+                <TableCell onClick={() => handleSortChange("location")}>
+                  <Typography
+                    variant="subtitle1"
+                    style={{
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                    }}
+                    align="left"
+                  >
+                    District
+                    {sortBy === "location" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </Typography>
+                </TableCell>
+                <TableCell onClick={() => handleSortChange("description")}>
+                  <Typography
+                    variant="subtitle1"
+                    style={{ fontWeight: "bold" }}
+                    align="left"
+                  >
+                    City
+                    {sortBy === "description" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography
+                    variant="subtitle1"
+                    style={{ fontWeight: "bold", color: "#007bff" }}
+                    align="left"
+                  ></Typography>
                 </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      {/* Pagination controls */}
-      <div style={{ textAlign: "center", marginTop: "10px" }}>
-        <label>Items per page: </label>
-        <select value={pageSize} onChange={handleChangePageSize}>
-          <option value={5}>5</option>
-          <option value={10}>10</option>
-          <option value={20}>20</option>
-          <option value={50}>50</option>
-        </select>
-      </div>
+            </TableHead>
+            <TableBody>
+              {teams.map((team) => (
+                <TableRow key={team.id}>
+                  <TableCell align="left">
+                    <Checkbox inputProps={{ "aria-label": "controlled" }} />
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    <IconButton onClick={() => handleDetailTeam(team.id)}>
+                      <Edit />
+                    </IconButton>
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    <IconButton onClick={() => onDeleteTeam(team.id)}>
+                      <Delete />
+                    </IconButton>
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    {team.description}
+                  </TableCell>
+                  <TableCell align="left">{team.name}</TableCell>
+                  <TableCell align="left">{team.location}</TableCell>
+                  <TableCell align="left">
+                    <div style={{ display: "flex", gap: "10px" }}></div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </MDBContainer>
+
       <Box display="flex" justifyContent="center" mt={2}>
         <Pagination
           count={totalPages}
@@ -536,7 +554,7 @@ const Team = () => {
           </form>
         )}
       </Dialog>
-    </Wrapper>
+    </section>
   );
 };
 export default Team;

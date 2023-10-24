@@ -17,12 +17,18 @@ import {
 } from "@mui/icons-material";
 import { useEffect } from "react";
 import { deleteService, getAllServices } from "../../../app/api/service";
-import { Box, Dialog, FormControl, MenuItem, Pagination, Select } from "@mui/material";
+import {
+  Box,
+  Dialog,
+  Pagination,
+} from "@mui/material";
 import { FaPlus } from "react-icons/fa";
 import CreateService from "./CreateService";
 import EditService from "./EditService";
 import { toast } from "react-toastify";
 import { useCallback } from "react";
+import PageSizeSelector from "../Pagination/Pagination";
+
 
 const ServiceList = () => {
   const [dataService, setDataService] = useState([]);
@@ -141,23 +147,10 @@ const ServiceList = () => {
                 <Delete /> Delete
               </MDBBtn>
 
-              <div style={{ textAlign: "center" }}>
-                <label style={{ fontWeight: "bold", marginTop: "15px" }}>
-                  Items per page:{" "}
-                </label>
-                <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                  <Select
-                    value={pageSize}
-                    onChange={handleChangePageSize}
-                    className="select"
-                  >
-                    <MenuItem value={5}>5</MenuItem>
-                    <MenuItem value={10}>10</MenuItem>
-                    <MenuItem value={20}>20</MenuItem>
-                    <MenuItem value={50}>50</MenuItem>
-                  </Select>
-                </FormControl>
-              </div>
+              <PageSizeSelector
+                pageSize={pageSize}
+                handleChangePageSize={handleChangePageSize}
+              />
             </MDBNavbarNav>
           </MDBContainer>
         </MDBNavbar>
@@ -200,16 +193,16 @@ const ServiceList = () => {
               );
             })}
           </MDBTableBody>
-          
+
           <MDBTableBody className="bg-light"></MDBTableBody>
         </MDBTable>
         <Box display="flex" justifyContent="center" mt={2}>
-            <Pagination
-              count={totalPages}
-              page={currentPage}
-              onChange={handleChangePage}
-            />
-          </Box>
+          <Pagination
+            count={totalPages}
+            page={currentPage}
+            onChange={handleChangePage}
+          />
+        </Box>
       </MDBContainer>
       <Dialog open={dialogOpen} onClose={handleCloseService}>
         <CreateService onClose={handleCloseService} />

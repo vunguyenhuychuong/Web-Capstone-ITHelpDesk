@@ -3,7 +3,7 @@ import '../../assets/css/Logo.css'
 const Logo = () => {
   return (
     <div >
-      <img src={logoAvatar}  className='logo shine-effect' alt='' />;
+      <img src={logoAvatar}  className='logo shine-effect' alt='' />
     </div>
   )
 };

@@ -59,10 +59,7 @@ const ModeList = () => {
     try {
       if (selectedModes.length === 0) {
         return;
-      }
-  
-      console.log("Deleting Modes: ", selectedModes);
-  
+      }  
       const deletePromises = selectedModes.map(async (modeId) => {
         try {
           const res = await Promise.resolve(deleteMode(modeId));
