@@ -43,7 +43,7 @@ function App() {
           {(hasCustomerRole) && <Route path='mains' element={<Main />} />} 
           <Route path='main' element={<AccessibleTabs1 />} />
           <Route path='menu' element={<Menu />} />
-          <Route path='service' element={<ServiceList />} />
+          {(hasCustomerRole || hasManagerRole) && <Route path='service' element={<ServiceList />} />}
           <Route path='mode' element={<ModeList />} />
           <Route path='customerTicket' element={<IssueList />} />
           <Route path='detailTicket/:ticketId' element={<DetailTicket />} />

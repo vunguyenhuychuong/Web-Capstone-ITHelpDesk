@@ -14,19 +14,16 @@ import CategoryApi from "../../../app/api/category";
 import { getAllServices } from "../../../app/api/service";
 import ModeApi from "../../../app/api/mode";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import axios from "axios";
 import {
-  baseURL,
   editTicketByManager,
   getTicketByTicketId,
 } from "../../../app/api/ticket";
-import { getAuthHeader } from "../../../app/api/auth";
 import { toast } from "react-toastify";
 import { FaTicketAlt } from "react-icons/fa";
 import { ArrowBack, ChatOutlined } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
 
-const EditTicket = () => {
+const EditTicket = ({ onClose }) => {
   const { ticketId } = useParams();
   const [data, setData] = useState({
     requesterId: 0,
@@ -43,6 +40,8 @@ const EditTicket = () => {
     attachmentUrl: "",
     scheduledStartTime: "",
     scheduledEndTime: "",
+    dueTime: "",
+    completedTime: "",
   });
 
   const [dataCategories, setDataCategories] = useState([]);
@@ -69,17 +68,21 @@ const EditTicket = () => {
     const fetchTicketData = async () => {
       try {
         const ticketData = await getTicketByTicketId(ticketId);
+        console.log(ticketData);
         setData((prevData) => ({
           ...prevData,
           requesterId: ticketData.requesterId,
           title: ticketData.title,
           description: ticketData.description,
+          modeId: ticketData.modeId,
           categoryId: ticketData.categoryId,
           priority: ticketData.priority,
           impactDetail: ticketData.impactDetail,
           ticketStatus: ticketData.ticketStatus,
           scheduledStartTime: ticketData.scheduledStartTime,
           scheduledEndTime: ticketData.scheduledEndTime,
+          dueTime: ticketData.dueTime,
+          completedTime: ticketData.completedTime
         }));
       } catch (error) {
         console.error("Error fetching ticket data: ", error);
@@ -118,17 +121,23 @@ const EditTicket = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const response = await axios.put(
-        `https://localhost:7043/v1/itsds/ticket/manager/${ticketId.id}`,
-        data,
-        {
-          headers: {
-            Authorization: getAuthHeader(),
-          },
-        }
-      );
-      toast.success("Ticket updated successfully");
-    } finally {
+      const res = await editTicketByManager(ticketId, data);
+      setIsSubmitting(false);
+      console.log(res);
+      if (res.isError && res.responseException?.exceptionMessage) {
+        toast.info('Ticket is currently being executed and cannot be updated.');
+      } else {
+        toast.success("Ticket updated successfully");
+        onClose();
+      }
+    }catch(error){
+      if (error.response && error.response.status === 400) {
+        const errorMessage = error.response.data?.message || 'Ticket can not be updated when it is being executed';
+        toast.error(errorMessage);
+      } else {
+        toast.info('Error updating ticket. Please try again later');
+      }
+    }finally {
       setIsSubmitting(false);
     }
   };
@@ -138,7 +147,6 @@ const EditTicket = () => {
       style={{ backgroundColor: "#DDDDDD" }}
       className="edit-ticket-container"
     >
-      <div className="left-box">{/* Content for the left box */}</div>
       <MDBContainer>
         <MDBCol md="12" className="text-start mt-2">
           <MDBRow>
@@ -177,7 +185,7 @@ const EditTicket = () => {
             </div>
             <div style={{ display: "flex", flexDirection: "column" }}>
               <span style={{ marginBottom: "5px" }}>
-                #{data.requesterId} Name User
+                #{data.requesterId} {data.title}
               </span>
               <span style={{ fontSize: "0.8em" }}>
                 by Guest <ChatOutlined color="#007bff" /> on
@@ -209,24 +217,28 @@ const EditTicket = () => {
             </MDBCol>
           </MDBRow>
           <MDBRow className="mb-4">
-            <MDBCol md="2" className="text-center mt-2">
+            <MDBCol md="1" className="text-center mt-2">
               <label htmlFor="requesterId" className="narrow-input">
-                Requester Id
+                Category
               </label>
             </MDBCol>
-            <MDBCol md="3">
-              <input
-                id="requesterId"
-                type="number"
-                name="requesterId"
-                min={0}
-                className="form-control"
-                value={data.requesterId}
+            <MDBCol md="5">
+              <select
+                id="categoryId"
+                name="categoryId"
+                className="form-select"
+                value={data.categoryId}
                 onChange={handleInputChange}
-                disabled
-              />
+              >
+                {dataCategories
+                  .map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+              </select>
             </MDBCol>
-            <MDBCol md="2" className="text-center mt-2">
+            <MDBCol md="1" className="text-center mt-2">
               <label htmlFor="title" className="narrow-input">
                 Title
               </label>
@@ -243,12 +255,12 @@ const EditTicket = () => {
             </MDBCol>
           </MDBRow>
           <MDBRow className="mb-4">
-            <MDBCol md="2" className="text-center mt-2">
+            <MDBCol md="1" className="text-center mt-2">
               <label htmlFor="requestId" className="narrow-input">
                 Mode Id
               </label>
             </MDBCol>
-            <MDBCol md="3">
+            <MDBCol md="5">
               <select
                 id="modeId"
                 name="modeId"
@@ -257,7 +269,6 @@ const EditTicket = () => {
                 onChange={handleInputChange}
               >
                 {dataMode
-                  .filter((mode) => mode.id !== "")
                   .map((mode) => (
                     <option key={mode.id} value={mode.id}>
                       {mode.name}
@@ -265,7 +276,7 @@ const EditTicket = () => {
                   ))}
               </select>
             </MDBCol>
-            <MDBCol md="2" className="text-center mt-2">
+            <MDBCol md="1" className="text-center mt-2">
               <label htmlFor="title" className="narrow-input">
                 Service
               </label>
@@ -279,7 +290,6 @@ const EditTicket = () => {
                 onChange={handleInputChange}
               >
                 {dataServices
-                  .filter((service) => service.id !== "")
                   .map((service) => (
                     <option key={service.id} value={service.id}>
                       {service.description}
@@ -289,12 +299,12 @@ const EditTicket = () => {
             </MDBCol>
           </MDBRow>
           <MDBRow className="mb-4">
-            <MDBCol md="2" className="text-center mt-2">
+            <MDBCol md="1" className="text-center mt-2">
               <label htmlFor="requestId" className="narrow-input">
                 Impact Detail
               </label>
             </MDBCol>
-            <MDBCol md="3">
+            <MDBCol md="5">
               <input
                 id="impactDetail"
                 name="impactDetail"
@@ -303,9 +313,9 @@ const EditTicket = () => {
                 onChange={handleInputChange}
               />
             </MDBCol>
-            <MDBCol md="2" className="text-center mt-2">
+            <MDBCol md="1" className="text-center mt-2">
               <label htmlFor="title" className="narrow-input">
-                Ticket Status
+                Status
               </label>
             </MDBCol>
             <MDBCol md="5">
@@ -325,12 +335,12 @@ const EditTicket = () => {
             </MDBCol>
           </MDBRow>
           <MDBRow className="mb-4">
-            <MDBCol md="2" className="text-center mt-2">
+            <MDBCol md="1" className="text-center mt-2">
               <label htmlFor="requestId" className="narrow-input">
                 Impact
               </label>
             </MDBCol>
-            <MDBCol md="3">
+            <MDBCol md="5">
               <select
                 id="impact"
                 name="impact"
@@ -345,7 +355,7 @@ const EditTicket = () => {
                 ))}
               </select>
             </MDBCol>
-            <MDBCol md="2" className="text-center mt-2">
+            <MDBCol md="1" className="text-center mt-2">
               <label htmlFor="title" className="narrow-input">
                 Urgency
               </label>
@@ -367,58 +377,73 @@ const EditTicket = () => {
             </MDBCol>
           </MDBRow>
           <MDBRow className="mb-4">
-            <MDBCol md="2" className="text-center mt-2">
+            <MDBCol md="1" className="text-center mt-2">
               <label htmlFor="requestId" className="narrow-input">
-                Priority
-              </label>
-            </MDBCol>
-            <MDBCol md="3">
-              <select
-                id="priority"
-                name="priority"
-                className="form-select"
-                onChange={handleInputChange}
-              >
-                {priorityOption.map((priorityItem) => (
-                  <option
-                    key={priorityItem.id}
-                    value={parseInt(priorityItem.id, 10)}
-                  >
-                    {priorityItem.name}
-                  </option>
-                ))}
-              </select>
-            </MDBCol>
-            <MDBCol md="2" className="text-center mt-2">
-              <label htmlFor="title" className="narrow-input">
-                Category
+                ScheduledStartTime
               </label>
             </MDBCol>
             <MDBCol md="5">
-              <select
-                id="categoryId"
-                name="categoryId"
-                className="form-select"
-                value={data.categoryId}
+              <input
+                id="scheduledStartTime"
+                name="scheduledStartTime"
+                className="form-control"
+                value={data.scheduledStartTime}
                 onChange={handleInputChange}
-              >
-                {dataCategories
-                  .filter((category) => category.id !== "")
-                  .map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-              </select>
+              />
+            </MDBCol>
+            <MDBCol md="1" className="text-center mt-2">
+              <label htmlFor="title" className="narrow-input">
+                ScheduledEndTime
+              </label>
+            </MDBCol>
+            <MDBCol md="5">
+              <input
+                id="scheduledEndTime"
+                name="scheduledEndTime"
+                className="form-control"
+                value={data.scheduledEndTime}
+                onChange={handleInputChange}
+              />
             </MDBCol>
           </MDBRow>
           <MDBRow className="mb-4">
-            <MDBCol md="2" className="text-center mt-2">
+            <MDBCol md="1" className="text-center mt-2">
+              <label htmlFor="requestId" className="narrow-input">
+                DueTime
+              </label>
+            </MDBCol>
+            <MDBCol md="5">
+              <input
+                id="dueTime"
+                name="dueTime"
+                className="form-control"
+                value={data.dueTime}
+                onChange={handleInputChange}
+              />
+            </MDBCol>
+            <MDBCol md="1" className="text-center mt-2">
+              <label htmlFor="title" className="narrow-input">
+                CompletedTime
+              </label>
+            </MDBCol>
+            <MDBCol md="5">
+              <input
+                id="completedTime"
+                name="completedTime"
+                className="form-control"
+                value={data.completedTime}
+                onChange={handleInputChange}
+              />
+            </MDBCol>
+          </MDBRow>
+
+          <MDBRow className="mb-4">
+            <MDBCol md="1" className="text-center mt-2">
               <label htmlFor="attachmentFile" className="narrow-input">
                 Attachment File
               </label>
             </MDBCol>
-            <MDBCol md="10">
+            <MDBCol md="11">
               <input
                 type="file"
                 name="file"
@@ -439,14 +464,14 @@ const EditTicket = () => {
               >
                 Edit
               </MDBBtn>
-              <MDBBtn color="danger" className="ms-2">
+              <MDBBtn color="danger" className="ms-2"
+                onClick={onClose}>
                 Cancel
               </MDBBtn>
             </MDBCol>
           </MDBRow>
         </form>
       </MDBContainer>
-      <div className="right-box">{/* Content for the right box */}</div>
     </section>
   );
 };

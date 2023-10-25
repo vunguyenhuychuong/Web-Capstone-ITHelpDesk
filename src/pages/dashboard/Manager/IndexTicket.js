@@ -38,7 +38,6 @@ import {
   TicketStatusOptions,
   getPriorityOptionById,
 } from "../Admin/tableComlumn";
-import TicketStatusOptionsSelector from "./TicketStatusOptionsSelector ";
 
 const IndexTicket = () => {
   const [dataTickets, setDataTickets] = useState([]);
@@ -55,7 +54,12 @@ const IndexTicket = () => {
   const [selectedTickets, setSelectedTickets] = useState([]);
   const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [selectedTicketData, setSelectedTicketData] = useState(null);
+  const [isDropdownVisible, setDropdownVisible] = useState(false);
+
   const navigate = useNavigate();
+  const toggleDropdown = () => {
+    setDropdownVisible(!isDropdownVisible);
+  };
 
   const fetchAllTicket = useCallback(async () => {
     try {
@@ -176,8 +180,6 @@ const IndexTicket = () => {
     const category = dataCategories.find((cat) => cat.id === categoryId);
     return category ? category.name : "Unknown Category";
   };
-
-  
 
   useEffect(() => {
     fetchAllTicket();
@@ -399,12 +401,34 @@ const IndexTicket = () => {
                           {priorityOption.name}
                         </span>
                       </td>
-                      <td>
-                        <span style={ticketStatusOption.badgeStyle}>
-                          {ticketStatusOption.icon}
-                          {ticketStatusOption.name}
-                        </span>
-                        {/* <TicketStatusOptionsSelector /> */}
+                      <td onClick={toggleDropdown}>
+                        {isDropdownVisible ? (
+                          <select
+                            style={ticketStatusOption.badgeStyle}
+                            value={ticket.ticketStatus}
+                            // onChange={(e) =>
+                            //   handleTicketStatusChange(
+                            //     ticket.id,
+                            //     e.target.value
+                            //   )
+                            // }
+                            // onBlur={toggleDropdown}
+                          >
+                            {TicketStatusOptions.map((option) => (
+                              <option key={option.id} value={option.id}>
+                                <span className={option.badgeStyle}>
+                                  {option.icon}
+                                  {option.name}
+                                </span>
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <span style={ticketStatusOption.badgeStyle}>
+                            {ticketStatusOption.icon}
+                            {ticketStatusOption.name}
+                          </span>
+                        )}
                       </td>
                       <td>{formattedDate}</td>
                     </tr>
@@ -430,16 +454,6 @@ const IndexTicket = () => {
       >
         <CreateTicket onClose={handleCloseRequestTicket} />
       </Dialog>
-
-      {/* <Dialog
-        maxWidth="lg"
-        fullWidth
-        open={dialogEdit}
-        onClose={handleCloseEditTicket}
-      >
-        
-        <EditTicket selectedTicketData={selectedTicketData}  onClose={handleCloseEditTicket} />
-      </Dialog> */}
     </section>
   );
 };

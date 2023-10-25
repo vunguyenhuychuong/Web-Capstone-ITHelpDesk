@@ -98,7 +98,6 @@ export async function getTicketByTicketId(id) {
         Authorization: header,
       },
     });
-    console.log(res);
     return res.data.result;
   } catch (error) {
     console.log(error);
@@ -186,8 +185,7 @@ export async function editTicketByManager(ticketId, data) {
         }
       }
     );
-    console.log(res);
-    return res.data;
+    return res.data.result;
   } catch (error) {
     console.log("Error editing ticket:", error);
     throw error;

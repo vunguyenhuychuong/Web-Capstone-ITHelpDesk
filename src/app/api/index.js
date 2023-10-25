@@ -31,6 +31,21 @@ export async function getAllUser(searchField, searchQuery, page = 1, pageSize = 
   }
 };
 
+export async function getDataUser() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/user`, {
+      headers: {
+        Authorization: header,
+      },
+    })
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+    return [];
+  }
+};
+
 // Login User
 export async function LoginUser(data) {
   try {

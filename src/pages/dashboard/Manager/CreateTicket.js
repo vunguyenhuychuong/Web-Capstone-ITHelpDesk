@@ -15,10 +15,11 @@ import CategoryApi from "../../../app/api/category";
 import { getAllServices } from "../../../app/api/service";
 import ModeApi from "../../../app/api/mode";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { getDataUser } from "../../../app/api";
 
-const CreateTicket = ({ onClose , onTicketCreated }) => {
+const CreateTicket = ({ onClose }) => {
   const [data, setData] = useState({
-    requesterId: 0,
+    requesterId: 1,
     title: "",
     description: "",
     modeId: 1,
@@ -35,16 +36,20 @@ const CreateTicket = ({ onClose , onTicketCreated }) => {
   const [dataCategories, setDataCategories] = useState([]);
   const [dataServices, setDataServices] = useState([]);
   const [dataMode, setDataMode] = useState([]);
+  const [dataUser, setDataUser] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchDataManager = async () => {
     try {
       const fetchCategories = await CategoryApi.getAllCategories();
+      const fetchUsers = await getDataUser(); 
       const fetchModes = await ModeApi.getMode();
       const responseService = await getAllServices();
       setDataCategories(fetchCategories);
       setDataServices(responseService);
+      setDataUser(fetchUsers);
+      console.log(fetchUsers);
       setDataMode(fetchModes);
     } catch (error) {
       console.log("Error while fetching data", error);
@@ -138,19 +143,24 @@ const handleInputChange = (e) => {
               </label>
             </MDBCol>
             <MDBCol md="3">
-              <input
+            <select
                 id="requesterId"
-                type="number"
                 name="requesterId"
-                min={0}
-                className="form-control"
+                className="form-select"
                 value={data.requesterId}
                 onChange={handleInputChange}
-              />
+              >
+                {dataUser
+                  .map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.username}
+                    </option>
+                  ))}
+              </select>
             </MDBCol>
             <MDBCol md="2" className="text-center mt-2">
               <label htmlFor="title" className="narrow-input">
-              <span style={{ color: "red" }}>*</span>Title
+                <span style={{ color: "red" }}>*</span>Title
               </label>
             </MDBCol>
             <MDBCol md="5">

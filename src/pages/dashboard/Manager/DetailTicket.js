@@ -31,6 +31,8 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import useTicketData from "./useTicketData";
 import AssignTicketModal from "./AssignTicketModal";
+import EditTicket from "./EditTicket";
+import { Dialog } from "@mui/material";
 
 const DetailTicket = () => {
   const { ticketId } = useParams();
@@ -40,6 +42,7 @@ const DetailTicket = () => {
   const [dataMode, setDataMode] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const navigate = useNavigate();
   const fetchDataManager = async () => {
     try {
@@ -53,6 +56,14 @@ const DetailTicket = () => {
       console.log("Error while fetching data", error);
     } finally {
     }
+  };
+
+  const handleOpenEditTicket = () => {
+    setEditDialogOpen(true);
+  };
+
+  const handleCloseEditTicket = () => {
+    setEditDialogOpen(false);
   };
 
   const handleOpenAssignTicket = () => {
@@ -133,6 +144,7 @@ const DetailTicket = () => {
                 <button
                   type="button"
                   className="btn btn-link narrow-input icon-label"
+                  onClick={handleOpenEditTicket}
                 >
                   Edit
                 </button>
@@ -466,6 +478,10 @@ const DetailTicket = () => {
       </MDBContainer>
       
       <AssignTicketModal open={dialogOpen} onClose={handleCloseAssignTicket} ticketId={ticketId} />
+         
+      <Dialog open={editDialogOpen} onClose={handleCloseEditTicket} maxWidth="lg" fullWidth>
+        <EditTicket onClose={handleCloseEditTicket} />
+      </Dialog>  
     </section>
   );
 };
