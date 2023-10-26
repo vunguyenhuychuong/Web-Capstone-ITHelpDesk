@@ -27,7 +27,6 @@
 
 
 .red-bg {
-  background-color: #a84632;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -40,17 +39,99 @@
   color: white; /* Icon color */
 }
 
-.custom-green-bg {
-  background-color: #4caf50;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%; /* Green background color */
+.custom-text {
+  font-weight: bold;
+  font-size: 50px; 
+  color: #6699FF;
+  animation: move 1s infinite;
+  transition: transform 0.1s ease;
 }
 
-.custom-grey-bg {
-  background-color: #73686c; /* Grey background color */
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0); /* Bounce height */
+  }
+  40% {
+    transform: translateY(-20px); /* Bounce upward */
+  }
+  60% {
+    transform: translateY(-10px); /* Bounce downward */
+  }
 }
+
+@keyframes move {
+  0% {
+    transform: translateX(-5px); 
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  100% {
+    transform: translateX(-5px);
+  }
+}
+
+.custom-red-bg {
+  background-color: #FF6666;
+  border-radius: 10px;
+}
+
+.custom-red-btn {
+  background-color: #DDDDDD;
+  color: #FF6666;
+  margin-bottom: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  font-family: 'Lato', sans-serif;
+}
+.custom-red-btn:hover {
+  background-color: #DDDDDD;
+}
+
+.custom-green-bg {
+  background-color: #33CC99;
+  border-radius: 10px;
+}
+
+.custom-green-btn {
+  background-color: #DDDDDD;
+  color: #33CC99;
+  margin-bottom: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  font-family: 'Lato', sans-serif;
+}
+
+.custom-green-btn:hover {
+  background-color: #DDDDDD;
+}
+
+.custom-blue-bg {
+  background-color: #6699FF;
+  border-radius: 10px;
+}
+
+.custom-blue-btn {
+  background-color: #DDDDDD;
+  color: #6699FF;
+  margin-bottom: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  font-family: 'Lato', sans-serif;
+}
+
+.custom-blue-btn:hover {
+  background-color: #DDDDDD;
+}
+
+.custom-card-text {
+  font-weight: bold;
+  font-size: 20px;
+  color: #fff;
+  margin-top: 20px;
+}
+
+
 
 .custom-list-item {
   width: 100%;
@@ -69,23 +150,23 @@
 }
 
 .admin {
-  color: green; /* Set the color for admin role */
+  color: green; 
 }
 
 .customer {
-  color: blue; /* Set the color for customer role */
+  color: blue; 
 }
 
 .manager {
-  color: orange; /* Set the color for manager role */
+  color: orange; 
 }
 
 .technician {
-  color: red; /* Set the color for technician role */
+  color: red; 
 }
 
 .accountant {
-  color: purple; /* Set the color for accountant role */
+  color: purple; 
 }
 
 .input-wrapper {
@@ -106,7 +187,7 @@
 }
 
 .my-request-summary .card-text {
-  padding-left: 20px; /* Adjust the padding value according to your preference */
+  padding-left: 20px; 
   padding-top: 20px;
 }
 
@@ -114,7 +195,7 @@
   font-weight: bold;
   font-size: 16px;
   color: white;
-  background-color: #999999; /* Primary color */
+  background-color: #999999; 
   border: none;
   padding: 8px 16px;
   cursor: pointer;
@@ -122,7 +203,61 @@
 }
 
 .my-request-summary .btn-primary:hover {
-  background-color: #3399CC; /* Darker shade of primary color on hover */
+  background-color: #3399CC; 
+}
+
+.section-container {
+  background-image: url('https://img-c.udemycdn.com/course/480x270/4568656_a477_2.jpg'); /* Replace 'path/to/your/image.jpg' with the actual path to your image file */
+  background-size: cover;
+  background-position: center;
+  height: 40vh; 
+  border: 2px solid #333;
+  border-radius: 5px;
+  margin: 10px;
+  margin-top: 20px;
+}
+
+.section-body {
+  margin: 10px;
+  margin-top: 20px;
+}
+
+.campaign-icon {
+  font-weight: bold;
+  font-size: 100px;
+  color: #3399CC;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-items: center;
+  width: 1500px; 
+  border: 2px solid #007bff; 
+  border-radius: 5px; 
+  padding: 5px; 
+}
+
+.input-container .search-icon {
+  margin-right: 10px; 
+  color: #007bff; 
+}
+
+.input-container input {
+   display: flex;
+  align-items: center;
+  border: none; 
+  outline: none; 
+  border-left: 1px solid #007bff;
+  border-radius: 5px;
+  padding: 5px; 
+}
+
+.custom-button-color {
+  color: #fff;
+  background-color: #007bff;
+  height: 38px;
 }
 
 

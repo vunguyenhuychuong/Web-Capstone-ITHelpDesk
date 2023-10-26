@@ -4,30 +4,31 @@ import Logo from "./Logo";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import {
-  Mail,
-  NotificationAdd,
-  Settings,
-} from "@mui/icons-material";
+import "../../assets/css/navbar.css"; 
+import { Mail, NotificationAdd, Search, Settings } from "@mui/icons-material";
 import {
   Avatar,
   Badge,
   Box,
   IconButton,
+  InputBase,
   Menu,
   MenuItem,
+  Paper,
   Tooltip,
   Typography,
 } from "@mui/material";
 import React from "react";
+import { roleOptions } from "../../pages/dashboard/Admin/tableComlumn";
 
 const Navbar = () => {
   const user = useSelector((state) => state.auth);
   const userAvatar = user.user.avatarUrl;
-  console.log(userAvatar);
+  const userName = user.user.lastName + " " + user.user.firstName;
+  const userRole = roleOptions.find((role) => role.id === user.user.role)?.name;
   const navigate = useNavigate();
 
-  const settings = ["Profile","Dashboard", "Logout"];
+  const settings = ["Profile", "Dashboard", "Logout"];
 
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -43,7 +44,7 @@ const Navbar = () => {
     localStorage.removeItem("profile");
     sessionStorage.removeItem("profile");
     localStorage.clear();
-    toast.success("Log out successful",{
+    toast.success("Log out successful", {
       autoClose: 1000,
       hideProgressBar: false,
     });
@@ -53,10 +54,10 @@ const Navbar = () => {
   const handleLogoutUser = (setting) => {
     if (setting === "Logout") {
       logout();
-    } else if (setting === "Profile"){
-      navigate('/home/profile');
+    } else if (setting === "Profile") {
+      navigate("/home/profile");
     } else if (setting === "Dashboard") {
-      navigate('/home/listTicket');
+      navigate("/home/listTicket");
     }
     setAnchorElUser(null);
   };
@@ -73,6 +74,12 @@ const Navbar = () => {
         </div>
         <div className="btn-container">
           <div className="icons-wrapper">
+            <Paper component="form" className="search-bar">
+              <InputBase className="search-input" placeholder="Search..." />
+              <IconButton type="submit" aria-label="search">
+                <Search />
+              </IconButton>
+            </Paper>
             <IconButton size="large" color="#33CCFF">
               <Badge badgeContent={4} color="error">
                 <Mail />
@@ -85,22 +92,31 @@ const Navbar = () => {
             </IconButton>
             <IconButton size="large" color="#33CCFF">
               <Badge color="error">
-                <Settings/>
+                <Settings />
               </Badge>
             </IconButton>
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  {userAvatar ? (
-                    <Avatar alt="User Avatar" src={userAvatar} />
-                  ) : (
-                    <Avatar
-                      alt="Remy Sharp"
-                      src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
-                    />
-                  )}
-                </IconButton>
-              </Tooltip>
+              <div
+                className="icon-wrapper"
+                style={{ display: "flex", alignItems: "center" }}
+              >
+                <Tooltip title="Open settings">
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    {userAvatar ? (
+                      <Avatar alt="User Avatar" src={userAvatar} />
+                    ) : (
+                      <Avatar
+                        alt="Remy Sharp"
+                        src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
+                      />
+                    )}
+                  </IconButton>
+                </Tooltip>
+                <div style={{ marginLeft: "8px" }}>
+                  <Typography variant="body1">{userName}</Typography>
+                  <Typography variant="caption">{userRole}</Typography>
+                </div>
+              </div>
               <Menu
                 sx={{ mt: "45px" }}
                 id="menu-appbar"

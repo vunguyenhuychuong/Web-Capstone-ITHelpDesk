@@ -15,13 +15,31 @@ import {
 } from "@mui/material";
 import { MDBCol } from "mdb-react-ui-kit";
 import { ArrowUpward, Edit } from "@mui/icons-material";
+import { useState } from "react";
+import { getTicketUserHistory } from "../../../../app/api/ticket";
+import { useEffect } from "react";
 
 const TicketHistory = () => {
-  const navigate = useNavigate();
+  
+  const [dataTicketHistory, setDataTicketHistory] = useState([]);
+
 
   function createData(name, calories, fat) {
     return { name, calories, fat };
   }
+
+  const fetchDataTicketHistory = async () => {
+    try{
+      const TicketHistory = getTicketUserHistory();
+      setDataTicketHistory(TicketHistory);
+    }catch(error){
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDataTicketHistory();
+  }, []);
 
   const rows = [
     createData("06:13 PM", <Edit />, "by administrator"),

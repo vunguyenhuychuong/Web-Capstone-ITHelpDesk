@@ -1,0 +1,12 @@
+.search-bar {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    border-radius: 50px; /* This creates a circular border */
+    border: 2px solid #333; /* Border color */
+  }
+  
+  .search-input {
+    flex: 1;
+    margin-left: 10px;
+  }

@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { getAllCategories } from "../../../app/api/category";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FaPaperclip } from "react-icons/fa";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 const RequestIssues = ({ onClose, fetchDataTicketByUserId }) => {
   const [data, setData] = useState({
@@ -16,9 +17,10 @@ const RequestIssues = ({ onClose, fetchDataTicketByUserId }) => {
     description: "",
     priority: 0,
     categoryId: 1,
-    attachmentUrl: null,
+    avatarUrl: "",
   });
 
+  const [selectedFile, setSelectedFile] = useState(null);
   const [dataCategories, setDataCategories] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -55,37 +57,45 @@ const RequestIssues = ({ onClose, fetchDataTicketByUserId }) => {
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setData((prevData) => ({
-      ...prevData,
-      attachmentUrl: file,
-    }));
+    setSelectedFile(e.target.files[0]);
+    console.log(selectedFile);
   };
 
   const handleSubmitTicket = async (e) => {
     e.preventDefault();
 
-    if(!data.title){
+    if (!data.title) {
       toast.warning("Title is required");
       return;
     }
+    let avatarUrl = data.avatarUrl;
+    if (selectedFile) {
+      const storage = getStorage();
+      const storageRef = ref(storage, "images/" + selectedFile.name);
+      await uploadBytes(storageRef, selectedFile);
+      avatarUrl = await getDownloadURL(storageRef);
+    }
+    const updatedData = {
+      ...data,
+      avatarUrl: avatarUrl,
+    };
+    setData(updatedData);
     setIsSubmitting(true);
     try {
-        const result = await createTicketByCustomer({
+      const result = await createTicketByCustomer({
         title: data.title,
         description: data.description,
         priority: data.priority,
         categoryId: data.categoryId,
-        attachmentUrl: data.attachmentUrl,
+        avatarUrl: avatarUrl,
       });
-      if(result === "Create Successfully") {
+      if (result === "Create Successfully") {
         toast.success("Ticket created successfully");
         fetchDataTicketByUserId();
-      }else{
-        toast.error("Error occurred while creating the ticket" , result);
       }
       onClose();
     } catch (error) {
+      toast.error("Error occurred while creating the ticket", error);
       console.log("Please check data input", error);
     } finally {
       setIsSubmitting(false);
@@ -94,8 +104,8 @@ const RequestIssues = ({ onClose, fetchDataTicketByUserId }) => {
 
   return (
     <section style={{ backgroundColor: "#eee" }}>
-      <MDBContainer  style={{ width: "100%" }}>
-      <MDBRow className="mb-4 custom-padding">
+      <MDBContainer style={{ width: "100%" }}>
+        <MDBRow className="mb-4 custom-padding">
           <MDBCol className="text-left-corner d-flex align-items-center">
             <h2 className="ms-3" style={{ fontFamily: "Arial, sans-serif" }}>
               Add Request
@@ -114,7 +124,7 @@ const RequestIssues = ({ onClose, fetchDataTicketByUserId }) => {
                 id="title"
                 type="text"
                 name="title"
-                className="form-control input-small"
+                className="form-control input-small border border-gray-300 py-2 px-4 rounded"
                 value={data.title}
                 onChange={handleInputChange}
               />
@@ -179,7 +189,6 @@ const RequestIssues = ({ onClose, fetchDataTicketByUserId }) => {
                   name="file"
                   className="form-control"
                   id="attachmentUrl"
-                  value={data.attachmentUrl}
                   onChange={handleFileChange}
                 />
               </div>

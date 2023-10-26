@@ -193,4 +193,19 @@ export async function editTicketByManager(ticketId, data) {
   }
 };
 
+//Get Ticket History
+export async function getTicketUserHistory(){
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/ticket/user/history`,{
+      headers: {
+        Authorization: header,
+      }
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};
+
 
