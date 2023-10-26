@@ -11,9 +11,9 @@ import {
 } from "../Admin/tableComlumn";
 import { createTicketByManager } from "../../../app/api/ticket";
 import { toast } from "react-toastify";
-import CategoryApi from "../../../app/api/category";
-import { getAllServices } from "../../../app/api/service";
-import ModeApi from "../../../app/api/mode";
+import { getDataCategories } from "../../../app/api/category";
+import { getDataServices } from "../../../app/api/service";
+import { getDataMode } from "../../../app/api/mode";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { getDataUser } from "../../../app/api";
 
@@ -42,14 +42,13 @@ const CreateTicket = ({ onClose }) => {
 
   const fetchDataManager = async () => {
     try {
-      const fetchCategories = await CategoryApi.getAllCategories();
+      const fetchCategories = await getDataCategories();
       const fetchUsers = await getDataUser(); 
-      const fetchModes = await ModeApi.getMode();
-      const responseService = await getAllServices();
+      const fetchModes = await getDataMode();
+      const responseService = await getDataServices();
       setDataCategories(fetchCategories);
       setDataServices(responseService);
       setDataUser(fetchUsers);
-      console.log(fetchUsers);
       setDataMode(fetchModes);
     } catch (error) {
       console.log("Error while fetching data", error);

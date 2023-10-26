@@ -6,15 +6,21 @@ import "draft-js/dist/Draft.css";
 import { priorityOption } from "../Admin/tableComlumn";
 import CategoryApi from "../../../app/api/category";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { editTicketByCustomer, getTicketByTicketId } from "../../../app/api/ticket";
+import {
+  editTicketByCustomer,
+  getTicketByTicketId,
+} from "../../../app/api/ticket";
+import {FaTicketAlt } from "react-icons/fa";
 
-const ChangeIssues = ({ onClose, ticketId  }) => {
+const ChangeIssues = ({ onClose, ticketId }) => {
   const [data, setData] = useState({
     title: "",
     description: "",
     priority: 0,
     categoryId: 1,
     attachmentUrl: "",
+    requesterId: 1,
+    id: 1,
   });
 
   const [dataCategories, setDataCategories] = useState([]);
@@ -39,42 +45,44 @@ const ChangeIssues = ({ onClose, ticketId  }) => {
   };
 
   useEffect(() => {
-      const fetchTicketData = async () => {
-        try{
-          const ticket = await getTicketByTicketId(ticketId);
-          setTicketData(ticket);
-          setData({
-            title: ticket.title || "",
-            description: ticket.description || "",
-            priority: ticket.priority || 0,
-            categoryId: ticket.categoryId || 1,
-            attachmentUrl: ticket.attachmentUrl || null,
-          });
-          console.log(data.title);
-        }catch(error){
-          console.log("Error fetching ticket data", error);
-        }
+    const fetchTicketData = async () => {
+      try {
+        const ticket = await getTicketByTicketId(ticketId);
+        setTicketData(ticket);
+        setData({
+          title: ticket.title || "",
+          description: ticket.description || "",
+          priority: ticket.priority || 0,
+          categoryId: ticket.categoryId || 1,
+          attachmentUrl: ticket.attachmentUrl || null,
+          requesterId: ticket.requesterId || 1,
+          id: ticket.id || 1,
+        });
+        console.log(data.title);
+      } catch (error) {
+        console.log("Error fetching ticket data", error);
       }
-      fetchCategory();
-      fetchTicketData();
+    };
+    fetchCategory();
+    fetchTicketData();
   }, [ticketId]);
 
   const handleSubmitTicket = async (e, updateData) => {
-    e.preventDefault(); 
-    try{
+    e.preventDefault();
+    try {
       setIsSubmitting(true);
       const res = await editTicketByCustomer(ticketId, updateData);
       onClose();
-    }catch(error){
+    } catch (error) {
       console.log("Error updating ticket", error);
-    }finally{
+    } finally {
       setIsSubmitting(false);
     }
-  }
+  };
 
   const handleFormClick = (e) => {
     e.stopPropagation();
-  }
+  };
 
   const handleInputChange = (e) => {
     e.stopPropagation();
@@ -96,8 +104,18 @@ const ChangeIssues = ({ onClose, ticketId  }) => {
 
   return (
     <section style={{ backgroundColor: "#eee" }}>
-      <MDBContainer className="py-5" onClick={onClose}>
-        <form  onSubmit={handleSubmitTicket} onClick={handleFormClick}>
+      <MDBContainer onClick={onClose}>
+        <MDBRow className="mb-4 custom-padding grey-row">
+          <MDBCol className="text-left-corner d-flex align-items-center custom-padding">
+            <div className="icon-container">
+              <FaTicketAlt color="#007bff" />
+            </div>
+            <h2 className="ms-3" style={{ fontFamily: "Arial, sans-serif" }}>
+              Request ID : #{data.requesterId}
+            </h2>
+          </MDBCol>
+        </MDBRow>
+        <form onSubmit={handleSubmitTicket} onClick={handleFormClick}>
           <MDBRow className="mb-4">
             <MDBCol md="2" className="text-center mt-2">
               <label htmlFor="form3Example2" className="narrow-input">
@@ -199,17 +217,16 @@ const ChangeIssues = ({ onClose, ticketId  }) => {
             </MDBCol>
           </MDBRow>
           <MDBRow className="mb-4">
-            <MDBCol md="2"></MDBCol>
-            <MDBCol md="10" className="text-end">
+            <MDBCol md="12" className="d-flex justify-content-center">
               <MDBBtn
                 small="true"
                 color="primary"
                 type="submit"
                 onClick={handleSubmitTicket}
-              >
+                className="me-2" >
                 {isSubmitting ? "Submitting..." : "Submit"}
               </MDBBtn>
-              <MDBBtn color="danger" className="ms-2" onClick={onClose}>
+              <MDBBtn color="danger" onClick={onClose}>
                 Cancel
               </MDBBtn>
             </MDBCol>

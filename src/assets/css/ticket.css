@@ -73,3 +73,32 @@
     padding-right: 10px;
     margin-left: 20px;
   }
+
+  .grey-row {
+    color: #33CCFF;
+    background-color: #cdd0d1;
+  }
+
+  .custom-padding {
+    padding-top: 10px; /* Adjust the top padding as needed */
+    padding-bottom: 10px; /* Adjust the bottom padding as needed */
+  }
+
+  
+  .icon-container {
+    width: 60px; /* Adjust the width and height to create a circle */
+    height: 60px; /* Adjust the width and height to create a circle */
+    border: 2px solid #3a3e42; /* Border color */
+    border-radius: 50%; /* Border-radius set to 50% creates a circle */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .icon-container svg {
+    width: 32px; /* Set the width of the icon */
+    height: 32px; /* Set the height of the icon */
+    fill: #007bff; /* Icon color */
+    font-size: 24px; /* Increase the font size of the icon */
+    padding-right: 6px;
+  }

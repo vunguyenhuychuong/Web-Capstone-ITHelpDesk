@@ -20,6 +20,20 @@ const ModeApi = {
     },
 };
 
+export async function getDataMode() {
+    const header = getAuthHeader();
+    try{
+        const res = await axios.get(`${baseURL}/mode/all`,{
+            headers: {
+                Authorization: header,
+            },
+        })
+        return res.data.result;
+    }catch(error){
+        console.log(error);
+        return [];
+    }
+};
 
 export async function createMode(data){
     const header = getAuthHeader();

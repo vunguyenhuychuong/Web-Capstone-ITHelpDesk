@@ -1,0 +1,21 @@
+.edit-ticket-container {
+    display: flex;
+}
+
+.left-box {
+    flex: 0 0 70%; /* 7/10 */
+    background-color: #f0f0f0;
+    padding: 20px; /* Add padding as needed */
+}
+
+.middle-box {
+    flex: 2;
+    background-color: #ffffff; /* Example background color */
+    padding: 20px; /* Add padding as needed */
+  }
+
+.right-box {
+    flex: 0 0 25%; /* 1/3 */
+    background-color: #f0f0f0;
+    padding: 20px; /* Add padding as needed */
+}

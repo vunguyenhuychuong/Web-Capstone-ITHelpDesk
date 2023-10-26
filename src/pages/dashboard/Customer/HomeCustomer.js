@@ -22,12 +22,10 @@ import { useState } from "react";
 import { getTicketByUserId } from "../../../app/api/ticket";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
-import { FaArrowLeft } from "react-icons/fa";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import RequestIssues from "./RequestIssues";
 
-
-const Main = () => {
+const HomeCustomer = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const navigate = useNavigate();
   const [tickets, setTickets] = useState([]);
@@ -49,6 +47,7 @@ const Main = () => {
     const fetchDataTicketByUserId = async () => {
       try {
         const response = await getTicketByUserId(user.user.id);
+        console.log(response);
         setTickets(response);
       } catch (error) {
         console.log("Error fetching tickets", error);
@@ -181,27 +180,43 @@ const Main = () => {
                     >
                       My Request Summary
                     </MDBCardText>
-                    <button className="btn btn-primary"onClick={handleOpenListTicket}>Show All</button>
+                    <button
+                      className="btn btn-primary"
+                      onClick={handleOpenListTicket}
+                    >
+                      Show All
+                    </button>
                   </div>
                 </MDBCol>
                 <div className="scrollable-list">
-                  <MDBListGroup className="rounded-3">
-                    {tickets.map((ticket, index) => (
-                      <MDBListGroupItem key={ticket.id} className="d-flex justify-content-between align-items-center p-3">
-                        <div key={ticket.id}>
-                          <MDBCardText className="ticket-title">
-                            Title: {ticket.title}
-                          </MDBCardText>
-                          <MDBCardText
-                            small
-                            className="text-muted ticket-description"
+                  {tickets.length === 0 ? (
+                    <div className="text-center p-3">
+                      <strong>No Ticket available</strong>
+                    </div>
+                  ) : (
+                    <MDBListGroup className="rounded-3">
+                      {tickets.map((ticket, index) => {
+                         return (
+                          <MDBListGroupItem
+                            key={ticket.id}
+                            className="d-flex justify-content-between align-items-center p-3"
                           >
-                            {ticket.description}
-                          </MDBCardText>
-                        </div>
-                      </MDBListGroupItem>
-                    ))}
-                  </MDBListGroup>
+                            <div key={ticket.id}>
+                              <MDBCardText className="ticket-title">
+                                Title: {ticket.title}
+                              </MDBCardText>
+                              <MDBCardText
+                                small
+                                className="text-muted ticket-description"
+                              >
+                                {ticket.description}
+                              </MDBCardText>
+                            </div>
+                          </MDBListGroupItem>
+                        )
+                      })}
+                    </MDBListGroup>
+                  )}
                 </div>
               </MDBCol>
             </div>
@@ -210,7 +225,11 @@ const Main = () => {
         <MDBCol md="5">
           <MDBCard className="mt-8 mb-md-0">
             <div className="d-flex align-items-center">
-              <MDBCol md="12" style={{ backgroundColor: "#C0C0C0" }}>
+              <MDBCol
+                md="12"
+                className="my-request-summary pl-3"
+                style={{ backgroundColor: "#C0C0C0" }}
+              >
                 <MDBCardText
                   className="mb-4 clickable-text"
                   style={{
@@ -225,7 +244,7 @@ const Main = () => {
                       fontSize: "20px",
                       color: "#000080",
                     }}
-                  />{" "}
+                  />
                   Announcements
                 </MDBCardText>
                 <MDBListGroup className="rounded-3">
@@ -264,7 +283,11 @@ const Main = () => {
         <MDBCol md="2">
           <MDBCard className="mt-8 mb-md-0">
             <div className="d-flex align-items-center">
-              <MDBCol md="12" style={{ backgroundColor: "#C0C0C0" }}>
+              <MDBCol
+                md="12"
+                className="my-request-summary pl-3"
+                style={{ backgroundColor: "#C0C0C0" }}
+              >
                 <MDBCardText
                   className="mb-4 ml-2"
                   style={{
@@ -273,7 +296,6 @@ const Main = () => {
                     color: "#333",
                   }}
                 >
-                  {" "}
                   My Request Summary
                 </MDBCardText>
                 <MDBListGroup className="rounded-3">
@@ -314,18 +336,10 @@ const Main = () => {
         open={dialogOpen}
         onClose={handleCloseRequestTicket}
       >
-          <MDBRow className="mb-4 custom-padding">
-            <MDBCol className="text-left-corner d-flex align-items-center">
-              <button className="btn btn-light">
-                <FaArrowLeft style={{ fontSize: 20 }}/>
-              </button>
-              <h2 className="ms-3" style={{ fontFamily: 'Arial, sans-serif' }}>Add Request</h2>
-            </MDBCol>
-          </MDBRow>
-            <RequestIssues onClose={handleCloseRequestTicket} />
+        <RequestIssues onClose={handleCloseRequestTicket} />
       </Dialog>
     </section>
   );
 };
 
-export default Main;
+export default HomeCustomer;

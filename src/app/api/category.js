@@ -19,6 +19,21 @@ export async function getAllCategories() {
     }
 };
 
+export async function getDataCategories() {
+    const header = getAuthHeader();
+    try{
+        const res = await axios.get(`${baseURL}/category/all`,{
+            headers: {
+                Authorization: header,
+            },
+        })
+        return res.data.result;
+    }catch(error){
+        console.log(error);
+        return [];
+    }
+};
+
 const CategoryApi = {
     getAllCategories: async () => {
         const header = getAuthHeader();

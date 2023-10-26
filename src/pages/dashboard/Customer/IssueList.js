@@ -1,7 +1,5 @@
 import {
-  MDBCol,
   MDBContainer,
-  MDBRow,
   MDBTable,
   MDBTableBody,
   MDBTableHead,
@@ -13,13 +11,15 @@ import CategoryApi from "../../../app/api/category";
 import { Edit } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 import { Dialog } from "@mui/material";
-import { FaArrowLeft } from "react-icons/fa";
 import ChangeIssues from "./ChangeIssues";
+import { formatDate } from "../../helpers/FormatDate";
+import { useNavigate } from "react-router-dom";
 
 const IssueList = () => {
   const [dataListTickets, setDataListTickets] = useState([]);
   const [dataCategories, setDataCategories] = useState([]);
   const [selectedTicketId, setSelectedTicketId] = useState(null);
+  const navigate = useNavigate();
   const user = useSelector((state) => state.auth);
   const userId = user.user.id;
 
@@ -32,7 +32,6 @@ const IssueList = () => {
   const fetchDataListTicket = async (userId) => {
     try {
       const response = await getTicketByUserId(userId);
-      console.log(response);
       setDataListTickets(response);
     } catch (error) {
       console.log(error);
@@ -49,8 +48,9 @@ const IssueList = () => {
   };
 
   const handleOpenDialog = (ticketId) => {
-    setSelectedTicketId(ticketId);
-    setDialogOpen(true);
+    // setSelectedTicketId(ticketId);
+    // setDialogOpen(true);
+    navigate(`/home/ticketService/${ticketId}`);
   };
 
   const getCategoryName = (categoryId) => {
@@ -90,9 +90,8 @@ const IssueList = () => {
         <MDBTable className="align-middle mb-0" responsive>
           <MDBTableHead className="bg-light">
             <tr>
-              <th
-                style={{ fontWeight: "bold", fontSize: "18px" }}>Edit</th>
-               <th style={{ fontWeight: "bold", fontSize: "18px" }}>Title</th>
+              <th style={{ fontWeight: "bold", fontSize: "18px" }}>Edit</th>
+              <th style={{ fontWeight: "bold", fontSize: "18px" }}>Title</th>
               <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                 Description
               </th>
@@ -106,49 +105,27 @@ const IssueList = () => {
               </th>
             </tr>
           </MDBTableHead>
-          <MDBTableBody>
+          <MDBTableBody className="bg-light">
             {dataListTickets.map((ticket, index) => (
               <tr key={index}>
-                <td style={{ cursor: 'pointer' }} onClick={() => handleOpenDialog(ticket.id)}>
-                  
+                <td
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleOpenDialog(ticket.id)}
+                >
                   <Edit />
                 </td>
                 <td>{ticket.title}</td>
                 <td>{ticket.description}</td>
                 <td>{getCategoryName(ticket.categoryId)}</td>
                 <td>{getPriorityBadge(ticket.priority)}</td>
-                <td>{ticket.createdAt}</td>
+                <td>{formatDate(ticket.createdAt)}</td>
                 <td>{getStatusName(ticket.ticketStatus)}</td>
               </tr>
             ))}
           </MDBTableBody>
         </MDBTable>
       </MDBContainer>
-      <Dialog
-        maxWidth="lg"
-        fullWidth
-        open={dialogOpen}
-        onClose={handleCloseChangeTicket}
-      >
-        <section style={{ backgroundColor: "#C0C0C0" }}>
-          <MDBContainer className="py-5">
-            <MDBRow className="mb-4 custom-padding">
-              <MDBCol className="text-left-corner d-flex align-items-center">
-                <button className="btn btn-light">
-                  <FaArrowLeft style={{ fontSize: 20 }} />
-                </button>
-                <h2
-                  className="ms-3"
-                  style={{ fontFamily: "Arial, sans-serif" }}
-                >
-                  Change Request
-                </h2>
-              </MDBCol>
-            </MDBRow>
-            <ChangeIssues onClose={() => setDialogOpen(false)}  ticketId={selectedTicketId}/>
-          </MDBContainer>
-        </section>
-      </Dialog>
+      
     </section>
   );
 };

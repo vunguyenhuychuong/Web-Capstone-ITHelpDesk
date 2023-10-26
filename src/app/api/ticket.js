@@ -66,6 +66,7 @@ export async function getTicketByUserId(id) {
         Authorization: header,
       },
     });
+    console.log(res);
     return res.data.result;
   } catch (error) {
     console.log(error);

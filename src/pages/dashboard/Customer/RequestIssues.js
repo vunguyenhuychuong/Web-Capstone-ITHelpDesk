@@ -81,10 +81,10 @@ const RequestIssues = ({ onClose, fetchDataTicketByUserId }) => {
       if(result === "Create Successfully") {
         toast.success("Ticket created successfully");
         fetchDataTicketByUserId();
-        onClose();
       }else{
         toast.error("Error occurred while creating the ticket" , result);
       }
+      onClose();
     } catch (error) {
       console.log("Please check data input", error);
     } finally {
@@ -95,6 +95,13 @@ const RequestIssues = ({ onClose, fetchDataTicketByUserId }) => {
   return (
     <section style={{ backgroundColor: "#eee" }}>
       <MDBContainer  style={{ width: "100%" }}>
+      <MDBRow className="mb-4 custom-padding">
+          <MDBCol className="text-left-corner d-flex align-items-center">
+            <h2 className="ms-3" style={{ fontFamily: "Arial, sans-serif" }}>
+              Add Request
+            </h2>
+          </MDBCol>
+        </MDBRow>
         <form method="post" onSubmit={handleSubmitTicket}>
           <MDBRow className="mb-4">
             <MDBCol md="2" className="text-center mt-2">

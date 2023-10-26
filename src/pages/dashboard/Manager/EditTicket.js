@@ -8,7 +8,6 @@ import {
   ImpactOptions,
   TicketStatusOptions,
   UrgencyOptions,
-  priorityOption,
 } from "../Admin/tableComlumn";
 import CategoryApi from "../../../app/api/category";
 import { getAllServices } from "../../../app/api/service";

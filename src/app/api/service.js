@@ -26,6 +26,21 @@ export async function getAllServices(
     }
 };
 
+export async function getDataServices() {
+    const header = getAuthHeader();
+    try{
+        const res = await axios.get(`${baseURL}/service/all`,{
+            headers: {
+                Authorization: header,
+            },
+        })
+        return res.data.result;
+    }catch(error){
+        console.log(error);
+        return [];
+    }
+};
+
 export async function getServiceDetail(serviceId) {
     const header = getAuthHeader();
     try{
