@@ -7,30 +7,19 @@ import {
   MDBTableHead,
 } from "mdb-react-ui-kit";
 import React, { useState } from "react";
-import { Badge, ContentCopy, Edit } from "@mui/icons-material";
-import { getAllAssigns } from "../../../app/api/assign";
+import { ContentCopy, Edit } from "@mui/icons-material";
 import { useEffect } from "react";
-import { getTicketByTicketId } from "../../../app/api/ticket";
-import { TicketStatusOptions } from "../../helpers/tableComlumn";
+import { getAllTicketSolutions } from "../../../app/api/ticketSolution";
+import { formatDate } from "../../helpers/FormatDate";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
-const AssignTicketList = () => {
+const TicketSolution = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [dataAssign, setDataAssign] = useState([]);
-  const fetchAllTicketAssign = async () => {
+  const [dataTicketSolution, setDataTicketSolution] = useState([]);
+  const fetchAllTicketSolutions = async () => {
+    setIsLoading(true);
     try {
-      const assigns = await getAllAssigns();
-      const assignsWithTickets = await Promise.all(
-        assigns.map(async (assign) => {
-          const ticket = await getTicketByTicketId(assign.ticketId);
-          return {
-            ...assign,
-            title: ticket.title,
-            ticketStatus: ticket.ticketStatus,
-          };
-        })
-      );
-      setDataAssign(assignsWithTickets);
-      setIsLoading(false);
+      const res = await getAllTicketSolutions();
+      setDataTicketSolution(res);
     } catch (error) {
       console.error(error);
       setIsLoading(false);
@@ -38,8 +27,14 @@ const AssignTicketList = () => {
   };
 
   useEffect(() => {
-    fetchAllTicketAssign();
+    fetchAllTicketSolutions();
   }, []);
+
+  useEffect(() => {
+    if (dataTicketSolution.length > 0) {
+      setIsLoading(false);
+    }
+  }, [dataTicketSolution]);
 
   return (
     <section style={{ backgroundColor: "#FFF" }}>
@@ -50,7 +45,8 @@ const AssignTicketList = () => {
         <MDBNavbar expand="lg" light bgColor="inherit">
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
-              <ContentCopy style={{ marginRight: "20px" }} /> All Assign
+              <ContentCopy style={{ marginRight: "20px" }} /> All Ticket
+              Solutions
             </MDBNavbarBrand>
           </MDBContainer>
         </MDBNavbar>
@@ -67,15 +63,17 @@ const AssignTicketList = () => {
                 <th style={{ fontWeight: "bold" }}>
                   <input type="checkbox" />
                 </th>
-                <th style={{ fontWeight: "bold" }}>Change</th>
-                <th style={{ fontWeight: "bold" }}>Ticket Name</th>
-                <th style={{ fontWeight: "bold" }}>Technician Name</th>
-                <th style={{ fontWeight: "bold" }}>Team Name</th>
-                <th style={{ fontWeight: "bold" }}>Status</th>
+                <th style={{ fontWeight: "bold" }}>Detail</th>
+                <th style={{ fontWeight: "bold" }}>Title</th>
+                <th style={{ fontWeight: "bold" }}>Content</th>
+                <th style={{ fontWeight: "bold" }}>Category</th>
+                <th style={{ fontWeight: "bold" }}>Owner</th>
+                <th style={{ fontWeight: "bold" }}>ReviewDate</th>
+                <th style={{ fontWeight: "bold" }}>ExpireDate</th>
               </tr>
             </MDBTableHead>
             <MDBTableBody className="bg-light">
-              {dataAssign.map((assign, index) => {
+              {dataTicketSolution.map((solution, index) => {
                 return (
                   <tr key={index}>
                     <td>
@@ -84,14 +82,12 @@ const AssignTicketList = () => {
                     <td>
                       <Edit />
                     </td>
-                    <td>{assign.title}</td>
-                    <td>{assign.technicianFullName}</td>
-                    <td>{assign.teamName}</td>
-                    <td>
-                      {TicketStatusOptions.find(
-                        (option) => option.id === assign.ticketStatus
-                      )?.name || "Unknown Status"}
-                    </td>
+                    <td>{solution.title}</td>
+                    <td>{solution.content}</td>
+                    <td>{solution.categoryId}</td>
+                    <td>{solution.ownerId}</td>
+                    <td>{formatDate(solution.reviewDate)}</td>
+                    <td>{formatDate(solution.expiredDate)}</td>
                   </tr>
                 );
               })}
@@ -104,4 +100,4 @@ const AssignTicketList = () => {
   );
 };
 
-export default AssignTicketList;
+export default TicketSolution;

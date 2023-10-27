@@ -3,8 +3,9 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import IndexTicket from './IndexTicket';
-import LoadingSkeleton from '../../../components/iconify/LoadingSkeleton';
 import AssignTicketList from './AssignTicketList';
+import TicketSolution from './TicketSolution';
+import CustomizedProgressBars from '../../../components/iconify/LinearProccessing';
 
 export default function ManagersTabs() {
   const [value, setValue] = React.useState(0);
@@ -21,14 +22,17 @@ export default function ManagersTabs() {
         selectionFollowsFocus
       >
         <Tab label="Requests" />
-        <Tab label="Assign" />
-        <Tab label="Projects" />
+        <Tab label="Assigns" />
+        <Tab label="Solutions" />
       </Tabs>
       <Box role="tabpanel" hidden={value !== 0}>
-        {value === 0 ? <IndexTicket /> : <LoadingSkeleton /> } 
+        {value === 0 ? <IndexTicket /> : <CustomizedProgressBars />  } 
       </Box>
       <Box role="tabpanel" hidden={value !== 1}>
-        {value === 1 ? <AssignTicketList /> : null} {/* Render AssignTicketList component */}
+        {value === 1 ? <AssignTicketList /> : <CustomizedProgressBars /> } 
+      </Box>
+      <Box role="tabpanel" hidden={value !== 2}>
+        {value === 2 ? <TicketSolution /> : <CustomizedProgressBars /> } {/* Render AssignTicketList component */}
       </Box>
     </Box>
   );

@@ -81,10 +81,10 @@ const handleInputChange = (e) => {
 
   const handleSubmitTicket = async (e) => {
     e.preventDefault();
-    // if (!data.title || !data.priority || data.categoryId === 0 || data.modeId === 0 || data.serviceId === 0) {
-    //   toast.warning("Please fill out all fields");
-    //   return;
-    // }
+    if (!data.title) {
+      toast.warning("Please fill out all fields");
+      return;
+    }
     setIsSubmitting(true);
     try {
       let attachmentUrl = data.attachmentUrl;
@@ -99,9 +99,8 @@ const handleInputChange = (e) => {
         ...data,
         attachmentUrl: attachmentUrl,
       };
-      console.log(updatedData);
       setData(updatedData);
-      const result = await createTicketByManager({
+        const response = await createTicketByManager({
         requesterId: data.requesterId,
         title: data.title,
         description: data.description,
@@ -115,11 +114,14 @@ const handleInputChange = (e) => {
         categoryId: data.categoryId,
         attachmentUrl: attachmentUrl,
       });
-      toast.success("Ticket created successfully");
-      onClose();
-      fetchDataManager();
+      if(response.data.isError && response.data.responseException.exceptionMessage) {
+        console.log(response.data.responseException.exceptionMessage)
+      }else{
+        toast.success("Ticket created successfully");
+        onClose(e);
+        fetchDataManager();
+      }
     } catch (error) {
-      console.log("Please check data input", error);
     } finally {
       setIsSubmitting(false);
     }

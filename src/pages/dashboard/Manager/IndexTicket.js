@@ -30,7 +30,6 @@ import {
   Select,
 } from "@mui/material";
 import { toast } from "react-toastify";
-import LoadingSkeleton from "../../../components/iconify/LoadingSkeleton";
 import { useNavigate } from "react-router-dom";
 import { formatTicketDate } from "../../helpers/FormatAMPM";
 import PageSizeSelector from "../Pagination/Pagination";
@@ -38,6 +37,7 @@ import {
   TicketStatusOptions,
   getPriorityOptionById,
 } from "../../helpers/tableComlumn";
+import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 
 const IndexTicket = () => {
   const [dataTickets, setDataTickets] = useState([]);
@@ -171,9 +171,11 @@ const IndexTicket = () => {
     navigate(`/home/detailTicket/${ticketId}`);
   };
 
-  const handleCloseRequestTicket = (e) => {
-    e.preventDefault();
+  const handleCloseRequestTicket = (e = null) => {
     setDialogOpen(false);
+    if(e){
+      e.preventDefault();
+    }
   };
 
   const getCategoryNameById = (categoryId) => {
@@ -189,9 +191,6 @@ const IndexTicket = () => {
 
   return (
     <section style={{ backgroundColor: "#FFF" }}>
-      {isLoading ? (
-        <LoadingSkeleton />
-      ) : (
         <MDBContainer
           className="py-5"
           style={{ paddingLeft: 20, paddingRight: 20, maxWidth: "100%" }}
@@ -265,7 +264,7 @@ const IndexTicket = () => {
             </MDBContainer>
           </MDBNavbar>
           {isLoading ? (
-            <p>Loading...</p>
+           <CustomizedProgressBars />
           ) : (
             <MDBTable
               className="align-middle mb-0"
@@ -438,7 +437,6 @@ const IndexTicket = () => {
             </MDBTable>
           )}
         </MDBContainer>
-      )}
       <Box display="flex" justifyContent="center" mt={2}>
         <Pagination
           count={totalPages}

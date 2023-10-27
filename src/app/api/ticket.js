@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getAuthHeader } from "./auth";
+import { toast } from "react-toastify";
 export const baseURL = "https://localhost:7043/v1/itsds";
 
 // Get All List ticket
@@ -153,16 +154,22 @@ export async function editTicketByCustomer(ticketId, data) {
 export async function createTicketByManager(data) {
   const header = getAuthHeader();
   try {
-    const res = await axios.post(`${baseURL}/ticket/manager/new`, data, {
+    const response = await axios.post(`${baseURL}/ticket/manager/new`, data, {
       headers: {
         Authorization: header,
       },
     });
-    console.log(res);
-    return res.data.result;
+    console.log(response);
+    return response.data;
   } catch (error) {
-    console.log(error);
-    return [];
+    if(error.response && error.response.data && error.response.data.isError){
+      const { responseException } = error.response.data;
+      toast.error(responseException.exceptionMessage);
+      throw new Error(responseException.exceptionMessage);
+    }else{
+      console.error("Unexpected error:", error);
+      throw new Error("An unexpected error occurred while processing your request.");
+    }
   }
 }
 
