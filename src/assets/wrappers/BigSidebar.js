@@ -39,6 +39,7 @@ const Wrapper = styled.aside`
       padding-left: 2.5rem;
       text-transform: capitalize;
       transition: var(--transition);
+      font-size: 1.2rem;
     }
     .nav-link:hover {
       background: var(--grey-50);
@@ -49,7 +50,7 @@ const Wrapper = styled.aside`
       color: var(--primary-500);
     }
     .icon {
-      font-size: 1.5rem;
+      font-size: 2rem;
       margin-right: 1rem;
       display: grid;
       place-items: center;

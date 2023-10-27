@@ -58,15 +58,27 @@ export async function getTicketByUserIdPagination(searchField, searchQuery, page
 };
 
 //Get Ticket User By Id
-export async function getTicketByUserId(id) {
+export async function getTicketByUserId(
+  searchField, 
+  searchQuery,
+  id,
+  page = 1,
+  pageSize = 5
+  ) {
   const header = getAuthHeader();
   try {
+    const filter = `${searchField}.contains("${searchQuery}")`;
+    const params = {
+      page: page,
+      pageSize: pageSize,
+    };
     const res = await axios.get(`${baseURL}/ticket/user/${id}`, {
       headers: {
         Authorization: header,
       },
+      params: params,
     });
-    console.log(res);
+    
     return res.data.result;
   } catch (error) {
     console.log(error);

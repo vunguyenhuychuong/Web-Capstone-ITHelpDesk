@@ -36,8 +36,8 @@ import { GetDataProfileUser } from "../../app/api";
 import { toast } from "react-toastify";
 import { getAuthHeader } from "../../app/api/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { genderOptions } from "./Admin/tableComlumn";
 import ChangePassword from "../ChangePassword";
+import { genderOptions } from "../helpers/tableComlumn";
 
 const Profile = () => {
   const [data, setData] = useState({

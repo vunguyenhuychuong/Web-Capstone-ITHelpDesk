@@ -42,7 +42,6 @@ import {
 } from "../../app/api";
 import "../../assets/css/profile.css";
 import { toast } from "react-toastify";
-import { genderOptions, roleOptions } from "./Admin/tableComlumn";
 import {
   ArrowDropDown,
   ArrowDropUp,
@@ -55,6 +54,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { useCallback } from "react";
 import { FaSearch } from "react-icons/fa";
+import { genderOptions, roleOptions } from "../helpers/tableComlumn";
 
 export default function Customer() {
   const [users, setUsers] = useState([]);

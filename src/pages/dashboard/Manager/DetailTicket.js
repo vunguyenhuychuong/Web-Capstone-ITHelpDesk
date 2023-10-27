@@ -10,12 +10,6 @@ import "../../../assets/css/ticket.css";
 import "../../../assets/css/EditTicket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "draft-js/dist/Draft.css";
-import {
-  ImpactOptions,
-  TicketStatusOptions,
-  UrgencyOptions,
-  priorityOption,
-} from "../Admin/tableComlumn";
 import CategoryApi from "../../../app/api/category";
 import { getAllServices } from "../../../app/api/service";
 import ModeApi from "../../../app/api/mode";
@@ -33,6 +27,7 @@ import useTicketData from "./useTicketData";
 import AssignTicketModal from "./AssignTicketModal";
 import EditTicket from "./EditTicket";
 import { Dialog } from "@mui/material";
+import { ImpactOptions, TicketStatusOptions, UrgencyOptions, priorityOption } from "../../helpers/tableComlumn";
 
 const DetailTicket = () => {
   const { ticketId } = useParams();

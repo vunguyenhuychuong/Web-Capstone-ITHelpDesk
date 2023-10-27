@@ -19,7 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import React from "react";
-import { roleOptions } from "../../pages/dashboard/Admin/tableComlumn";
+import { roleOptions } from "../../pages/helpers/tableComlumn";
 
 const Navbar = () => {
   const user = useSelector((state) => state.auth);

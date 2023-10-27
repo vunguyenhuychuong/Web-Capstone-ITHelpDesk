@@ -4,11 +4,7 @@ import "../../../assets/css/ticket.css";
 import "../../../assets/css/EditTicket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "draft-js/dist/Draft.css";
-import {
-  ImpactOptions,
-  TicketStatusOptions,
-  UrgencyOptions,
-} from "../Admin/tableComlumn";
+
 import CategoryApi from "../../../app/api/category";
 import { getAllServices } from "../../../app/api/service";
 import ModeApi from "../../../app/api/mode";
@@ -21,6 +17,7 @@ import { toast } from "react-toastify";
 import { FaTicketAlt } from "react-icons/fa";
 import { ArrowBack, ChatOutlined } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
+import { ImpactOptions, TicketStatusOptions, UrgencyOptions } from "../../helpers/tableComlumn";
 
 const EditTicket = ({ onClose }) => {
   const { ticketId } = useParams();

@@ -1,41 +1,62 @@
 import {
   MDBContainer,
+  MDBNavbar,
+  MDBNavbarBrand,
+  MDBNavbarNav,
   MDBTable,
   MDBTableBody,
   MDBTableHead,
 } from "mdb-react-ui-kit";
 import React, { useEffect, useState } from "react";
+import "../../../assets/css/ticketCustomer.css";
 import { getTicketByUserId } from "../../../app/api/ticket";
-import { TicketStatusOptions } from "../Admin/tableComlumn";
+import { TicketStatusOptions, getPriorityBadge } from "../../helpers/tableComlumn";
 import CategoryApi from "../../../app/api/category";
-import { Edit } from "@mui/icons-material";
+import { ContentCopy, Edit } from "@mui/icons-material";
 import { useSelector } from "react-redux";
-import { Dialog } from "@mui/material";
-import ChangeIssues from "./ChangeIssues";
 import { formatDate } from "../../helpers/FormatDate";
 import { useNavigate } from "react-router-dom";
+import PageSizeSelector from "../Pagination/Pagination";
+import { useCallback } from "react";
+import { Box, FormControl, MenuItem, Pagination, Select } from "@mui/material";
+import { FaSearch } from "react-icons/fa";
+
 
 const IssueList = () => {
   const [dataListTickets, setDataListTickets] = useState([]);
   const [dataCategories, setDataCategories] = useState([]);
-  const [selectedTicketId, setSelectedTicketId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchField, setSearchField] = useState("title");
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth);
   const userId = user.user.id;
 
-  const [dialogOpen, setDialogOpen] = useState(false);
-
-  const handleCloseChangeTicket = () => {
-    setDialogOpen(false);
-  };
-
-  const fetchDataListTicket = async (userId) => {
+  const fetchDataListTicket = useCallback(async (userId) => {
     try {
-      const response = await getTicketByUserId(userId);
+      const response = await getTicketByUserId(
+        searchField,
+        searchQuery,
+        userId,
+        currentPage,
+        pageSize
+        );
       setDataListTickets(response);
     } catch (error) {
       console.log(error);
     }
+  }, [searchField,searchQuery,userId, currentPage, pageSize]);
+
+  const handleChangePage = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  const handleChangePageSize = (event) => {
+    const newSize = parseInt(event.target.value);
+    setPageSize(newSize);
+    setCurrentPage(1);
   };
 
   const fetchCategoriesList = async () => {
@@ -48,8 +69,6 @@ const IssueList = () => {
   };
 
   const handleOpenDialog = (ticketId) => {
-    // setSelectedTicketId(ticketId);
-    // setDialogOpen(true);
     navigate(`/home/ticketService/${ticketId}`);
   };
 
@@ -65,28 +84,69 @@ const IssueList = () => {
     return statusOption ? statusOption.name : "Unknown Status";
   };
 
-  const getPriorityBadge = (priorityId) => {
-    if (priorityId === 0) {
-      return <span className="badge bg-primary rounded-pill">Low</span>;
-    } else if (priorityId === 1) {
-      return <span className="badge bg-info rounded-pill">Normal</span>;
-    } else if (priorityId === 2) {
-      return <span className="badge bg-secondary rounded-pill">Medium</span>;
-    } else if (priorityId === 3) {
-      return <span className="badge bg-warning rounded-pill">High</span>;
-    } else {
-      return <span className="badge bg-danger rounded-pill">Critical</span>;
-    }
-  };
-
   useEffect(() => {
     fetchDataListTicket(userId);
     fetchCategoriesList();
-  }, [userId]);
+    setTotalPages(4);
+  }, [userId, fetchDataListTicket]);
 
   return (
     <section style={{ backgroundColor: "#eee" }}>
-      <MDBContainer className="py-5">
+      <MDBContainer className="py-5 custom-container">
+      <MDBNavbar expand="lg" light bgColor="inherit">
+            <MDBContainer fluid>
+              <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
+                <ContentCopy style={{ marginRight: "20px" }} /> All Ticket Request
+              </MDBNavbarBrand>
+              <MDBNavbarNav className="ms-auto manager-navbar-nav">
+                <FormControl
+                  variant="outlined"
+                  style={{
+                    minWidth: 120,
+                    marginRight: 10,
+                    marginTop: 10,
+                    marginLeft: 10,
+                  }}
+                  size="small"
+                >
+                  <Select
+                    value={searchField}
+                    onChange={(e) => setSearchField(e.target.value)}
+                    inputProps={{
+                      name: "searchField",
+                      id: "search-field",
+                    }}
+                  >
+                    <MenuItem value="requesterId">RequesterId</MenuItem>
+                    <MenuItem value="title">Title</MenuItem>
+                    <MenuItem value="description">Description</MenuItem>
+                    <MenuItem value="categoryId">Category</MenuItem>
+                    <MenuItem value="impact">impact</MenuItem>
+                    <MenuItem value="ticketStatus">ticketStatus</MenuItem>
+                  </Select>
+                </FormControl>
+                <div className="input-wrapper">
+                  <FaSearch id="search-icon" />
+                  <input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        fetchDataListTicket();
+                      }
+                    }}
+                    className="input-search"
+                    placeholder="Type to search..."
+                  />
+                </div>
+                <PageSizeSelector
+                  pageSize={pageSize}
+                  handleChangePageSize={handleChangePageSize}
+                />
+              </MDBNavbarNav>
+            </MDBContainer>
+          </MDBNavbar>
         <MDBTable className="align-middle mb-0" responsive>
           <MDBTableHead className="bg-light">
             <tr>
@@ -101,7 +161,7 @@ const IssueList = () => {
                 Create Time
               </th>
               <th style={{ fontWeight: "bold", fontSize: "18px" }}>
-                Processing
+                Status
               </th>
             </tr>
           </MDBTableHead>
@@ -125,7 +185,13 @@ const IssueList = () => {
           </MDBTableBody>
         </MDBTable>
       </MDBContainer>
-      
+      <Box display="flex" justifyContent="center" mt={2}>
+        <Pagination
+          count={totalPages}
+          page={currentPage}
+          onChange={handleChangePage}
+        />
+      </Box>
     </section>
   );
 };

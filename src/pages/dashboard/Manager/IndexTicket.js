@@ -37,7 +37,7 @@ import PageSizeSelector from "../Pagination/Pagination";
 import {
   TicketStatusOptions,
   getPriorityOptionById,
-} from "../Admin/tableComlumn";
+} from "../../helpers/tableComlumn";
 
 const IndexTicket = () => {
   const [dataTickets, setDataTickets] = useState([]);

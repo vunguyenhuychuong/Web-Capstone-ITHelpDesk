@@ -8,7 +8,7 @@ import {
   TicketStatusOptions,
   UrgencyOptions,
   priorityOption,
-} from "../Admin/tableComlumn";
+} from "../../helpers/tableComlumn";
 import { createTicketByManager } from "../../../app/api/ticket";
 import { toast } from "react-toastify";
 import { getDataCategories } from "../../../app/api/category";

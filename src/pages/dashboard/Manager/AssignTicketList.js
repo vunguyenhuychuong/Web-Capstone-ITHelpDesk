@@ -11,7 +11,7 @@ import { Badge, ContentCopy, Edit } from "@mui/icons-material";
 import { getAllAssigns } from "../../../app/api/assign";
 import { useEffect } from "react";
 import { getTicketByTicketId } from "../../../app/api/ticket";
-import { TicketStatusOptions, mapTicketStatusToColor } from "../Admin/tableComlumn";
+import { TicketStatusOptions } from "../../helpers/tableComlumn";
 const AssignTicketList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [dataAssign, setDataAssign] = useState([]);

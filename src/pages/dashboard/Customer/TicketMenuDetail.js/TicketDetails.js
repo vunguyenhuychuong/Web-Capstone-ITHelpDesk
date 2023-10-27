@@ -5,7 +5,7 @@ import "../../../../assets/css/EditTicket.css";
 import { Grid, Stack } from "@mui/material";
 import { MDBCol, MDBTable, MDBTableBody } from "mdb-react-ui-kit";
 import useTicketData from "../../Manager/useTicketData";
-import { ImpactOptions, TicketStatusOptions } from "../../Admin/tableComlumn";
+import { ImpactOptions, TicketStatusOptions } from "../../../helpers/tableComlumn";
 import { formatDate } from "../../../helpers/FormatDate";
 
 const TicketDetails = ({ ticketId }) => {

@@ -3,7 +3,7 @@ import { MDBBtn, MDBCol, MDBContainer, MDBRow } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "draft-js/dist/Draft.css";
-import { priorityOption } from "../Admin/tableComlumn";
+
 import CategoryApi from "../../../app/api/category";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -11,6 +11,7 @@ import {
   getTicketByTicketId,
 } from "../../../app/api/ticket";
 import {FaTicketAlt } from "react-icons/fa";
+import { priorityOption } from "../../helpers/tableComlumn";
 
 const ChangeIssues = ({ onClose, ticketId }) => {
   const [data, setData] = useState({

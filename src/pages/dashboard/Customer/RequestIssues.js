@@ -3,13 +3,13 @@ import { MDBBtn, MDBCol, MDBContainer, MDBRow } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "draft-js/dist/Draft.css";
-import { priorityOption } from "../Admin/tableComlumn";
 import { createTicketByCustomer } from "../../../app/api/ticket";
 import { toast } from "react-toastify";
 import { getAllCategories } from "../../../app/api/category";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FaPaperclip } from "react-icons/fa";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { priorityOption } from "../../helpers/tableComlumn";
 
 const RequestIssues = ({ onClose, fetchDataTicketByUserId }) => {
   const [data, setData] = useState({

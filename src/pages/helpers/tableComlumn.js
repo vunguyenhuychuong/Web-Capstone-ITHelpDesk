@@ -201,5 +201,18 @@ export const TicketStatusOptions = [
   }
 ];
 
+export const getPriorityBadge = (priorityId) => {
+  if (priorityId === 0) {
+    return <span className="badge bg-primary rounded-pill">Low</span>;
+  } else if (priorityId === 1) {
+    return <span className="badge bg-info rounded-pill">Normal</span>;
+  } else if (priorityId === 2) {
+    return <span className="badge bg-secondary rounded-pill">Medium</span>;
+  } else if (priorityId === 3) {
+    return <span className="badge bg-warning rounded-pill">High</span>;
+  } else {
+    return <span className="badge bg-danger rounded-pill">Critical</span>;
+  }
+};
 
 

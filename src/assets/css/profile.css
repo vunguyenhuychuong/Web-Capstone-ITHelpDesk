@@ -88,6 +88,13 @@
   background-color: #DDDDDD;
 }
 
+.custom-red-btn:active,
+.custom-red-btn:focus {
+  background-color: #DDDDDD;
+  color: #FF6666;
+  outline: none; 
+}
+
 .custom-green-bg {
   background-color: #33CC99;
   border-radius: 10px;
@@ -106,6 +113,13 @@
   background-color: #DDDDDD;
 }
 
+.custom-green-btn:active,
+.custom-green-btn:focus {
+  background-color: #DDDDDD;
+  color: #33CC99;
+  outline: none; 
+}
+
 .custom-blue-bg {
   background-color: #6699FF;
   border-radius: 10px;
@@ -122,6 +136,13 @@
 
 .custom-blue-btn:hover {
   background-color: #DDDDDD;
+}
+
+.custom-blue-btn:active,
+.custom-blue-btn:focus {
+  background-color: #DDDDDD;
+  color: #6699FF;
+  outline: none; 
 }
 
 .custom-card-text {

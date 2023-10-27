@@ -270,12 +270,13 @@ const HomeCustomer = () => {
           <MDBCol md="4">
             <MDBRow className="mb-4">
               <MDBCol md="6">
-                <MDBCard className="mt-8 mb-md-0">
+                <MDBCard className="mt-8 mb-md-0" style={{ height: "240px" }}>
                   <MDBCardBody
                     style={{
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
                     <MDBCardTitle className="text-center mb-3">
@@ -288,19 +289,20 @@ const HomeCustomer = () => {
                 </MDBCard>
               </MDBCol>
               <MDBCol md="6">
-                <MDBCard className="mt-8 mb-md-0">
+                <MDBCard className="mt-8 mb-md-0" style={{ height: "240px" }}>
                 <MDBCardBody
                     style={{
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
                     <MDBCardTitle className="text-center mb-3">
                       0
                     </MDBCardTitle>
                     <MDBCardText className="text-center mb-4">
-                      Pending Requests
+                      Awaited Requests
                     </MDBCardText>
                   </MDBCardBody>
                 </MDBCard>
@@ -308,37 +310,39 @@ const HomeCustomer = () => {
             </MDBRow>
             <MDBRow className="mb-4">
               <MDBCol md="6">
-                <MDBCard className="mt-8 mb-md-0">
+                <MDBCard className="mt-8 mb-md-0" style={{ height: "240px" }}>
                 <MDBCardBody
                     style={{
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
                     <MDBCardTitle className="text-center mb-3">
                       0
                     </MDBCardTitle>
                     <MDBCardText className="text-center mb-4">
-                      Pending Requests
+                      On Hold Requests
                     </MDBCardText>
                   </MDBCardBody>
                 </MDBCard>
               </MDBCol>
               <MDBCol md="6">
-                <MDBCard className="mt-8 mb-md-0">
+                <MDBCard className="mt-8 mb-md-0" style={{ height: "240px" }}>
                 <MDBCardBody
                     style={{
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
                     <MDBCardTitle className="text-center mb-3">
                       0
                     </MDBCardTitle>
                     <MDBCardText className="text-center mb-4">
-                      Pending Requests
+                      Closed Requests
                     </MDBCardText>
                   </MDBCardBody>
                 </MDBCard>
