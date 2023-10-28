@@ -227,4 +227,20 @@ export async function getTicketUserHistory(){
   }
 };
 
+//Change status ticket
+export async function ChangeStatusTicket(ticketId, newStatus) {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.patch(`${baseURL}/ticket/modify-status?ticketId=${ticketId}&newStatus=${newStatus}`, null, {
+      headers: {
+        Authorization: header,
+      }
+    });
+    console.log(res.data);
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+}
+
 

@@ -1,4 +1,4 @@
-import { Cancel, Create, DoDisturb, Email, HighlightOff, Info, Pending } from "@mui/icons-material";
+import { Cancel, CheckCircle, Create, DoDisturb, Email, HighlightOff, Info, Pending } from "@mui/icons-material";
 import {
   FaImages,
   FaUser,
@@ -149,7 +149,7 @@ export const TicketStatusOptions = [
   },
   {
     id: 2,
-    name: "Progressing",
+    name: "In Progress",
     icon: <Pending style={{ color: '#339999' }} />,
     badgeStyle: {
       backgroundColor: 'white',
@@ -162,11 +162,11 @@ export const TicketStatusOptions = [
   },
   {
     id: 3,
-    name: "On Hold",
-    icon: <DoDisturb style={{ color: '#330000' }} />,
+    name: "Resolved",
+    icon: <CheckCircle style={{ color: '#33CC33' }} />,
     badgeStyle: {
       backgroundColor: 'white',
-      border: '2px solid #330000',
+      border: '2px solid #33CC33',
       borderRadius: '16px',
       padding: '5px',
       display: 'flex',

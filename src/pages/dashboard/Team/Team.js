@@ -49,6 +49,7 @@ import {
 import { FaPlus } from "react-icons/fa";
 import { useCallback } from "react";
 import PageSizeSelector from "../Pagination/Pagination";
+import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 
 
 const Team = () => {
@@ -56,6 +57,7 @@ const Team = () => {
   const [openAdd, setOpenAdd] = React.useState(false);
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
@@ -104,6 +106,7 @@ const Team = () => {
         sortDirection
       );
       setTeams(TeamList);
+      setIsLoading(false);
     } catch (error) {
       console.log("Error while fetching data", error);
     }
@@ -169,7 +172,6 @@ const Team = () => {
   const onHandleEditTeam = async () => {
     try {
       const response = UpdateTeam(data.id, data);
-      console.log(response);
       toast.success("Update Team successful");
       setOpen(false);
       fetchDataTeam();
@@ -295,6 +297,9 @@ const Team = () => {
             </MDBNavbarNav>
           </MDBContainer>
         </MDBNavbar>
+        {isLoading ? (
+           <CustomizedProgressBars />
+          ) : (
         <TableContainer component={Paper}>
           <Table arial-label="arial-label">
             <TableHead>
@@ -406,6 +411,7 @@ const Team = () => {
             </TableBody>
           </Table>
         </TableContainer>
+        )}
       </MDBContainer>
 
       <Box display="flex" justifyContent="center" mt={2}>

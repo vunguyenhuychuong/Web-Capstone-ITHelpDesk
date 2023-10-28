@@ -9,7 +9,7 @@ import {
   MDBTableHead,
 } from "mdb-react-ui-kit";
 import React, { useCallback, useEffect, useState } from "react";
-import { deleteTicketByManager, getAllTicket } from "../../../app/api/ticket";
+import { ChangeStatusTicket, deleteTicketByManager, getAllTicket } from "../../../app/api/ticket";
 import { getAllCategories } from "../../../app/api/category";
 import "../../../assets/css/manager.css";
 import { FaPlus, FaSearch } from "react-icons/fa";
@@ -55,11 +55,7 @@ const IndexTicket = () => {
   const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [selectedTicketData, setSelectedTicketData] = useState(null);
   const [isDropdownVisible, setDropdownVisible] = useState(false);
-
   const navigate = useNavigate();
-  const toggleDropdown = () => {
-    setDropdownVisible(!isDropdownVisible);
-  };
 
   const fetchAllTicket = useCallback(async () => {
     try {
@@ -181,6 +177,23 @@ const IndexTicket = () => {
   const getCategoryNameById = (categoryId) => {
     const category = dataCategories.find((cat) => cat.id === categoryId);
     return category ? category.name : "Unknown Category";
+  };
+
+  const handleTicketStatusChange = useCallback(
+    async (ticketId, newStatus) => {
+      try {
+        await ChangeStatusTicket(ticketId, newStatus);
+      } catch (error) {
+        console.log('Error changing ticket status:', error);
+      }
+    },
+    []
+  );
+
+  const handleDropdownClick = (e) => {
+    e.stopPropagation();
+    console.log("Dropdown clicked");
+    setDropdownVisible(!isDropdownVisible);
   };
 
   useEffect(() => {
@@ -400,25 +413,19 @@ const IndexTicket = () => {
                           {priorityOption.name}
                         </span>
                       </td>
-                      <td onClick={toggleDropdown}>
+                      <td onMouseDown={(e) => e.stopPropagation()} onClick={handleDropdownClick}>
                         {isDropdownVisible ? (
                           <select
                             style={ticketStatusOption.badgeStyle}
                             value={ticket.ticketStatus}
-                            // onChange={(e) =>
-                            //   handleTicketStatusChange(
-                            //     ticket.id,
-                            //     e.target.value
-                            //   )
-                            // }
-                            // onBlur={toggleDropdown}
+                            onChange={(e) => handleTicketStatusChange(ticket.id, parseInt(e.target.value))
+                            }
+                            onBlur={() => setDropdownVisible(false)}
                           >
                             {TicketStatusOptions.map((option) => (
                               <option key={option.id} value={option.id}>
-                                <span className={option.badgeStyle}>
                                   {option.icon}
                                   {option.name}
-                                </span>
                               </option>
                             ))}
                           </select>

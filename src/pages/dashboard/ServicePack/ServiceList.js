@@ -28,6 +28,9 @@ import EditService from "./EditService";
 import { toast } from "react-toastify";
 import { useCallback } from "react";
 import PageSizeSelector from "../Pagination/Pagination";
+import { formatCurrency } from "../../helpers/FormatCurrency";
+import { formatDate } from "../../helpers/FormatDate";
+import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 
 
 const ServiceList = () => {
@@ -38,13 +41,17 @@ const ServiceList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+
 
   const fetchAllService = useCallback(async () => {
     try {
       const service = await getAllServices(currentPage, pageSize);
       setDataService(service);
+      setIsLoading(false);
     } catch (error) {
       console.error(error);
+      setIsLoading(false);
     }
   }, [currentPage, pageSize]);
 
@@ -80,20 +87,6 @@ const ServiceList = () => {
   const handleCloseEdit = (e) => {
     e.preventDefault();
     setDialogEdit(false);
-  };
-
-  const formatCurrency = (amount) => {
-    // Convert the amount to a number if it's a string
-    const numericAmount = parseFloat(amount);
-
-    // Use toLocaleString to format the number with commas and remove currency symbol
-    return numericAmount
-      .toLocaleString("en-US", {
-        style: "currency",
-        currency: "USD", // Change this to the desired currency code if not USD
-        minimumFractionDigits: 0,
-      })
-      .replace(/^./, ""); // Remove the first character (currency symbol) from the formatted string
   };
 
   const onDeleteService = async (id) => {
@@ -154,6 +147,9 @@ const ServiceList = () => {
             </MDBNavbarNav>
           </MDBContainer>
         </MDBNavbar>
+        {isLoading ? (
+           <CustomizedProgressBars />
+          ) : (
         <MDBTable
           className="align-middle mb-0"
           responsive
@@ -187,8 +183,8 @@ const ServiceList = () => {
                   </td>
                   <td>{service.description}</td>
                   <td>{formatCurrency(service.amount)} VND</td>
-                  <td>{service.createdAt || "-"}</td>
-                  <td>{service.modifiedAt || "-"}</td>
+                  <td>{formatDate(service.createdAt || "-")}</td>
+                  <td>{formatDate(service.modifiedAt || "-")}</td>
                 </tr>
               );
             })}
@@ -196,6 +192,7 @@ const ServiceList = () => {
 
           <MDBTableBody className="bg-light"></MDBTableBody>
         </MDBTable>
+        )}
         <Box display="flex" justifyContent="center" mt={2}>
           <Pagination
             count={totalPages}

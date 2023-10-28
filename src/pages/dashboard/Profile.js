@@ -37,7 +37,7 @@ import { toast } from "react-toastify";
 import { getAuthHeader } from "../../app/api/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import ChangePassword from "../ChangePassword";
-import { genderOptions } from "../helpers/tableComlumn";
+import { genderOptions, roleOptions } from "../helpers/tableComlumn";
 
 const Profile = () => {
   const [data, setData] = useState({
@@ -59,7 +59,6 @@ const Profile = () => {
   const [openChangePassword, setChangePassword] = React.useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [date, setDate] = useState(moment());
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prevInputs) => ({
@@ -130,7 +129,7 @@ const Profile = () => {
       };
       setData(updatedData);
       
-      const editProfile = await axios.patch('https://localhost:7043/v1/itsds/user/update-profile',{
+        await axios.patch('https://localhost:7043/v1/itsds/user/update-profile',{
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
@@ -147,7 +146,6 @@ const Profile = () => {
       });
       toast.success("Edit Successful");
       setOpenAdd(false);
-      console.log(editProfile);
     }catch(err){
       console.log(err);
     }
@@ -296,7 +294,7 @@ const Profile = () => {
                     </MDBCol>
                     <MDBCol sm="8">
                       <MDBCardText className="text-muted">
-                      {data && data.role ? data.role : "N/A"}
+                      {data && data.role ? roleOptions.find(role => role.id === data.role).name : "N/A"}
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="1">
@@ -420,7 +418,6 @@ const Profile = () => {
           <MDBCard className="mb-4" style={{ backgroundColor: "#FFFFFF" }}>
             <MDBCardBody className="text-center">
               <Grid container spacing={4}>
-                {/* Left side with avatar and basic information */}
                 <Grid item xs={12} md={4}>
                   {data && data.avatarUrl ? (
                     <MDBCardImage
@@ -443,7 +440,6 @@ const Profile = () => {
                     <input type="file" onChange={handleFileChange} />                
                   </div>
                 </Grid>
-                {/* Right side with input fields */}
                 <Grid item xs={12} md={8}>
                   <TextField
                     name="firstName"
@@ -524,7 +520,6 @@ const Profile = () => {
             </MDBCardBody>
           </MDBCard>
         </DialogContent>
-        );
         <DialogActions>
           <>
             <Button onClick={onHandleEditProfile} variant="outlined" color="primary"><EditIcon /></Button>

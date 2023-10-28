@@ -18,8 +18,10 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { roleOptions } from "../../pages/helpers/tableComlumn";
+import { GetDataProfileUser } from "../../app/api";
+import { useState } from "react";
 
 const Navbar = () => {
   const user = useSelector((state) => state.auth);
@@ -27,6 +29,13 @@ const Navbar = () => {
   const userName = user.user.lastName + " " + user.user.firstName;
   const userRole = roleOptions.find((role) => role.id === user.user.role)?.name;
   const navigate = useNavigate();
+
+  const [data, setData] = useState({
+    firstName: "",
+    lastName: "",
+    username: "",
+    avatarUrl: "",
+  });
 
   const settings = ["Profile", "Dashboard", "Logout"];
 
@@ -39,6 +48,19 @@ const Navbar = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const fetchDataProfile = async () => {
+    try{
+      const res = await GetDataProfileUser();
+      setData(res);
+    }catch(error){
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDataProfile();
+  }, []);
 
   const logout = () => {
     localStorage.removeItem("profile");
@@ -102,8 +124,8 @@ const Navbar = () => {
               >
                 <Tooltip title="Open settings">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    {userAvatar ? (
-                      <Avatar alt="User Avatar" src={userAvatar} />
+                    {data ? (
+                      <Avatar alt="User Avatar" src={data.avatarUrl} />
                     ) : (
                       <Avatar
                         alt="Remy Sharp"
