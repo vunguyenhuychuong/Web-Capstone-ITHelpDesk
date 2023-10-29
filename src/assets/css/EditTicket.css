@@ -1,11 +1,11 @@
 .edit-ticket-container {
     display: flex;
     justify-content: space-between;
-    padding: 20px; /* Add padding as needed */
+    padding: 10px; /* Add padding as needed */
   }
   
   .left-box {
-    flex: 1;
+    flex: 0 0 70%;
     background-color: #f0f0f0; /* Example background color */
     padding: 0 10px 0px 10px; /* Add padding as needed */
   }
@@ -17,7 +17,7 @@
   }
   
   .right-box {
-    flex: 1;
+    flex: 0 0 25%; 
     background-color: #f0f0f0; /* Example background color */
   }
 
@@ -108,7 +108,7 @@
 }
 
 .heading-padding {
-    padding-top: 7px; /* Adjust the top padding as needed */
+    padding-top: 5px; /* Adjust the top padding as needed */
     padding-bottom: 7px; /* Adjust the bottom padding as needed */
 }
 

@@ -192,7 +192,6 @@ const IndexTicket = () => {
 
   const handleDropdownClick = (e) => {
     e.stopPropagation();
-    console.log("Dropdown clicked");
     setDropdownVisible(!isDropdownVisible);
   };
 
@@ -200,7 +199,7 @@ const IndexTicket = () => {
     fetchAllTicket();
     fetchAllCategories();
     setTotalPages(4);
-  }, [fetchAllTicket]);
+  }, [fetchAllTicket, dataTickets]);
 
   return (
     <section style={{ backgroundColor: "#FFF" }}>
@@ -421,11 +420,10 @@ const IndexTicket = () => {
                             onChange={(e) => handleTicketStatusChange(ticket.id, parseInt(e.target.value))
                             }
                             onBlur={() => setDropdownVisible(false)}
-                          >
+                          > 
                             {TicketStatusOptions.map((option) => (
-                              <option key={option.id} value={option.id}>
-                                  {option.icon}
-                                  {option.name}
+                              <option key={option.id} value={option.id} className={option.iconClass}>
+                                  {option.icon} {option.name}
                               </option>
                             ))}
                           </select>

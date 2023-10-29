@@ -36,3 +36,9 @@
   #search-icon {
     color: royalblue;
   }
+
+  .info-icon::before {
+    content: '\info'; /* Unicode character or URL for the icon */
+    color: #3399FF; /* Icon color */
+    /* Additional styles for the icon if needed */
+  }

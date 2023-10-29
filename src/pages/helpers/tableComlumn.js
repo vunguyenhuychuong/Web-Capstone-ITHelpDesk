@@ -124,6 +124,7 @@ export const TicketStatusOptions = [
   {
     id: 0,
     name: "Open",
+    iconClass: "info-icon",
     icon: <Info style={{ color: '#3399FF' }} />,
     badgeStyle: {
       backgroundColor: 'white',
@@ -137,6 +138,7 @@ export const TicketStatusOptions = [
   {
     id: 1,
     name: "Assigned",
+    iconClass: "info-icon",
     icon: <Create style={{ color: '#FF9933' }} />,
     badgeStyle: {
       backgroundColor: 'white',
@@ -150,6 +152,7 @@ export const TicketStatusOptions = [
   {
     id: 2,
     name: "In Progress",
+    iconClass: "info-icon",
     icon: <Pending style={{ color: '#339999' }} />,
     badgeStyle: {
       backgroundColor: 'white',
@@ -163,6 +166,7 @@ export const TicketStatusOptions = [
   {
     id: 3,
     name: "Resolved",
+    iconClass: "info-icon",
     icon: <CheckCircle style={{ color: '#33CC33' }} />,
     badgeStyle: {
       backgroundColor: 'white',
@@ -176,6 +180,7 @@ export const TicketStatusOptions = [
   {
     id: 4,
     name: "Closed",
+    iconClass: "info-icon",
     icon: <HighlightOff style={{ color: '#888888' }} />,
     badgeStyle: {
       backgroundColor: 'white',
@@ -189,6 +194,7 @@ export const TicketStatusOptions = [
   {
     id: 5,
     name: "Cancelled",
+    iconClass: "info-icon",
     icon: <Cancel style={{ color: '#CC3333' }} />,
     badgeStyle: {
       backgroundColor: 'white',
