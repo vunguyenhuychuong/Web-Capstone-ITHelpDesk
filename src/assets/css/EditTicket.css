@@ -78,9 +78,9 @@
 }
 
 .narrow-input {
-  display: flex; /* Use flexbox layout for the child elements */
-  align-items: center; /* Center items vertically within the child elements */
-  margin-right: 10px; /* Optional: Add some space between the label and the priority text */
+  display: flex; 
+  align-items: center; 
+  margin-right: 10px; 
 }
 
   .status-container {
@@ -91,10 +91,10 @@
   }
   
   .status-badge {
-    width: 20px; /* Adjust the width of the square as needed */
-    height: 20px; /* Adjust the height of the square as needed */
-    margin-right: 10px; /* Adjust the spacing between the square and text as needed */
-    border-radius: 3px; /* Adjust border-radius for a rounded square */
+    width: 20px; 
+    height: 20px; 
+    margin-right: 10px; 
+    border-radius: 3px; 
   }
 
   .bold-text {
@@ -102,14 +102,14 @@
 }
 
 .border-box {
-    border: 1px solid #cccccc; /* Border color and width */
-    border-radius: 1px; /* Optional: Add border-radius for rounded corners */
+    border: 1px solid #cccccc; 
+    border-radius: 1px; 
     background-color:#DDDDDD ;
 }
 
 .heading-padding {
-    padding-top: 5px; /* Adjust the top padding as needed */
-    padding-bottom: 7px; /* Adjust the bottom padding as needed */
+    padding-top: 5px; 
+    padding-bottom: 7px; 
 }
 
 .custom-table {

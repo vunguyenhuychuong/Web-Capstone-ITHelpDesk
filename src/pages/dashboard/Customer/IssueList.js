@@ -33,6 +33,7 @@ const IssueList = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth);
   const userId = user.user.id;
+  console.log(userId);
 
   const fetchDataListTicket = useCallback(async (userId) => {
     try {
@@ -44,10 +45,11 @@ const IssueList = () => {
         pageSize
         );
       setDataListTickets(response);
+      console.log(response);
     } catch (error) {
       console.log(error);
     }
-  }, [searchField,searchQuery,userId, currentPage, pageSize]);
+  }, [searchField,searchQuery, currentPage, pageSize]);
 
   const handleChangePage = (event, value) => {
     setCurrentPage(value);

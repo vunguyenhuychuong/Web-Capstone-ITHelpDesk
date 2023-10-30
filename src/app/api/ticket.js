@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getAuthHeader } from "./auth";
 import { toast } from "react-toastify";
-export const baseURL = "https://localhost:7043/v1/itsds";
+export const baseURL = 'https://dichvuit-be.hisoft.vn/v1/itsds';
 
 // Get All List ticket
 export async function getAllTicket(
@@ -79,7 +79,6 @@ export async function getTicketByUserId(
       },
       params: params,
     });
-    
     return res.data.result;
   } catch (error) {
     console.log(error);
@@ -130,7 +129,7 @@ export async function createTicketByCustomer(data) {
     });
     return res.data.result;
   } catch (error) {
-    console.log(error);
+    toast.error(error.response.data.responseException.exceptionMessage);
     return [];
   }
 };

@@ -34,6 +34,12 @@ const HomeCustomer = () => {
   const navigate = useNavigate();
   const [tickets, setTickets] = useState([]);
   const user = useSelector((state) => state.auth);
+  const id = user.user.id;
+  const [searchField, setSearchField] = useState("title");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [pageSize, setPageSize] = useState(5);
+  const [currentPage, setCurrentPage] = useState(1);
+
   const handleOpenRequestTicket = (e) => {
     e.preventDefault();
     setDialogOpen(true);
@@ -50,7 +56,13 @@ const HomeCustomer = () => {
   useEffect(() => {
     const fetchDataTicketByUserId = async () => {
       try {
-        const response = await getTicketByUserId(user.user.id);
+        const response = await getTicketByUserId(
+          searchField, 
+          searchQuery,
+          id,
+          currentPage,
+          pageSize,
+          );
         setTickets(response);
       } catch (error) {
         console.log("Error fetching tickets", error);

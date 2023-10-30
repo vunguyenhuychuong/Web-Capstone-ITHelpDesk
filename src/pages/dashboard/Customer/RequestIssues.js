@@ -89,13 +89,14 @@ const RequestIssues = ({ onClose, fetchDataTicketByUserId }) => {
         categoryId: data.categoryId,
         avatarUrl: avatarUrl,
       });
-      if (result === "Create Successfully") {
+      if (result.data && result.data.responseException.exceptionMessage) {
+        console.log(result.data.responseException.exceptionMessage)
+      }else{
         toast.success("Ticket created successfully");
+        onClose(e);
         fetchDataTicketByUserId();
       }
-      onClose();
     } catch (error) {
-      toast.error("Error occurred while creating the ticket", error);
       console.log("Please check data input", error);
     } finally {
       setIsSubmitting(false);
