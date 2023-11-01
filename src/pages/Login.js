@@ -74,6 +74,13 @@ function Login() {
               hideProgressBar: false,
             });
             break;
+          case 3: 
+            navigate("/home/ticketSolution");
+            toast.success(`Welcome Technician: ${lastName} ${firstName}`, {
+              autoClose: 1000,
+              hideProgressBar: false,
+            });
+            break;
           default:
             navigate("/login");
             toast.error("Login Fail", {

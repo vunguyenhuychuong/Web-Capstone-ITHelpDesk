@@ -4,8 +4,15 @@ import Logo from "./Logo";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import "../../assets/css/navbar.css"; 
-import { Mail, NotificationAdd, Search, Settings } from "@mui/icons-material";
+import "../../assets/css/navbar.css";
+import {
+  Help,
+  Mail,
+  NotificationAdd,
+  RotateLeft,
+  Search,
+  Settings,
+} from "@mui/icons-material";
 import {
   Avatar,
   Badge,
@@ -25,7 +32,6 @@ import { useState } from "react";
 
 const Navbar = () => {
   const user = useSelector((state) => state.auth);
-  const userAvatar = user.user.avatarUrl;
   const userName = user.user.lastName + " " + user.user.firstName;
   const userRole = roleOptions.find((role) => role.id === user.user.role)?.name;
   const navigate = useNavigate();
@@ -50,10 +56,10 @@ const Navbar = () => {
   };
 
   const fetchDataProfile = async () => {
-    try{
+    try {
       const res = await GetDataProfileUser();
       setData(res);
-    }catch(error){
+    } catch (error) {
       console.log(error);
     }
   };
@@ -90,18 +96,18 @@ const Navbar = () => {
         <button type="button" className="toggle-btn">
           <FaAlignLeft />
         </button>
+        <Paper component="form" className="search-bar">
+          <InputBase className="search-input" placeholder="Search..." />
+          <IconButton type="submit" aria-label="search">
+            <Search />
+          </IconButton>
+        </Paper>
         <div>
           {" "}
           <Logo />
         </div>
         <div className="btn-container">
           <div className="icons-wrapper">
-            <Paper component="form" className="search-bar">
-              <InputBase className="search-input" placeholder="Search..." />
-              <IconButton type="submit" aria-label="search">
-                <Search />
-              </IconButton>
-            </Paper>
             <IconButton size="large" color="#33CCFF">
               <Badge badgeContent={4} color="error">
                 <Mail />
@@ -115,6 +121,16 @@ const Navbar = () => {
             <IconButton size="large" color="#33CCFF">
               <Badge color="error">
                 <Settings />
+              </Badge>
+            </IconButton>
+            <IconButton size="large" color="#33CCFF">
+              <Badge color="error">
+                <RotateLeft />
+              </Badge>
+            </IconButton>
+            <IconButton size="large" color="#33CCFF">
+              <Badge color="error">
+                <Help />
               </Badge>
             </IconButton>
             <Box sx={{ flexGrow: 0 }}>

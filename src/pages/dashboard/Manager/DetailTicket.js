@@ -306,7 +306,7 @@ const DetailTicket = () => {
                 </tr>
                 <tr>
                   <td className="gray-background align-right">Mode </td>
-                  <td className="align-left">
+                  <td  >
                     {dataMode[data.modeId]?.name || "-"}
                   </td>
                   <td className="gray-background align-right">Urgency</td>

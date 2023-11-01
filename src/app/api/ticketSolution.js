@@ -1,6 +1,6 @@
 import axios from "axios";
 import { getAuthHeader } from "./auth";
-export const baseURL = 'https://dichvuit-be.hisoft.vn/v1/itsds';
+import { baseURL } from "./ticket";
 
 export async function getAllTicketSolutions() {
     const header = getAuthHeader();
@@ -15,4 +15,20 @@ export async function getAllTicketSolutions() {
         console.log(error);
         return [];
     };
-}
+};
+
+export async function getTicketSolutionById(solutionId) {
+    const header = getAuthHeader();
+    try{
+        const res = await axios.get(`${baseURL}/solution/${solutionId}`,{
+            headers: {
+                Authorization: header,
+            },
+        });
+        return res.data.result;
+    }catch(error){
+        console.log(error);
+        return [];
+    }
+};
+

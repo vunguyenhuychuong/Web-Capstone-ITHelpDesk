@@ -53,6 +53,10 @@ const HomeCustomer = () => {
     navigate(`/home/customerTicket`);
   };
 
+  // const handleOpenListTicketSolution = () => {
+  //   navigate('/home/ticketSolution');
+  // };
+
   useEffect(() => {
     const fetchDataTicketByUserId = async () => {
       try {
@@ -144,7 +148,7 @@ const HomeCustomer = () => {
                   <MDBCol md="9">
                     <MDBCardText className="mb-4 custom-card-text">
                       I am looking for
-                      <div style={{ fontSize: "24px" }}>Solutions</div>
+                      <div style={{ fontSize: "24px" }} >Solutions</div>
                     </MDBCardText>
                     <MDBBtn className="custom-blue-btn">View Solution</MDBBtn>
                   </MDBCol>

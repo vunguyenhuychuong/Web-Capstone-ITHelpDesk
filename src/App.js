@@ -20,6 +20,9 @@ import ModeList from './pages/dashboard/Mode/ModeList';
 import Team from './pages/dashboard/Team/Team';
 import HomeCustomer from './pages/dashboard/Customer/HomeCustomer';
 import TicketService from './pages/dashboard/Customer/TicketService';
+import TicketSolutionList from './pages/dashboard/Technician/TicketSolutionList';
+import CreateTicketSolution from './pages/dashboard/Technician/CreateTicketSolution';
+import TicketSolutionDetail from './pages/dashboard/Technician/TicketSolutionDetail';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -48,6 +51,9 @@ function App() {
           <Route path='mode' element={<ModeList />} />
           <Route path='customerTicket' element={<IssueList />} />
           <Route path='ticketService/:ticketId' element={<TicketService />} />
+          <Route path='ticketSolution' element={<TicketSolutionList />} />
+          <Route path='createSolution' element={<CreateTicketSolution />} />
+          <Route path='detailSolution/:solutionId' element={<TicketSolutionDetail />} />
           <Route path='detailTicket/:ticketId' element={<DetailTicket />} />
           {(hasManagerRole) && <Route path='listTicket' element={<ManagersTabs />} />}
           </Route>
