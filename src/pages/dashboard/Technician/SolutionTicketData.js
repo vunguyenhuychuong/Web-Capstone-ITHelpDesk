@@ -4,7 +4,8 @@ import { useState } from "react";
 
 
 const useSolutionTicketData = (solutionId) => {
-    // const [error, setError] = useState(null);
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
   
     useEffect(() => {
@@ -17,9 +18,11 @@ const useSolutionTicketData = (solutionId) => {
           }
         } catch (error) {
           console.error("Error fetching ticket data: ", error);
-        //   if(isMounted){
-        //       setError(error);
-        //   }
+          if(isMounted){
+              setError(error);
+          }
+        } finally {
+          setLoading(false);
         }
       };
   
@@ -29,7 +32,7 @@ const useSolutionTicketData = (solutionId) => {
         };
       }, [solutionId]);
     
-      return { data }; // Return data separately
+      return { loading ,data , error }; // Return data separately
   };
   
   export default useSolutionTicketData;

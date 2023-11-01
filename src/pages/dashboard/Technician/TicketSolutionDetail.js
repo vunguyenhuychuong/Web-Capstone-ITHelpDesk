@@ -8,19 +8,27 @@ import CommentSolution from "./CommentSolution.js/CommentSolution";
 import LoadingSkeleton from "../../../components/iconify/LoadingSkeleton";
 import CountBox from "../../helpers/CountBox";
 import useSolutionTicketData from "./SolutionTicketData";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { formatDate } from "../../helpers/FormatDate";
+import HistorySolution from "./CommentSolution.js/HistorySolution";
 
 const TicketSolutionDetail = () => {
   const [value, setValue] = React.useState(0);
   const {solutionId} = useParams();
-  const { data } = useSolutionTicketData(solutionId);
+  const navigate = useNavigate();
+  const { loading ,data, error } = useSolutionTicketData(solutionId);
   const associationsRequesterCount = 42;
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  console.log(data);
+  const handleBackTicketSolution = () => {
+    navigate('/home/ticketSolution'); 
+  };
+
+  if(loading) {
+    return <LoadingSkeleton />;
+  }
 
   const comments = [
     {
@@ -46,7 +54,7 @@ const TicketSolutionDetail = () => {
             <MDBCol md="1" className="mt-2">
               <div className="d-flex align-items-center">
                 <button type="button" className="btn btn-link icon-label">
-                  <ArrowBack />
+                  <ArrowBack onClick={handleBackTicketSolution}/>
                 </button>
               </div>
             </MDBCol>
@@ -150,6 +158,9 @@ const TicketSolutionDetail = () => {
           <Box role="tabpanel" hidden={value !== 1}>
           </Box>
           <Box role="tabpanel" hidden={value !== 2}>
+          </Box>
+          <Box role="tabpanel" hidden={value !== 3}>
+          {value === 3 ? <HistorySolution /> : <LoadingSkeleton />}
           </Box>
         </Box>
       </Grid>

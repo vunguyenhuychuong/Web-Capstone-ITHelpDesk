@@ -11,16 +11,28 @@ import {
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketCustomer.css";
 
-import { ContentCopy, PlaylistAdd, Search, Settings, ViewCompact } from "@mui/icons-material";
+import {
+  ContentCopy,
+  PlaylistAdd,
+  Search,
+  Settings,
+  ViewCompact,
+} from "@mui/icons-material";
 import { formatDate } from "../../helpers/FormatDate";
 import { useNavigate } from "react-router-dom";
 import { useCallback } from "react";
-import { Box} from "@mui/material";
+import { Box } from "@mui/material";
 import { FaPlus } from "react-icons/fa";
-import { getAllTicketSolutions } from "../../../app/api/ticketSolution";
+import {
+  deleteTicketSolution,
+  getAllTicketSolutions,
+} from "../../../app/api/ticketSolution";
+import { toast } from "react-toastify";
 
 const TicketSolutionList = () => {
   const [dataListTicketsSolution, setDataListTicketsSolution] = useState([]);
+  const [selectedSolutionIds, setSelectedSolutionIds] = useState([]);
+  const [refreshData, setRefreshData] = useState(false);
   // const [currentPage, setCurrentPage] = useState(1);
   // const [pageSize, setPageSize] = useState(10);
   // const [totalPages, setTotalPages] = useState(1);
@@ -37,9 +49,68 @@ const TicketSolutionList = () => {
       console.log(error);
     }
   }, []);
+
+  const handleSelectSolution = (solutionId) => {
+    if (selectedSolutionIds.includes(solutionId)) {
+      setSelectedSolutionIds(
+        selectedSolutionIds.filter((id) => id !== solutionId)
+      );
+    } else {
+      setSelectedSolutionIds([...selectedSolutionIds, solutionId]);
+    }
+  };
+
+  const handleSelectAllSolutions = () => {
+    if (selectedSolutionIds.length === dataListTicketsSolution.length) {
+      setSelectedSolutionIds([]);
+    } else {
+      setSelectedSolutionIds(
+        dataListTicketsSolution.map((solution) => solution.id)
+      );
+    }
+  };
+
+  const handleDeleteSelectedSolutions = (id) => {
+    try {
+      console.log("Deleting selected solutions...");
   
+      if (selectedSolutionIds.length === 0) {
+        console.log("No selected solutions to delete.");
+        return;
+      }
+  
+      let currentIndex = 0;
+  
+      const deleteNextSolution = () => {
+        if (currentIndex < selectedSolutionIds.length) {
+          const solutionId = selectedSolutionIds[currentIndex];
+  
+          deleteTicketSolution(solutionId)
+            .then(() => {
+              console.log(`Solution with ID ${solutionId} deleted successfully`);
+              currentIndex++;
+              deleteNextSolution();
+            })
+            .catch((error) => {
+              console.error(`Error deleting solution with ID ${solutionId}: `, error);
+              toast.error(`Error deleting solution with ID ${solutionId}: `, error);
+            });
+        } else {
+          setSelectedSolutionIds([]);
+          toast.success("Selected solutions deleted successfully");
+          setRefreshData((prev) => !prev);
+        }
+      };
+  
+      deleteNextSolution();
+    } catch (error) {
+      console.error("Failed to delete selected solutions: ", error);
+      toast.error("Failed to delete selected solutions, Please try again later");
+    }
+  }
+
   const handleOpenCreateTicketSolution = () => {
-    navigate('/home/createSolution'); 
+    navigate("/home/createSolution");
   };
 
   const handleOpenDetailTicketSolution = (solutionId) => {
@@ -88,7 +159,7 @@ const TicketSolutionList = () => {
   useEffect(() => {
     fetchDataListTicketSolution();
     // setTotalPages(4);
-  }, [fetchDataListTicketSolution]);
+  }, [fetchDataListTicketSolution, refreshData]);
 
   return (
     <section style={{ backgroundColor: "#eee" }}>
@@ -110,9 +181,9 @@ const TicketSolutionList = () => {
               <MDBBtn
                 color="#eee"
                 style={{ fontWeight: "bold", fontSize: "20px" }}
-                onClick={() => handleOpenCreateTicketSolution}
+                onClick={() => handleDeleteSelectedSolutions()}
               >
-                Actions
+                Delete
               </MDBBtn>
               <MDBBtn
                 color="#eee"
@@ -126,7 +197,7 @@ const TicketSolutionList = () => {
                 style={{ fontWeight: "bold", fontSize: "20px" }}
                 // onClick={handleOpenRequestTicket}
               >
-                <Search /> <PlaylistAdd /> 
+                <Search /> <PlaylistAdd />
               </MDBBtn>
               {/* <FormControl
                   variant="outlined"
@@ -180,6 +251,16 @@ const TicketSolutionList = () => {
           <MDBTableHead className="bg-light">
             <tr>
               <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th>
+              <th style={{ fontWeight: "bold", fontSize: "18px" }}>
+                <input
+                  type="checkbox"
+                  checked={
+                    selectedSolutionIds.length ===
+                    dataListTicketsSolution.length
+                  }
+                  onChange={handleSelectAllSolutions}
+                />
+              </th>
               <th style={{ fontWeight: "bold", fontSize: "18px" }}></th>
               <th style={{ fontWeight: "bold", fontSize: "18px" }}>Title</th>
               <th style={{ fontWeight: "bold", fontSize: "18px" }}>Keyword</th>
@@ -199,31 +280,43 @@ const TicketSolutionList = () => {
             </tr>
           </MDBTableHead>
           <MDBTableBody className="bg-light">
-            {dataListTicketsSolution.map((TicketSolution, index) => (
-              <tr key={index}>
-                {/* <td
-                  style={{ cursor: "pointer" }}
-                  // onClick={() => handleOpenDialog(ticket.id)}
-                >
-                  <Edit />
-                </td> */}
-                <td>{TicketSolution.id}</td>
-                <td><ViewCompact  onClick={() => handleOpenDetailTicketSolution(TicketSolution.id)} /> </td>
-                <td>{TicketSolution.title}</td>
-                <td>{TicketSolution.keyword}</td>
-                <td>
-                  {TicketSolution.isApproved ? "Approved" : "Not Approved"}
-                </td>
-                <td>{TicketSolution.isPublic ? "Public" : "Not Public"}</td>
-                <td>{formatDate(TicketSolution.reviewDate)}</td>
-                <td>
-                  {TicketSolution.createdAt
-                    ? new Date(TicketSolution.createdAt).toLocaleDateString()
-                    : ""}
-                </td>
-                <td>{formatDate(TicketSolution.modifiedAt)}</td>
-              </tr>
-            ))}
+            {dataListTicketsSolution.map((TicketSolution, index) => {
+              const isSelected = selectedSolutionIds.includes(
+                TicketSolution.id
+              );
+              return (
+                <tr key={index}>
+                  <td>{TicketSolution.id}</td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => handleSelectSolution(TicketSolution.id)}
+                    />
+                  </td>
+                  <td>
+                    <ViewCompact
+                      onClick={() =>
+                        handleOpenDetailTicketSolution(TicketSolution.id)
+                      }
+                    />{" "}
+                  </td>
+                  <td>{TicketSolution.title}</td>
+                  <td>{TicketSolution.keyword}</td>
+                  <td>
+                    {TicketSolution.isApproved ? "Approved" : "Not Approved"}
+                  </td>
+                  <td>{TicketSolution.isPublic ? "Public" : "Not Public"}</td>
+                  <td>{formatDate(TicketSolution.reviewDate)}</td>
+                  <td>
+                    {TicketSolution.createdAt
+                      ? new Date(TicketSolution.createdAt).toLocaleDateString()
+                      : ""}
+                  </td>
+                  <td>{formatDate(TicketSolution.modifiedAt)}</td>
+                </tr>
+              );
+            })}
           </MDBTableBody>
         </MDBTable>
       </MDBContainer>

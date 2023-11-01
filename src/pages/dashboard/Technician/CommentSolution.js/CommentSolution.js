@@ -61,14 +61,14 @@ const CommentSolution = ({ comments }) => {
         </IconButton>
         <span style={{ marginLeft: "5px" }}>{thumbsDownCount}</span>
       </div>
-      <button
+      <Button
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        style={{ marginLeft: "10px", cursor: "pointer", color: "#222222" }}
+        style={{ marginLeft: "10px", cursor: "pointer", color: "#222222",backgroundColor: "#CCCCCC",textTransform: "none" }}
       >
         {isDropdownOpen
           ? `Comments ▲ (${comments.length})`
           : `Comments ▼ (${comments.length})`}
-      </button>
+      </Button>
       {isDropdownOpen &&
         comments.map((comment) => (
           <div
