@@ -10,7 +10,7 @@ export const baseURL = 'https://dichvuit-be.hisoft.vn/v1/itsds';
 export async function getAllUser(searchField, searchQuery, page = 1, pageSize = 5, sortBy = "id", sortDirection = "asc") {
   const header = getAuthHeader();
   try {
-    const encodedSearchQuery = encodeURIComponent(searchQuery);
+    // const encodedSearchQuery = encodeURIComponent(searchQuery);
     const filter = `${searchField}.contains("${searchQuery}")`;
     const params = {
       filter: filter,

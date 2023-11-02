@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { getDataCategories } from "../../../app/api/category";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { createTicketSolution, deleteTicketSolution } from "../../../app/api/ticketSolution";
+import { createTicketSolution } from "../../../app/api/ticketSolution";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";

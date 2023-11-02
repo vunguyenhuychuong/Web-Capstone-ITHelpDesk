@@ -1,4 +1,4 @@
-import { Cancel, CheckCircle, Create, DoDisturb, Email, HighlightOff, Info, Pending } from "@mui/icons-material";
+import { Cancel, CheckCircle, Create, Email, HighlightOff, Info, Pending } from "@mui/icons-material";
 import {
   FaImages,
   FaUser,
@@ -151,7 +151,7 @@ export const TicketStatusOptions = [
   },
   {
     id: 2,
-    name: "In Progress",
+    name: "Progress",
     iconClass: "info-icon",
     icon: <Pending style={{ color: '#339999' }} />,
     badgeStyle: {
