@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getAuthHeader } from "./auth";
 import axiosClient from "./axiosClient";
-import { baseURL } from "./service";
+import { baseURL } from "./link";
 
 const ModeApi = {
     getMode: async() => {

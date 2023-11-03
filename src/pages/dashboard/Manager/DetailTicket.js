@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  MDBCol,
-  MDBRow,
-  MDBTable,
-  MDBTableBody,
-} from "mdb-react-ui-kit";
+import { MDBCol, MDBRow, MDBTable, MDBTableBody } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
 import "../../../assets/css/EditTicket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
@@ -91,9 +86,7 @@ const DetailTicket = () => {
   }
 
   return (
-    <section
-      style={{ backgroundColor: "#fff" }}
-    >
+    <section style={{ backgroundColor: "#fff" }}>
       <Grid
         container
         style={{
@@ -102,11 +95,21 @@ const DetailTicket = () => {
           paddingLeft: "10px",
         }}
       >
-        <Grid item xs={3}>
+        <Grid item xs={3} 
+          style={{
+            paddingBottom: "10px",
+            borderRight: "1px solid #ccc",
+          }}
+        >
           <MDBRow md="12">
-            <MDBRow className="border-box">
+            <MDBRow
+              className="border-box"
+              style={{ marginLeft: "1px", marginRight: "15px" }}
+            >
               <MDBCol md="12">
-                  <h2 className="heading-padding">All Request(2)</h2>
+                <div className="d-flex">
+                  <h2 className="heading-padding">Heading </h2>
+                </div>
               </MDBCol>
             </MDBRow>
             <MDBRow className="mb-4">
@@ -134,7 +137,10 @@ const DetailTicket = () => {
             </MDBRow>
           </MDBRow>
         </Grid>
-        <Grid item style={{ flex: 1 }}>
+        <Grid item style={{ 
+          flex: 1, 
+          paddingLeft: "10px",
+          }}>
           <MDBCol md="12">
             <MDBRow className="border-box">
               <MDBCol md="1" className="mt-2">
@@ -306,9 +312,7 @@ const DetailTicket = () => {
                 </tr>
                 <tr>
                   <td className="gray-background align-right">Mode </td>
-                  <td  >
-                    {dataMode[data.modeId]?.name || "-"}
-                  </td>
+                  <td>{dataMode[data.modeId]?.name || "-"}</td>
                   <td className="gray-background align-right">Urgency</td>
                   <td className="align-left">
                     {UrgencyOptions[data.urgency]?.name || "-"}
@@ -364,7 +368,13 @@ const DetailTicket = () => {
             </MDBTable>
           </form>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={3}
+          style={{
+            paddingBottom: "10px",
+            borderLeft: "1px solid #ccc",
+            paddingLeft: "11px"
+          }}
+        >
           <MDBRow className="border-box">
             <MDBCol md="12">
               <div className="d-flex">

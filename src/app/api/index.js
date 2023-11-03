@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { getAuthHeader } from "./auth";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase";
-export const baseURL = 'https://dichvuit-be.hisoft.vn/v1/itsds';
+import { baseURL } from "./link";
 
 // Get all users in system
 export async function getAllUser(searchField, searchQuery, page = 1, pageSize = 5, sortBy = "id", sortDirection = "asc") {

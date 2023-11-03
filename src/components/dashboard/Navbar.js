@@ -98,7 +98,7 @@ const Navbar = () => {
         </button>
         <Paper component="form" className="search-bar">
           <InputBase className="search-input" placeholder="Search..." />
-          <IconButton type="submit" aria-label="search">
+          <IconButton type="submit" aria-label="search" style={{ color: "#0099FF" }}>
             <Search />
           </IconButton>
         </Paper>
@@ -108,27 +108,27 @@ const Navbar = () => {
         </div>
         <div className="btn-container">
           <div className="icons-wrapper">
-            <IconButton size="large" color="#33CCFF">
+            <IconButton size="large" style={{ color: "#0099FF" }}>
               <Badge badgeContent={4} color="error">
                 <Mail />
               </Badge>
             </IconButton>
-            <IconButton size="large" color="#33CCFF">
+            <IconButton size="large" style={{ color: "#0099FF" }}>
               <Badge badgeContent={17} color="error">
                 <NotificationAdd />
               </Badge>
             </IconButton>
-            <IconButton size="large" color="#33CCFF">
+            <IconButton size="large" style={{ color: "#0099FF" }}>
               <Badge color="error">
                 <Settings />
               </Badge>
             </IconButton>
-            <IconButton size="large" color="#33CCFF">
+            <IconButton size="large" style={{ color: "#0099FF" }}>
               <Badge color="error">
                 <RotateLeft />
               </Badge>
             </IconButton>
-            <IconButton size="large" color="#33CCFF">
+            <IconButton size="large" style={{ color: "#0099FF" }}>
               <Badge color="error">
                 <Help />
               </Badge>

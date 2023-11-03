@@ -22,6 +22,7 @@
 
 .heading-padding {
   margin-right: auto; /* This pushes the heading to the right */
+  margin-bottom: 13px;
 }
 
 .label-col {
@@ -36,4 +37,42 @@
 .custom-tab-label {
   text-transform: none; /* Prevent uppercase text */
   font-weight: bold; /* Make text bold */
+}
+
+.action-menu-item {
+  font-weight: bold;
+  color: #0099FF;
+  font-style: normal;
+}
+
+.custom-select-container {
+  position: relative;
+  width: 200px;
+}
+
+.custom-select {
+  background-color: #f2f2f2;
+  border-radius: 5px;
+  padding: 10px;
+  height: 45px;
+  cursor: pointer;
+}
+
+.custom-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #f2f2f2;
+  border-radius: 5px;
+  padding: 10px;
+  width: 100%;
+}
+
+.custom-option {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.custom-option:hover {
+  background-color: #ccc;
 }

@@ -1,9 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import "../../../assets/css/ticket.css";
 import "../../../assets/css/ServiceTicket.css";
-import { Box, Grid, Tab, Tabs } from "@mui/material";
+import { Box, Grid, MenuItem, Select, Tab, Tabs} from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
-import { ArrowBack, Lock, Square, TipsAndUpdates } from "@mui/icons-material";
+import {
+  ArrowBack,
+  Feedback,
+  Lock,
+  LockOpen,
+  Square,
+  TipsAndUpdates,
+  WorkHistory,
+} from "@mui/icons-material";
 import CommentSolution from "./CommentSolution.js/CommentSolution";
 import LoadingSkeleton from "../../../components/iconify/LoadingSkeleton";
 import CountBox from "../../helpers/CountBox";
@@ -11,33 +19,87 @@ import useSolutionTicketData from "./SolutionTicketData";
 import { useNavigate, useParams } from "react-router-dom";
 import { formatDate } from "../../helpers/FormatDate";
 import HistorySolution from "./CommentSolution.js/HistorySolution";
+import {
+  approveTicketSolution,
+  changePublicSolution,
+  rejectTicketSolution,
+} from "../../../app/api/ticketSolution";
+import { toast } from "react-toastify";
+import { getRoleName } from "../../helpers/tableComlumn";
+import { Button } from "flowbite-react";
+
 
 const TicketSolutionDetail = () => {
-  const [value, setValue] = React.useState(0);
-  const {solutionId} = useParams();
+  const [value, setValue] = useState(0);
+  const [selectedValue, setSelectedValue] = useState("");
+  const { solutionId } = useParams();
   const navigate = useNavigate();
-  const { loading ,data, error } = useSolutionTicketData(solutionId);
+  const { loading, data, dataCategories,error, refetch } = useSolutionTicketData(solutionId);
   const associationsRequesterCount = 42;
+  const [fileName, setFileName] = useState("");
+
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  const handleBackTicketSolution = () => {
-    navigate('/home/ticketSolution'); 
+  const handleOpenEditTicketSolution = () => {
+    navigate(`/home/editSolution/${solutionId}`);
   };
 
-  if(loading) {
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setFileName(file.name);
+    }
+    // Handle other actions related to the file if needed
+  };
+
+  const handleBackTicketSolution = () => {
+    navigate("/home/ticketSolution");
+    refetch();
+  };
+
+  const handleClickChangePublic = async (solutionId) => {
+    try {
+      await changePublicSolution(solutionId);
+      toast.success("Change Ticket Solution public");
+      refetch();
+    } catch (error) {
+      console.log("Error while changing public", error);
+    }
+  };
+
+  const handleApproveTicketSolution = async () => {
+    try {
+      await approveTicketSolution(solutionId);
+      toast.success("Approve Ticket Solution");
+      refetch();
+    } catch (error) {
+      console.log("Error while Approve ticket solution", error);
+    }
+  };
+
+  const handleRejectTicketSolution = async () => {
+    try {
+      await rejectTicketSolution(solutionId);
+      toast.success("Reject Ticket Solution");
+      refetch();
+    } catch (error) {
+      console.log("Error while reject ticket solution ", error);
+    }
+  };
+
+  if (loading) {
     return <LoadingSkeleton />;
   }
 
-  const comments = [
-    {
-      id: 1,
-      user: { name: 'John Doe', avatarUrl: 'url_to_avatar' },
-      text: 'This is the first comment.',
-      dateTime: 'Oct 30, 2023, 10:00 AM',
-    },
-  ];
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  const handleChange = (event) => {
+    setSelectedValue(event.target.value);
+  };
 
   return (
     <Grid
@@ -48,50 +110,71 @@ const TicketSolutionDetail = () => {
         paddingLeft: "10px",
       }}
     >
-      <Grid item xs={9} style={{ paddingRight: "12px"}}>
+      <Grid item xs={9} style={{ paddingRight: "12px" }}>
         <MDBCol md="12">
-          <MDBRow className="border-box">
+          <MDBRow className="border-box" style={{ backgroundColor: "#EEEEEE" }}>
             <MDBCol md="1" className="mt-2">
               <div className="d-flex align-items-center">
                 <button type="button" className="btn btn-link icon-label">
-                  <ArrowBack onClick={handleBackTicketSolution}/>
+                  <ArrowBack onClick={handleBackTicketSolution} style={{color: "#0099FF"}} />
                 </button>
               </div>
             </MDBCol>
             <MDBCol md="2" className="mt-2">
               <div className="d-flex align-items-center">
-                <button
+                <Button
                   type="button"
-                  className="btn btn-link narrow-input icon-label"
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-link narrow-input icon-label"
-                >
-                  Actions
-                </button>
-                {/* <Select
-                  value={age}
-                  onChange={handleChange}
-                  displayEmpty
-                  inputProps={{ "aria-label": "Without label" }}
+                  className="btn btn-link narrow-input"
                   style={{
                     backgroundColor: "#f2f2f2",
                     borderRadius: "5px",
                     paddingLeft: "10px",
-                    height: "40px", // Set the height of the select box
-                    padding: "10px 0", // Set the top and bottom padding
+                    height: "45px",
+                    padding: "10px 0", 
+                    marginBottom: "10px",
                   }}
                 >
-                  <MenuItem value="">
-                    <em>Actions</em>
+                  <span className="action-menu-item" style={{fontSize: "16px", textTransform: "none"}} onClick={() => handleOpenEditTicketSolution()}>Edit</span>
+                </Button>
+                <Select
+                  displayEmpty
+                  value={selectedValue}
+                  onChange={handleChange}
+                  inputProps={{ "aria-label": "Without label" }}
+                  style={{                
+                    backgroundColor: "#f2f2f2",
+                    borderRadius: "5px",
+                    paddingLeft: "10px",
+                    height: "45px", // Set the height of the select box
+                    padding: "10px 0", // Set the top and bottom padding
+                    marginBottom: "10px",
+                    zIndex: 9999
+                  }}
+                >
+                  {selectedValue !== "" ? null : (
+                    <MenuItem value="" disabled>
+                      <em className="action-menu-item">Action</em>
+                    </MenuItem>
+                  )}
+                  <MenuItem
+                    value={10}
+                    onClick={() => handleClickChangePublic(solutionId)}
+                  >
+                    Public
                   </MenuItem>
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
-                </Select> */}
+                  <MenuItem
+                    value={20}
+                    onClick={() => handleApproveTicketSolution(solutionId)}
+                  >
+                    Approve
+                  </MenuItem>
+                  <MenuItem
+                    value={30}
+                    onClick={() => handleRejectTicketSolution(solutionId)}
+                  >
+                    Reject
+                  </MenuItem>
+                </Select>
               </div>
             </MDBCol>
           </MDBRow>
@@ -110,7 +193,7 @@ const TicketSolutionDetail = () => {
                 {data.title}
               </span>
               <span style={{ fontSize: "0.8em" }}>
-                <span>Topic: </span> <span className="bold-text">Printers</span>{" "}
+                <span>Topic: </span> <span className="bold-text">{dataCategories.find(category => category.id === data.categoryId)?.name || 'Unknown Category'}</span>
               </span>
             </div>
           </MDBCol>
@@ -122,16 +205,18 @@ const TicketSolutionDetail = () => {
             name="description"
             className="form-control input-field-2"
             rows="6"
-            value={data.content}
+            defaultValue={data.content}
           />
         </Grid>
         <Grid item xs={12}>
+          <div style={{ marginBottom: "10px" }}>{fileName}</div>
           <input
             type="file"
             name="file"
             className="form-control input-field"
             id="attachmentUrl"
             value={data.attachmentUrl}
+            onChange={handleFileChange}
           />
         </Grid>
 
@@ -147,25 +232,34 @@ const TicketSolutionDetail = () => {
               },
             }}
           >
-            <Tab label="Feedback" className="custom-tab-label" />
-            <Tab label="Keywords" className="custom-tab-label" />
-            <Tab label="Associations" className="custom-tab-label" />
-            <Tab label="History" className="custom-tab-label" />
+            <Tab label={
+            <div style={{ display: "flex", alignItems: "center",textTransform: "none" }}>
+              <Feedback sx={{ marginRight: 1 }} /> Feedback
+            </div>
+          } className="custom-tab-label" />
+            <Tab label={
+            <div style={{ display: "flex", alignItems: "center",textTransform: "none" }}>
+              <WorkHistory sx={{ marginRight: 1 }} /> History
+            </div> }  className="custom-tab-label" />
           </Tabs>
           <Box role="tabpanel" hidden={value !== 0}>
-          {value === 0 ? <CommentSolution comments={comments} /> : <LoadingSkeleton />}
+            {value === 0 ? <CommentSolution /> : <LoadingSkeleton />}
           </Box>
           <Box role="tabpanel" hidden={value !== 1}>
-          </Box>
-          <Box role="tabpanel" hidden={value !== 2}>
-          </Box>
-          <Box role="tabpanel" hidden={value !== 3}>
-          {value === 3 ? <HistorySolution /> : <LoadingSkeleton />}
+            {value === 1 ? <HistorySolution /> : <LoadingSkeleton />}
           </Box>
         </Box>
       </Grid>
-      <Grid item xs={3} style={{ paddingBottom: "10px", borderLeft: "1px solid #ccc", paddingLeft: "11px" }}>
-        <MDBRow className="border-box">
+      <Grid
+        item
+        xs={3}
+        style={{
+          paddingBottom: "10px",
+          borderLeft: "1px solid #ccc",
+          paddingLeft: "11px",
+        }}
+      >
+        <MDBRow className="border-box" style={{ backgroundColor: "#EEEEEE" }}>
           <MDBCol md="12">
             <div className="d-flex">
               <h2 className="heading-padding">Solution</h2>
@@ -175,69 +269,124 @@ const TicketSolutionDetail = () => {
         <MDBRow className="mb-4 mt-4">
           <MDBRow className="mb-4">
             <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-3 ">Solution ID</div>
-              <div className="data-col col-md-9">{data.id}</div>
+              <div className="label-col col-md-4 ">Solution ID</div>
+              <div className="data-col col-md-8">{data.id}</div>
             </MDBCol>
             <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-3 ">Status</div>
-              <div className="data-col col-md-9" ><Square className="square-icon" /> {data.isApproved ? "Approved" : "Not Approved"} </div>
+              <div className="label-col col-md-4 ">Status</div>
+              <div className="data-col col-md-8">
+                {data.isApproved ? (
+                  <>
+                    <Square className="square-icon"  style={{ color: "green" }} />
+                    <span>Approved</span>
+                  </>
+                ) : (
+                  <>
+                    <Square className="square-icon" />
+                    <span>Not Approved</span>
+                  </>
+                )}
+              </div>
             </MDBCol>
             <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-3 ">Type</div>
-              <div className="data-col col-md-9">Solution</div>
+              <div className="label-col col-md-4 ">Type</div>
+              <div className="data-col col-md-8">Solution</div>
             </MDBCol>
             <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-3 "> Visibility</div>
-              <div className="data-col col-md-9"> <Lock className="square-icon" /> {data.isPublic ? "Public" : "Not Public"}</div>
+              <div className="label-col col-md-4 "> Visibility</div>
+              <div className="data-col col-md-8">
+                {data.isPublic ? (
+                  <>
+                    <LockOpen
+                      className="square-icon"
+                      style={{ color: "green" }}
+                    />{" "}
+                    <span>Public</span>
+                  </>
+                ) : (
+                  <>
+                    <Lock className="square-icon" /> Private
+                  </>
+                )}
+              </div>
             </MDBCol>
             <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-3 ">Review Date</div>
-              <div className="data-col col-md-9">{formatDate(data.reviewDate)}</div>
+              <div className="label-col col-md-4 ">Review Date</div>
+              <div className="data-col col-md-8">
+                {formatDate(data.reviewDate)}
+              </div>
             </MDBCol>
             <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-3 ">Expiry Date</div>
-              <div className="data-col col-md-9">{formatDate(data.expiredDate)}</div>
+              <div className="label-col col-md-4">Expiry Date</div>
+              <div className="data-col col-md-8">
+                {formatDate(data.expiredDate)}
+              </div>
             </MDBCol>
             <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-3 ">Views</div>
-              <div className="data-col col-md-9">1</div>
+              <div className="label-col col-md-4">Views</div>
+              <div className="data-col col-md-8">1</div>
             </MDBCol>
           </MDBRow>
         </MDBRow>
 
-        <MDBRow className="mb-4 mt-4" style={{ border: "1px solid #ccc", padding: "5px" }}>
+        <MDBRow
+          className="mb-4 mt-4"
+          style={{ border: "1px solid #ccc", padding: "5px" }}
+        >
           <MDBRow className="mb-4">
             <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-5 "style={{ fontWeight: "bold" }}>Created By</div>
-            </MDBCol> 
-            <MDBCol md="12" className="mt-2 text-box">
-            <div className="label-col col-md-12"><span style={{ color: "#3399FF" }}>administrator</span> {formatDate(data.createdAt)}</div>
+              <div
+                className="label-col col-md-5 "
+                style={{ fontWeight: "bold" }}
+              >
+                Created By
+              </div>
             </MDBCol>
             <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-5 "style={{ fontWeight: "bold" }}>Last Updated By</div>
+              <div className="label-col col-md-12">
+                <span style={{ color: "#3399FF" }}>
+                  {getRoleName(data.owner.role)}
+                </span>{" "}
+                {formatDate(data.createdAt)}
+              </div>
             </MDBCol>
             <MDBCol md="12" className="mt-2 text-box">
-            <div className="label-col col-md-12"><span style={{ color: "#3399FF" }}>administrator</span> {formatDate(data.modifiedAt)}</div>
+              <div
+                className="label-col col-md-5 "
+                style={{ fontWeight: "bold" }}
+              >
+                Last Updated By
+              </div>
+            </MDBCol>
+            <MDBCol md="12" className="mt-2 text-box">
+              <div className="label-col col-md-12">
+                <span style={{ color: "#3399FF" }}>
+                  {getRoleName(data.owner.role)}
+                </span>{" "}
+                {formatDate(data.modifiedAt)}
+              </div>
             </MDBCol>
           </MDBRow>
         </MDBRow>
 
-        <MDBRow className="mb-4 mt-4" >
+        <MDBRow className="mb-4 mt-4">
           <MDBRow className="mb-4">
             <MDBCol md="12" className="mt-2 text-box">
-              <div className="col-md-5 " style={{ fontWeight: "bold" }}>Associations</div>
+              <div className="col-md-5 " style={{ fontWeight: "bold" }}>
+                Associations
+              </div>
             </MDBCol>
             <MDBCol md="12" className="mt-2 text-box">
-            <div className=" col-md-11">Associations Requester</div> 
-            <CountBox  count={associationsRequesterCount} />
+              <div className=" col-md-11">Associations Requester</div>
+              <CountBox count={associationsRequesterCount} />
             </MDBCol>
             <MDBCol md="12" className="mt-2 text-box">
               <div className="col-md-11">Associations Problems</div>
-              <CountBox  count={associationsRequesterCount} />
+              <CountBox count={associationsRequesterCount} />
             </MDBCol>
             <MDBCol md="12" className="mt-2 text-box">
-            <div className="col-md-11">Linked Solutions</div>
-            <CountBox  count={associationsRequesterCount} />
+              <div className="col-md-11">Linked Solutions</div>
+              <CountBox count={associationsRequesterCount} />
             </MDBCol>
           </MDBRow>
         </MDBRow>

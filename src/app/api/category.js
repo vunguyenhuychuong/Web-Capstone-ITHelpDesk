@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getAuthHeader } from "./auth";
 import axiosClient from "./axiosClient";
-export const baseURL = 'https://dichvuit-be.hisoft.vn/v1/itsds';
+import { baseURL } from "./link";
 
 
 export async function getAllCategories() {

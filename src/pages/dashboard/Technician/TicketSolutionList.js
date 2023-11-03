@@ -13,9 +13,12 @@ import "../../../assets/css/ticketCustomer.css";
 
 import {
   ContentCopy,
+  Lock,
+  LockOpen,
   PlaylistAdd,
   Search,
   Settings,
+  Square,
   ViewCompact,
 } from "@mui/icons-material";
 import { formatDate } from "../../helpers/FormatDate";
@@ -28,11 +31,13 @@ import {
   getAllTicketSolutions,
 } from "../../../app/api/ticketSolution";
 import { toast } from "react-toastify";
+import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 
 const TicketSolutionList = () => {
   const [dataListTicketsSolution, setDataListTicketsSolution] = useState([]);
   const [selectedSolutionIds, setSelectedSolutionIds] = useState([]);
   const [refreshData, setRefreshData] = useState(false);
+  const [loading, setLoading] = useState(true);
   // const [currentPage, setCurrentPage] = useState(1);
   // const [pageSize, setPageSize] = useState(10);
   // const [totalPages, setTotalPages] = useState(1);
@@ -43,10 +48,13 @@ const TicketSolutionList = () => {
 
   const fetchDataListTicketSolution = useCallback(async () => {
     try {
+      setLoading(true);
       const response = await getAllTicketSolutions();
       setDataListTicketsSolution(response);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -73,27 +81,35 @@ const TicketSolutionList = () => {
   const handleDeleteSelectedSolutions = (id) => {
     try {
       console.log("Deleting selected solutions...");
-  
+
       if (selectedSolutionIds.length === 0) {
         console.log("No selected solutions to delete.");
         return;
       }
-  
+
       let currentIndex = 0;
-  
+
       const deleteNextSolution = () => {
         if (currentIndex < selectedSolutionIds.length) {
           const solutionId = selectedSolutionIds[currentIndex];
-  
+
           deleteTicketSolution(solutionId)
             .then(() => {
-              console.log(`Solution with ID ${solutionId} deleted successfully`);
+              console.log(
+                `Solution with ID ${solutionId} deleted successfully`
+              );
               currentIndex++;
               deleteNextSolution();
             })
             .catch((error) => {
-              console.error(`Error deleting solution with ID ${solutionId}: `, error);
-              toast.error(`Error deleting solution with ID ${solutionId}: `, error);
+              console.error(
+                `Error deleting solution with ID ${solutionId}: `,
+                error
+              );
+              toast.error(
+                `Error deleting solution with ID ${solutionId}: `,
+                error
+              );
             });
         } else {
           setSelectedSolutionIds([]);
@@ -101,13 +117,15 @@ const TicketSolutionList = () => {
           setRefreshData((prev) => !prev);
         }
       };
-  
+
       deleteNextSolution();
     } catch (error) {
       console.error("Failed to delete selected solutions: ", error);
-      toast.error("Failed to delete selected solutions, Please try again later");
+      toast.error(
+        "Failed to delete selected solutions, Please try again later"
+      );
     }
-  }
+  };
 
   const handleOpenCreateTicketSolution = () => {
     navigate("/home/createSolution");
@@ -247,78 +265,117 @@ const TicketSolutionList = () => {
             </MDBNavbarNav>
           </MDBContainer>
         </MDBNavbar>
-        <MDBTable className="align-middle mb-0" responsive>
-          <MDBTableHead className="bg-light">
-            <tr>
-              <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th>
-              <th style={{ fontWeight: "bold", fontSize: "18px" }}>
-                <input
-                  type="checkbox"
-                  checked={
-                    selectedSolutionIds.length ===
-                    dataListTicketsSolution.length
-                  }
-                  onChange={handleSelectAllSolutions}
-                />
-              </th>
-              <th style={{ fontWeight: "bold", fontSize: "18px" }}></th>
-              <th style={{ fontWeight: "bold", fontSize: "18px" }}>Title</th>
-              <th style={{ fontWeight: "bold", fontSize: "18px" }}>Keyword</th>
-              <th style={{ fontWeight: "bold", fontSize: "18px" }}>Status</th>
-              <th style={{ fontWeight: "bold", fontSize: "18px" }}>
-                Visibility
-              </th>
-              <th style={{ fontWeight: "bold", fontSize: "18px" }}>
-                Review Date
-              </th>
-              <th style={{ fontWeight: "bold", fontSize: "18px" }}>
-                Create On
-              </th>
-              <th style={{ fontWeight: "bold", fontSize: "18px" }}>
-                LastUpdate On
-              </th>
-            </tr>
-          </MDBTableHead>
-          <MDBTableBody className="bg-light">
-            {dataListTicketsSolution.map((TicketSolution, index) => {
-              const isSelected = selectedSolutionIds.includes(
-                TicketSolution.id
-              );
-              return (
-                <tr key={index}>
-                  <td>{TicketSolution.id}</td>
-                  <td>
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => handleSelectSolution(TicketSolution.id)}
-                    />
-                  </td>
-                  <td>
-                    <ViewCompact
-                      onClick={() =>
-                        handleOpenDetailTicketSolution(TicketSolution.id)
-                      }
-                    />{" "}
-                  </td>
-                  <td>{TicketSolution.title}</td>
-                  <td>{TicketSolution.keyword}</td>
-                  <td>
-                    {TicketSolution.isApproved ? "Approved" : "Not Approved"}
-                  </td>
-                  <td>{TicketSolution.isPublic ? "Public" : "Not Public"}</td>
-                  <td>{formatDate(TicketSolution.reviewDate)}</td>
-                  <td>
-                    {TicketSolution.createdAt
-                      ? new Date(TicketSolution.createdAt).toLocaleDateString()
-                      : ""}
-                  </td>
-                  <td>{formatDate(TicketSolution.modifiedAt)}</td>
-                </tr>
-              );
-            })}
-          </MDBTableBody>
-        </MDBTable>
+        <div>
+          <MDBTable className="align-middle mb-0" responsive>
+            <MDBTableHead className="bg-light">
+              <tr>
+                <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th>
+                <th style={{ fontWeight: "bold", fontSize: "18px" }}>
+                  <input
+                    type="checkbox"
+                    checked={
+                      selectedSolutionIds.length ===
+                      dataListTicketsSolution.length
+                    }
+                    onChange={handleSelectAllSolutions}
+                  />
+                </th>
+                <th style={{ fontWeight: "bold", fontSize: "18px" }}></th>
+                <th style={{ fontWeight: "bold", fontSize: "18px" }}>Title</th>
+                <th style={{ fontWeight: "bold", fontSize: "18px" }}>
+                  Keyword
+                </th>
+                <th style={{ fontWeight: "bold", fontSize: "18px" }}>Status</th>
+                <th style={{ fontWeight: "bold", fontSize: "18px" }}>
+                  Visibility
+                </th>
+                <th style={{ fontWeight: "bold", fontSize: "18px" }}>
+                  Review Date
+                </th>
+                <th style={{ fontWeight: "bold", fontSize: "18px" }}>
+                  Create On
+                </th>
+                <th style={{ fontWeight: "bold", fontSize: "18px" }}>
+                  LastUpdate On
+                </th>
+              </tr>
+            </MDBTableHead>
+            {loading ? (
+              <CustomizedProgressBars />
+            ) : (
+              <MDBTableBody className="bg-light">
+                {dataListTicketsSolution.map((TicketSolution, index) => {
+                  const isSelected = selectedSolutionIds.includes(
+                    TicketSolution.id
+                  );
+                  return (
+                    <tr key={index}>
+                      <td>{TicketSolution.id}</td>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() =>
+                            handleSelectSolution(TicketSolution.id)
+                          }
+                        />
+                      </td>
+                      <td>
+                        <ViewCompact
+                          onClick={() =>
+                            handleOpenDetailTicketSolution(TicketSolution.id)
+                          }
+                        />{" "}
+                      </td>
+                      <td>{TicketSolution.title}</td>
+                      <td>{TicketSolution.keyword}</td>
+                      <td>
+                        {TicketSolution.isApproved ? (
+                          <>
+                            <Square
+                              className="square-icon"
+                              style={{ color: "green" }}
+                            />
+                            <span>Approved</span>
+                          </>
+                        ) : (
+                          <>
+                            <Square className="square-icon" />
+                            <span>Not Approved</span>
+                          </>
+                        )}
+                      </td>
+                      <td>
+                        {TicketSolution.isPublic ? (
+                          <>
+                            <LockOpen
+                              className="square-icon"
+                              style={{ color: "green" }}
+                            />{" "}
+                            <span>Public</span>
+                          </>
+                        ) : (
+                          <>
+                            <Lock className="square-icon" /> Private
+                          </>
+                        )}
+                      </td>
+                      <td>{formatDate(TicketSolution.reviewDate)}</td>
+                      <td>
+                        {TicketSolution.createdAt
+                          ? new Date(
+                              TicketSolution.createdAt
+                            ).toLocaleDateString()
+                          : ""}
+                      </td>
+                      <td>{formatDate(TicketSolution.modifiedAt)}</td>
+                    </tr>
+                  );
+                })}
+              </MDBTableBody>
+            )}
+          </MDBTable>
+        </div>
       </MDBContainer>
       <Box display="flex" justifyContent="center" mt={2}>
         {/* <Pagination

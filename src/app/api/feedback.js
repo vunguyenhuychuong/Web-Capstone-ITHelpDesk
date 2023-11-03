@@ -1,6 +1,6 @@
 import axios from "axios";
 import { getAuthHeader } from "./auth";
-import { baseURL } from "./ticket";
+import { baseURL } from "./link";
 
 export async function getAllFeedBack(solutionId) {
     const header = getAuthHeader();
@@ -53,9 +53,22 @@ export async function editFeedBack(feedbackId, data) {
                 Authorization: header,
             },
         });
-        console.log(res);
         return res.data.result;
     }catch(error){
         console.log(error);
     }
 };
+
+export async function getDetailFeedBack(feedbackId) {
+    const header = getAuthHeader();
+    try{
+        const res = await axios.get(`${baseURL}/solution/feedback/${feedbackId}`, {
+            headers: {
+                Authorization: header,
+            },
+        });
+        return res.data.result;
+    }catch(error){
+        console.log(error);
+    }
+}

@@ -88,6 +88,11 @@ export const getPriorityOptionById = (priorityId) => {
   };
 };
 
+export const getRoleNameById = (roleId) => {
+  const role= roleOptions.find(option => option.id === roleId);
+  return role ? role.name : 'Unknown Role';
+}
+
 export const getRoleName = (role) => {
   switch (role) {
     case 0:

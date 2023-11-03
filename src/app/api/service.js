@@ -1,6 +1,6 @@
 import axios from "axios";
 import { getAuthHeader } from "./auth";
-export const baseURL = 'https://dichvuit-be.hisoft.vn/v1/itsds';
+import { baseURL } from "./link";
 
 
 export async function getAllServices(

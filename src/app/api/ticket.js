@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getAuthHeader } from "./auth";
 import { toast } from "react-toastify";
-export const baseURL = 'https://dichvuit-be.hisoft.vn/v1/itsds';
+import { baseURL } from "./link";
 
 // Get All List ticket
 export async function getAllTicket(

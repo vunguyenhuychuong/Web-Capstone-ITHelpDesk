@@ -30,6 +30,7 @@ import {
   deleteFeedBack,
   editFeedBack,
   getAllFeedBack,
+  getDetailFeedBack,
 } from "../../../../app/api/feedback";
 import { useCallback } from "react";
 import { useEffect } from "react";
@@ -62,19 +63,35 @@ const CommentSolution = () => {
     isPublic: true,
   });
 
-  const handleEditCommentClick = (commentId) => {
+  const handleDetailFeedBack = async (commentId) => {
+    try{
+      const feedback = await getDetailFeedBack(dataFeedBack.id);
+      setData({
+        id: feedback.result.id || "",
+        userId: feedback.result.userId || "",
+        solutionId: feedback.result.solutionId || "",
+        comment: feedback.result.comment || "",
+        isPublic: feedback.result.isPublic || "",
+        createdAt: feedback.result.createdAt || "",
+        modifiedAt: feedback.result.modifiedAt || "",
+      })
+      console.log(comment);
+    }catch(error){
+      console.log('Error while fetching detail Feed Back');
+    }
     setEditCommentId(commentId);
-  };
+  }
+
+
+  // const handleEditCommentClick = (commentId) => {
+  //   setEditCommentId(commentId);
+  // };
 
   const handleEditComment = async () => {
     try {
       const payload = {
-        comment: {
-          [editCommentId]: {
-            comment: data.comment[editCommentId].comment
-          }
-        },
-        isPublic: data.isPublic
+        comment: data.comment,
+        isPublic: data.isPublic,
       };
 
       await editFeedBack(data.id, payload);
@@ -109,20 +126,6 @@ const CommentSolution = () => {
     setData((prevData) => ({
       ...prevData,
       [name]: value,
-    }));
-  };
-
-  const handleEditInputChange = (e) => {
-    const { name, value } = e.target;
-    setData((prevData) => ({
-      ...prevData,
-      comment: {
-        ...prevData.comment,
-        [editCommentId]: {
-          ...prevData.comment[editCommentId],
-          [name]: value,
-        },
-      },
     }));
   };
 
@@ -178,7 +181,7 @@ const CommentSolution = () => {
       console.log(error);
     } finally {
       setIsDeleting(false);
-      setOpen(false); // Close the confirmation dialog
+      setOpen(false); 
     }
   };
 
@@ -286,12 +289,8 @@ const CommentSolution = () => {
                     fullWidth
                     id="comment"
                     name="comment"
-                    value={
-                      data.comment[editCommentId]
-                        ? data.comment[editCommentId].comment
-                        : ""
-                    }
-                    onChange={handleEditInputChange}
+                    value={comment.comment}
+                    onChange={handleInputChange}
                     style={{ margin: "10px 0", marginRight: "10px" }}
                   />
                   <IconButton aria-label="Save" onClick={handleEditComment}>
@@ -311,7 +310,7 @@ const CommentSolution = () => {
                   </IconButton>
                   <IconButton
                     aria-label="Edit"
-                    onClick={() => handleEditCommentClick(comment.id)}
+                    onClick={() => handleDetailFeedBack(comment.id)}
                   >
                     <EditNote />
                     <span style={{ fontSize: "0.6em" }}>Edit</span>
@@ -336,7 +335,6 @@ const CommentSolution = () => {
             Tag Technician(@Technician-name) to notify them
           </p>
         </div>
-        {/* Text area for posting new comments */}
         <TextField
           multiline
           rows={4}
@@ -351,7 +349,7 @@ const CommentSolution = () => {
         />
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <div style={{ display: "flex", marginRight: "auto" }}>
-            <Checkbox color="primary" />
+            <Checkbox color="primary" onChange={handleInputChange} />
             <span style={{ marginTop: "10px" }}>
               Show a comment to requester
             </span>
@@ -380,8 +378,8 @@ const CommentSolution = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={handleDeleteFeedBack}>Yes</Button>
+          <Button onClick={handleClose}>Cancel</Button>
         </DialogActions>
       </Dialog>
     </div>
