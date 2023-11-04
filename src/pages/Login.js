@@ -26,8 +26,8 @@ function Login() {
   const navigate = useNavigate();
   const [data, setData] = useState({ username: "", password: "" });
 
-  const usernameRegex = /^[a-zA-Z0-9_]+$/;
-  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+  // const usernameRegex = /^[a-zA-Z0-9_]+$/;
+  // const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {

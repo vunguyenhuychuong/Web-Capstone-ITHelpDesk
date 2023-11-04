@@ -10,7 +10,7 @@ import {
 } from "mdb-react-ui-kit";
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketCustomer.css";
-
+import PageSizeSelector from "../Pagination/Pagination";
 import {
   ContentCopy,
   Lock,
@@ -24,8 +24,8 @@ import {
 import { formatDate } from "../../helpers/FormatDate";
 import { useNavigate } from "react-router-dom";
 import { useCallback } from "react";
-import { Box } from "@mui/material";
-import { FaPlus } from "react-icons/fa";
+import { Box, FormControl, MenuItem, Pagination, Select } from "@mui/material";
+import { FaPlus, FaSearch } from "react-icons/fa";
 import {
   deleteTicketSolution,
   getAllTicketSolutions,
@@ -38,25 +38,37 @@ const TicketSolutionList = () => {
   const [selectedSolutionIds, setSelectedSolutionIds] = useState([]);
   const [refreshData, setRefreshData] = useState(false);
   const [loading, setLoading] = useState(true);
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const [pageSize, setPageSize] = useState(10);
-  // const [totalPages, setTotalPages] = useState(1);
-  // const [searchField, setSearchField] = useState("title");
-  // const [searchQuery, setSearchQuery] = useState("");
-  // const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchField, setSearchField] = useState("title");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortDirection, setSortDirection] = useState("asc");
+  const [sortBy, setSortBy] = useState("id");
   const navigate = useNavigate();
 
   const fetchDataListTicketSolution = useCallback(async () => {
     try {
+      let filter = "";
+      if(searchQuery) {
+        filter = `title="${encodeURIComponent(searchQuery)}"`;
+      }
       setLoading(true);
-      const response = await getAllTicketSolutions();
+      const response = await getAllTicketSolutions(
+        searchField,
+        searchQuery,
+        currentPage,
+        pageSize,
+        sortBy,
+        sortDirection
+      );
       setDataListTicketsSolution(response);
     } catch (error) {
       console.log(error);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection]);
 
   const handleSelectSolution = (solutionId) => {
     if (selectedSolutionIds.includes(solutionId)) {
@@ -135,48 +147,28 @@ const TicketSolutionList = () => {
     navigate(`/home/detailSolution/${solutionId}`);
   };
 
-  // const handleOpenListTicketSolution = () => {
-  //   navigate('/home/ticketSolution');
-  // };
+  const handleChangePage = (event, value) => {
+    setCurrentPage(value);
+  };
 
-  // const handleChangePage = (event, value) => {
-  //   setCurrentPage(value);
-  // };
+  const handleChangePageSize = (event) => {
+    const newSize = parseInt(event.target.value);
+    setPageSize(newSize);
+    setCurrentPage(1);
+  };
 
-  // const handleChangePageSize = (event) => {
-  //   const newSize = parseInt(event.target.value);
-  //   setPageSize(newSize);
-  //   setCurrentPage(1);
-  // };
-
-  // const fetchCategoriesList = async () => {
-  //   try {
-  //     const fetchCategories = await CategoryApi.getAllCategories();
-  //     setDataCategories(fetchCategories);
-  //   } catch (error) {
-  //     console.log("Error while fetching data", error);
-  //   }
-  // };
-
-  // const handleOpenDialog = (ticketId) => {
-  //   navigate(`/home/ticketService/${ticketId}`);
-  // };
-
-  // const getCategoryName = (categoryId) => {
-  //   const category = dataCategories.find((cat) => cat.id === categoryId);
-  //   return category ? category.name : "Unknown Category";
-  // };
-
-  // const getStatusName = (statusId) => {
-  //   const statusOption = TicketStatusOptions.find(
-  //     (option) => option.id === statusId
-  //   );
-  //   return statusOption ? statusOption.name : "Unknown Status";
-  // };
+  const handleSortChange = (field) => {
+    if (sortBy === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortDirection("asc");
+    }
+  };
 
   useEffect(() => {
     fetchDataListTicketSolution();
-    // setTotalPages(4);
+    setTotalPages(4);
   }, [fetchDataListTicketSolution, refreshData]);
 
   return (
@@ -217,7 +209,7 @@ const TicketSolutionList = () => {
               >
                 <Search /> <PlaylistAdd />
               </MDBBtn>
-              {/* <FormControl
+              <FormControl
                   variant="outlined"
                   style={{
                     minWidth: 120,
@@ -242,8 +234,8 @@ const TicketSolutionList = () => {
                     <MenuItem value="isPublic">Visibility</MenuItem>
                     <MenuItem value="reviewDate">reviewDate</MenuItem>
                   </Select>
-                </FormControl> */}
-              {/* <div className="input-wrapper">
+                </FormControl>
+              <div className="input-wrapper">
                   <FaSearch id="search-icon" />
                   <input
                     value={searchQuery}
@@ -251,17 +243,17 @@ const TicketSolutionList = () => {
                     onKeyPress={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
-                        fetchDataListTicket();
+                        fetchDataListTicketSolution();
                       }
                     }}
                     className="input-search"
                     placeholder="Type to search..."
                   />
-                </div> */}
-              {/* <PageSizeSelector
+                </div>
+              <PageSizeSelector
                   pageSize={pageSize}
                   handleChangePageSize={handleChangePageSize}
-                /> */}
+                />
             </MDBNavbarNav>
           </MDBContainer>
         </MDBNavbar>
@@ -281,12 +273,23 @@ const TicketSolutionList = () => {
                   />
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}></th>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>Title</th>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>
+                <th 
+                  style={{ fontWeight: "bold", fontSize: "18px" }}
+                  onClick={() => handleSortChange("title")}
+                  >Title</th>
+                <th 
+                  style={{ fontWeight: "bold", fontSize: "18px" }}
+                  onClick={() => handleSortChange("keyword")}>
                   Keyword
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>Status</th>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>
+                <th 
+                  style={{ fontWeight: "bold", fontSize: "18px" }}
+                  onClick={() => handleSortChange("isApproved")}
+                  >Status</th>
+                <th 
+                  style={{ fontWeight: "bold", fontSize: "18px" }}
+                  onClick={() => handleSortChange("isPublic")}
+                  >
                   Visibility
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}>
@@ -378,11 +381,11 @@ const TicketSolutionList = () => {
         </div>
       </MDBContainer>
       <Box display="flex" justifyContent="center" mt={2}>
-        {/* <Pagination
+        <Pagination
           count={totalPages}
           page={currentPage}
           onChange={handleChangePage}
-        /> */}
+        />
       </Box>
     </section>
   );

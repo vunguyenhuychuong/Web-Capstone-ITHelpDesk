@@ -87,21 +87,21 @@ const IndexTicket = () => {
       console.log("Error while fetching data", error);
     }
   };
-  const handleSelectTicket = (ticketId) => {
+  const handleSelectTicket = useCallback((ticketId) => {
     if (selectedTickets.includes(ticketId)) {
       setSelectedTickets(selectedTickets.filter((id) => id !== ticketId));
     } else {
       setSelectedTickets([...selectedTickets, ticketId]);
     }
-  };
+  }, [selectedTickets]);
 
-  const handleSelectAllTickets = () => {
+  const handleSelectAllTickets = useCallback(() => {
     if (selectedTickets.length === dataTickets.length) {
       setSelectedTickets([]);
     } else {
       setSelectedTickets(dataTickets.map((ticket) => ticket.id));
     }
-  };
+  }, [selectedTickets]);
 
   const handleDeleteSelectedTickets = async (id) => {
     try {
@@ -146,14 +146,14 @@ const IndexTicket = () => {
     setCurrentPage(1);
   };
 
-  const handleSortChange = (field) => {
+  const handleSortChange = useCallback((field) => {
     if (sortBy === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortBy(field);
       setSortDirection("asc");
     }
-  };
+  }, [sortBy, sortDirection]);
 
   const handleOpenRequestTicket = (e) => {
     e.preventDefault();
@@ -199,7 +199,7 @@ const IndexTicket = () => {
     fetchAllTicket();
     fetchAllCategories();
     setTotalPages(4);
-  }, [fetchAllTicket, dataTickets]);
+  }, [fetchAllTicket]);
 
   return (
     <section style={{ backgroundColor: "#FFF" }}>

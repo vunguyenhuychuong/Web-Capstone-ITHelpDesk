@@ -3,13 +3,28 @@ import { getAuthHeader } from "./auth";
 import { baseURL } from "./link";
 import { toast } from "react-toastify";
 
-export async function getAllTicketSolutions() {
+export async function getAllTicketSolutions(
+    searchField,
+    searchQuery,
+    page = 1,
+    pageSize = 5,
+    sortBy = "id",
+    sortDirection = "asc"
+) {
     const header = getAuthHeader();
     try{
+        let filter = `${searchField}.contains("${searchQuery}")`;
+        const params = {
+            filter: filter,
+            page: page,
+            pageSize: pageSize,
+            sort: `${sortBy} ${sortDirection}`,
+        }
         const res = await axios.get(`${baseURL}/solution`, {
             headers: {
                 Authorization: header,
             },
+            params: params,
         });
         return res.data.result;
     }catch(error){
