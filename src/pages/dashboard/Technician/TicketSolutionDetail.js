@@ -32,6 +32,7 @@ import { Button } from "flowbite-react";
 const TicketSolutionDetail = () => {
   const [value, setValue] = useState(0);
   const [selectedValue, setSelectedValue] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
   const { solutionId } = useParams();
   const navigate = useNavigate();
   const { loading, data, dataCategories,error, refetch } = useSolutionTicketData(solutionId);
@@ -48,6 +49,7 @@ const TicketSolutionDetail = () => {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
+    setSelectedFile(file);
     if (file) {
       setFileName(file.name);
     }
@@ -215,7 +217,6 @@ const TicketSolutionDetail = () => {
             name="file"
             className="form-control input-field"
             id="attachmentUrl"
-            value={data.attachmentUrl}
             onChange={handleFileChange}
           />
         </Grid>

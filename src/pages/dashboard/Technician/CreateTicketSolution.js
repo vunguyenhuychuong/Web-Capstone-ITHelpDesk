@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Grid, Switch } from "@mui/material";
+import { Grid, Switch, TextField } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -8,10 +8,11 @@ import { getDataCategories } from "../../../app/api/category";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { createTicketSolution } from "../../../app/api/ticketSolution";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment from "moment";
+import { getDataUser } from "../../../app/api";
 
 const CreateTicketSolution = () => {
   const navigate = useNavigate();
@@ -32,13 +33,34 @@ const CreateTicketSolution = () => {
   const [dataCategories, setDataCategories] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const [date, setDate] = useState(moment());
+  const [reviewDate, setReviewDate] = useState(moment());
+  const [expiredDate, setExpiredDate] = useState(moment());
+  const [dataUsers, setDataUsers] = useState([]);
+
+  const handleReviewDateChange = (newDate) => {
+    const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
+    setReviewDate(newDate);
+    setData((prevInputs) => ({
+      ...prevInputs,
+      reviewDate: formattedDate,
+    }));
+  };
+
+  const handleExpiredDateChange = (newDate) => {
+    const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
+    setExpiredDate(newDate);
+    setData((prevInputs) => ({
+      ...prevInputs,
+      expiredDate: formattedDate,
+    }));
+  };
 
   const fetchDataSolution = async () => {
     try {
       const fetchCategories = await getDataCategories();
+      const fetchUsers = await getDataUser();
       setDataCategories(fetchCategories);
+      setDataUsers(fetchUsers);
     } catch (error) {
       console.log("Error while fetching data", error);
     } finally {
@@ -48,8 +70,6 @@ const CreateTicketSolution = () => {
   useEffect(() => {
     fetchDataSolution();
   }, []);
-
-  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -62,19 +82,16 @@ const CreateTicketSolution = () => {
     }
   };
 
-  const handleDateChange = (newDate) => {
-    const formattedDate = moment(newDate).format("YYYY-MM-DD");
-    setDate(newDate);
-    setData((prevInputs) => ({
-      ...prevInputs,
-      reviewDate: formattedDate,
-      expiredDate: formattedDate,
-    }));
-  };
-
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    selectedFile(file);
+    setSelectedFile(file);
+  };
+
+  const validateDate = (reviewDate, expiredDate) => {
+    if (!reviewDate || !expiredDate) {
+      return false; // If either date is missing, return false
+    }
+    return moment(reviewDate).isBefore(expiredDate);
   };
 
   const handleSubmitTicket = async (e) => {
@@ -93,30 +110,50 @@ const CreateTicketSolution = () => {
         attachmentUrl = await getDownloadURL(storageRef);
       }
 
+      const isDataValid = validateDate(data.reviewDate, data.expiredDate);
+      if (!isDataValid) {
+        toast.info("Review Date must be earlier than Expired Date.");
+        return;
+      }
+
+      const formattedReviewDate = moment(data.reviewDate).format(
+        "YYYY-MM-DDTHH:mm:ss"
+      );
+      const formattedExpiredDate = moment(data.expiredDate).format(
+        "YYYY-MM-DDTHH:mm:ss"
+      );
+
       const updatedData = {
         ...data,
         attachmentUrl: attachmentUrl,
+        reviewDate: formattedReviewDate,
+        expiredDate: formattedExpiredDate,
       };
+
       setData(updatedData);
       const response = await createTicketSolution({
         title: data.title,
         content: data.content,
         categoryId: data.categoryId,
         ownerId: data.ownerId,
-        reviewDate: data.reviewDate,
-        expiredDate: data.expiredDate,
+        reviewDate: formattedReviewDate,
+        expiredDate: formattedExpiredDate,
         keyword: data.keyword,
         internalComments: data.internalComments,
         isPublic: data.isPublic,
-        attachmentUrl: data.attachmentUrl,
+        attachmentUrl: attachmentUrl,
       });
-      if (response.data.isError && response.data.responseException.exceptionMessage) {
+      if (
+        response.data.isError &&
+        response.data.responseException.exceptionMessage
+      ) {
         console.log(response.data.responseException.exceptionMessage);
       } else {
         toast.success("Ticket created successfully");
       }
       toast.success("Ticket created successfully");
     } catch (error) {
+      console.error(error);
     } finally {
       setIsSubmitting(false);
     }
@@ -215,7 +252,11 @@ const CreateTicketSolution = () => {
                   onChange={handleFileChange}
                 />
               </Grid>
-              <Grid container justifyContent="flex-end">
+              <Grid
+                container
+                justifyContent="flex-end"
+                style={{ marginBottom: "20px" }}
+              >
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
@@ -249,15 +290,21 @@ const CreateTicketSolution = () => {
                       <h2 className="align-right">Solution Owner</h2>
                     </Grid>
                     <Grid item xs={5}>
-                      <input
+                      <select
                         id="ownerId"
-                        type="number"
                         name="ownerId"
-                        rows="3"
-                        className="form-control input-field"
+                        className="form-select"
                         value={data.ownerId}
                         onChange={handleInputChange}
-                      />
+                      >
+                        {dataUsers
+                          .filter((owner) => owner.id !== "")
+                          .map((owner) => (
+                            <option key={owner.id} value={owner.id}>
+                              {owner.lastName} {owner.firstName}
+                            </option>
+                          ))}
+                      </select>
                     </Grid>
                   </Grid>
                 </Grid>
@@ -270,20 +317,22 @@ const CreateTicketSolution = () => {
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <DatePicker
+                        <DateTimePicker
                           slotProps={{
                             textField: {
-                              helperText: `${data.reviewDate}`,
+                              helperText: `${reviewDate}`,
                             },
                           }}
-                          value={date}
-                          onChange={(newValue) => handleDateChange(newValue)}
+                          value={reviewDate}
+                          onChange={(newValue) =>
+                            handleReviewDateChange(newValue)
+                          }
+                          renderInput={(props) => <TextField {...props} />}
                         />
                       </LocalizationProvider>
                     </Grid>
                   </Grid>
                 </Grid>
-
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
@@ -291,14 +340,16 @@ const CreateTicketSolution = () => {
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <DatePicker
+                        <DateTimePicker
                           slotProps={{
                             textField: {
-                              helperText: `${data.expiredDate}`,
+                              helperText: `${expiredDate}`,
                             },
                           }}
-                          value={date}
-                          onChange={(newValue) => handleDateChange(newValue)}
+                          value={expiredDate}
+                          onChange={(newValue) =>
+                            handleExpiredDateChange(newValue)
+                          }
                         />
                       </LocalizationProvider>
                     </Grid>
@@ -362,7 +413,8 @@ const CreateTicketSolution = () => {
                 <button
                   type="button"
                   className="btn btn-primary custom-btn-margin"
-                  onClick={handleSubmitTicket} 
+                  onClick={handleSubmitTicket}
+                  disabled={isSubmitting}
                 >
                   Save
                 </button>

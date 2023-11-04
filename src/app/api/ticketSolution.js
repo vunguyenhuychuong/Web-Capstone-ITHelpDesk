@@ -1,6 +1,7 @@
 import axios from "axios";
 import { getAuthHeader } from "./auth";
 import { baseURL } from "./link";
+import { toast } from "react-toastify";
 
 export async function getAllTicketSolutions() {
     const header = getAuthHeader();
@@ -40,9 +41,15 @@ export async function createTicketSolution(data) {
                 Authorization: header
             }
         });
-        return res.data.result;
+        if (res.data.isError && res.data.message) {
+            toast.error(res.data.message);
+        } else {
+            toast.success("Create Ticket Solution successful");
+            return res.data.result;
+        }        
     }catch(error){
-        console.log(error);
+        console.log(error.response.data.responseException.exceptionMessage.title);
+        toast.error(error.response.data.responseException.exceptionMessage.title);
     }
 };
 
@@ -72,9 +79,11 @@ export async function editTicketSolution(solutionId, data) {
                 Authorization: header,
             },            
         });
+        toast.success("Edit Ticket Solution successful");
         return res.data.result;
     }catch(error){
         console.log("Error edit solution", error);
+        toast.error(error.response.data.responseException.exceptionMessage.title);
     }
 }
 

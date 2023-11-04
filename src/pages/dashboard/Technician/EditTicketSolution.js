@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Grid, Switch } from "@mui/material";
+import { Grid, Switch, TextField } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
@@ -9,13 +9,13 @@ import {
   editTicketSolution,
   getTicketSolutionById,
 } from "../../../app/api/ticketSolution";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import moment from "moment";
 import { getDataCategories } from "../../../app/api/category";
 import { toast } from "react-toastify";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import DateValidation from "../../helpers/DateValidation";
-import { validateDate } from "@mui/x-date-pickers/internals";
 
 const EditTicketSolution = () => {
   const navigate = useNavigate();
@@ -37,14 +37,27 @@ const EditTicketSolution = () => {
     createdAt: "",
     modifiedAt: "",
   });
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [reviewDate, setReviewDate] = useState(moment());
+  const [expiredDate, setExpiredDate] = useState(moment());
 
-  const [date, setDate] = useState(moment());
-  const [reviewDate, setReviewDate] = useState(
-    moment(data.reviewDate || moment().format("YYYY-MM-DD"))
-  );
-  const [expiredDate, setExpiredDate] = useState(
-    moment(data.expiredDate || moment().format("YYYY-MM-DD"))
-  );
+  const handleReviewDateChange = (newDate) => {
+    const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
+    setReviewDate(newDate);
+    setData((prevInputs) => ({
+      ...prevInputs,
+      reviewDate: formattedDate,
+    }));
+  };
+
+  const handleExpiredDateChange = (newDate) => {
+    const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
+    setExpiredDate(newDate);
+    setData((prevInputs) => ({
+      ...prevInputs,
+      expiredDate: formattedDate,
+    }));
+  };
 
   const handlePublicToggle = () => {
     setData((prevData) => ({
@@ -53,22 +66,9 @@ const EditTicketSolution = () => {
     }));
   };
 
-  const handleDateChange = (newDate, dateType) => {
-    const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
-    setDate(newDate);
-    if (dateType === "reviewDate") {
-      setReviewDate(newDate);
-      setData((prevInputs) => ({
-        ...prevInputs,
-        reviewDate: formattedDate,
-      }));
-    } else {
-      setExpiredDate(newDate);
-      setData((prevInputs) => ({
-        ...prevInputs,
-        expiredDate: formattedDate,
-      }));
-    }
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
   };
 
   const fetchDataSolution = async () => {
@@ -85,13 +85,6 @@ const EditTicketSolution = () => {
     const fetchSolutionData = async () => {
       try {
         const solutionData = await getTicketSolutionById(solutionId);
-        console.log(solutionData);
-        const formattedReviewDate = moment(solutionData.reviewDate).format(
-          "YYYY-MM-DD"
-        );
-        const formattedExpiredDate = moment(solutionData.expiredDate).format(
-          "YYYY-MM-DD"
-        );
         setData((prevData) => ({
           ...prevData,
           id: solutionData.id,
@@ -99,8 +92,8 @@ const EditTicketSolution = () => {
           content: solutionData.content,
           categoryId: solutionData.categoryId,
           ownerId: solutionData.ownerId,
-          reviewDate: formattedReviewDate,
-          expiredDate: formattedExpiredDate,
+          reviewDate: solutionData.reviewDate,
+          expiredDate: solutionData.expiredDate,
           keyword: solutionData.keyword,
           internalComments: solutionData.internalComments,
           attachmentUrl: solutionData.attachmentUrl,
@@ -117,16 +110,42 @@ const EditTicketSolution = () => {
     fetchDataSolution();
   }, [solutionId]);
 
+  const validateDate = (reviewDate, expiredDate) => {
+    if (!reviewDate || !expiredDate) {
+      return false; // If either date is missing, return false
+    }
+    return moment(reviewDate).isBefore(expiredDate);
+  };
+
   const handleEditSolutionTicket = async (e) => {
-    console.log("handleEditSolutionTicket function called");
     e.preventDefault();
+    let attachmentUrl = data.attachmentUrl;
+    if (selectedFile) {
+      const storage = getStorage();
+      const storageRef = ref(storage, "images/" + selectedFile.name);
+      await uploadBytes(storageRef, selectedFile);
+      attachmentUrl = await getDownloadURL(storageRef);
+    }
+    const isDataValid = validateDate(data.reviewDate, data.expiredDate);
+    if (!isDataValid) {
+      toast.info("Review Date must be earlier than Expired Date.");
+      return;
+    }
+  
+    const formattedReviewDate = moment(data.reviewDate).format(
+      "YYYY-MM-DDTHH:mm:ss"
+    );
+    const formattedExpiredDate = moment(data.expiredDate).format(
+      "YYYY-MM-DDTHH:mm:ss"
+    );
 
-    // const isDataValid = validateDate();
-    // if (!isDataValid) {
-    //   toast.info("Review Date must be earlier than Expired Date.");
-    //   return;
-    // }
-
+    const updatedData = {
+      ...data,
+      attachmentUrl: attachmentUrl,
+      reviewDate: formattedReviewDate,
+      expiredDate: formattedExpiredDate,
+    };
+    setData(updatedData);
     try {
       const res = await editTicketSolution(solutionId, data);
       console.log(res);
@@ -229,9 +248,13 @@ const EditTicketSolution = () => {
                   name="attachmentUrl"
                   className="form-control input-field"
                   id="attachmentUrl"
-                  value={data.attachmentUrl}
-                  onChange={handleInputChange}
+                  onChange={handleFileChange}
                 />
+                <div style={{ marginBottom: "10px" }}>
+                  {data.attachmentUrl
+                    ? data.attachmentUrl.name
+                    : "No file selected"}
+                </div>
               </Grid>
               <Grid container justifyContent="flex-end">
                 <Grid item xs={6}>
@@ -288,24 +311,25 @@ const EditTicketSolution = () => {
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <DatePicker
+                        <DateTimePicker
                           slotProps={{
                             textField: {
-                              helperText: `${data.reviewDate}`,
+                              helperText: `${reviewDate}`,
                             },
                           }}
                           value={reviewDate}
                           onChange={(newValue) =>
-                            handleDateChange(newValue, "reviewDate")
+                            handleReviewDateChange(newValue)
                           }
+                          renderInput={(props) => <TextField {...props} />}
                         />
                       </LocalizationProvider>
                     </Grid>
-                    {/* <DateValidation
+                    <DateValidation
                       className="text-center"
                       reviewDate={data.reviewDate}
                       expiredDate={data.expiredDate}
-                    /> */}
+                    />
                   </Grid>
                 </Grid>
 
@@ -316,16 +340,17 @@ const EditTicketSolution = () => {
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <DatePicker
+                        <DateTimePicker
                           slotProps={{
                             textField: {
-                              helperText: `${data.expiredDate}`,
+                              helperText: `${expiredDate}`,
                             },
                           }}
                           value={expiredDate}
                           onChange={(newValue) =>
-                            handleDateChange(newValue, "expiredDate")
+                            handleExpiredDateChange(newValue)
                           }
+                          renderInput={(props) => <TextField {...props} />}
                         />
                       </LocalizationProvider>
                     </Grid>
