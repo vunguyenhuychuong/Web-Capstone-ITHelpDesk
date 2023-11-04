@@ -36,12 +36,6 @@ const links = [
     icon: <FaLightbulb />,
   },
   {
-    id: 14,
-    text: "Create Solution",
-    path: "createSolution",
-    icon: <ControlPoint />,
-  },
-  {
     id: 15,
     text: "Detail Solution",
     path: "detailTicketSolution",

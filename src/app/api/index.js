@@ -196,7 +196,7 @@ export async function UploadImage(file) {
     await uploadBytes(storageRef, file);
 
     const downloadURL = await getDownloadURL(storageRef);
-    const res = await axios.patch("https://localhost:7043/v1/itsds/user/uploadAvatarFirebase", {
+    const res = await axios.patch(`https://localhost:7043/v1/itsds/user/uploadAvatarFirebase`, {
       downloadURL: downloadURL,
     }, {
       headers: {
@@ -206,6 +206,21 @@ export async function UploadImage(file) {
 
     return res.data;
   }catch(error) {
+    console.log(error);
+  }
+};
+
+
+export async function UpdateProfile(data) {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.patch(`${baseURL}/user/update-profile`, data, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data;
+  }catch(error){
     console.log(error);
   }
 }

@@ -22,22 +22,21 @@ import {
   Grid,
   MenuItem,
 } from "@mui/material";
-import EditIcon from '@mui/icons-material/Edit';
-import CloseIcon from '@mui/icons-material/Close';
-import LockIcon from '@mui/icons-material/Lock';
-import axios from "axios";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import EditIcon from "@mui/icons-material/Edit";
+import CloseIcon from "@mui/icons-material/Close";
+import LockIcon from "@mui/icons-material/Lock";
+import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment from "moment";
 import "../../assets/css/profile.css";
 import React, { useEffect, useState } from "react";
-import { GetDataProfileUser } from "../../app/api";
+import { GetDataProfileUser, UpdateProfile } from "../../app/api";
 import { toast } from "react-toastify";
-import { getAuthHeader } from "../../app/api/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import ChangePassword from "../ChangePassword";
 import { genderOptions, roleOptions } from "../helpers/tableComlumn";
+import { formatTicketDate } from "../helpers/FormatAMPM";
 
 const Profile = () => {
   const [data, setData] = useState({
@@ -51,7 +50,7 @@ const Profile = () => {
     gender: "",
     team: "",
     address: "",
-    role: ""
+    role: "",
   });
 
   const [open, setOpen] = React.useState(false);
@@ -62,25 +61,25 @@ const Profile = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prevInputs) => ({
-        ...prevInputs,
-        [name]: value,
+      ...prevInputs,
+      [name]: value,
     }));
   };
 
   const handleDateChange = (newDate) => {
-    const formattedDate = moment(newDate).format("YYYY-MM-DD");
+    console.log(newDate);
+    const formattedDateBirth = moment(newDate).format("YYYY-MM-DD");
     setDate(newDate);
     setData((prevInputs) => ({
       ...prevInputs,
-      dateOfBirth: formattedDate,
+      dateOfBirth: formattedDateBirth,
     }));
   };
 
-   const handleFileChange = (e) => {
+  const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
     console.log(selectedFile);
-   };
- 
+  };
 
   const handleClose = () => {
     setOpen(false);
@@ -95,59 +94,52 @@ const Profile = () => {
   const handleOpenChangePW = (e) => {
     e.preventDefault();
     setChangePassword(true);
-  }
+  };
 
   const handleCloseChangePW = (e) => {
     setChangePassword(false);
-  }
+  };
 
   const fetchDataProfile = async () => {
-    const profile = await GetDataProfileUser();
-    setData(profile);
+    try {
+      const profile = await GetDataProfileUser();
+      console.log(profile);
+      setData(profile);
+    } catch (error) {}
   };
 
   useEffect(() => {
     fetchDataProfile();
-    if(data.dateOfBirth){
-      setDate(moment(data.dateOfBirth));
-    }
-  }, [data.dateOfBirth]);
+  }, []);
 
   const onHandleEditProfile = async () => {
-    try{
-      const header = getAuthHeader();
-      let avatarUrl = data.avatarUrl;
-      if(selectedFile) {
+    try {
+      let avatarUrl = data.avatarUrl; // Use the current avatarUrl by default
+
+      if (selectedFile) {
+        // If a new file is selected, upload it and get the download URL
         const storage = getStorage();
-        const storageRef = ref(storage, 'images/' + selectedFile.name);
+        const storageRef = ref(storage, "images/" + selectedFile.name);
         await uploadBytes(storageRef, selectedFile);
-        avatarUrl = await getDownloadURL(storageRef);
+        avatarUrl = await getDownloadURL(storageRef); // Update avatarUrl with the new URL
       }
+
+      const formattedDateOfBirth = moment(date).format("YYYY-MM-DD");
+
       const updatedData = {
         ...data,
-        avatarUrl: avatarUrl,
+        avatarUrl: avatarUrl, // Update the avatarUrl property with the new URL
+        dateOfBirth: formattedDateOfBirth,
       };
-      setData(updatedData);
-      
-        await axios.patch('https://localhost:7043/v1/itsds/user/update-profile',{
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        phoneNumber: data.phoneNumber,
-        gender: data.gender,
-        dateOfBirth: data.dateOfBirth,
-        address: data.address,
-        avatarUrl: avatarUrl
-      },
-      {
-        headers: {
-          Authorization: header,
-        },
-      });
+
+      setData(updatedData); // Update the local state with the new data (including the updated avatarUrl)
+      await UpdateProfile(updatedData); // Send the updated data to the API
       toast.success("Edit Successful");
       setOpenAdd(false);
-    }catch(err){
-      console.log(err);
+      fetchDataProfile();
+    } catch (error) {
+      console.error(error);
+      toast.error("Error editing ticket solution");
     }
   };
 
@@ -163,13 +155,14 @@ const Profile = () => {
                     <MDBCardImage
                       src={data.avatarUrl}
                       alt="avatar"
-                      className="rounded-circle border-hover" 
+                      className="rounded-circle border-hover"
                       style={{
                         width: "140px",
                         borderColor: "grey",
                         borderWidth: "2px",
                         borderStyle: "solid",
-                        transition: "transform 0.3s ease, border-color 0.3s ease",
+                        transition:
+                          "transform 0.3s ease, border-color 0.3s ease",
                       }}
                       fluid
                     />
@@ -183,18 +176,22 @@ const Profile = () => {
                     />
                   )}
                   <p className="text-muted mb-1">
-                    {data && data.firstName ? data.firstName : "N/A"}{" "}
+                    {data && data.firstName ? data.firstName : "N/A"}
                     {data && data.lastName ? data.lastName : "N/A"}
                   </p>
                   <p className="text-muted mb-4">
-                    {data.result && data.result.role
-                      ? data.result.role
-                      : "N/A"}
+                    {data.result && data.result.role ? data.result.role : "N/A"}
                   </p>
                   <div className="d-flex justify-content-center mb-2">
-                    <MDBBtn onClick={handleOpenEditUser}><EditIcon /></MDBBtn>
-                    <MDBBtn outline className="ms-2" onClick={handleOpenChangePW}>
-                      <LockIcon style={{ marginRight: '8px' }}  />
+                    <MDBBtn onClick={handleOpenEditUser}>
+                      <EditIcon />
+                    </MDBBtn>
+                    <MDBBtn
+                      outline
+                      className="ms-2"
+                      onClick={handleOpenChangePW}
+                    >
+                      <LockIcon style={{ marginRight: "8px" }} />
                     </MDBBtn>
                   </div>
                 </MDBCardBody>
@@ -210,33 +207,21 @@ const Profile = () => {
                       </MDBCardText>
                     </MDBListGroupItem>
                     <MDBListGroupItem className="d-flex justify-content-between align-items-center p-3">
-                      <MDBIcon
-                        fab
-                        style={{ color: "#333333" }}
-                      />
+                      <MDBIcon fab style={{ color: "#333333" }} />
                       <MDBCardText>
                         {data && data.team ? data.team : "N/A"}
                       </MDBCardText>
                     </MDBListGroupItem>
                     <MDBListGroupItem className="d-flex justify-content-between align-items-center p-3">
-                      <MDBIcon
-                        fab
-                        style={{ color: "#55acee" }}
-                      />
+                      <MDBIcon fab style={{ color: "#55acee" }} />
                       <MDBCardText>@mdbootstrap</MDBCardText>
                     </MDBListGroupItem>
                     <MDBListGroupItem className="d-flex justify-content-between align-items-center p-3">
-                      <MDBIcon
-                        fab
-                        style={{ color: "#ac2bac" }}
-                      />
+                      <MDBIcon fab style={{ color: "#ac2bac" }} />
                       <MDBCardText>mdbootstrap</MDBCardText>
                     </MDBListGroupItem>
                     <MDBListGroupItem className="d-flex justify-content-between align-items-center p-3">
-                      <MDBIcon
-                        fab
-                        style={{ color: "#3b5998" }}
-                      />
+                      <MDBIcon fab style={{ color: "#3b5998" }} />
                       <MDBCardText>mdbootstrap</MDBCardText>
                     </MDBListGroupItem>
                   </MDBListGroup>
@@ -248,7 +233,11 @@ const Profile = () => {
                 <MDBCardBody>
                   <MDBRow>
                     <MDBCol sm="3">
-                      <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>UserName :</MDBCardText>
+                      <MDBCardText
+                        style={{ fontWeight: "bold", color: "#000000" }}
+                      >
+                        UserName :
+                      </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="8">
                       <MDBCardText className="text-muted">
@@ -256,13 +245,21 @@ const Profile = () => {
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="1">
-                      <EditIcon fontSize="small" color="primary" onClick={handleOpenEditUser}/>
+                      <EditIcon
+                        fontSize="small"
+                        color="primary"
+                        onClick={handleOpenEditUser}
+                      />
                     </MDBCol>
                   </MDBRow>
                   <hr />
                   <MDBRow>
                     <MDBCol sm="3">
-                      <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>Email :</MDBCardText>
+                      <MDBCardText
+                        style={{ fontWeight: "bold", color: "#000000" }}
+                      >
+                        Email :
+                      </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="8">
                       <MDBCardText className="text-muted">
@@ -270,13 +267,21 @@ const Profile = () => {
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="1">
-                      <EditIcon fontSize="small" color="primary" onClick={handleOpenEditUser}/>
+                      <EditIcon
+                        fontSize="small"
+                        color="primary"
+                        onClick={handleOpenEditUser}
+                      />
                     </MDBCol>
                   </MDBRow>
                   <hr />
                   <MDBRow>
                     <MDBCol sm="3">
-                      <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>Phone :</MDBCardText>
+                      <MDBCardText
+                        style={{ fontWeight: "bold", color: "#000000" }}
+                      >
+                        Phone :
+                      </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="8">
                       <MDBCardText className="text-muted">
@@ -284,41 +289,68 @@ const Profile = () => {
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="1">
-                      <EditIcon fontSize="small" color="primary" onClick={handleOpenEditUser}/>
+                      <EditIcon
+                        fontSize="small"
+                        color="primary"
+                        onClick={handleOpenEditUser}
+                      />
                     </MDBCol>
                   </MDBRow>
                   <hr />
                   <MDBRow>
                     <MDBCol sm="3">
-                      <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>Role :</MDBCardText>
+                      <MDBCardText
+                        style={{ fontWeight: "bold", color: "#000000" }}
+                      >
+                        Role :
+                      </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="8">
                       <MDBCardText className="text-muted">
-                      {data && data.role ? roleOptions.find(role => role.id === data.role).name : "N/A"}
+                        {data && data.role
+                          ? roleOptions.find((role) => role.id === data.role)
+                              .name
+                          : "N/A"}
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="1">
-                      <EditIcon fontSize="small" color="primary" onClick={handleOpenEditUser}/>
+                      <EditIcon
+                        fontSize="small"
+                        color="primary"
+                        onClick={handleOpenEditUser}
+                      />
                     </MDBCol>
                   </MDBRow>
                   <hr />
                   <MDBRow>
                     <MDBCol sm="3">
-                      <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>Date Of Birth :</MDBCardText>
+                      <MDBCardText
+                        style={{ fontWeight: "bold", color: "#000000" }}
+                      >
+                        Date Of Birth :
+                      </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="8">
                       <MDBCardText className="text-muted">
-                        {data && data.dateOfBirth ? data.dateOfBirth : "N/A"}
+                        {formatTicketDate(data.dateOfBirth)}
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="1">
-                      <EditIcon fontSize="small" color="primary" onClick={handleOpenEditUser}/>
+                      <EditIcon
+                        fontSize="small"
+                        color="primary"
+                        onClick={handleOpenEditUser}
+                      />
                     </MDBCol>
                   </MDBRow>
                   <hr />
                   <MDBRow>
                     <MDBCol sm="3">
-                      <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>Team :</MDBCardText>
+                      <MDBCardText
+                        style={{ fontWeight: "bold", color: "#000000" }}
+                      >
+                        Team :
+                      </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="8">
                       <MDBCardText className="text-muted">
@@ -326,13 +358,21 @@ const Profile = () => {
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="1">
-                      <EditIcon fontSize="small" color="primary" onClick={handleOpenEditUser}/>
+                      <EditIcon
+                        fontSize="small"
+                        color="primary"
+                        onClick={handleOpenEditUser}
+                      />
                     </MDBCol>
                   </MDBRow>
                   <hr />
                   <MDBRow>
                     <MDBCol sm="3">
-                      <MDBCardText style={{ fontWeight: "bold", color: "#000000" }}>Company :</MDBCardText>
+                      <MDBCardText
+                        style={{ fontWeight: "bold", color: "#000000" }}
+                      >
+                        Company :
+                      </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="8">
                       <MDBCardText className="text-muted">
@@ -340,7 +380,11 @@ const Profile = () => {
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="1">
-                      <EditIcon fontSize="small" color="primary" onClick={handleOpenEditUser}/>
+                      <EditIcon
+                        fontSize="small"
+                        color="primary"
+                        onClick={handleOpenEditUser}
+                      />
                     </MDBCol>
                   </MDBRow>
                 </MDBCardBody>
@@ -368,7 +412,7 @@ const Profile = () => {
                         Website Markup
                       </MDBCardText>
                     </MDBCardBody>
-                  </MDBCard>  
+                  </MDBCard>
                 </MDBCol>
                 <MDBCol md="6">
                   <MDBCard className="mb-4 mb-md-0">
@@ -392,7 +436,7 @@ const Profile = () => {
                         Website Markup
                       </MDBCardText>
                     </MDBCardBody>
-                  </MDBCard>  
+                  </MDBCard>
                 </MDBCol>
               </MDBRow>
             </MDBCol>
@@ -437,7 +481,7 @@ const Profile = () => {
                     />
                   )}
                   <div>
-                    <input type="file" onChange={handleFileChange} />                
+                    <input type="file" onChange={handleFileChange} />
                   </div>
                 </Grid>
                 <Grid item xs={12} md={8}>
@@ -447,7 +491,7 @@ const Profile = () => {
                     label="First Name"
                     variant="outlined"
                     margin="normal"
-                    value={data && data.firstName ? data.firstName : "" }
+                    value={data && data.firstName ? data.firstName : ""}
                     onChange={handleChange}
                   />
                   <TextField
@@ -502,19 +546,18 @@ const Profile = () => {
                     onChange={handleChange}
                   />
                   <Grid container spacing={3}>
-                  <Grid item xs={12}>
-                    <LocalizationProvider dateAdapter={AdapterMoment}>
-                      <DatePicker
-                      label="Date Export"
-                      required
-                      fullWidth
-                      value={date}
-                      maxDate={moment()}
-                      onChange={(newValue) => handleDateChange(newValue)}
-                      />
-                    </LocalizationProvider>
-                </Grid>
-                </Grid>
+                    <Grid item xs={12}>
+                      <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <DatePicker
+                          label="Date Export"
+                          required
+                          fullWidth
+                          value={date}
+                          onChange={(newValue) => handleDateChange(newValue)}
+                        />
+                      </LocalizationProvider>
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Grid>
             </MDBCardBody>
@@ -522,14 +565,22 @@ const Profile = () => {
         </DialogContent>
         <DialogActions>
           <>
-            <Button onClick={onHandleEditProfile} variant="outlined" color="primary"><EditIcon /></Button>
-            <Button onClick={handleClose} variant="outlined" color="secondary"><CloseIcon /></Button>
+            <Button
+              onClick={onHandleEditProfile}
+              variant="outlined"
+              color="primary"
+            >
+              <EditIcon />
+            </Button>
+            <Button onClick={handleClose} variant="outlined" color="secondary">
+              <CloseIcon />
+            </Button>
           </>
         </DialogActions>
       </Dialog>
 
       <Dialog fullWidth open={openChangePassword} onClose={handleCloseChangePW}>
-        <ChangePassword />       
+        <ChangePassword />
       </Dialog>
     </section>
   );
