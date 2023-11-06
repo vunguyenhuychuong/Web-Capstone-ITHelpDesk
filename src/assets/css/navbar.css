@@ -13,3 +13,27 @@
     margin-left: 10px;
     width: 100%;
   }
+
+  .online-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #00CC00; /* Green color for the dot */
+    position: absolute;
+    bottom: -1px; /* Adjust the position of the dot from the bottom */
+    right: 1px; /* Adjust the position of the dot from the right */
+    animation: ripple 1.2s infinite ease-in-out; /* Apply the ripple animation */
+    border: 1px solid currentColor;
+    content: "";
+  }
+  
+  /* @keyframes ripple {
+    0% {
+      transform: scale(.8);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(2.4);
+      opacity: 0;
+    }
+  } */

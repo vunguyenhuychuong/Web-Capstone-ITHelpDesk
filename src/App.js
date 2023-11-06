@@ -24,6 +24,9 @@ import TicketSolutionList from './pages/dashboard/Technician/TicketSolutionList'
 import CreateTicketSolution from './pages/dashboard/Technician/CreateTicketSolution';
 import TicketSolutionDetail from './pages/dashboard/Technician/TicketSolutionDetail';
 import EditTicketSolution from './pages/dashboard/Technician/EditTicketSolution';
+import HomeTechnician from './pages/dashboard/Technician/HomeTechnician';
+import TicketTaskList from './pages/dashboard/Technician/TicketTaskList';
+import CreateTicketTask from './pages/dashboard/Technician/CreateTicketTask';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -31,6 +34,7 @@ function App() {
   const hasCustomerRole = user?.user?.role === 1 || data?.result?.role === 1;
   const hasAdminRole = user?.user?.role === 0 || data?.result?.role === 0;
   const hasManagerRole = user?.user?.role === 2 || data?.result?.role === 2;
+  const hasTechnicianRole = user?.user?.role === 3 || data?.result?.role === 3;
   return (
     <BrowserRouter>
       <Routes>
@@ -43,7 +47,7 @@ function App() {
         >
           <Route index element={<AccessibleTabs1 />} />
           {(hasAdminRole || hasManagerRole) && <Route path='team' element={<Team />} />}
-          {(hasCustomerRole || hasAdminRole || hasManagerRole) && <Route path='profile' element={<Profile />} />} 
+          {(hasCustomerRole || hasAdminRole || hasManagerRole || hasTechnicianRole) && <Route path='profile' element={<Profile />} />} 
           {hasAdminRole && <Route path='customer' element={<Customer />} />}
           {(hasCustomerRole) && <Route path='mains' element={<HomeCustomer />} />} 
           <Route path='main' element={<AccessibleTabs1 />} />
@@ -57,6 +61,9 @@ function App() {
           <Route path='editSolution/:solutionId' element={<EditTicketSolution />} />
           <Route path='detailSolution/:solutionId' element={<TicketSolutionDetail />} />
           <Route path='detailTicket/:ticketId' element={<DetailTicket />} />
+          <Route path='homeTechnician' element={<HomeTechnician />} />
+          <Route path='ticketTask' element={<TicketTaskList />} />
+          <Route path='createTask' element={<CreateTicketTask />} />
           {(hasManagerRole) && <Route path='listTicket' element={<ManagersTabs />} />}
           </Route>
         <Route path='login' element={<Login />} />

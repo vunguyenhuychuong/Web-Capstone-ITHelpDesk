@@ -281,4 +281,18 @@
   height: 38px;
 }
 
+.blue-summary {
+  background-color: #66CCFF  ;
+  padding: 10px; /* Optional: Add padding for better spacing */
+  border: 1px solid #7e7e80; /* Add a solid border with blue color (#0000FF) */
+  border-radius: 5px;
+}
+
+.blue-summary h4 {
+  font-family: Arial, sans-serif; /* Set font family */
+  font-size: 24px; /* Set font size */
+  font-weight: bold; /* Set font weight to bold */
+  color: white; /* Set text color to white */
+}
+
 

@@ -6,6 +6,9 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "../../assets/css/navbar.css";
 import {
+  AccountBox,
+  Dashboard,
+  ExitToApp,
   Help,
   Mail,
   NotificationAdd,
@@ -29,6 +32,33 @@ import React, { useEffect } from "react";
 import { roleOptions } from "../../pages/helpers/tableComlumn";
 import { GetDataProfileUser } from "../../app/api";
 import { useState } from "react";
+
+export  function stringToColor(string) {
+  let hash = 0;
+  let i;
+
+  for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  let color = "#";
+
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+
+  return color;
+}
+
+export  function stringAvatar(name) {
+  return {
+    sx: {
+      bgcolor: stringToColor(name),
+    },
+    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+  };
+}
 
 const Navbar = () => {
   const user = useSelector((state) => state.auth);
@@ -98,7 +128,11 @@ const Navbar = () => {
         </button>
         <Paper component="form" className="search-bar">
           <InputBase className="search-input" placeholder="Search..." />
-          <IconButton type="submit" aria-label="search" style={{ color: "#0099FF" }}>
+          <IconButton
+            type="submit"
+            aria-label="search"
+            style={{ color: "#0099FF" }}
+          >
             <Search />
           </IconButton>
         </Paper>
@@ -108,46 +142,57 @@ const Navbar = () => {
         </div>
         <div className="btn-container">
           <div className="icons-wrapper">
-            <IconButton size="large" style={{ color: "#0099FF" }}>
-              <Badge badgeContent={4} color="error">
-                <Mail />
-              </Badge>
-            </IconButton>
-            <IconButton size="large" style={{ color: "#0099FF" }}>
-              <Badge badgeContent={17} color="error">
-                <NotificationAdd />
-              </Badge>
-            </IconButton>
-            <IconButton size="large" style={{ color: "#0099FF" }}>
-              <Badge color="error">
-                <Settings />
-              </Badge>
-            </IconButton>
-            <IconButton size="large" style={{ color: "#0099FF" }}>
-              <Badge color="error">
-                <RotateLeft />
-              </Badge>
-            </IconButton>
-            <IconButton size="large" style={{ color: "#0099FF" }}>
-              <Badge color="error">
-                <Help />
-              </Badge>
-            </IconButton>
+            <Tooltip title="Message">
+              <IconButton size="large" style={{ color: "#0099FF" }}>
+                <Badge badgeContent={4} color="error">
+                  <Mail />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Notifications">
+              <IconButton size="large" style={{ color: "#0099FF" }}>
+                <Badge badgeContent={17} color="error">
+                  <NotificationAdd />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Open Setting">
+              <IconButton size="large" style={{ color: "#0099FF" }}>
+                <Badge color="error">
+                  <Settings />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Reload">
+              <IconButton size="large" style={{ color: "#0099FF" }}>
+                <Badge color="error">
+                  <RotateLeft />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Information">
+              <IconButton size="large" style={{ color: "#0099FF" }}>
+                <Badge color="error">
+                  <Help />
+                </Badge>
+              </IconButton>
+            </Tooltip>
             <Box sx={{ flexGrow: 0 }}>
               <div
                 className="icon-wrapper"
                 style={{ display: "flex", alignItems: "center" }}
               >
-                <Tooltip title="Open settings">
+                <Tooltip title="Menu">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                     {data ? (
-                      <Avatar alt="User Avatar" src={data.avatarUrl} />
+                      <Avatar alt="User Avatar" {...stringAvatar(userName)} />
                     ) : (
                       <Avatar
                         alt="Remy Sharp"
                         src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
                       />
                     )}
+                    <div className="online-dot" /> {/* Green dot */}
                   </IconButton>
                 </Tooltip>
                 <div style={{ marginLeft: "8px" }}>
@@ -176,7 +221,16 @@ const Navbar = () => {
                     key={setting}
                     onClick={() => handleLogoutUser(setting)}
                   >
-                    <Typography textAlign="center">{setting}</Typography>
+                    {setting === "Profile" && (
+                      <AccountBox sx={{ marginRight: 1, color: "#3399FF" }} />
+                    )}
+                    {setting === "Dashboard" && (
+                      <Dashboard sx={{ marginRight: 1, color: "#3399FF" }} />
+                    )}
+                    {setting === "Logout" && (
+                      <ExitToApp sx={{ marginRight: 1, color: "#3399FF" }} />
+                    )}
+                    <Typography variant="subtitle1" fontWeight="bold" color="primary">{setting}</Typography>
                   </MenuItem>
                 ))}
               </Menu>

@@ -21,16 +21,12 @@ import {
   Button,
   Grid,
   MenuItem,
-  Tooltip,
-  FormControl,
-  InputLabel,
-  Typography,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close";
 import LockIcon from "@mui/icons-material/Lock";
-import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment from "moment";
 import "../../assets/css/profile.css";
@@ -39,32 +35,11 @@ import { GetDataProfileUser, UpdateProfile } from "../../app/api";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import ChangePassword from "../ChangePassword";
-import { genderOptions, getRoleNameById } from "../helpers/tableComlumn";
+import { genderOptions, getRoleNameById, roleOptions } from "../helpers/tableComlumn";
 import { formatTicketDate } from "../helpers/FormatAMPM";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import {
-  CalendarMonth,
-  CorporateFare,
-  Group,
-  LocalPhone,
-  Mail,
-  Portrait,
-} from "@mui/icons-material";
-import CustomTextField from "../CustomTextField";
+import { LocalPhone, Mail } from "@mui/icons-material";
 
-const VisuallyHidden = styled("input")({
-  clip: "rect(0 0 0 0)",
-  clipPath: "inset(50%)",
-  height: 1,
-  overflow: "hidden",
-  position: "absolute",
-  bottom: 0,
-  left: 0,
-  whiteSpace: "nowrap",
-  width: 1,
-});
-
-const Profile = (props) => {
+const Profile = () => {
   const [data, setData] = useState({
     firstName: "",
     lastName: "",
@@ -77,26 +52,6 @@ const Profile = (props) => {
     team: "",
     address: "",
     role: "",
-  });
-
-  const [errors, setErrors] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phoneNumber: "",
-    gender: "",
-    dateOfBirth: "",
-    address: "",
-  });
-
-  const [formData, setFormData] = useState({
-    firstName: data.firstName || "",
-    lastName: data.lastName || "",
-    email: data.email || "",
-    phoneNumber: data.phoneNumber || "",
-    gender: data.gender || "",
-    dateOfBirth: data.dateOfBirth || "",
-    address: data.address || "",
   });
 
   const [open, setOpen] = React.useState(false);
@@ -156,32 +111,9 @@ const Profile = (props) => {
 
   useEffect(() => {
     fetchDataProfile();
-    
   }, []);
 
   const onHandleEditProfile = async () => {
-    const newErrors = {};
-
-    if (!data.firstName) {
-      newErrors.firstName = "First Name is required";
-    }
-
-    if (!data.lastName) {
-      newErrors.lastName = "Last Name is required";
-    }
-
-    if (!data.email) {
-      newErrors.email = "Email is required";
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      toast.error("Please fill out all required fields.");
-      return;
-    }
-
-    setErrors({});
-
     try {
       let avatarUrl = data.avatarUrl; // Use the current avatarUrl by default
 
@@ -230,6 +162,8 @@ const Profile = (props) => {
                         borderColor: "grey",
                         borderWidth: "2px",
                         borderStyle: "solid",
+                        transition:
+                          "transform 0.3s ease, border-color 0.3s ease",
                       }}
                       fluid
                     />
@@ -242,10 +176,7 @@ const Profile = (props) => {
                       fluid
                     />
                   )}
-                  <p
-                    className="text-muted mb-1"
-                    style={{ fontSize: "24px", fontWeight: "bold" }}
-                  >
+                  <p className="text-muted mb-1" style={{ fontSize: '24px', fontWeight: 'bold' }}>
                     {data && data.firstName ? data.firstName : "N/A"} {""}
                     {data && data.lastName ? data.lastName : "N/A"}
                   </p>
@@ -253,20 +184,16 @@ const Profile = (props) => {
                     {getRoleNameById(data.role)}
                   </p>
                   <div className="d-flex justify-content-center mb-2">
-                    <Tooltip title="Edit Profile">
-                      <MDBBtn onClick={handleOpenEditUser}>
-                        <EditIcon />
-                      </MDBBtn>
-                    </Tooltip>
-                    <Tooltip title="Change Your Password">
-                      <MDBBtn
-                        outline
-                        className="ms-2"
-                        onClick={handleOpenChangePW}
-                      >
-                        <LockIcon style={{ marginRight: "8px" }} />
-                      </MDBBtn>
-                    </Tooltip>
+                    <MDBBtn onClick={handleOpenEditUser}>
+                      <EditIcon />
+                    </MDBBtn>
+                    <MDBBtn
+                      outline
+                      className="ms-2"
+                      onClick={handleOpenChangePW}
+                    >
+                      <LockIcon style={{ marginRight: "8px" }} />
+                    </MDBBtn>
                   </div>
                 </MDBCardBody>
               </MDBCard>
@@ -303,9 +230,6 @@ const Profile = (props) => {
               </MDBCard>
             </MDBCol>
             <MDBCol lg="8">
-              <div className="blue-summary">
-                <h4>About Your Profile Information</h4>
-              </div>
               <MDBCard className="mb-4">
                 <MDBCardBody>
                   <MDBRow>
@@ -322,7 +246,7 @@ const Profile = (props) => {
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="1">
-                      <Portrait
+                      <EditIcon
                         fontSize="small"
                         color="primary"
                         onClick={handleOpenEditUser}
@@ -379,15 +303,14 @@ const Profile = (props) => {
                       <MDBCardText
                         style={{ fontWeight: "bold", color: "#000000" }}
                       >
-                        Gender :
+                        Role :
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="8">
                       <MDBCardText className="text-muted">
-                        {data && data.gender
-                          ? genderOptions.find(
-                              (gender) => gender.id === gender.role
-                            ).name
+                        {data && data.role
+                          ? roleOptions.find((role) => role.id === data.role)
+                              .name
                           : "N/A"}
                       </MDBCardText>
                     </MDBCol>
@@ -414,7 +337,7 @@ const Profile = (props) => {
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="1">
-                      <CalendarMonth
+                      <EditIcon
                         fontSize="small"
                         color="primary"
                         onClick={handleOpenEditUser}
@@ -436,7 +359,7 @@ const Profile = (props) => {
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="1">
-                      <Group
+                      <EditIcon
                         fontSize="small"
                         color="primary"
                         onClick={handleOpenEditUser}
@@ -458,7 +381,7 @@ const Profile = (props) => {
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="1">
-                      <CorporateFare
+                      <EditIcon
                         fontSize="small"
                         color="primary"
                         onClick={handleOpenEditUser}
@@ -533,12 +456,10 @@ const Profile = (props) => {
         </div>
       )}
       <Dialog open={openAdd} maxWidth="md" fullWidth>
-        <DialogTitle className="text-center" style={{ background: "#66CCFF" }}>
-          <h2 style={{ fontWeight: "bold", color: "white", marginTop: "20px" }}>
-            Information about user
-          </h2>
+        <DialogTitle className="text-center">
+          Information about User
         </DialogTitle>
-        <DialogContent open={open} style={{ backgroundColor: "#eee" }}>
+        <DialogContent open={open}>
           <MDBCard className="mb-4" style={{ backgroundColor: "#FFFFFF" }}>
             <MDBCardBody className="text-center">
               <Grid container spacing={4}>
@@ -560,140 +481,107 @@ const Profile = (props) => {
                       fluid
                     />
                   )}
-                  <Button
-                    component="label"
-                    variant="contained"
-                    startIcon={<CloudUploadIcon />}
-                  >
-                    Upload file
-                    <VisuallyHidden
-                      type="file"
-                      onChange={handleFileChange}
-                      {...props}
-                    />
-                  </Button>
+                  <div>
+                    <input type="file" onChange={handleFileChange} />
+                  </div>
                 </Grid>
                 <Grid item xs={12} md={8}>
-                  <CustomTextField
-                    label="FirstName"
+                  <TextField
                     name="firstName"
-                    value={data.firstName}
+                    fullWidth
+                    label="First Name"
+                    variant="outlined"
+                    margin="normal"
+                    value={data && data.firstName ? data.firstName : ""}
                     onChange={handleChange}
-                    error={errors.firstName}
-                    helperText={
-                      <span style={{ color: "red" }}>{errors.firstName}</span>
-                    }
                   />
-                  <CustomTextField
-                    label="Last Name"
+                  <TextField
                     name="lastName"
+                    fullWidth
+                    label="Last Name"
+                    variant="outlined"
+                    margin="normal"
                     value={data.lastName}
                     onChange={handleChange}
-                    helperText={
-                      <span style={{ color: "red" }}>{errors.lastName}</span>
-                    }
                   />
-                  <CustomTextField
-                    label="Email"
+                  <TextField
                     name="email"
+                    fullWidth
+                    label="Email"
+                    variant="outlined"
+                    margin="normal"
                     value={data.email}
                     onChange={handleChange}
-                    helperText={
-                      <span style={{ color: "red" }}>{errors.email}</span>
-                    }
                   />
-                  <CustomTextField
-                    label="Phone Number"
+                  <TextField
                     name="phoneNumber"
+                    fullWidth
+                    label="Phone Number"
+                    variant="outlined"
+                    margin="normal"
                     value={data.phoneNumber}
                     onChange={handleChange}
                   />
-                  <FormControl
+                  <Select
+                    name="gender"
                     fullWidth
-                    variant="outlined"
-                    size="small"
-                    style={{ marginTop: "16px" }}
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Gender"
+                    value={data.gender}
+                    onChange={handleChange}
                   >
-                    <InputLabel id="gender-label">Gender</InputLabel>
-                    <Select
-                      labelId="gender-label"
-                      id="gender"
-                      value={data.gender}
-                      onChange={handleChange}
-                      label="Gender"
-                    >
-                      {genderOptions.map((gender) => (
-                        <MenuItem key={gender.id} value={gender.id}>
-                          {gender.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                  <CustomTextField
-                    label="Address"
+                    {genderOptions.map((gender) => (
+                      <MenuItem key={gender.id} value={gender.id}>
+                        {gender.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  <TextField
                     name="address"
+                    fullWidth
+                    label="Address"
+                    variant="outlined"
+                    margin="normal"
                     value={data.address}
                     onChange={handleChange}
                   />
-                  <Grid
-                    item
-                    xs={10}
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <Typography
-                      variant="body1"
-                      style={{
-                        marginRight: "10px",
-                        color: "#3399FF",
-                        marginTop: "10px",
-                      }}
-                    >
-                      Birth Day
-                    </Typography>
-                    <LocalizationProvider dateAdapter={AdapterMoment}>
-                      <div style={{ marginTop: "20px" }}>
-                        <MobileDatePicker
+                  <Grid container spacing={3}>
+                    <Grid item xs={12}>
+                      <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <DatePicker
+                          label="Date Export"
                           required
                           fullWidth
                           value={date}
                           onChange={(newValue) => handleDateChange(newValue)}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              variant="outlined"
-                              size="small"
-                            />
-                          )}
                         />
-                      </div>
-                    </LocalizationProvider>
+                      </LocalizationProvider>
+                    </Grid>
                   </Grid>
                 </Grid>
               </Grid>
             </MDBCardBody>
           </MDBCard>
-          <DialogActions>
-            <>
-              <Button
-                onClick={onHandleEditProfile}
-                variant="outlined"
-                color="primary"
-              >
-                <EditIcon />
-              </Button>
-              <Button
-                onClick={handleClose}
-                variant="outlined"
-                color="secondary"
-              >
-                <CloseIcon />
-              </Button>
-            </>
-          </DialogActions>
         </DialogContent>
+        <DialogActions>
+          <>
+            <Button
+              onClick={onHandleEditProfile}
+              variant="outlined"
+              color="primary"
+            >
+              <EditIcon />
+            </Button>
+            <Button onClick={handleClose} variant="outlined" color="secondary">
+              <CloseIcon />
+            </Button>
+          </>
+        </DialogActions>
       </Dialog>
+
       <Dialog fullWidth open={openChangePassword} onClose={handleCloseChangePW}>
-        <ChangePassword onCancel={handleCloseChangePW} />
+        <ChangePassword />
       </Dialog>
     </section>
   );

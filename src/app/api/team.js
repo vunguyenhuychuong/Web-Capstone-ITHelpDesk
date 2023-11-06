@@ -31,7 +31,7 @@ export async function getAllTeam(searchField,searchQuery,page = 1, pageSize = 5,
 export async function getAllTeams() {
     const header = getAuthHeader();
     try{
-        const res = await axios.get(`${baseURL}/team`,{
+        const res = await axios.get(`${baseURL}/team/all`,{
             headers: {
                 Authorization: header,
             },

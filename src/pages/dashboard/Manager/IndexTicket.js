@@ -204,8 +204,8 @@ const IndexTicket = () => {
   return (
     <section style={{ backgroundColor: "#FFF" }}>
         <MDBContainer
-          className="py-5"
-          style={{ paddingLeft: 20, paddingRight: 20, maxWidth: "100%" }}
+          className="py-5 custom-container"
+          // style={{ paddingLeft: 20, paddingRight: 20, maxWidth: "100%" }}
         >
           <MDBNavbar expand="lg" light bgColor="inherit">
             <MDBContainer fluid>

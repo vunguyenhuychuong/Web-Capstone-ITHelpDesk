@@ -25,7 +25,7 @@ const AssignTicketModal = ({ open, onClose, ticketId }) => {
     const selectedTeamId = event.target.value;
     setSelectedTeamId(selectedTeamId);
     fetchAssignTicket(selectedTeamId);
-    setSelectedTechnicianId(""); // Reset when selected team change
+    setSelectedTechnicianId(""); 
   };
 
   const handleSubmitAssignTicket = async () => {

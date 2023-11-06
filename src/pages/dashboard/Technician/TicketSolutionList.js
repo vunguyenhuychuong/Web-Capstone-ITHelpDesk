@@ -202,13 +202,6 @@ const TicketSolutionList = () => {
               >
                 <Settings /> Solution Settings
               </MDBBtn>
-              <MDBBtn
-                color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px" }}
-                // onClick={handleOpenRequestTicket}
-              >
-                <Search /> <PlaylistAdd />
-              </MDBBtn>
               <FormControl
                   variant="outlined"
                   style={{

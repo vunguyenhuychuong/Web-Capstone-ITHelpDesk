@@ -3,15 +3,25 @@ import { MDBContainer } from "mdb-react-ui-kit";
 import { toast } from "react-toastify";
 import { Box, TextField } from "@mui/material";
 import { Navigate, useNavigate } from "react-router-dom";
-import { ChangePasswordUser } from "../app/api/profile";
+import { Button, Checkbox, Form, Input } from "antd";
 
-const ChangePassword = () => {
+import { ChangePasswordUser } from "../app/api/profile";
+import CustomTextField from "./CustomizeField";
+
+const ChangePassword = ({ onCancel }) => {
   const navigate = useNavigate();
   const [data, setData] = useState({
     currentPassword: "",
     newPassword: "",
     confirmNewPassword: "",
   });
+
+  const onFinish = (values) => {
+    console.log("Success:", values);
+  };
+  const onFinishFailed = (errorInfo) => {
+    console.log("Failed:", errorInfo);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,48 +61,56 @@ const ChangePassword = () => {
   return (
     <section style={{ backgroundColor: "#eee" }}>
       <MDBContainer className="py-5">
-        <h2>Change Password</h2>
+        <h2
+          style={{ fontWeight: "bold", color: "#0099FF", marginTop: "-20px" }}
+        >
+          Change Password
+        </h2>
         <Box
           sx={{
             maxWidth: "100%",
           }}
         >
-          <TextField
-            fullWidth
-            label="currentPassword"
-            id="currentPassword"
+          <CustomTextField
+            label="Current Password"
             name="currentPassword"
-            onChange={handleChange}
             value={data.currentPassword}
-            sx={{ marginTop: 2 }} 
+            onChange={handleChange}
+            sx={{ marginBottom: 2 }}
           />
-          <TextField
-            fullWidth
-            label="newPassword"
-            id="newPassword"
+          <CustomTextField
+            label="New Password"
             name="newPassword"
-            onChange={handleChange}
             value={data.newPassword}
-            sx={{ marginTop: 2 }} 
-          />
-          <TextField
-            fullWidth
-            label="confirmNewPassword"
-            id="confirmNewPassword"
-            name="confirmNewPassword"
             onChange={handleChange}
+            sx={{ marginBottom: 2 }}
+          />
+          <CustomTextField
+            label="Confirm New Password"
+            name="confirmNewPassword"
             value={data.confirmNewPassword}
-            sx={{ marginTop: 2 }} 
+            onChange={handleChange}
+            sx={{ marginBottom: 2 }}
           />
         </Box>
-        <button
-          type="submit"
-          className="btn btn-primary"
+        <Button
+          variant="contained"
+          color="primary"
           onClick={onHandleChangePassword}
-          style={{ marginTop: "16px" }} 
+          size="large"
+          style={{ flex: 1 }}
         >
-          Agree
-        </button>
+          Submit
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={onCancel}
+          size="large"
+          style={{ flex: 1 }}
+        >
+          Cancel
+        </Button>
       </MDBContainer>
     </section>
   );

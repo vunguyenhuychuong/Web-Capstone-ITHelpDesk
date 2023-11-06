@@ -226,4 +226,12 @@ export const getPriorityBadge = (priorityId) => {
   }
 };
 
+const Process = {};
+
+for (let i = 1; i <= 100; i++) {
+  Process[i] = `${i}%`;
+}
+
+export default Process;
+
 

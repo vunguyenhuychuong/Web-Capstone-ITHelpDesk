@@ -2,7 +2,6 @@ import { FaAd, FaLightbulb, FaTicketAlt, FaWpforms } from "react-icons/fa";
 import { ImProfile } from "react-icons/im";
 import {
   Category,
-  ControlPoint,
   DesignServices,
   Details,
   FolderShared,
@@ -34,6 +33,12 @@ const links = [
     text: "Tickets Solution",
     path: "ticketSolution",
     icon: <FaLightbulb />,
+  },
+  {
+    id: 14,
+    text: "List Task",
+    path: "ticketTask",
+    icon: <Details />,
   },
   {
     id: 15,
