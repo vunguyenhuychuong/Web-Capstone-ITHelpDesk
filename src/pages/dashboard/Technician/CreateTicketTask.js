@@ -3,14 +3,14 @@ import "../../../assets/css/ticketSolution.css";
 import { Grid, Switch, TextField } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment from "moment";
-import AssignApi, { createAssignTicket } from "../../../app/api/assign";
+import AssignApi from "../../../app/api/assign";
 import Process, {
   TicketStatusOptions,
   priorityOption,
@@ -20,9 +20,9 @@ import { getAllTeams } from "../../../app/api/team";
 
 const CreateTicketTask = () => {
   const navigate = useNavigate();
-
+  const {ticketId} = useParams();
   const [data, setData] = useState({
-    ticketId: 1,
+    ticketId: ticketId,
     title: "",
     description: "",
     taskStatus: 1,
@@ -155,7 +155,7 @@ const CreateTicketTask = () => {
         description: data.description,
         taskStatus: data.taskStatus,
         technicianId: data.technicianId,
-        priority: data.priority,
+        priority: parseInt(data.priority, 10),
         scheduledStartTime: data.scheduledStartTime,
         scheduledEndTime: data.scheduledEndTime,
         progress: data.progress,
@@ -173,6 +173,10 @@ const CreateTicketTask = () => {
   const handleGoBack = () => {
     navigate(`/home/ticketSolution`);
   };
+
+  // const handleGoBack = (ticketId) => {
+  //   navigate(`/home/detailTicket/${ticketId}`);
+  // };
 
   return (
     <Grid
@@ -250,6 +254,7 @@ const CreateTicketTask = () => {
                         id="ticketId"
                         value={data.ticketId}
                         onChange={handleInputChange}
+                        disabled
                       />
                     </Grid>
                   </Grid>

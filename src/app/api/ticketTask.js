@@ -10,7 +10,8 @@ export async function getAllTicketTasks(
     page = 1,
     pageSize = 5,
     sortBy = "id",
-    sortDirection = "asc"
+    sortDirection = "asc",
+    ticketId
     ){
      const header = getAuthHeader();
      try{
@@ -21,7 +22,7 @@ export async function getAllTicketTasks(
             pageSize: pageSize,
             sort: `${sortBy} ${sortDirection}`,
         }
-        const res = await axios.get(`${baseURL}/ticket/task`, {
+        const res = await axios.get(`${baseURL}/ticket/task?ticketId=${ticketId}`, {
             headers: {
                 Authorization: header,
             },

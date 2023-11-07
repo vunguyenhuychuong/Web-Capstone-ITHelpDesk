@@ -400,7 +400,7 @@ const IndexTicket = () => {
                       <td>
                         <Edit onClick={() => handleOpenEditTicket(ticket.id)} />
                       </td>
-                      <td>{ticket.requesterId}</td>
+                      <td>{ticket.id}</td>
                       <td>{ticket.title}</td>
                       <td>{ticket.description}</td>
                       <td>{getCategoryNameById(ticket.categoryId)}</td>

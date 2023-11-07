@@ -29,6 +29,7 @@ const useTicketData = (ticketId) => {
       lastName: "",
       username: "",
       email: "",
+      role: 1,
     },
     category: {
         assignedTechnical: ""

@@ -10,6 +10,8 @@ const AssignTicketModal = ({ open, onClose, ticketId }) => {
   const [dataTechnician, setDataTechnician] = useState([]);
   const [selectedTeamId, setSelectedTeamId] = useState("");
   const [selectedTechnicianId, setSelectedTechnicianId] = useState("");
+  const [teamError, setTeamError] = useState('');
+  const [technicianError, setTechnicianError] = useState('');
 
   const fetchAssignTicket = async (teamId) => {
     try {
@@ -20,29 +22,56 @@ const AssignTicketModal = ({ open, onClose, ticketId }) => {
     }
   };
 
+  // const handleTeamChange = (event) => {
+  //   const selectedTeamId = event.target.value;
+  //   setSelectedTeamId(selectedTeamId);
+  //   setTeamError('');
+  //   fetchAssignTicket(selectedTeamId);
+  //   setSelectedTechnicianId("");
+  // };
 
   const handleTeamChange = (event) => {
-    const selectedTeamId = event.target.value;
-    setSelectedTeamId(selectedTeamId);
-    fetchAssignTicket(selectedTeamId);
-    setSelectedTechnicianId(""); 
+    const teamId = event.target.value;
+    setSelectedTeamId(teamId);
+    setTeamError('');
+    setTechnicianError('');
+    setSelectedTechnicianId(""); // Reset technician selection when team changes
+    if (teamId) {
+      fetchAssignTicket(teamId);
+    } else {
+      setDataTechnician([]); // Clear technician data if no team is selected
+    }
+  };
+
+  const handleTechnicianChange = (event) => {
+    const selectedTechnicianId = event.target.value;
+    setSelectedTechnicianId(selectedTechnicianId);
+    setTechnicianError('');
   };
 
   const handleSubmitAssignTicket = async () => {
-    try{
+    if (!selectedTeamId) {
+      setTeamError('Please select a Team.');
+      return;
+    }
+
+    if (!selectedTechnicianId) {
+      setTechnicianError('Please select a Technician.');
+      return;
+    }
+    try {
       const data = {
         technicianId: parseInt(selectedTechnicianId, 10),
         teamId: parseInt(selectedTeamId, 10),
       };
 
-      const res = await createAssignTicket(ticketId, data);
-      console.log(res);
+      await createAssignTicket(ticketId, data);
       toast.success(`Assigned Ticket${ticketId} successful`);
-    }catch(error){
+    } catch (error) {
       console.log("Error while assigning ticket", error);
     }
     onClose();
-  }
+  };
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -57,25 +86,27 @@ const AssignTicketModal = ({ open, onClose, ticketId }) => {
   }, []);
 
   return (
-    <Dialog maxWidth="lg" fullWidth open={open} onClose={onClose}>
-      <MDBContainer className="py-5">
-        <MDBRow className="mb-4">
+    <Dialog fullWidth open={open} onClose={onClose}>
+      <MDBContainer className="py-5" >
+        <MDBRow className="mb-4" >
           <MDBCol className="text-center">
-            <h2>Assign Technician</h2>
+            <h2 style={{ fontWeight: "bold", color: "#3399FF" }}>
+              Assign Technician
+            </h2>
           </MDBCol>
         </MDBRow>
         <MDBRow className="mb-4">
           <MDBCol md="2" className="text-center mt-2">
-            <label htmlFor="title" className="narrow-input">
+            <label htmlFor="title" className="narrow-input" style={{ color: "#3399FF", fontWeight: "bold" }}>
               Team
             </label>
           </MDBCol>
-          <MDBCol md="5">
+          <MDBCol md="10">
             <select
               id="team"
               name="team"
               className="form-select"
-              onChange={handleTeamChange} // Call handleTeamChange when team is selected
+              onChange={handleTeamChange } // Call handleTeamChange when team is selected
               value={selectedTeamId} // Set the selected team ID in the dropdown
             >
               <option value="">Select Team</option>
@@ -89,11 +120,11 @@ const AssignTicketModal = ({ open, onClose, ticketId }) => {
         </MDBRow>
         <MDBRow className="mb-4">
           <MDBCol md="2" className="text-center mt-2">
-            <label htmlFor="title" className="narrow-input">
+            <label htmlFor="title" className="narrow-input" style={{ color: "#3399FF", fontWeight: "bold" }}>
               Technician
             </label>
           </MDBCol>
-          <MDBCol md="5">
+          <MDBCol md="10">
             <select
               id="technician"
               name="technician"
@@ -111,11 +142,33 @@ const AssignTicketModal = ({ open, onClose, ticketId }) => {
           </MDBCol>
         </MDBRow>
       </MDBContainer>
-      <DialogActions>
-        <Button onClick={handleSubmitAssignTicket} color="primary" autoFocus>
+      <div style={{ color: 'red', marginTop: '5px', fontSize: '14px' }}>
+        {teamError && teamError}
+      </div>
+      <div style={{ color: 'red', marginTop: '5px', fontSize: '14px' }}>
+        {technicianError && technicianError}
+      </div>
+      <DialogActions
+        style={{ justifyContent: "center", backgroundColor: "#EEEEEE" }}
+      >
+        <Button
+          onClick={handleSubmitAssignTicket}
+          color="primary"
+          autoFocus
+          style={{ color: "white", backgroundColor: "#007bff" }}
+        >
           Assign
         </Button>
-        <Button onClick={onClose} color="primary" autoFocus>
+        <Button
+          onClick={onClose}
+          color="primary"
+          autoFocus
+          style={{
+            color: "white",
+            backgroundColor: "#dc3545",
+            marginLeft: "10px",
+          }}
+        >
           Cancel
         </Button>
       </DialogActions>

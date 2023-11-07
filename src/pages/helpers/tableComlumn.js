@@ -65,6 +65,11 @@ export const genderOptions = [
   { id: 1, name: "Female" },
 ];
 
+export const getGenderById = (id) => {
+  const gender = genderOptions.find((option) => option.id === id);
+  return gender ? gender.name : 'Unknown Gender';
+};
+
 export const priorityOption = [
   { id: 0, name: "Low" },
   { id: 1, name: "Normal" },
@@ -72,6 +77,11 @@ export const priorityOption = [
   { id: 3, name: "High"},
   { id: 4, name: "Critical"},
 ];
+
+export const getPriorityOption = (priorityId) => {
+  const priority = priorityOptions.find((option) => option.id === priorityId);
+  return priority ? priority.name : 'Unknown Priority';
+};
 
 export const priorityOptions = [
   { id: 0, name: "Low", colorClass: "bg-primary", fontSize: '14px' },
@@ -119,11 +129,21 @@ export const UrgencyOptions = [
   {id: 3, name: "Urgent"},
 ];
 
+export const getUrgencyById = (urgencyId) => {
+  const urgency= UrgencyOptions.find(option => option.id === urgencyId);
+  return urgency ? urgency.name : 'Unknown Urgency';
+}
+
 export const ImpactOptions = [
   {id: 0, name: "Low"},
   {id: 1, name: "Medium"},
   {id: 2, name: "High"},
 ]
+
+export const getImpactById = (impactId) => {
+  const impact = ImpactOptions.find(option => option.id === impactId);
+  return impact ? impact.name : 'Unknown Impact';
+}
 
 export const TicketStatusOptions = [
   {

@@ -1,0 +1,27 @@
+.upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  gap: 10px;
+  border: 2px dashed #ccc;
+  border-radius: 4px;
+}
+
+.upload-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.upload-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%; /* Set the progress bar width to 100% */
+  }
+
+.upload-content span {
+    color: #007bff; /* Set the desired color for the text inside the span element */
+  }

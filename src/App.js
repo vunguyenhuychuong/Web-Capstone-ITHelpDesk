@@ -63,8 +63,8 @@ function App() {
           <Route path='detailTicket/:ticketId' element={<DetailTicket />} />
           <Route path='homeTechnician' element={<HomeTechnician />} />
           <Route path='ticketTask' element={<TicketTaskList />} />
-          <Route path='createTask' element={<CreateTicketTask />} />
-          {(hasManagerRole) && <Route path='listTicket' element={<ManagersTabs />} />}
+          <Route path='createTask/:ticketId' element={<CreateTicketTask />} />
+          {(hasManagerRole || hasTechnicianRole) && <Route path='listTicket' element={<ManagersTabs />} />}
           </Route>
         <Route path='login' element={<Login />} />
         <Route path='forgot-password' element={<ForgetPassword /> }  />

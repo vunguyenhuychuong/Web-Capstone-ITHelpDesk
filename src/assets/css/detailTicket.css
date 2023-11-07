@@ -1,0 +1,32 @@
+.gridContainer {
+  padding-right: 10px; /* Set the desired right padding */
+}
+
+.labelContainer {
+  background-color: #f0f0f0;
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 0px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.descriptionLabel {
+  width: 100%;
+}
+
+.icon {
+  margin-left: 8px;
+  /* Add additional styling for the arrow icon if needed */
+}
+
+.buttonContainer {
+  background-color: #f0f0f0;
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  width: 100%;
+  display: flex;
+}
