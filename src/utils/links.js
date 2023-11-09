@@ -1,6 +1,7 @@
 import { FaAd, FaLightbulb, FaTicketAlt, FaWpforms } from "react-icons/fa";
 import { ImProfile } from "react-icons/im";
 import {
+  Build,
   Category,
   DesignServices,
   Details,
@@ -46,6 +47,12 @@ const links = [
     path: "detailTicketSolution",
     icon: <Details />,
   },
+  {
+    id: 16,
+    text: "Company",
+    path: "companyList",
+    icon: <Build />
+  }
 ];
 
 export default links;

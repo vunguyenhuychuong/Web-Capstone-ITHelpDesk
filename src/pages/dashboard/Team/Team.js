@@ -225,6 +225,7 @@ const Team = () => {
 
   const handleOpenAdd = (e) => {
     e.preventDefault();
+    console.log('Open Add')
     clearFormData();
     setOpenAdd(true);
   };
@@ -250,8 +251,9 @@ const Team = () => {
               <MDBBtn
                 color="#eee"
                 style={{ fontWeight: "bold", fontSize: "20px" }}
+                onClick={handleOpenAdd} 
               >
-                <FaPlus onClick={handleOpenAdd} /> New
+                <FaPlus /> New
               </MDBBtn>
               <MDBBtn
                 color="eee"

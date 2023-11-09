@@ -27,6 +27,13 @@ import EditTicketSolution from './pages/dashboard/Technician/EditTicketSolution'
 import HomeTechnician from './pages/dashboard/Technician/HomeTechnician';
 import TicketTaskList from './pages/dashboard/Technician/TicketTaskList';
 import CreateTicketTask from './pages/dashboard/Technician/CreateTicketTask';
+import CreateTickets from './pages/dashboard/Manager/CreateTickets';
+import EditTickets from './pages/dashboard/Manager/EditTickets';
+import EditTicketTask from './pages/dashboard/Technician/EditTicketTask';
+import ChartManager from './pages/dashboard/Chart/ChartManager';
+import CompanyList from './pages/dashboard/Company/CompanyList';
+import CreateCompany from './pages/dashboard/Company/CreateCompany';
+import EditCompany from './pages/dashboard/Company/EditCompany';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -56,6 +63,8 @@ function App() {
           <Route path='mode' element={<ModeList />} />
           <Route path='customerTicket' element={<IssueList />} />
           <Route path='ticketService/:ticketId' element={<TicketService />} />
+          <Route path='createTicket' element={<CreateTickets />} />
+          <Route path='editTicket/:ticketId' element={<EditTickets />} />
           <Route path='ticketSolution' element={<TicketSolutionList />} />
           <Route path='createSolution' element={<CreateTicketSolution />} />
           <Route path='editSolution/:solutionId' element={<EditTicketSolution />} />
@@ -64,6 +73,11 @@ function App() {
           <Route path='homeTechnician' element={<HomeTechnician />} />
           <Route path='ticketTask' element={<TicketTaskList />} />
           <Route path='createTask/:ticketId' element={<CreateTicketTask />} />
+          <Route path='editTask/:ticketId' element={<EditTicketTask />} />
+          <Route path='dashBoard' element={<ChartManager />} />
+          <Route path='companyList' element={<CompanyList />} />
+          <Route path='createCompany' element={<CreateCompany />} />
+          <Route path='editCompany/:companyId' element={<EditCompany />} />
           {(hasManagerRole || hasTechnicianRole) && <Route path='listTicket' element={<ManagersTabs />} />}
           </Route>
         <Route path='login' element={<Login />} />

@@ -108,5 +108,20 @@ export async function deleteTicketTask(taskId) {
     }
 };
 
+export async function getTicketTaskById(ticketId) {
+    const header = getAuthHeader();
+    try{
+        const res = await axios.get(`${baseURL}/ticket/task/${ticketId}`, {
+            headers: {
+                Authorization: header,
+            },
+        });
+        return res.data.result;
+    }catch(error){
+        console.log(error);
+        return [];
+    }
+}
+
 
 

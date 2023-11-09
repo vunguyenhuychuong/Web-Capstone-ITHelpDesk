@@ -20,7 +20,6 @@ import {
   Delete,
   Edit,
 } from "@mui/icons-material";
-import CreateTicket from "./CreateTicket";
 import {
   Box,
   Dialog,
@@ -155,9 +154,10 @@ const IndexTicket = () => {
     }
   }, [sortBy, sortDirection]);
 
-  const handleOpenRequestTicket = (e) => {
-    e.preventDefault();
-    setDialogOpen(true);
+  const handleOpenRequestTicket = () => {
+    // e.preventDefault();
+    // setDialogOpen(true);
+    navigate(`/home/createTicket`);
   };
 
   const handleOpenEditTicket = (ticketId) => {
@@ -449,14 +449,6 @@ const IndexTicket = () => {
           onChange={handleChangePage}
         />
       </Box>
-      <Dialog
-        maxWidth="lg"
-        fullWidth
-        open={dialogOpen}
-        onClose={handleCloseRequestTicket}
-      >
-        <CreateTicket onClose={handleCloseRequestTicket} />
-      </Dialog>
     </section>
   );
 };

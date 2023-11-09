@@ -144,9 +144,9 @@ const TicketTaskList = () => {
     navigate(`/home/createTask/${ticketId}`);
   };
 
-  // const handleOpenDetailTicketSolution = (solutionId) => {
-  //   navigate(`/home/detailSolution/${solutionId}`);
-  // };
+  const handleOpenDetailTicketTask = (ticketId) => {
+    navigate(`/home/editTask/${ticketId}`);
+  };
 
   const handleChangePage = (event, value) => {
     setCurrentPage(value);
@@ -199,7 +199,7 @@ const TicketTaskList = () => {
                   <MDBBtn
                     color="#eee"
                     style={{ fontWeight: "bold", fontSize: "20px" }}
-                    // onClick={() => handleOpenCreateTicketTask()}
+                    onClick={() => handleOpenCreateTask(ticketId)}
                   >
                     <FaPlus /> Create
                   </MDBBtn>
@@ -209,13 +209,6 @@ const TicketTaskList = () => {
                     // onClick={() => handleDeleteSelectedSolutions()}
                   >
                     <Delete /> Delete
-                  </MDBBtn>
-                  <MDBBtn
-                    color="#eee"
-                    style={{ fontWeight: "bold", fontSize: "20px" }}
-                    // onClick={handleOpenRequestTicket}
-                  >
-                    <Settings /> Ticket Task Settings
                   </MDBBtn>
                   <FormControl
                     variant="outlined"
@@ -317,17 +310,17 @@ const TicketTaskList = () => {
                   <CustomizedProgressBars />
                 ) : (
                   <MDBTableBody className="bg-light">
-                    {dataListTicketsTask.map((TicketSolution, index) => {
+                    {dataListTicketsTask.map((TicketTask, index) => {
                       const isSelected = selectedSolutionIds.includes(
-                        TicketSolution.id
+                        TicketTask.id
                       );
                       const ticketStatusOption = TicketStatusOptions.find(
-                        (option) => option.id === TicketSolution.taskStatus
+                        (option) => option.id === TicketTask.taskStatus
                       );
 
                       return (
                         <tr key={index}>
-                          <td>{TicketSolution.id}</td>
+                          <td>{TicketTask.id}</td>
                           <td>
                             <input
                               type="checkbox"
@@ -339,12 +332,12 @@ const TicketTaskList = () => {
                           </td>
                           <td>
                             <ViewCompact
-                            // onClick={() =>
-                            //   handleOpenDetailTicketSolution(TicketSolution.id)
-                            // }
+                            onClick={() =>
+                              handleOpenDetailTicketTask(TicketTask.id)
+                            }
                             />{" "}
                           </td>
-                          <td>{TicketSolution.title}</td>
+                          <td>{TicketTask.title}</td>
                           <td>
                             {ticketStatusOption ? (
                               <span style={ticketStatusOption.badgeStyle}>
@@ -356,7 +349,7 @@ const TicketTaskList = () => {
                             )}
                           </td>
                           <td>
-                            {TicketSolution.isApproved ? (
+                            {TicketTask.isApproved ? (
                               <>
                                 <Square
                                   className="square-icon"
@@ -371,11 +364,11 @@ const TicketTaskList = () => {
                               </>
                             )}
                           </td>
-                          <td>{getPriorityOption(TicketSolution.priority)}</td>
+                          <td>{getPriorityOption(TicketTask.priority)}</td>
                           <td>
-                            {formatDate(TicketSolution.scheduledStartTime)}
+                            {formatDate(TicketTask.scheduledStartTime)}
                           </td>
-                          <td>{formatDate(TicketSolution.scheduledEndTime)}</td>
+                          <td>{formatDate(TicketTask.scheduledEndTime)}</td>
                           <td>
                             <div
                               style={{
@@ -387,7 +380,7 @@ const TicketTaskList = () => {
                             >
                               <div
                                 style={{
-                                  width: `${TicketSolution.progress}%`,
+                                  width: `${TicketTask.progress}%`,
                                   height: "100%",
                                   backgroundColor: "#3399FF",
                                   borderRadius: "5px",
@@ -395,7 +388,7 @@ const TicketTaskList = () => {
                                   color: "white",
                                 }}
                               >
-                                {TicketSolution.progress}%
+                                {TicketTask.progress}%
                               </div>
                             </div>
                           </td>

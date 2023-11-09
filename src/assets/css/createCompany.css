@@ -1,0 +1,36 @@
+.card-image-section {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .image-container {
+    text-align: center;
+  }
+  
+  .card-image {
+    width: 450px;
+    height: 350px;
+    object-fit: cover;
+    border: 2px solid #ccc;
+    border-radius: 20px; /* Adjust this value for the desired rounding */
+  }
+  
+  .file-input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .file-input {
+    margin-top: 10px;
+  }
+
+  .file-upload-button {
+    height: 40px; /* Adjust the height according to your preference */
+    padding-top: 8px; /* Adjust the top padding to vertically center the text/icon */
+    padding-bottom: 8px; /* Adjust the bottom padding to vertically center the text/icon */
+    padding-left: 16px; /* Adjust the left padding to add space on the left */
+    padding-right: 16px; /* Adjust the right padding to add space on the right */
+  }

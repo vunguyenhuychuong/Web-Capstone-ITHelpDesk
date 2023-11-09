@@ -1,75 +1,73 @@
 .edit-ticket-container {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px; /* Add padding as needed */
-  }
-  
-  .left-box {
-    flex: 0 0 70%;
-    background-color: #f0f0f0; /* Example background color */
-    padding: 0 10px 0px 10px; /* Add padding as needed */
-  }
-  
-  .middle-box {
-    flex: 2;
-    background-color: #ffffff; /* Example background color */
-    padding: 20px; /* Add padding as needed */
-  }
-  
-  .right-box {
-    flex: 0 0 25%; 
-    background-color: #f0f0f0; /* Example background color */
-  }
+  display: flex;
+  justify-content: space-between;
+  padding: 10px; /* Add padding as needed */
+}
 
-  .description-label {
-    float: left;
-    width: 100%;
-    margin-bottom: 10px; /* Adjust margin as needed */
-    font-size: 16px;
-    border: 0.8px solid #ccc;
-    padding: 5px;
-    font-weight: bold;
-  }
+.left-box {
+  flex: 0 0 70%;
+  background-color: #f0f0f0; /* Example background color */
+  padding: 0 10px 0px 10px; /* Add padding as needed */
+}
 
-  .grey-background {
-    background-color: #eeeeee; /* Grey background color */
-    color: #333333; /* Text color */
-    border: 1px solid #cccccc; /* Border color */
-    border-radius: 5px; /* Optional: Add border-radius for rounded corners */
-    padding: 10px; /* Optional: Add padding as needed */
-  }
+.middle-box {
+  flex: 2;
+  background-color: #ffffff; /* Example background color */
+  padding: 20px; /* Add padding as needed */
+}
 
-  .icon-label {
-    float: left;
-    width: 100%;
-    margin-bottom: 10px; /* Adjust margin as needed */
-    font-size: 20px;
-    border: 0.8px solid #aca5a5;
-    padding: 5px 10px;
-    font-weight: bold;
-    width: fit-content;
-    background-color: #f2f2f2;
-  }
+.right-box {
+  flex: 0 0 25%;
+  background-color: #f0f0f0; /* Example background color */
+}
 
+.description-label {
+  float: left;
+  width: 100%;
+  margin-bottom: 10px; /* Adjust margin as needed */
+  font-size: 16px;
+  border: 0.8px solid #ccc;
+  padding: 5px;
+  font-weight: bold;
+}
 
+.grey-background {
+  background-color: #eeeeee; /* Grey background color */
+  color: #333333; /* Text color */
+  border: 1px solid #cccccc; /* Border color */
+  border-radius: 5px; /* Optional: Add border-radius for rounded corners */
+  padding: 10px; /* Optional: Add padding as needed */
+}
+
+.icon-label {
+  float: left;
+  width: 100%;
+  margin-bottom: 10px; /* Adjust margin as needed */
+  font-size: 20px;
+  border: 0.8px solid #aca5a5;
+  padding: 5px 10px;
+  font-weight: bold;
+  width: fit-content;
+  background-color: #f2f2f2;
+}
 
 .edit-label,
 .custom-select {
-    float: left;
-    width: fit-content;
-    margin-bottom: 10px;
-    font-size: 20px;
-    border: 0.8px solid #aca5a5;
-    padding: 5px 10px;
-    height: 40px;
-    font-weight: bold;
-    background-color: #CCCCCC;
-    line-height: 34px; /* Set the line-height to match the height of the elements */
+  float: left;
+  width: fit-content;
+  margin-bottom: 10px;
+  font-size: 20px;
+  border: 0.8px solid #aca5a5;
+  padding: 5px 10px;
+  height: 40px;
+  font-weight: bold;
+  background-color: #cccccc;
+  line-height: 34px; /* Set the line-height to match the height of the elements */
 }
 
 .custom-select {
-    border: 1px solid #ced4da;
-    border-radius: 4px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
 }
 
 .text-box {
@@ -78,40 +76,47 @@
 }
 
 .narrow-input {
-  display: flex; 
-  align-items: center; 
-  margin-right: 10px; 
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
 }
 
-  .status-container {
-    display: flex;
-    margin-bottom: 10px;
-    width: 100%;
-    justify-content: flex-start;
-  }
-  
-  .status-badge {
-    width: 20px; 
-    height: 20px; 
-    margin-right: 10px; 
-    border-radius: 3px; 
-  }
+.status-container {
+  display: flex;
+  margin-bottom: 10px;
+  width: 100%;
+  justify-content: flex-start;
+}
 
-  .bold-text {
-    font-weight: bold;
+.status-badge {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  border-radius: 3px;
+}
+
+.bold-text {
+  font-weight: bold;
 }
 
 .border-box {
-    border: 1px solid #cccccc; 
-    border-radius: 1px; 
-    background-color:#DDDDDD ;
+  border: 1px solid #cccccc;
+  border-radius: 1px;
+  background-color: #dddddd;
+}
+
+.border-box-detail {
+  border: 1px solid #cccccc;
+  border-radius: 1px;
+  background-color: #dddddd;
+  margin-left: -20px;
 }
 
 .heading-padding {
-    padding-top: 5px; 
-    padding-bottom: 5px; 
-    margin-right: auto;
-    margin-bottom: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  margin-right: auto;
+  margin-bottom: 10px;
 }
 
 .custom-table {
@@ -121,7 +126,7 @@
 }
 
 .gray-background {
-  background-color: #C0C0C0 !important; /* or any other shade of gray you prefer */
+  background-color: #c0c0c0 !important; /* or any other shade of gray you prefer */
   text-align: right;
   font-size: 18px;
 }
@@ -144,4 +149,3 @@
 .icon-container {
   padding-left: 10px; /* Adjust the padding value as needed */
 }
-

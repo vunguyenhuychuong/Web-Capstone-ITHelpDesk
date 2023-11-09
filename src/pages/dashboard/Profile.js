@@ -52,7 +52,7 @@ import {
 } from "@mui/icons-material";
 import CustomTextField from "../CustomTextField";
 
-const VisuallyHidden = styled("input")({
+export const VisuallyHidden = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
   height: 1,

@@ -51,7 +51,25 @@ export  function stringToColor(string) {
   return color;
 }
 
-export  function stringAvatar(name) {
+// export  function stringAvatar(name) {
+//   return {
+//     sx: {
+//       bgcolor: stringToColor(name),
+//     },
+//     children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+//   };
+// }
+
+export function stringAvatar(name) {
+  if (!name || name.trim().length === 0) {
+    return {
+      sx: {
+        bgcolor: "#ccc", // Default color for empty or undefined name
+      },
+      children: "", // No text for empty or undefined name
+    };
+  }
+
   return {
     sx: {
       bgcolor: stringToColor(name),

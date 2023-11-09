@@ -135,8 +135,9 @@ const TicketSolutionDetail = () => {
                     padding: "10px 0", 
                     marginBottom: "10px",
                   }}
+                  onClick={() => handleOpenEditTicketSolution()}
                 >
-                  <span className="action-menu-item" style={{fontSize: "16px", textTransform: "none"}} onClick={() => handleOpenEditTicketSolution()}>Edit</span>
+                  <span className="action-menu-item" style={{fontSize: "16px", textTransform: "none"}} >Edit</span>
                 </Button>
                 <Select
                   displayEmpty

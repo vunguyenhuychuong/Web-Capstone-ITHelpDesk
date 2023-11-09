@@ -242,4 +242,18 @@ export async function ChangeStatusTicket(ticketId, newStatus) {
   }
 }
 
+export async function UpdateTicketForTechnician(ticketId, data) {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.patch(`${baseURL}/ticket/technician/${ticketId}`, data, {
+      headers: {
+        Authorization: header,
+      }
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+}
+
 

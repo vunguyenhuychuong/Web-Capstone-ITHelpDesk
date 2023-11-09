@@ -15,8 +15,6 @@ import {
   ContentCopy,
   Lock,
   LockOpen,
-  PlaylistAdd,
-  Search,
   Settings,
   Square,
   ViewCompact,

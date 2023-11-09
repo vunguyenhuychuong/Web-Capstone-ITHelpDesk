@@ -15,23 +15,29 @@ import Process, {
   TicketStatusOptions,
   priorityOption,
 } from "../../helpers/tableComlumn";
-import { createTicketTask } from "../../../app/api/ticketTask";
+import {
+  createTicketTask,
+  getTicketTaskById,
+  updateTicketTask,
+} from "../../../app/api/ticketTask";
 import { getAllTeams } from "../../../app/api/team";
 
-const CreateTicketTask = () => {
+const EditTicketTask = () => {
   const navigate = useNavigate();
-  const {ticketId} = useParams();
+  const { ticketId } = useParams();
   const [data, setData] = useState({
     ticketId: ticketId,
     title: "",
     description: "",
     taskStatus: 1,
     technicianId: 1,
-    priority: 1,
+    teamId: 1,
+    priority: 0,
     scheduledStartTime: "",
     scheduledEndTime: "",
-    progress: 1,
+    progress: 0,
     attachmentUrl: "",
+    note: "",
   });
   const [dataTeam, setDataTeam] = useState([]);
   const [dataTechnician, setDataTechnician] = useState([]);
@@ -73,7 +79,7 @@ const CreateTicketTask = () => {
   const handleTeamChange = async (event) => {
     const selectedTeamId = event.target.value;
     setSelectedTeamId(selectedTeamId);
-  
+
     try {
       const technicians = await AssignApi.getTechnician(selectedTeamId);
       console.log(technicians);
@@ -84,6 +90,30 @@ const CreateTicketTask = () => {
   };
 
   useEffect(() => {
+    const fetchTaskData = async () => {
+      try {
+        const taskData = await getTicketTaskById(ticketId);
+        setData((prevData) => ({
+          ...prevData,
+          id: taskData.id,
+          ticketId: taskData.ticketId,
+          createById: taskData.createById,
+          technicianId: taskData.technicianId,
+          title: taskData.title,
+          description: taskData.description,
+          teamId: taskData.teamId,
+          note: taskData.note,
+          priority: taskData.priority,
+          scheduledStartTime: taskData.scheduledStartTime,
+          scheduledEndTime: taskData.scheduledEndTime,
+          createdAt: taskData.createdAt,
+          modifiedAt: taskData.modifiedAt,
+        }));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchTaskData();
     fetchDataTeam();
   }, []);
 
@@ -127,7 +157,10 @@ const CreateTicketTask = () => {
         attachmentUrl = await getDownloadURL(storageRef);
       }
 
-      const isDataValid = validateDate(data.scheduledStartTime, data.scheduledEndTime);
+      const isDataValid = validateDate(
+        data.scheduledStartTime,
+        data.scheduledEndTime
+      );
       if (!isDataValid) {
         toast.info("Review Date must be earlier than Expired Date.");
         return;
@@ -145,21 +178,22 @@ const CreateTicketTask = () => {
         attachmentUrl: attachmentUrl,
         scheduledStartTime: formattedScheduledStartTime,
         scheduledEndTime: formattedScheduledEndTime,
-        technicianId: selectedTechnicianId
+        technicianId: selectedTechnicianId,
       };
 
       setData(updatedData);
-      const response = await createTicketTask({
-        ticketId: data.ticketId,
+      const response = await updateTicketTask({
         title: data.title,
         description: data.description,
         taskStatus: data.taskStatus,
+        teamId: data.teamId,
         technicianId: data.technicianId,
         priority: parseInt(data.priority, 10),
         scheduledStartTime: data.scheduledStartTime,
         scheduledEndTime: data.scheduledEndTime,
         progress: data.progress,
         attachmentUrl: data.attachmentUrl,
+        note: data.note,
       });
       console.log(response);
       toast.success("Ticket created successfully");
@@ -174,9 +208,6 @@ const CreateTicketTask = () => {
     navigate(`/home/detailTicket/${ticketId}`);
   };
 
-  // const handleGoBack = (ticketId) => {
-  //   navigate(`/home/detailTicket/${ticketId}`);
-  // };
 
   return (
     <Grid
@@ -199,7 +230,7 @@ const CreateTicketTask = () => {
                   />
                 </button>
 
-                <h2 style={{ marginLeft: "10px" }}>New Task</h2>
+                <h2 style={{ marginLeft: "10px" }}>Edit Task</h2>
               </div>
             </MDBCol>
           </MDBRow>
@@ -221,43 +252,20 @@ const CreateTicketTask = () => {
                 justifyContent="flex-end"
                 style={{ marginBottom: "20px" }}
               >
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2 className="align-right">
-                        <span style={{ color: "red" }}>*</span>Title
-                      </h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <input
-                        type="text"
-                        name="title"
-                        className="form-control input-field"
-                        id="title"
-                        value={data.title}
-                        onChange={handleInputChange}
-                      />
-                    </Grid>
-                  </Grid>
+                <Grid item xs={3}>
+                  <h2 className="align-right">
+                    <span style={{ color: "red" }}>*</span>Title
+                  </h2>
                 </Grid>
-
-                <Grid item xs={6}>
-                  <Grid container alignItems="center">
-                    <Grid item xs={6}>
-                      <h2 className="align-right">TicketId</h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <input
-                        type="number"
-                        name="ticketId"
-                        className="form-control input-field"
-                        id="ticketId"
-                        value={data.ticketId}
-                        onChange={handleInputChange}
-                        disabled
-                      />
-                    </Grid>
-                  </Grid>
+                <Grid item xs={9}>
+                  <input
+                    type="text"
+                    name="title"
+                    className="form-control input-field"
+                    id="title"
+                    value={data.title}
+                    onChange={handleInputChange}
+                  />
                 </Grid>
               </Grid>
               <Grid item xs={3}>
@@ -322,8 +330,10 @@ const CreateTicketTask = () => {
                         name="technician"
                         className="form-select"
                         value={selectedTechnicianId}
-                        onChange={(e) => setSelectedTechnicianId(e.target.value)}
-                        >
+                        onChange={(e) =>
+                          setSelectedTechnicianId(e.target.value)
+                        }
+                      >
                         {dataTechnician
                           .filter((technician) => technician.id !== "")
                           .map((technician) => (
@@ -443,7 +453,56 @@ const CreateTicketTask = () => {
                         id="progress"
                         name="progress"
                         className="form-select"
-                        value={data.progress} 
+                        value={data.progress}
+                        onChange={handleInputChange}
+                      >
+                        <option value="">Select Progress</option>{" "}
+                        {Object.keys(Process).map((processId) => (
+                          <option key={processId} value={processId}>
+                            {Process[processId]}
+                          </option>
+                        ))}
+                      </select>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid container justifyContent="flex-end">
+                <Grid item xs={6}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <h2 className="align-right">Team</h2>
+                    </Grid>
+                    <Grid item xs={5}>
+                      <select
+                        id="teamId"
+                        name="teamId"
+                        className="form-select"
+                        value={data.taskStatus}
+                        onChange={handleInputChange}
+                      >
+                        {TicketStatusOptions.filter(
+                          (status) => status.id !== ""
+                        ).map((status) => (
+                          <option key={status.id} value={status.id}>
+                            {status.name}
+                          </option>
+                        ))}
+                      </select>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid item xs={6}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <h2 className="align-right">Progress</h2>
+                    </Grid>
+                    <Grid item xs={5}>
+                      <select
+                        id="progress"
+                        name="progress"
+                        className="form-select"
+                        value={data.progress}
                         onChange={handleInputChange}
                       >
                         <option value="">Select Progress</option>{" "}
@@ -494,4 +553,4 @@ const CreateTicketTask = () => {
   );
 };
 
-export default CreateTicketTask;
+export default EditTicketTask;

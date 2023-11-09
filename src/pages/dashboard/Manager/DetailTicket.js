@@ -14,7 +14,6 @@ import {
   ArrowRight,
   ChatOutlined,
   Feedback,
-  MessageRounded,
   MessageSharp,
   Square,
   Task,
@@ -23,9 +22,12 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import useTicketData from "./useTicketData";
 import AssignTicketModal from "./AssignTicketModal";
-import EditTicket from "./EditTicket";
 import { Avatar, Dialog, Grid, Tab, Tabs } from "@mui/material";
-import { getGenderById, priorityOption, roleOptions } from "../../helpers/tableComlumn";
+import {
+  getGenderById,
+  priorityOption,
+  roleOptions,
+} from "../../helpers/tableComlumn";
 import { formatDate } from "../../helpers/FormatDate";
 import { Box } from "@mui/system";
 import LoadingSkeleton from "../../../components/iconify/LoadingSkeleton";
@@ -44,7 +46,8 @@ const DetailTicket = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [value, setValue] = useState(0);
   const navigate = useNavigate();
-  const userName = data.requester.lastName + " " + data.requester.firstName;
+  const userName = data.requester ? `${data.requester.lastName} ${data.requester.firstName}` : "";
+
   const fetchDataManager = async () => {
     try {
       const fetchCategories = await CategoryApi.getAllCategories();
@@ -69,8 +72,9 @@ const DetailTicket = () => {
     setValue(newValue);
   };
 
-  const handleOpenEditTicket = () => {
-    setEditDialogOpen(true);
+  const handleOpenEditTicket = (ticketId) => {
+    // setEditDialogOpen(true);
+    navigate(`/home/editTicket/${ticketId}`);
   };
 
   const handleCloseEditTicket = () => {
@@ -89,6 +93,7 @@ const DetailTicket = () => {
     navigate(`/home/listTicket`);
   };
 
+
   useEffect(() => {
     fetchDataManager();
   }, []);
@@ -98,7 +103,12 @@ const DetailTicket = () => {
     console.log(selectedFile);
   };
 
-  const roleName = roleOptions.find((role) => role.id === data.requester.role);
+  const roleName =
+    data.requester && data.requester.role
+      ? roleOptions.find((role) => role.id === data.requester.role)
+      : null;
+
+  const roleNameString = roleName ? roleName.name : "Unknown Role";
 
   if (loading) {
     return <div>Loading...</div>;
@@ -122,7 +132,7 @@ const DetailTicket = () => {
           }}
         >
           <MDBCol md="12">
-            <MDBRow className="border-box">
+            <MDBRow className="border-box-detail">
               <MDBCol md="1" className="mt-2">
                 <div className="d-flex align-items-center">
                   <button type="button" className="btn btn-link icon-label">
@@ -135,7 +145,7 @@ const DetailTicket = () => {
                   <button
                     type="button"
                     className="btn btn-link narrow-input icon-label"
-                    onClick={handleOpenEditTicket}
+                    onClick={() => handleOpenEditTicket(ticketId)}
                   >
                     Edit
                   </button>
@@ -167,7 +177,7 @@ const DetailTicket = () => {
                   #{data.requesterId} {data.title}
                 </span>
                 <span style={{ fontSize: "0.8em" }}>
-                  by <span className="bold-text">{roleName.name}</span>{" "}
+                  by <span className="bold-text">{roleName && roleName.name ? roleName.name : "Unknown Role"}</span>{" "}
                   <ChatOutlined color="#007bff" /> on:
                   {formatDate(data.scheduledStartTime)} |
                   <span className="bold-text">DueBy:</span>{" "}
@@ -394,41 +404,76 @@ const DetailTicket = () => {
               className="d-flex align-items-center mt-2 description-label"
             >
               <Avatar
-               alt="User Avatar" {...stringAvatar(userName)}
+                alt="User Avatar"
+                {...stringAvatar(userName)}
                 className="img-avatar"
               />
               <div className="ms-3">
-                <p className="fw-bold mb-1">
-                  {data.requester.username} <MessageSharp style={{ color: "#3399FF" }} />{" "}
-                </p>
-                <p className="text-muted mb-0">Requests(2) | Assets</p>
+                {data.requester && data.requester.username ? (
+                  <>
+                    <p className="fw-bold mb-1">
+                      {data.requester.username}{" "}
+                      <MessageSharp style={{ color: "#3399FF" }} />{" "}
+                    </p>
+                    <p className="text-muted mb-0">Requests(2) | Assets</p>
+                  </>
+                ) : (
+                  <p className="text-muted">Username not available</p>
+                )}
               </div>
             </MDBCol>
             <MDBTable bordered>
               <MDBTableBody>
                 <tr>
                   <th>ID</th>
-                  <th>{data.requester.id || "-"}</th>
+                  <th>
+                    {data.requester && data.requester.id
+                      ? data.requester.id
+                      : "-"}
+                  </th>
                 </tr>
                 <tr>
-                  <th>Full Name</th>
-                  <th>{data.requester.lastName || "-"} {data.requester.firstName || "-"}</th>
+                  <th>Name</th>
+                  <th>
+                    {data.requester && data.requester.lastName
+                      ? data.requester.lastName
+                      : "-"}{" "}
+                    {data.requester && data.requester.firstName
+                      ? data.requester.firstName
+                      : "-"}
+                  </th>
                 </tr>
                 <tr>
                   <th>Phone</th>
-                  <th>{data.requester.phoneNumber || "-"}</th>
+                  <th>
+                    {data.requester && data.requester.phoneNumber
+                      ? data.requester.phoneNumber
+                      : "-"}
+                  </th>
                 </tr>
                 <tr>
                   <th>Address</th>
-                  <th>{data.requester.address || "-"}</th>
+                  <th>
+                    {data.requester && data.requester.address
+                      ? data.requester.address
+                      : "-"}
+                  </th>
                 </tr>
                 <tr>
-                  <th>Birth Day</th>
-                  <th>{data.requester.dateOfBirth || "-"}</th>
+                  <th>BirthDay</th>
+                  <th>
+                    {data.requester && data.requester.dateOfBirth
+                      ? data.requester.dateOfBirth
+                      : "-"}
+                  </th>
                 </tr>
                 <tr>
                   <th>Gender</th>
-                  <th>{getGenderById(data.requester.gender || "-")}</th>
+                  <th>
+                    {data.requester && data.requester.gender
+                      ? getGenderById(data.requester.gender)
+                      : "-"}
+                  </th>
                 </tr>
               </MDBTableBody>
             </MDBTable>
@@ -442,14 +487,6 @@ const DetailTicket = () => {
         ticketId={ticketId}
       />
 
-      <Dialog
-        open={editDialogOpen}
-        onClose={handleCloseEditTicket}
-        maxWidth="lg"
-        fullWidth
-      >
-        <EditTicket onClose={handleCloseEditTicket} />
-      </Dialog>
       <button
         onClick={toggleSidebar}
         style={{
