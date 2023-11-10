@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Grid, Switch, TextField } from "@mui/material";
+import { Grid, TextField } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
@@ -16,7 +16,6 @@ import Process, {
   priorityOption,
 } from "../../helpers/tableComlumn";
 import {
-  createTicketTask,
   getTicketTaskById,
   updateTicketTask,
 } from "../../../app/api/ticketTask";
@@ -135,7 +134,7 @@ const EditTicketTask = () => {
 
   const validateDate = (reviewDate, expiredDate) => {
     if (!reviewDate || !expiredDate) {
-      return false; // If either date is missing, return false
+      return false;
     }
     return moment(scheduledStartTime).isBefore(scheduledEndTime);
   };
@@ -143,7 +142,6 @@ const EditTicketTask = () => {
   const handleSubmitTicket = async (e) => {
     e.preventDefault();
     if (!data.title || !data.ticketId || !data.taskStatus) {
-      // Handle validation errors
       console.log("Validation error: Please fill out all required fields.");
       return;
     }

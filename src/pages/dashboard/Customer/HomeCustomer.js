@@ -41,8 +41,7 @@ const HomeCustomer = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const handleOpenRequestTicket = (e) => {
-    e.preventDefault();
-    setDialogOpen(true);
+    navigate(`/home/createRequest`);
   };
 
   const handleCloseRequestTicket = () => {

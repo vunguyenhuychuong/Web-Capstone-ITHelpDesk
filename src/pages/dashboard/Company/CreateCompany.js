@@ -211,7 +211,7 @@ const CreateCompany = (props) => {
                 startIcon={<CloudUpload />}
                 className="file-upload-button input-field file-input"
               >
-                Upload file
+                Upload Image
                 <VisuallyHidden
                   type="file"
                   onChange={handleFileChange}

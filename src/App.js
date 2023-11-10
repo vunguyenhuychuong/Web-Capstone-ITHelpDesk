@@ -34,6 +34,8 @@ import ChartManager from './pages/dashboard/Chart/ChartManager';
 import CompanyList from './pages/dashboard/Company/CompanyList';
 import CreateCompany from './pages/dashboard/Company/CreateCompany';
 import EditCompany from './pages/dashboard/Company/EditCompany';
+import CustomizedSteppers from './pages/dashboard/Customer/CustomizedSteppers';
+import RequestIssue from './pages/dashboard/Customer/RequestIssue';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -78,6 +80,8 @@ function App() {
           <Route path='companyList' element={<CompanyList />} />
           <Route path='createCompany' element={<CreateCompany />} />
           <Route path='editCompany/:companyId' element={<EditCompany />} />
+          <Route path='stepperCustomer' element={<CustomizedSteppers />} />
+          <Route path='createRequest' element={<RequestIssue />} />
           {(hasManagerRole || hasTechnicianRole) && <Route path='listTicket' element={<ManagersTabs />} />}
           </Route>
         <Route path='login' element={<Login />} />
