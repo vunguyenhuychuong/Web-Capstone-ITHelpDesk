@@ -63,25 +63,43 @@ const CommentSolution = () => {
     isPublic: true,
   });
 
-  const handleDetailFeedBack = async (commentId) => {
-    try{
-      const feedback = await getDetailFeedBack(dataFeedBack.id);
-      setData({
-        id: feedback.result.id || "",
-        userId: feedback.result.userId || "",
-        solutionId: feedback.result.solutionId || "",
-        comment: feedback.result.comment || "",
-        isPublic: feedback.result.isPublic || "",
-        createdAt: feedback.result.createdAt || "",
-        modifiedAt: feedback.result.modifiedAt || "",
-      })
-      console.log(comment);
-    }catch(error){
-      console.log('Error while fetching detail Feed Back');
-    }
-    setEditCommentId(commentId);
-  }
+  const [editComment, setEditComment] = useState({
+    id: 1,
+    userId: 1,
+    solutionId: 1,
+    comment: "",
+    isPublic: true,
+  });
 
+  const handleDetailFeedBack = async (commentId) => {
+    try {
+      const feedback = await getDetailFeedBack(commentId);
+      if (feedback) {
+        setData({
+          id: feedback.id || "",
+          userId: feedback.userId || "",
+          solutionId: feedback.solutionId || "",
+          comment: feedback.comment || "",
+          isPublic: feedback.isPublic || "",
+          createdAt: feedback.createdAt || "",
+          modifiedAt: feedback.modifiedAt || "",
+        });
+        setData({
+          id: 1,
+          userId: 1,
+          solutionId: 1,
+          comment: "",
+          isPublic: true,
+        });
+      } else {
+        console.error("Invalid or missing data in feedback result");
+      }
+    } catch (error) {
+      console.error("Error while fetching detail Feed Back:", error);
+    } finally {
+      setEditCommentId(commentId);
+    }
+  };
 
   // const handleEditCommentClick = (commentId) => {
   //   setEditCommentId(commentId);
@@ -90,11 +108,11 @@ const CommentSolution = () => {
   const handleEditComment = async () => {
     try {
       const payload = {
-        comment: data.comment,
-        isPublic: data.isPublic,
+        comment: editComment.comment,
+        isPublic: editComment.isPublic,
       };
 
-      await editFeedBack(data.id, payload);
+      await editFeedBack(editComment.id, payload);
       toast.success("Edit comment successful");
       fetchDataListFeedBack();
       setEditCommentId(null);
@@ -106,6 +124,20 @@ const CommentSolution = () => {
 
   const handleCancelEdit = () => {
     setEditCommentId(null);
+    setEditComment({
+      id: 1,
+      userId: 1,
+      solutionId: 1,
+      comment: "",
+      isPublic: true,
+    });
+    setData({
+      id: 1,
+      userId: 1,
+      solutionId: 1,
+      comment: "",
+      isPublic: true,
+    });
   };
 
   const isEditingComment = (commentId) => {
@@ -181,7 +213,7 @@ const CommentSolution = () => {
       console.log(error);
     } finally {
       setIsDeleting(false);
-      setOpen(false); 
+      setOpen(false);
     }
   };
 
@@ -251,6 +283,7 @@ const CommentSolution = () => {
             style={{
               display: "flex",
               alignItems: "center",
+              alignItems: "flex-start",
               marginBottom: "20px",
               marginTop: "20px",
             }}
@@ -287,10 +320,10 @@ const CommentSolution = () => {
                   <TextField
                     variant="outlined"
                     fullWidth
-                    id="comment"
-                    name="comment"
-                    value={comment.comment}
-                    onChange={handleInputChange}
+                    id="edit-comment"
+                    name="edit-comment"
+                    value={editComment.comment}
+                    onChange={(e) => setEditComment((prevEditComment) => ({ ...prevEditComment, comment: e.target.value }))}
                     style={{ margin: "10px 0", marginRight: "10px" }}
                   />
                   <IconButton aria-label="Save" onClick={handleEditComment}>
@@ -310,7 +343,10 @@ const CommentSolution = () => {
                   </IconButton>
                   <IconButton
                     aria-label="Edit"
-                    onClick={() => handleDetailFeedBack(comment.id)}
+                    onClick={() => {
+                      console.log("Editing comment ID:", comment.id);
+                      handleDetailFeedBack(comment.id)}
+                    }
                   >
                     <EditNote />
                     <span style={{ fontSize: "0.6em" }}>Edit</span>
@@ -324,6 +360,39 @@ const CommentSolution = () => {
                   </IconButton>
                 </div>
               )}
+              {comment.feedbackReplies &&
+                comment.feedbackReplies.length > 0 && (
+                  <div style={{ marginLeft: "20px" }}>
+                    {comment.feedbackReplies.map((reply) => (
+                      <div
+                        key={reply.id}
+                        style={{ display: "flex", alignItems: "center" }}
+                      >
+                        <Avatar
+                          alt={reply.user.username}
+                          src={reply.user.avatarUrl}
+                          className="avatar"
+                        />
+                        <div
+                          style={{ marginLeft: "10px", marginBottom: "25px" }}
+                        >
+                          <strong>
+                            {reply.user.lastName} {reply.user.firstName}
+                          </strong>
+                          <small style={{ marginLeft: "10px" }}>
+                            {formatDate(reply.createdAt)}
+                          </small>
+                          {reply.isPublic ? (
+                            <LockOpen style={{ color: "#66FF66" }} />
+                          ) : (
+                            <Lock style={{ color: "#FFCC66" }} />
+                          )}
+                          <p>{reply.comment}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
             </div>
           </div>
         ))}

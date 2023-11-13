@@ -25,6 +25,7 @@ import {
   Menu,
   MenuItem,
   Paper,
+  Popover,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -32,8 +33,9 @@ import React, { useEffect } from "react";
 import { roleOptions } from "../../pages/helpers/tableComlumn";
 import { GetDataProfileUser } from "../../app/api";
 import { useState } from "react";
+import NotificationList from "../../pages/dashboard/Notificate/NotificationList";
 
-export  function stringToColor(string) {
+export function stringToColor(string) {
   let hash = 0;
   let i;
 
@@ -78,11 +80,12 @@ export function stringAvatar(name) {
   };
 }
 
-const Navbar = () => {
+const Navbar = ({ notifications }) => {
   const user = useSelector((state) => state.auth);
   const userName = user.user.lastName + " " + user.user.firstName;
   const userRole = roleOptions.find((role) => role.id === user.user.role)?.name;
   const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const [data, setData] = useState({
     firstName: "",
@@ -90,6 +93,17 @@ const Navbar = () => {
     username: "",
     avatarUrl: "",
   });
+
+  const handleNotificationClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
 
   const settings = ["Profile", "Dashboard", "Logout"];
 
@@ -168,12 +182,28 @@ const Navbar = () => {
               </IconButton>
             </Tooltip>
             <Tooltip title="Notifications">
-              <IconButton size="large" style={{ color: "#0099FF" }}>
+              <IconButton size="large" style={{ color: "#0099FF" }} onClick={handleNotificationClick}>
                 <Badge badgeContent={17} color="error">
                   <NotificationAdd />
                 </Badge>
               </IconButton>
             </Tooltip>
+            <Popover
+              id={id}
+              open={open}
+              anchorEl={anchorEl}
+              onClose={handlePopoverClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+            >
+              <NotificationList notifications={notifications} />
+            </Popover>
             <Tooltip title="Open Setting">
               <IconButton size="large" style={{ color: "#0099FF" }}>
                 <Badge color="error">
@@ -248,7 +278,13 @@ const Navbar = () => {
                     {setting === "Logout" && (
                       <ExitToApp sx={{ marginRight: 1, color: "#3399FF" }} />
                     )}
-                    <Typography variant="subtitle1" fontWeight="bold" color="primary">{setting}</Typography>
+                    <Typography
+                      variant="subtitle1"
+                      fontWeight="bold"
+                      color="primary"
+                    >
+                      {setting}
+                    </Typography>
                   </MenuItem>
                 ))}
               </Menu>

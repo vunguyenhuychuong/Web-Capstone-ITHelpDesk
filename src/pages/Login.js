@@ -61,7 +61,7 @@ function Login() {
             });
             break;
           case 1:
-            navigate("/home/menu");
+            navigate("/home/mains");
             toast.success(`Welcome User: ${lastName} ${firstName}`, {
               autoClose: 1000,
               hideProgressBar: false,
@@ -73,9 +73,8 @@ function Login() {
               autoClose: 1000,
               hideProgressBar: false,
             });
-            break;
           case 3: 
-            navigate("/home/ticketSolution");
+            navigate("/home/homeTechnician");
             toast.success(`Welcome Technician: ${lastName} ${firstName}`, {
               autoClose: 1000,
               hideProgressBar: false,

@@ -16,26 +16,6 @@ const AssignApi = {
       console.log(error);
     }
   },
-//   createAssignTicket: async (ticketId, data) => {
-//     const header = getAuthHeader();
-//     console.log('Request Payload:', data);
-//     try {
-//       const res = await axiosClient.post(
-//         `${baseURL}/assign/${ticketId}/assign`,
-//         JSON.stringify(data),
-//         {
-//           headers: {
-//             Authorization: header,
-//             'Content-Type': 'application/json'
-//           },
-//         }
-//       );
-//       console.log("API Response:", res.data);
-//       return res.data;
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   },
   getTechnician: async (teamId) => {
     const header = getAuthHeader();
     try {
@@ -82,10 +62,24 @@ export async function getAllAssigns ()  {
         Authorization: header,
       },
     });
-    return res.result;
+    return res;
   } catch (error) {
     console.log(error);
     return [];
+  }
+}
+
+export async function getAssignAvailable() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/ticket/assign/available`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
   }
 }
 

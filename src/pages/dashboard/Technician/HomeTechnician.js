@@ -1,19 +1,17 @@
 import {
-  CalendarToday,
-  HowToReg,
+  ConfirmationNumber,
+  LocalActivity,
   PieChart,
   SupervisedUserCircle,
 } from "@mui/icons-material";
-import {
-  Grid,
-  Tab,
-  Tabs,
-} from "@mui/material";
+import { Grid, Tab, Tabs } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
 import { useState } from "react";
 import MyView from "./MyView";
 import LoadingSkeleton from "../../../components/iconify/LoadingSkeleton";
+import ManagersTabs from "../Manager/ManagerTabs";
+import TicketSolutionList from "./TicketSolutionList";
 
 const HomeTechnician = () => {
   const [value, setValue] = useState(0);
@@ -44,17 +42,17 @@ const HomeTechnician = () => {
                   color: "#007bff",
                 },
                 "& .MuiTab-root": {
-                  minHeight: "70px", 
-                  fontSize: "1rem", 
+                  minHeight: "70px",
+                  fontSize: "1rem",
                 },
                 "& .MuiTab-wrapper": {
                   display: "flex",
                   alignItems: "center",
                   textTransform: "none",
-                  fontSize: "1.2rem", 
+                  fontSize: "1.2rem",
                 },
                 "& .MuiSvgIcon-root": {
-                  fontSize: "2  .5rem", 
+                  fontSize: "2  .5rem",
                   marginRight: "0.5rem",
                 },
               }}
@@ -63,13 +61,27 @@ const HomeTechnician = () => {
                 label={
                   <div
                     style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      textTransform: "none",
+                    }}
+                  >
+                    <PieChart sx={{ marginRight: 1, color: "#0099FF" }} />
+                    <span style={{ whiteSpace: "nowrap" }}>My View</span>
+                  </div>
+                }
+              />
+              <Tab
+                label={
+                  <div
+                    style={{
                       display: "flex",
                       alignItems: "center",
                       textTransform: "none",
                     }}
                   >
-                    <PieChart sx={{ marginRight: 1, color: "#0099FF" }} /> My
-                    View
+                    <ConfirmationNumber sx={{ marginRight: 1, color: "#0099FF" }} />{" "}
+                    List Ticket
                   </div>
                 }
                 className="custom-tab-label"
@@ -83,23 +95,8 @@ const HomeTechnician = () => {
                       textTransform: "none",
                     }}
                   >
-                    <CalendarToday sx={{ marginRight: 1, color: "#0099FF" }} />{" "}
-                    Schedular
-                  </div>
-                }
-                className="custom-tab-label"
-              />
-              <Tab
-                label={
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      textTransform: "none",
-                    }}
-                  >
-                    <HowToReg sx={{ marginRight: 1, color: "#0099FF" }} />{" "}
-                    Backup Approver
+                    <LocalActivity sx={{ marginRight: 1, color: "#0099FF" }} />{" "}
+                    Ticket Solution
                   </div>
                 }
                 className="custom-tab-label"
@@ -126,7 +123,12 @@ const HomeTechnician = () => {
             <Box role="tabpanel" hidden={value !== 0}>
               {value === 0 ? <MyView /> : <LoadingSkeleton />}
             </Box>
-            <Box role="tabpanel" hidden={value !== 1}></Box>
+            <Box role="tabpanel" hidden={value !== 1}>
+              {value === 1 ? <ManagersTabs /> : <LoadingSkeleton />}
+            </Box>
+            <Box role="tabpanel" hidden={value !== 2}>
+              {value === 2 ? <TicketSolutionList /> : <LoadingSkeleton />}
+            </Box>
           </Box>
         </Grid>
         {/* <Grid item xs={1}>
@@ -162,7 +164,6 @@ const HomeTechnician = () => {
         </FormControl>
       </Grid> */}
       </Grid>
-      
     </Grid>
   );
 };

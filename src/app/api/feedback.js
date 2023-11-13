@@ -31,6 +31,20 @@ export async function createFeedBack(data) {
     }
 };
 
+export async function createReply(data) {
+    const header = getAuthHeader();
+    try{
+        const res = await axios.post(`${baseURL}/solution/feedback/reply`, data, {
+            headers: {
+                Authorization: header,
+            },
+        });
+        return res.data.result;
+    }catch(error){
+        console.log(error);
+    }
+}
+
 export async function deleteFeedBack(feedbackId) {
     const header = getAuthHeader();
     try{

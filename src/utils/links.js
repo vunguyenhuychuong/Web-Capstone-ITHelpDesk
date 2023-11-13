@@ -7,6 +7,7 @@ import {
   Details,
   FolderShared,
   Group,
+  Home,
   Menu,
   ModeComment,
 } from "@mui/icons-material";
@@ -21,7 +22,7 @@ const links = [
   { id: 7, text: "mains", path: "mains", icon: <FaWpforms /> },
   { id: 8, text: "menu", path: "menu", icon: <Menu /> },
   { id: 9, text: "categories", path: "categories", icon: <Category /> },
-  { id: 10, text: "List Ticket", path: "listTicket", icon: <FaTicketAlt /> },
+  { id: 17, text: "List Ticket", path: "listTicket", icon: <FaTicketAlt /> },
   {
     id: 11,
     text: "Customer Ticket",
@@ -52,6 +53,12 @@ const links = [
     text: "Company",
     path: "companyList",
     icon: <Build />
+  },
+  {
+    id: 10,
+    text: "Home",
+    path: "homeTechnician",
+    icon: <Home />
   }
 ];
 

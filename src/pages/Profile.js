@@ -68,7 +68,6 @@ const Profile = () => {
   };
 
   const handleDateChange = (newDate) => {
-    console.log(newDate);
     const formattedDateBirth = moment(newDate).format("YYYY-MM-DD");
     setDate(newDate);
     setData((prevInputs) => ({

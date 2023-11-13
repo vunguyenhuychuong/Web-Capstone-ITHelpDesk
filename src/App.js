@@ -36,6 +36,7 @@ import CreateCompany from './pages/dashboard/Company/CreateCompany';
 import EditCompany from './pages/dashboard/Company/EditCompany';
 import CustomizedSteppers from './pages/dashboard/Customer/CustomizedSteppers';
 import RequestIssue from './pages/dashboard/Customer/RequestIssue';
+import CreateTicketTaskTc from './pages/dashboard/Technician/CreateTicketTaskTc';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -75,6 +76,7 @@ function App() {
           <Route path='homeTechnician' element={<HomeTechnician />} />
           <Route path='ticketTask' element={<TicketTaskList />} />
           <Route path='createTask/:ticketId' element={<CreateTicketTask />} />
+          <Route path='createTask' element={<CreateTicketTaskTc />} />
           <Route path='editTask/:ticketId' element={<EditTicketTask />} />
           <Route path='dashBoard' element={<ChartManager />} />
           <Route path='companyList' element={<CompanyList />} />
