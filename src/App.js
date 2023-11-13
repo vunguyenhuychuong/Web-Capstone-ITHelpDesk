@@ -37,6 +37,7 @@ import EditCompany from './pages/dashboard/Company/EditCompany';
 import CustomizedSteppers from './pages/dashboard/Customer/CustomizedSteppers';
 import RequestIssue from './pages/dashboard/Customer/RequestIssue';
 import CreateTicketTaskTc from './pages/dashboard/Technician/CreateTicketTaskTc';
+import MyRequestList from './pages/dashboard/Customer/MyRequestList';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -84,6 +85,7 @@ function App() {
           <Route path='editCompany/:companyId' element={<EditCompany />} />
           <Route path='stepperCustomer' element={<CustomizedSteppers />} />
           <Route path='createRequest' element={<RequestIssue />} />
+          <Route path='requestCustomerList' element={<MyRequestList />} />
           {(hasManagerRole || hasTechnicianRole) && <Route path='listTicket' element={<ManagersTabs />} />}
           </Route>
         <Route path='login' element={<Login />} />

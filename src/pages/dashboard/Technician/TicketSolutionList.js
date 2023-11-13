@@ -174,32 +174,26 @@ const TicketSolutionList = () => {
       <MDBContainer className="py-5 custom-container">
         <MDBNavbar expand="lg" light bgColor="inherit">
           <MDBContainer fluid>
-            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
+            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "16px" }}>
               <ContentCopy style={{ marginRight: "20px" }} /> All Ticket
               Solutions
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px" }}
+                style={{ fontWeight: "bold", fontSize: "14px" }}
                 onClick={() => handleOpenCreateTicketSolution()}
               >
-                <FaPlus /> New Solution
+                <FaPlus /> New 
               </MDBBtn>
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px" }}
+                style={{ fontWeight: "bold", fontSize: "14px" }}
                 onClick={() => handleDeleteSelectedSolutions()}
               >
                 Delete
               </MDBBtn>
-              <MDBBtn
-                color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px" }}
-                // onClick={handleOpenRequestTicket}
-              >
-                <Settings /> Solution Settings
-              </MDBBtn>
+
               <FormControl
                   variant="outlined"
                   style={{
@@ -263,34 +257,34 @@ const TicketSolutionList = () => {
                     onChange={handleSelectAllSolutions}
                   />
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}></th>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
                 <th 
-                  style={{ fontWeight: "bold", fontSize: "18px" }}
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("title")}
                   >Title</th>
                 <th 
-                  style={{ fontWeight: "bold", fontSize: "18px" }}
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("keyword")}>
                   Keyword
                 </th>
                 <th 
-                  style={{ fontWeight: "bold", fontSize: "18px" }}
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("isApproved")}
                   >Status</th>
                 <th 
-                  style={{ fontWeight: "bold", fontSize: "18px" }}
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("isPublic")}
                   >
                   Visibility
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
                   Review Date
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>
-                  Create On
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                  Created
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>
-                  LastUpdate On
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                  Last Update
                 </th>
               </tr>
             </MDBTableHead>

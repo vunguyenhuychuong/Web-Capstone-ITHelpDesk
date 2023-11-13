@@ -9,7 +9,7 @@ const Wrapper = styled.aside`
       background: var(--white);
       min-height: 100vh;
       height: 100%;
-      width: 250px;
+      width: 200px;
       margin-left: -250px;
       transition: var(--transition);
     }
@@ -27,7 +27,7 @@ const Wrapper = styled.aside`
       padding-left: 2.5rem;
     }
     .nav-links {
-      padding-top: 2rem;
+      padding-top: 1rem;
       display: flex;
       flex-direction: column;
     }
@@ -36,14 +36,14 @@ const Wrapper = styled.aside`
       align-items: center;
       color: var(--grey-500);
       padding: 1rem 0;
-      padding-left: 2.5rem;
+      padding-left: 0.5rem;
       text-transform: capitalize;
       transition: var(--transition);
-      font-size: 1.2rem;
+      font-size: 0.9rem;
     }
     .nav-link:hover {
       background: var(--grey-50);
-      padding-left: 3rem;
+      padding-left: 1.5rem;
       color: var(--grey-900);
     }
     .nav-link:hover .icon {

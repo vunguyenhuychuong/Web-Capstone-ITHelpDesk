@@ -9,14 +9,12 @@ import {
   More,
   Notifications,
   PermDeviceInformation,
-  PestControl,
   SyncProblem,
 } from "@mui/icons-material";
 import { Button, Card, CardContent, Grid } from "@mui/material";
 import "../../../assets/css/MyView.css";
 import React, { useEffect, useState } from "react";
 import {
-  MDBCard,
   MDBCardBody,
   MDBCardText,
   MDBCol,
@@ -30,16 +28,20 @@ import Announcements from "../../../assets/images/announcements.jpg";
 import { getAssignAvailable } from "../../../app/api/assign";
 import { formatTicketDate } from "../../helpers/FormatAMPM";
 import { useNavigate } from "react-router-dom";
+import { getSummaryTechnician } from "../../../app/api/dashboard";
 
 const MyView = () => {
   const [dataListTicketsTask, setDataListTicketsTask] = useState([]);
+  const [dataSummary, setDataSummary] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const fetchDataListTicketTask = async () => {
     try {
       setLoading(true);
       const response = await getAssignAvailable();
+      const summaryTechnician = await getSummaryTechnician();
       setDataListTicketsTask(response);
+      setDataSummary(summaryTechnician);
     } catch (error) {
       console.log(error);
     } finally {
@@ -76,86 +78,161 @@ const MyView = () => {
         >
           <EventNote sx={{ margin: 1, color: "#CC99FF" }} />
           <h4
-            style={{ marginLeft: "8px", marginTop: "4px", fontWeight: "bold" }}
+            style={{
+              marginLeft: "6px",
+              marginTop: "2px",
+              fontWeight: "bold",
+              fontSize: "14px",
+            }}
           >
             My Summary
           </h4>
         </div>
-        <MDBCard className="mb-3">
-          <MDBCardBody>
-            <MDBRow>
-              <MDBCol sm="11">
-                <MDBCardText style={{ fontSize: "18px", color: "#666" }}>
-                  <PermDeviceInformation />
-                  Requests OverDue
-                </MDBCardText>
-              </MDBCol>
-              <MDBCol sm="1">
-                <span style={{ fontSize: "18px", fontWeight: "bold" }}>0</span>
-              </MDBCol>
-            </MDBRow>
-            <hr />
-            <MDBRow>
-              <MDBCol sm="11">
-                <MDBCardText style={{ fontSize: "18px", color: "#666" }}>
-                  <More />
-                  Pending Request
-                </MDBCardText>
-              </MDBCol>
-              <MDBCol sm="1">
-                <span style={{ fontSize: "18px", fontWeight: "bold" }}>0</span>
-              </MDBCol>
-            </MDBRow>
-            <hr />
-            <MDBRow>
-              <MDBCol sm="11">
-                <MDBCardText style={{ fontSize: "18px", color: "#666" }}>
-                  <SyncProblem />
-                  Approved Changes
-                </MDBCardText>
-              </MDBCol>
-              <MDBCol sm="1">
-                <span style={{ fontSize: "18px", fontWeight: "bold" }}>0</span>
-              </MDBCol>
-            </MDBRow>
-            <hr />
-            <MDBRow>
-              <MDBCol sm="11">
-                <MDBCardText style={{ fontSize: "18px", color: "#666" }}>
-                  <DoDisturb />
-                  Unapproved Changes
-                </MDBCardText>
-              </MDBCol>
-              <MDBCol sm="1">
-                <span style={{ fontSize: "18px", fontWeight: "bold" }}>0</span>
-              </MDBCol>
-            </MDBRow>
-            <hr />
-            <MDBRow>
-              <MDBCol sm="11">
-                <MDBCardText style={{ fontSize: "18px", color: "#666" }}>
-                  <BugReport />
-                  Open Problems
-                </MDBCardText>
-              </MDBCol>
-              <MDBCol sm="1">
-                <span style={{ fontSize: "18px", fontWeight: "bold" }}>0</span>
-              </MDBCol>
-            </MDBRow>
-            <hr />
-            <MDBRow>
-              <MDBCol sm="11">
-                <MDBCardText style={{ fontSize: "18px", color: "#666" }}>
-                  <PestControl />
-                  Unassigned Problems
-                </MDBCardText>
-              </MDBCol>
-              <MDBCol sm="1">
-                <span style={{ fontSize: "18px", fontWeight: "bold" }}>0</span>
-              </MDBCol>
-            </MDBRow>
-          </MDBCardBody>
-        </MDBCard>
+        <MDBCardBody
+          style={{
+            background: "#FFFFFF", // Set white background
+          }}
+        >
+          <MDBRow>
+            <MDBCol
+              sm="10"
+              style={{
+                marginLeft: "5px",
+                marginTop: "15px",
+                transition: "color 0.3s",
+                cursor: "pointer",
+              }}
+            >
+              <MDBCardText
+                style={{ fontSize: "14px", color: "#666" }}
+                className={dataSummary.totalTicket ? "text-hover" : ""}
+              >
+                <PermDeviceInformation
+                  style={{
+                    color: dataSummary.totalTicket ? "#3399FF" : "#AAAAAA",
+                  }}
+                />
+                Requests OverDue
+              </MDBCardText>
+            </MDBCol>
+            <MDBCol sm="1" style={{ marginLeft: "5px", marginTop: "10px" }}>
+              <span style={{ fontSize: "14px", fontWeight: "bold" }}>
+                {dataSummary.totalTicket}
+              </span>
+            </MDBCol>
+          </MDBRow>
+          <hr />
+          <MDBRow>
+            <MDBCol sm="10" style={{ marginLeft: "5px" }}>
+              <MDBCardText
+                style={{
+                  fontSize: "14px",
+                  color: "#666",
+                  transition: "color 0.3s",
+                  cursor: "pointer",
+                }}
+                className={dataSummary.totalAssignedTicket ? "text-hover" : ""}
+              >
+                <More
+                  style={{
+                    color: dataSummary.totalAssignedTicket ? "#3399FF" : "#000",
+                  }}
+                />
+                Assign Ticket
+              </MDBCardText>
+            </MDBCol>
+            <MDBCol sm="1" style={{ marginLeft: "5px" }}>
+              <span style={{ fontSize: "14px", fontWeight: "bold" }}>
+                {dataSummary.totalAssignedTicket}
+              </span>
+            </MDBCol>
+          </MDBRow>
+          <hr />
+          <MDBRow>
+            <MDBCol sm="10" style={{ marginLeft: "5px" }}>
+              <MDBCardText
+                style={{
+                  fontSize: "14px",
+                  color: "#666",
+                  transition: "color 0.3s",
+                  cursor: "pointer",
+                }}
+                className={
+                  dataSummary.totalInProgressTicket ? "text-hover" : ""
+                }
+              >
+                <SyncProblem
+                  style={{
+                    color: dataSummary.totalInProgressTicket
+                      ? "#3399FF"
+                      : "#000",
+                  }}
+                />
+                Pending Ticket
+              </MDBCardText>
+            </MDBCol>
+            <MDBCol sm="1" style={{ marginLeft: "5px" }}>
+              <span style={{ fontSize: "14px", fontWeight: "bold" }}>
+                {dataSummary.totalInProgressTicket}
+              </span>
+            </MDBCol>
+          </MDBRow>
+          <hr />
+          <MDBRow>
+            <MDBCol sm="10" style={{ marginLeft: "5px" }}>
+              <MDBCardText
+                style={{
+                  fontSize: "14px",
+                  color: "#666",
+                  transition: "color 0.3s",
+                  cursor: "pointer",
+                }}
+                className={dataSummary.totalResolvedTicket ? "text-hover" : ""}
+              >
+                <DoDisturb
+                  style={{
+                    color: dataSummary.totalResolvedTicket ? "blue" : "#AAAAAA",
+                  }}
+                />
+                Resolve Ticket
+              </MDBCardText>
+            </MDBCol>
+            <MDBCol sm="1" style={{ marginLeft: "5px" }}>
+              <span style={{ fontSize: "14px", fontWeight: "bold" }}>
+                {dataSummary.totalResolvedTicket}
+              </span>
+            </MDBCol>
+          </MDBRow>
+          <hr />
+          <MDBRow>
+            <MDBCol sm="10" style={{ marginLeft: "5px", marginBottom: "px" }}>
+              <MDBCardText
+                style={{
+                  fontSize: "14px",
+                  color: "#666",
+                  transition: "color 0.3s",
+                  cursor: "pointer",
+                }}
+                className={dataSummary.totalCompletedTicket ? "text-hover" : ""}
+              >
+                <BugReport
+                  style={{
+                    color: dataSummary.totalCompletedTicket
+                      ? "#3399FF"
+                      : "#000",
+                  }}
+                />
+                Close Ticket
+              </MDBCardText>
+            </MDBCol>
+            <MDBCol sm="1" style={{ marginLeft: "5px" }}>
+              <span style={{ fontSize: "14px", fontWeight: "bold" }}>
+                {dataSummary.totalCompletedTicket}
+              </span>
+            </MDBCol>
+          </MDBRow>
+          <hr />
+        </MDBCardBody>
       </Grid>
       <Grid item xs={6}>
         <Grid item xs={12}>
@@ -175,35 +252,32 @@ const MyView = () => {
                 marginLeft: "8px",
                 marginTop: "4px",
                 fontWeight: "bold",
+                fontSize: "14px",
               }}
             >
               My Task
             </h4>
             <div style={{ marginLeft: "auto" }}>
-              <Button
+              <button
                 variant="contained"
                 color="primary"
                 className="custom-button"
                 onClick={() => handleOpenCreateTicketTask()}
               >
                 <AddCircle style={{ marginRight: "6px" }} /> Add New
-              </Button>
-              <Button
+              </button>
+              <button
                 variant="contained"
                 color="secondary"
-                style={{
-                  marginLeft: "8px",
-                  textTransform: "none",
-                  backgroundColor: "#3399FF",
-                }}
+                className="custom-button"
               >
                 Show All
-              </Button>
+              </button>
             </div>
           </div>
         </Grid>
         <Grid item xs={12}>
-          <Card style={{ height: "390px", overflowY: "auto" }}>
+          <Card style={{ height: "290px", overflowY: "auto" }}>
             <CardContent>
               {dataListTicketsTask && dataListTicketsTask.length > 0 ? (
                 dataListTicketsTask.map((ticket, index) => (
@@ -211,9 +285,11 @@ const MyView = () => {
                     key={index}
                     style={{ display: "flex", flexDirection: "column" }}
                   >
-                    <div style={{ display: "flex", marginBottom: "2px" }}>
-                      <p style={{ marginRight: "8px" }}>#{ticket.id} -</p>
-                      <p>{ticket.title}</p>
+                    <div style={{ display: "flex" }}>
+                      <p style={{ marginRight: "8px", fontSize: "12px" }}>
+                        #{ticket.id} -
+                      </p>
+                      <p style={{ fontSize: "12px" }}>{ticket.title}</p>
                     </div>
                     <div
                       style={{
@@ -222,12 +298,12 @@ const MyView = () => {
                       }}
                     >
                       <div>
-                        <p>
+                        <p style={{ fontSize: "12px" }}>
                           Description: {ticket.description || "No Description"}
                         </p>
                       </div>
                       <div>
-                        <p style={{ fontWeight: "bold" }}>
+                        <p style={{ fontWeight: "bold", fontSize: "12px" }}>
                           Create Time: {formatTicketDate(ticket.createdAt)}
                         </p>
                       </div>
@@ -282,28 +358,25 @@ const MyView = () => {
                 marginLeft: "8px",
                 marginTop: "4px",
                 fontWeight: "bold",
+                fontSize: "14px",
               }}
             >
               My Approvals
             </h4>
             <div style={{ marginLeft: "auto" }}>
-              <Button
+              <button
                 variant="contained"
                 color="secondary"
-                style={{
-                  marginLeft: "8px",
-                  textTransform: "none",
-                  backgroundColor: "#3399FF",
-                }}
+                className="custom-button"
               >
                 Show All
-              </Button>
+              </button>
             </div>
           </div>
         </Grid>
         <Grid item xs={12}>
           {/* Card content goes here */}
-          <Card style={{ height: "390px" }}>
+          <Card style={{ height: "290px" }}>
             <CardContent>
               <div>
                 <MDBTable className="align-middle mb-0" responsive>
@@ -313,7 +386,7 @@ const MyView = () => {
                       flexDirection: "column",
                       justifyContent: "center",
                       alignItems: "center",
-                      marginTop: "100px",
+                      marginTop: "30px",
                     }}
                   >
                     <img
@@ -356,52 +429,49 @@ const MyView = () => {
                 marginLeft: "8px",
                 marginTop: "4px",
                 fontWeight: "bold",
+                fontSize: "14px",
               }}
             >
               Announcements
             </h4>
             <div style={{ marginLeft: "auto" }}>
-              <Button
+              <button
                 variant="contained"
                 color="secondary"
-                style={{
-                  marginLeft: "8px",
-                  textTransform: "none",
-                  backgroundColor: "#3399FF",
-                }}
+                className="custom-button"
               >
                 Show All
-              </Button>
+              </button>
             </div>
           </div>
         </Grid>
         <Grid item xs={12}>
-          <Card style={{ height: "330px", overflowY: "auto" }}>
+          <Card style={{ height: "300px", overflowY: "auto" }}>
             <CardContent>
-                <div
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: "30px",
+                }}
+              >
+                <img
+                  src={Announcements}
+                  alt="No Pending"
+                  style={{ maxWidth: "300px", maxHeight: "200px" }}
+                />
+                <p
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    marginTop: "80px",
+                    marginTop: "2px",
+                    fontSize: "16px",
+                    color: "#666",
                   }}
                 >
-                  <img
-                    src={Announcements}
-                    alt="No Pending"
-                    style={{ maxWidth: "300px", maxHeight: "200px" }}
-                  />
-                  <p
-                    style={{
-                      marginTop: "2px",
-                      fontSize: "16px",
-                      color: "#666",
-                    }}
-                  >
-                    There are no new announcements today
-                  </p>
-                </div>
+                  There are no new announcements today
+                </p>
+              </div>
             </CardContent>
           </Card>
         </Grid>
@@ -425,28 +495,25 @@ const MyView = () => {
                 marginLeft: "8px",
                 marginTop: "4px",
                 fontWeight: "bold",
+                fontSize: "14px",
               }}
             >
               My Reminders
             </h4>
             <div style={{ marginLeft: "auto" }}>
-              <Button
+              <button
                 variant="contained"
                 color="secondary"
-                style={{
-                  marginLeft: "8px",
-                  textTransform: "none",
-                  backgroundColor: "#3399FF",
-                }}
+                className="custom-button"
               >
                 Show All
-              </Button>
+              </button>
             </div>
           </div>
         </Grid>
         <Grid item xs={12}>
           {/* Card content goes here */}
-          <Card style={{ height: "330px" }}>
+          <Card style={{ height: "300px" }}>
             <CardContent>
               <div>
                 <MDBTable className="align-middle mb-0" responsive>
@@ -456,7 +523,7 @@ const MyView = () => {
                       flexDirection: "column",
                       justifyContent: "center",
                       alignItems: "center",
-                      marginTop: "100px",
+                      marginTop: "50px",
                     }}
                   >
                     <img

@@ -256,4 +256,20 @@ export async function UpdateTicketForTechnician(ticketId, data) {
   }
 }
 
+//View Ticket Customer 
+export async function GetTicketUserAvailable() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/ticket/user/available`, {
+      headers: {
+        Authorization: header,
+      }
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};
+
+
 

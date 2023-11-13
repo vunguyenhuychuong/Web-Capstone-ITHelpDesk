@@ -1,30 +1,29 @@
 /* Profile.css */
 .custom-card {
-    margin-bottom: 1rem;
-  }
-  
-  .profile-avatar {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-  }
-  
-  .profile-title {
-    font-size: 1.25rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-  }
-  
-  .profile-description {
-    font-size: 1rem;
-    color: #888;
-    margin-bottom: 1rem;
-  }
-  
-  .profile-button {
-    margin-right: 0.5rem;
+  margin-bottom: 1rem;
 }
 
+.profile-avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+}
+
+.profile-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.profile-description {
+  font-size: 1rem;
+  color: #888;
+  margin-bottom: 1rem;
+}
+
+.profile-button {
+  margin-right: 0.5rem;
+}
 
 .red-bg {
   display: flex;
@@ -41,14 +40,16 @@
 
 .custom-text {
   font-weight: bold;
-  font-size: 50px; 
-  color: #6699FF;
-  animation: move 1s infinite;
-  transition: transform 0.1s ease;
+  font-size: 25px;
+  color: #6699ff;
 }
 
 @keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
     transform: translateY(0); /* Bounce height */
   }
   40% {
@@ -61,7 +62,7 @@
 
 @keyframes move {
   0% {
-    transform: translateX(-5px); 
+    transform: translateX(-5px);
   }
   50% {
     transform: translateX(5px);
@@ -72,93 +73,91 @@
 }
 
 .custom-red-bg {
-  background-color: #FF6666;
+  background-color: #ff6666;
   border-radius: 10px;
 }
 
 .custom-red-btn {
-  background-color: #DDDDDD;
-  color: #FF6666;
+  background-color: #dddddd;
+  color: #ff6666;
   margin-bottom: 20px;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: bold;
-  font-family: 'Lato', sans-serif;
+  font-family: "Lato", sans-serif;
 }
 .custom-red-btn:hover {
-  background-color: #DDDDDD;
+  background-color: #dddddd;
 }
 
 .custom-red-btn:active,
 .custom-red-btn:focus {
-  background-color: #DDDDDD;
-  color: #FF6666;
-  outline: none; 
+  background-color: #dddddd;
+  color: #ff6666;
+  outline: none;
 }
 
 .custom-green-bg {
-  background-color: #33CC99;
+  background-color: #33cc99;
   border-radius: 10px;
 }
 
 .custom-green-btn {
-  background-color: #DDDDDD;
-  color: #33CC99;
+  background-color: #dddddd;
+  color: #33cc99;
   margin-bottom: 20px;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: bold;
-  font-family: 'Lato', sans-serif;
+  font-family: "Lato", sans-serif;
 }
 
 .custom-green-btn:hover {
-  background-color: #DDDDDD;
+  background-color: #dddddd;
 }
 
 .custom-green-btn:active,
 .custom-green-btn:focus {
-  background-color: #DDDDDD;
-  color: #33CC99;
-  outline: none; 
+  background-color: #dddddd;
+  color: #33cc99;
+  outline: none;
 }
 
 .custom-blue-bg {
-  background-color: #6699FF;
+  background-color: #6699ff;
   border-radius: 10px;
 }
 
 .custom-blue-btn {
-  background-color: #DDDDDD;
-  color: #6699FF;
+  background-color: #dddddd;
+  color: #6699ff;
   margin-bottom: 20px;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: bold;
-  font-family: 'Lato', sans-serif;
+  font-family: "Lato", sans-serif;
 }
 
 .custom-blue-btn:hover {
-  background-color: #DDDDDD;
+  background-color: #dddddd;
 }
 
 .custom-blue-btn:active,
 .custom-blue-btn:focus {
-  background-color: #DDDDDD;
-  color: #6699FF;
-  outline: none; 
+  background-color: #dddddd;
+  color: #6699ff;
+  outline: none;
 }
 
 .custom-card-text {
   font-weight: bold;
-  font-size: 20px;
+  font-size: 14px;
   color: #fff;
-  margin-top: 20px;
+  margin-top: 10px;
 }
-
-
 
 .custom-list-item {
   width: 100%;
 }
 
-.custom-orange-bg{
+.custom-orange-bg {
   background-color: #a88532;
   display: flex;
   justify-content: center;
@@ -167,27 +166,27 @@
 }
 
 .narrow-input {
-  width: 60%; 
+  width: 60%;
 }
 
 .admin {
-  color: green; 
+  color: green;
 }
 
 .customer {
-  color: blue; 
+  color: blue;
 }
 
 .manager {
-  color: orange; 
+  color: orange;
 }
 
 .technician {
-  color: red; 
+  color: red;
 }
 
 .accountant {
-  color: purple; 
+  color: purple;
 }
 
 .input-wrapper {
@@ -208,30 +207,30 @@
 }
 
 .my-request-summary .card-text {
-  padding-left: 20px; 
-  padding-top: 20px;
+  padding-left: 20px;
+  padding-top: 5px;
 }
 
 .my-request-summary .btn-primary {
   font-weight: bold;
-  font-size: 16px;
+  font-size: 14px;
   color: white;
-  background-color: #999999; 
+  background-color: #999999;
   border: none;
-  padding: 8px 16px;
+  padding: 8px 12px;
   cursor: pointer;
   margin-right: 20px;
 }
 
 .my-request-summary .btn-primary:hover {
-  background-color: #3399CC; 
+  background-color: #3399cc;
 }
 
 .section-container {
-  background-image: url('https://img-c.udemycdn.com/course/480x270/4568656_a477_2.jpg'); /* Replace 'path/to/your/image.jpg' with the actual path to your image file */
+  background-image: url("https://img-c.udemycdn.com/course/480x270/4568656_a477_2.jpg"); /* Replace 'path/to/your/image.jpg' with the actual path to your image file */
   background-size: cover;
   background-position: center;
-  height: 40vh; 
+  height: 40vh;
   border: 2px solid #333;
   border-radius: 5px;
   margin: 10px;
@@ -246,7 +245,7 @@
 .campaign-icon {
   font-weight: bold;
   font-size: 100px;
-  color: #3399CC;
+  color: #3399cc;
 }
 
 .input-container {
@@ -254,35 +253,35 @@
   align-items: center;
   justify-content: center;
   align-items: center;
-  width: 1500px; 
-  border: 2px solid #007bff; 
-  border-radius: 5px; 
-  padding: 5px; 
+  width: 1500px;
+  border: 2px solid #007bff;
+  border-radius: 5px;
+  padding: 5px;
 }
 
 .input-container .search-icon {
-  margin-right: 10px; 
-  color: #007bff; 
+  margin-right: 10px;
+  color: #007bff;
 }
 
 .input-container input {
-   display: flex;
+  display: flex;
   align-items: center;
-  border: none; 
-  outline: none; 
+  border: none;
+  outline: none;
   border-left: 1px solid #007bff;
   border-radius: 5px;
-  padding: 5px; 
+  padding: 5px;
 }
 
 .custom-button-color {
   color: #fff;
   background-color: #007bff;
-  height: 38px;
+  height: 30px;
 }
 
 .blue-summary {
-  background-color: #66CCFF  ;
+  background-color: #66ccff;
   padding: 10px; /* Optional: Add padding for better spacing */
   border: 1px solid #7e7e80; /* Add a solid border with blue color (#0000FF) */
   border-radius: 5px;
@@ -296,3 +295,13 @@
 }
 
 
+.dashboard-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+  cursor: pointer;
+}
+
+.dashboard-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  opacity: 0.8;
+}
