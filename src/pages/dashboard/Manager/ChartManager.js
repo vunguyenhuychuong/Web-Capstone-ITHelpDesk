@@ -8,30 +8,56 @@ import {
 import {
   Card,
   CardContent,
+  FormControl,
   Grid,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
+  MenuItem,
+  Select,
   Tooltip,
 } from "@mui/material";
 import "../../../assets/css/homeManager.css";
 import React, { useEffect, useState } from "react";
-import { getSummaryManager } from "../../../app/api/dashboard";
+import { getChartCategory, getChartMode, getChartPriority, getChartService, getSummaryManager } from "../../../app/api/dashboard";
 import LoadingImg from "../../../assets/images/loading.gif";
 import { BarChart, LineChart, PieChart } from "@mui/x-charts";
+import CustomizeChart from "./charts/CustomizeChart";
+import PriorityChart from "./charts/PriorityChart";
+import ModeChart from "./charts/ModeChart";
+import ServiceChart from "./charts/ServiceChart";
 
 const ChartManager = () => {
-  const [dataSummary, setDataSummary] = useState([]);
+  const [dataCategory, setDataCategory] = useState([]);
+  const [dataPriority, setDataPriority] = useState([]);
+  const [dataMode, setDataMode] = useState([]);
+  const [dataService, setDataService] = useState([]);
+  const [dataTotal, setDataTotal] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedChart, setSelectedChart] = useState('Request By Category');
   const fetchDataListTicketTask = async () => {
     try {
       setLoading(true);
-      const summaryManager = await getSummaryManager();
-      setDataSummary(summaryManager);
+      const categoryChart = await getChartCategory();
+      const priorityChart = await getChartPriority();
+      const modeChart = await getChartMode();
+      const serviceChart = await getChartService();
+      setDataCategory(categoryChart);
+      setDataPriority(priorityChart);
+      setDataMode(modeChart);
+      setDataService(serviceChart);
     } catch (error) {
       console.log(error);
     } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchDataTotalChart = async () => {
+    try{
+      setLoading(true);
+      const totalChart = await getSummaryManager();
+      setDataTotal(totalChart);
+    }catch(error){
+      console.log(error);
+    }finally{
       setLoading(false);
     }
   };
@@ -40,15 +66,42 @@ const ChartManager = () => {
     fetchDataListTicketTask();
   };
 
+  const handleReloadPieChart = () => {
+    fetchDataTotalChart();
+  };
+
   useEffect(() => {
+    fetchDataTotalChart();
     fetchDataListTicketTask();
   }, []);
 
   const data = [
-    { id: 0, value: 10, label: "series A" },
-    { id: 1, value: 15, label: "series B" },
-    { id: 2, value: 20, label: "series C" },
+    { id: 0, value: dataTotal.totalOpenTicket, label: "Total Open Ticket" },
+    { id: 1, value: dataTotal.totalAssignedTicket, label: "Total Assigned Ticket" },
+    { id: 2, value: dataTotal.totalInProgressTicket, label: "Total InProgress Ticket" },
+    { id: 3, value: dataTotal.totalResolvedTicket, label: "Total Resolved Ticket" },
+    { id: 4, value: dataTotal.totalClosedTicket, label: "Total Closed Ticket" },
+    { id: 5, value: dataTotal.totalCancelledTicket, label: "Total Cancelled Ticket" },
   ];
+
+  const renderSelectedChart = () => {
+    switch (selectedChart) {
+      case 'Request By Category':
+        return <CustomizeChart dataSummary={dataCategory} />;
+      case 'Request By Priority':
+        return <PriorityChart dataSummary={dataPriority} />;
+      case 'Request By Mode':
+        return <ModeChart dataSummary={dataMode} />;
+      case 'Request By Service':
+        return <ServiceChart dataSummary={dataService} />;
+      default:
+        return null;
+    }
+  };
+
+  const handleTechnicianChange = (event) => {
+    setSelectedChart(event.target.value);
+  };
 
   return (
     <Grid
@@ -71,16 +124,20 @@ const ChartManager = () => {
             }}
           >
             <TableChart sx={{ margin: 1, color: "#33CC66" }} />
-            <h4
-              style={{
-                marginLeft: "8px",
-                marginTop: "4px",
-                fontWeight: "bold",
-                fontSize: "14px",
-              }}
-            >
-              Request By Technician
-            </h4>
+            <FormControl sx={{ marginLeft: "8px", marginRight: "8px" }}>
+              <Select
+                labelId="technician-select-label"
+                id="technician-select"
+                value={selectedChart} 
+                onChange={handleTechnicianChange}
+                style={{ height: "30px"}}
+              >
+                <MenuItem value="Request By Category">Request By Technician</MenuItem>
+                <MenuItem value="Request By Priority">Request By Priority</MenuItem>
+                <MenuItem value="Request By Mode">Request By Mode</MenuItem>
+                <MenuItem value="Request By Service">Request By Service</MenuItem>
+              </Select>
+            </FormControl>
             <div style={{ marginLeft: "auto" }}>
               <Tooltip title="Refresh" arrow>
                 <button
@@ -109,29 +166,7 @@ const ChartManager = () => {
                   <img src={LoadingImg} alt="Loading" />
                 </div>
               ) : (
-                <Table>
-                  <TableBody>
-                    {/* Table Header Row */}
-                    <TableRow className="hoverCell">
-                      <TableCell colSpan={3}></TableCell>
-                      <TableCell className="boldText">Close</TableCell>
-                      <TableCell className="boldText">Open</TableCell>
-                      <TableCell className="boldText">Overdue</TableCell>
-                    </TableRow>
-                    <TableRow className="hoverCell">
-                      <TableCell colSpan={3}>Unassigned</TableCell>
-                      <TableCell>1</TableCell>
-                      <TableCell>2</TableCell>
-                      <TableCell>3</TableCell>
-                    </TableRow>
-                    <TableRow className="hoverCell">
-                      <TableCell colSpan={3}>Total</TableCell>
-                      <TableCell>{dataSummary.totalClosedTicket}</TableCell>
-                      <TableCell>{dataSummary.totalOpenTicket}</TableCell>
-                      <TableCell>{dataSummary.totalCancelledTicket}</TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
+                renderSelectedChart()
               )}
             </CardContent>
           </Card>
@@ -208,7 +243,7 @@ const ChartManager = () => {
               background: "#FFFFFF",
             }}
           >
-            <DonutSmall sx={{ margin: 1, color: "#33CC66" }} />
+            <DonutSmall sx={{ margin: 1, color: "#6699FF" }} />
             <h4
               style={{
                 marginLeft: "8px",
@@ -217,7 +252,7 @@ const ChartManager = () => {
                 fontSize: "14px",
               }}
             >
-              Request By Technician
+              Request Summary Total
             </h4>
             <div style={{ marginLeft: "auto" }}>
               <Tooltip title="Refresh" arrow>
@@ -225,7 +260,7 @@ const ChartManager = () => {
                   variant="contained"
                   color="secondary"
                   className="custom-button"
-                  onClick={handleReloadClick}
+                  onClick={handleReloadPieChart}
                 >
                   <Replay />
                 </button>
@@ -266,7 +301,7 @@ const ChartManager = () => {
               background: "#FFFFFF",
             }}
           >
-            <QueryStats sx={{ margin: 1, color: "#9966FF" }} />
+            <QueryStats sx={{ margin: 1, color: "#FF66CC" }} />
             <h4
               style={{
                 marginLeft: "8px",
