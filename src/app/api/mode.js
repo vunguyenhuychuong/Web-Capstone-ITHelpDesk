@@ -105,6 +105,7 @@ export async function getModeDetail(modeId) {
                 Authorization: header,
             },
         });
+        console.log(result)
         return result.data.result;
     }catch(error){
         console.log(error);

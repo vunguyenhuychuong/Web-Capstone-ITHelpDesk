@@ -54,7 +54,7 @@ function Login() {
         dispatch(setUser(userDataResponse.result));
         switch (role) {
           case 0:
-            navigate("/home/customer");
+            navigate("/home/homeAdmin");
             toast.success(`Welcome Admin: ${lastName} ${firstName}`, {
               autoClose: 1000,
               hideProgressBar: false,
@@ -68,13 +68,14 @@ function Login() {
             });
             break;
           case 2:
-            navigate("/home/homeTechnician");
+            navigate("/home/homeManager");
             toast.success(`Welcome Manager: ${lastName} ${firstName}`, {
               autoClose: 1000,
               hideProgressBar: false,
             });
+            break;
           case 3:
-            navigate("/home/homeManager");
+            navigate("/home/homeTechnician");
             toast.success(`Welcome Technician: ${lastName} ${firstName}`, {
               autoClose: 1000,
               hideProgressBar: false,

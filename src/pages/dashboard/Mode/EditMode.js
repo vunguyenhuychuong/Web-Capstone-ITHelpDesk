@@ -18,10 +18,14 @@ const EditMode = ({ onClose, modeId }) => {
     const fetchData = async () => {
       try {
         const result = await getModeDetail(modeId);
-        setData({
-          name: result.name,
-          description: result.description,
-        });
+        if (result) {
+          setData({
+            name: result.name || "",
+            description: result.description || "",
+          });
+        } else {
+          console.error("Error: Received undefined or null result from API");
+        }
       } catch (error) {
         console.log(error);
       }

@@ -35,6 +35,7 @@ import { roleOptions } from "../../pages/helpers/tableComlumn";
 import { GetDataProfileUser } from "../../app/api";
 import { useState } from "react";
 import NotificationList from "../../pages/dashboard/Notificate/NotificationList";
+import ChatBox from "./ChatBox";
 
 export function stringToColor(string) {
   let hash = 0;
@@ -53,16 +54,6 @@ export function stringToColor(string) {
 
   return color;
 }
-
-// export  function stringAvatar(name) {
-//   return {
-//     sx: {
-//       bgcolor: stringToColor(name),
-//     },
-//     children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
-//   };
-// }
-
 export function stringAvatar(name) {
   if (!name || name.trim().length === 0) {
     return {
@@ -88,6 +79,11 @@ const Navbar = ({ notifications }) => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [chatBoxVisible, setChatBoxVisible] = useState(false);
+
+  const toggleChatBox = () => {
+    setChatBoxVisible((prevVisible) => !prevVisible);
+  };
 
   const handleDrawerClose = () => {
     setDrawerOpen(false);
@@ -100,7 +96,6 @@ const Navbar = ({ notifications }) => {
   });
 
   const handleNotificationClick = () => {
-    // setAnchorEl(event.currentTarget);
     setDrawerOpen(true);
   };
 
@@ -180,14 +175,14 @@ const Navbar = ({ notifications }) => {
         </div>
         <div className="btn-container">
           <div className="icons-wrapper">
-            <Tooltip title="Message">
-              <IconButton size="large" style={{ color: "#0099FF" }}>
+            <Tooltip title="Message" arrow>
+              <IconButton size="large" style={{ color: "#0099FF" }} onClick={toggleChatBox}>
                 <Badge badgeContent={4} color="error">
                   <Mail />
                 </Badge>
               </IconButton>
             </Tooltip>
-            <Tooltip title="Notifications">
+            <Tooltip title="Notifications" arrow>
               <IconButton
                 size="large"
                 style={{ color: "#0099FF" }}
@@ -234,21 +229,21 @@ const Navbar = ({ notifications }) => {
             >
               <NotificationList notifications={notifications} />
             </Popover>
-            <Tooltip title="Open Setting">
+            <Tooltip title="Open Setting" arrow>
               <IconButton size="large" style={{ color: "#0099FF" }}>
                 <Badge color="error">
                   <Settings />
                 </Badge>
               </IconButton>
             </Tooltip>
-            <Tooltip title="Reload">
+            <Tooltip title="Reload" arrow>
               <IconButton size="large" style={{ color: "#0099FF" }}>
                 <Badge color="error">
                   <RotateLeft />
                 </Badge>
               </IconButton>
             </Tooltip>
-            <Tooltip title="Information">
+            <Tooltip title="Information" arrow>
               <IconButton size="large" style={{ color: "#0099FF" }}>
                 <Badge color="error">
                   <Help />
@@ -260,7 +255,7 @@ const Navbar = ({ notifications }) => {
                 className="icon-wrapper"
                 style={{ display: "flex", alignItems: "center" }}
               >
-                <Tooltip title="Menu">
+                <Tooltip title="Profile User" arrow>
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                     {data ? (
                       <Avatar alt="User Avatar" {...stringAvatar(userName)} />
@@ -322,6 +317,7 @@ const Navbar = ({ notifications }) => {
           </div>
         </div>
       </div>
+      {chatBoxVisible && <ChatBox />}
     </Wrapper>
   );
 };

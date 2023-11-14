@@ -39,6 +39,8 @@ import RequestIssue from './pages/dashboard/Customer/RequestIssue';
 import CreateTicketTaskTc from './pages/dashboard/Technician/CreateTicketTaskTc';
 import MyRequestList from './pages/dashboard/Customer/MyRequestList';
 import HomeManager from './pages/dashboard/Manager/HomeManager';
+import HomeAdmin from './pages/dashboard/Admin/HomeAdmin';
+import Customers from './pages/dashboard/Customers';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -60,7 +62,7 @@ function App() {
           <Route index element={<AccessibleTabs1 />} />
           {(hasAdminRole || hasManagerRole) && <Route path='team' element={<Team />} />}
           {(hasCustomerRole || hasAdminRole || hasManagerRole || hasTechnicianRole) && <Route path='profile' element={<Profile />} />} 
-          {hasAdminRole && <Route path='customer' element={<Customer />} />}
+          {hasAdminRole && <Route path='customer' element={<Customers />} />}
           {(hasCustomerRole) && <Route path='mains' element={<HomeCustomer />} />} 
           <Route path='main' element={<AccessibleTabs1 />} />
           <Route path='menu' element={<Menu />} />
@@ -89,6 +91,7 @@ function App() {
           <Route path='requestCustomerList' element={<MyRequestList />} />
           {(hasManagerRole || hasTechnicianRole) && <Route path='listTicket' element={<ManagersTabs />} />}
           <Route path='homeManager' element={<HomeManager />} />
+          <Route path='homeAdmin' element={<HomeAdmin />} />
           </Route>
         <Route path='login' element={<Login />} />
         <Route path='forgot-password' element={<ForgetPassword /> }  />

@@ -3,22 +3,11 @@ import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
-  Paper,
-  Button,
-  TableRow,
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
   IconButton,
   Select,
   MenuItem,
   InputLabel,
   Grid,
-  Typography,
-  Pagination,
   FormControl,
 } from "@mui/material";
 import {
@@ -26,8 +15,15 @@ import {
   MDBCardBody,
   MDBCardImage,
   MDBCol,
+  MDBContainer,
   MDBInput,
+  MDBNavbar,
+  MDBNavbarBrand,
+  MDBNavbarNav,
   MDBRow,
+  MDBTable,
+  MDBTableBody,
+  MDBTableHead,
 } from "mdb-react-ui-kit";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -43,20 +39,27 @@ import {
 import "../../assets/css/profile.css";
 import { toast } from "react-toastify";
 import {
-  ArrowDropDown,
-  ArrowDropUp,
   Close,
-  Delete,
-  DeleteForeverOutlined,
-  PersonAdd,
+  ContentCopy,
+  DeleteForeverSharp,
+  Edit,
+  Lock,
+  LockOpen,
 } from "@mui/icons-material";
-import EditIcon from "@mui/icons-material/Edit";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { useCallback } from "react";
-import { FaSearch } from "react-icons/fa";
-import { genderOptions, roleOptions } from "../helpers/tableComlumn";
+import { FaPlus, FaSearch } from "react-icons/fa";
+import {
+  genderOptions,
+  getGenderById,
+  getRoleNameById,
+  roleOptions,
+} from "../helpers/tableComlumn";
+import { formatDate } from "../helpers/FormatDate";
+import Pagination from "../dashboard/Pagination/Pagination";
+import { Box } from "@mui/system";
 
-export default function Customer() {
+export default function Customers() {
   const [users, setUsers] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [openAdd, setOpenAdd] = React.useState(false);
@@ -156,7 +159,9 @@ export default function Customer() {
         toast.info("No users selected for deletion.");
         return;
       }
-      const confirmed = window.confirm("Are you sure you want to delete selected users?");
+      const confirmed = window.confirm(
+        "Are you sure you want to delete selected users?"
+      );
       if (!confirmed) {
         return;
       }
@@ -164,19 +169,25 @@ export default function Customer() {
         try {
           const res = await DeleteDataUser(userId);
           if (res.isError) {
-            toast.error(`Error deleting user with ID ${userId}: ${res.message}`);
+            toast.error(
+              `Error deleting user with ID ${userId}: ${res.message}`
+            );
           } else {
             toast.success(`User with ID ${userId} deleted successfully`);
           }
           return userId;
         } catch (error) {
-          toast.error(`Error deleting user with ID ${userId}: ${error.message}`);
+          toast.error(
+            `Error deleting user with ID ${userId}: ${error.message}`
+          );
           return null;
         }
       });
-  
+
       const deletedUserIds = await Promise.all(deletePromises);
-      const updatedUsers = users.filter((user) => !deletedUserIds.includes(user.id));
+      const updatedUsers = users.filter(
+        (user) => !deletedUserIds.includes(user.id)
+      );
       setUsers(updatedUsers);
       setSelectedTickets([]);
     } catch (error) {
@@ -184,7 +195,7 @@ export default function Customer() {
       toast.error("Failed to delete selected users. Please try again later.");
     }
   };
-  
+
   const handleChangePageSize = (event) => {
     const newSize = parseInt(event.target.value);
     setPageSize(newSize);
@@ -371,246 +382,145 @@ export default function Customer() {
   };
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        backgroundColor: "#eee",
-        p: 2,
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ mb: 2, marginRight: 2 }}
-          onClick={handleOpenAdd}
+    <section style={{ backgroundColor: "#FFF" }}>
+      <MDBContainer
+        className="py-5"
+        style={{ paddingLeft: 20, paddingRight: 20, maxWidth: "100%" }}
+      >
+        <MDBNavbar expand="lg" light bgColor="inherit">
+          <MDBContainer fluid>
+            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
+              <ContentCopy style={{ marginRight: "20px" }} /> All User
+            </MDBNavbarBrand>
+            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+              <MDBBtn
+                color="#eee"
+                style={{ fontWeight: "bold", fontSize: "20px" }}
+                onClick={handleOpenAdd}
+              >
+                <FaPlus /> New
+              </MDBBtn>
+              <FormControl
+                  variant="outlined"
+                  style={{
+                    minWidth: 120,
+                    marginRight: 10,
+                    marginTop: 10,
+                    marginLeft: 10,
+                  }}
+                  size="small"
+                >
+                  <Select
+                    value={searchField}
+                    onChange={(e) => setSearchField(e.target.value)}
+                    inputProps={{
+                      name: "searchField",
+                      id: "search-field",
+                    }}
+                  >
+                    <MenuItem value="id">ID</MenuItem>
+                    <MenuItem value="firstName">FirstName</MenuItem>
+                    <MenuItem value="lastName">LastName</MenuItem>
+                    <MenuItem value="username">UserName</MenuItem>
+                    <MenuItem value="address">Address</MenuItem>
+                    <MenuItem value="email">Email</MenuItem>
+                  </Select>
+                </FormControl>
+                <div className="input-wrapper">
+                  <FaSearch id="search-icon" />
+                  <input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        fetchDataUser();
+                      }
+                    }}
+                    className="input-search"
+                    placeholder="Type to search..."
+                  />
+                </div>
+              <Pagination
+                pageSize={pageSize}
+                handleChangePageSize={handleChangePageSize}
+              />
+            </MDBNavbarNav>
+          </MDBContainer>
+        </MDBNavbar>
+        <MDBTable
+          className="align-middle mb-0"
+          responsive
+          style={{ border: "0.05px solid #50545c" }}
         >
-          <PersonAdd />
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ mb: 2, marginRight: 2 }}
-          onClick={handleDeleteSelectedUser}
-        >
-          <DeleteForeverOutlined />
-        </Button>
-        <FormControl
-          variant="outlined"
-          style={{ minWidth: 120, marginRight: 10 }}
-        >
-          <InputLabel htmlFor="search-field">Search Field</InputLabel>
-          <Select
-            value={searchField}
-            onChange={(e) => setSearchField(e.target.value)}
-            label="Search Field"
-            inputProps={{
-              name: "searchField",
-              id: "search-field",
-            }}
-          >
-            <MenuItem value="id">Id</MenuItem>
-            <MenuItem value="firstName">FirstName</MenuItem>
-            <MenuItem value="lastName">LastName</MenuItem>
-            <MenuItem value="username">UserName</MenuItem>
-            <MenuItem value="phoneNumber">PhoneNumber</MenuItem>
-          </Select>
-        </FormControl>
-        <div className="input-wrapper">
-          <FaSearch id="search-icon" />
-          <input
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                fetchDataUser();
-              }
-            }}
-            className="input-search"
-            placeholder="Type to search..."
-          />
-        </div>
-      </div>
-      {loading ? (
-        <div style={{ textAlign: "center" }}>Loading...</div>
-      ) : (
-        <Paper sx={{ width: "100%", mb: 2 }}>
-          <TableContainer>
-            <Table sx={{ minWidth: 750 }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell onClick={() => handleSortChange("id")}>
-                    <Typography
-                      variant="subtitle1"
-                      style={{
-                        fontWeight: "bold",
-                        color: "#007bff",
-                        cursor: "pointer",
-                      }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={selectedTickets.length === data.length}
-                        onChange={handleSelectAllTickets}
-                      />
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="subtitle1"
-                      style={{
-                        fontWeight: "bold",
-                        color: "#007bff",
-                        cursor: "pointer",
-                      }}
-                      align="left"
-                    >
-                      {" "}
-                      Avatar{" "}
-                    </Typography>
-                  </TableCell>
-                  <TableCell onClick={() => handleSortChange("firstName")}>
-                    <Typography
-                      variant="subtitle1"
-                      style={{ fontWeight: "bold", color: "#007bff" }}
-                      align="left"
-                    >
-                      Name{" "}
-                      {sortBy === "firstName" &&
-                        (sortDirection === "asc" ? (
-                          <ArrowDropDown />
-                        ) : (
-                          <ArrowDropUp />
-                        ))}
-                    </Typography>
-                  </TableCell>
-                  <TableCell onClick={() => handleSortChange("email")}>
-                    <Typography
-                      variant="subtitle1"
-                      style={{ fontWeight: "bold", color: "#007bff" }}
-                      align="left"
-                    >
-                      Email{" "}
-                      {sortBy === "email" &&
-                        (sortDirection === "asc" ? (
-                          <ArrowDropDown />
-                        ) : (
-                          <ArrowDropUp />
-                        ))}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="subtitle1"
-                      style={{ fontWeight: "bold", color: "#007bff" }}
-                      align="left"
-                    >
-                      Phone Number
-                    </Typography>
-                  </TableCell>
-                  <TableCell onClick={() => handleSortChange("role")}>
-                    <Typography
-                      variant="subtitle1"
-                      style={{ fontWeight: "bold", color: "#007bff" }}
-                      align="left"
-                    >
-                      Role{" "}
-                      {sortBy === "role" &&
-                        (sortDirection === "asc" ? (
-                          <ArrowDropDown />
-                        ) : (
-                          <ArrowDropUp />
-                        ))}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="subtitle1"
-                      style={{ fontWeight: "bold", color: "#007bff" }}
-                      align="left"
-                    ></Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="subtitle1"
-                      style={{ fontWeight: "bold", color: "#007bff" }}
-                      align="left"
-                    ></Typography>
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {users.map((user, index) => {
-                  const isSelected = selectedTickets.includes(user.id);
-                  return (
-                    <TableRow
-                      key={`user-${index}`}
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                      sx={{ cursor: "pointer" }}
-                    >
-                      <TableCell align="left">
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => handleSelectTicket(user.id)}
-                        />
-                      </TableCell>
-                      <TableCell align="left">
-                        {user.avatarUrl && (
-                          <img
-                            src={user.avatarUrl}
-                            alt="Avatar"
-                            style={{ width: "50px", height: "50px" }}
-                          />
-                        )}
-                      </TableCell>
-                      <TableCell align="left">
-                        {user.firstName} {user.lastName}
-                      </TableCell>
-                      <TableCell align="left">{user.email}</TableCell>
-                      <TableCell align="left">{user.phoneNumber}</TableCell>
-                      <TableCell align="left">{user.role}</TableCell>
-                      <TableCell align="left">
-                        <EditIcon
-                          fontSize="small"
-                          color="primary"
-                          onClick={() => handleDetailUser(user.id)}
-                        />
-                      </TableCell>
-                      <TableCell align="left">
-                        <Delete
-                          fontSize="small"
-                          color="error"
-                          onClick={() => onDeleteUser(user.id)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
-      )}
-      <div style={{ textAlign: "center", marginTop: "10px" }}>
-        <label>Items per page: </label>
-        <select value={pageSize} onChange={handleChangePageSize}>
-          <option value={5}>5</option>
-          <option value={10}>10</option>
-          <option value={20}>20</option>
-          <option value={50}>50</option>
-        </select>
-      </div>
-      <Box display="flex" justifyContent="center" mt={2}>
-        <Pagination
-          count={totalPages}
-          page={currentPage}
-          onChange={handleChangePage}
-        />
-      </Box>
+          <MDBTableHead className="bg-light">
+            <tr style={{ fontSize: "1.2rem" }}>
+              <th style={{ fontWeight: "bold" }}>
+                <input
+                  type="checkbox"
+                  checked={selectedTickets.length === data.length}
+                  onChange={handleSelectAllTickets}
+                />
+              </th>
+              <th style={{ fontWeight: "bold" }}>Edit</th>
+              <th style={{ fontWeight: "bold" }}>Delete</th>
+              <th style={{ fontWeight: "bold" }}>Name</th>
+              <th style={{ fontWeight: "bold" }}>UserName</th>
+              <th style={{ fontWeight: "bold" }}>Role</th>
+              <th style={{ fontWeight: "bold" }}>Gender</th>
+              <th style={{ fontWeight: "bold" }}>Status</th>
+              <th style={{ fontWeight: "bold" }}>Create Time</th>
+              <th style={{ fontWeight: "bold" }}>Modify Time</th>
+            </tr>
+          </MDBTableHead>
+          <MDBTableBody className="bg-light">
+            {users.map((user, index) => {
+              const isSelected = selectedTickets.includes(user.id);
+              return (
+                <tr key={index}>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => handleSelectTicket(user.id)}
+                    />
+                  </td>
+                  <td>
+                    <Edit onClick={() => handleDetailUser(user.id)} />
+                  </td>
+                  <td>
+                    <DeleteForeverSharp onClick={() => onDeleteUser(user.id)} />
+                  </td>
+                  <td>
+                    {user.lastName} {user.firstName}
+                  </td>
+                  <td>{user.username}</td>
+                  <td>{getRoleNameById(user.role)}</td>
+                  <td>{getGenderById(user.gender)}</td>
+                  <td>
+                    {user.isActive ? (
+                      <>
+                        <LockOpen
+                          className="square-icon"
+                          style={{ color: "green" }}
+                        />{" "}
+                        <span>Active</span>
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="square-icon" /> DeActive
+                      </>
+                    )}
+                  </td>
+                  <td>{formatDate(user.createdAt || "-")}</td>
+                  <td>{formatDate(user.modifiedAt || "-")}</td>
+                </tr>
+              );
+            })}
+          </MDBTableBody>
+          <MDBTableBody className="bg-light"></MDBTableBody>
+        </MDBTable>
+      </MDBContainer>
       <Dialog open={openAdd} fullWidth maxWidth="lg">
         <DialogTitle className="text-center">
           <IconButton
@@ -871,6 +781,6 @@ export default function Customer() {
           </form>
         )}
       </Dialog>
-    </Box>
+    </section>
   );
 }

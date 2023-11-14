@@ -17,6 +17,7 @@ import { Dialog } from "@mui/material";
 import CreateMode from "./CreateMode";
 import EditMode from "./EditMode";
 import { toast } from "react-toastify";
+import { formatDate } from "../../helpers/FormatDate";
 const ModeList = () => {
   const [dataModes, setDataModes] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -118,7 +119,9 @@ const ModeList = () => {
   };
 
   const handleCloseEdit = (e) => {
-    e.preventDefault();
+    if(e){
+      e.preventDefault();
+    }
     setDialogEdit(false);
   };
 
@@ -206,8 +209,8 @@ const ModeList = () => {
                   </td>
                   <td>{mode.name}</td>
                   <td>{mode.description}</td>
-                  <td>{mode.createdAt || "-"}</td>
-                  <td>{mode.modifiedAt || "-"}</td>
+                  <td>{formatDate(mode.createdAt || "-")}</td>
+                  <td>{formatDate(mode.modifiedAt || "-")}</td>
                 </tr>
               );
             })}

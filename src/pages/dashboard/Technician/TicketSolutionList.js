@@ -15,7 +15,6 @@ import {
   ContentCopy,
   Lock,
   LockOpen,
-  Settings,
   Square,
   ViewCompact,
 } from "@mui/icons-material";
@@ -48,7 +47,7 @@ const TicketSolutionList = () => {
   const fetchDataListTicketSolution = useCallback(async () => {
     try {
       let filter = "";
-      if(searchQuery) {
+      if (searchQuery) {
         filter = `title="${encodeURIComponent(searchQuery)}"`;
       }
       setLoading(true);
@@ -184,7 +183,7 @@ const TicketSolutionList = () => {
                 style={{ fontWeight: "bold", fontSize: "14px" }}
                 onClick={() => handleOpenCreateTicketSolution()}
               >
-                <FaPlus /> New 
+                <FaPlus /> New
               </MDBBtn>
               <MDBBtn
                 color="#eee"
@@ -195,50 +194,50 @@ const TicketSolutionList = () => {
               </MDBBtn>
 
               <FormControl
-                  variant="outlined"
-                  style={{
-                    minWidth: 120,
-                    marginRight: 10,
-                    marginTop: 10,
-                    marginLeft: 10,
+                variant="outlined"
+                style={{
+                  minWidth: 120,
+                  marginRight: 10,
+                  marginTop: 10,
+                  marginLeft: 10,
+                }}
+                size="small"
+              >
+                <Select
+                  value={searchField}
+                  onChange={(e) => setSearchField(e.target.value)}
+                  inputProps={{
+                    name: "searchField",
+                    id: "search-field",
                   }}
-                  size="small"
                 >
-                  <Select
-                    value={searchField}
-                    onChange={(e) => setSearchField(e.target.value)}
-                    inputProps={{
-                      name: "searchField",
-                      id: "search-field",
-                    }}
-                  >
-                    <MenuItem value="id">ID</MenuItem>
-                    <MenuItem value="title">Title</MenuItem>
-                    <MenuItem value="keyword">Keyword</MenuItem>
-                    <MenuItem value="isApproved">Status</MenuItem>
-                    <MenuItem value="isPublic">Visibility</MenuItem>
-                    <MenuItem value="reviewDate">reviewDate</MenuItem>
-                  </Select>
-                </FormControl>
+                  <MenuItem value="id">ID</MenuItem>
+                  <MenuItem value="title">Title</MenuItem>
+                  <MenuItem value="keyword">Keyword</MenuItem>
+                  <MenuItem value="isApproved">Status</MenuItem>
+                  <MenuItem value="isPublic">Visibility</MenuItem>
+                  <MenuItem value="reviewDate">reviewDate</MenuItem>
+                </Select>
+              </FormControl>
               <div className="input-wrapper">
-                  <FaSearch id="search-icon" />
-                  <input
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        fetchDataListTicketSolution();
-                      }
-                    }}
-                    className="input-search"
-                    placeholder="Type to search..."
-                  />
-                </div>
-              <PageSizeSelector
-                  pageSize={pageSize}
-                  handleChangePageSize={handleChangePageSize}
+                <FaSearch id="search-icon" />
+                <input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      fetchDataListTicketSolution();
+                    }
+                  }}
+                  className="input-search"
+                  placeholder="Type to search..."
                 />
+              </div>
+              <PageSizeSelector
+                pageSize={pageSize}
+                handleChangePageSize={handleChangePageSize}
+              />
             </MDBNavbarNav>
           </MDBContainer>
         </MDBNavbar>
@@ -258,23 +257,28 @@ const TicketSolutionList = () => {
                   />
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
-                <th 
+                <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("title")}
-                  >Title</th>
-                <th 
+                >
+                  Title
+                </th>
+                <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
-                  onClick={() => handleSortChange("keyword")}>
+                  onClick={() => handleSortChange("keyword")}
+                >
                   Keyword
                 </th>
-                <th 
+                <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("isApproved")}
-                  >Status</th>
-                <th 
+                >
+                  Status
+                </th>
+                <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("isPublic")}
-                  >
+                >
                   Visibility
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}>

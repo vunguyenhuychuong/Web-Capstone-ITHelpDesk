@@ -72,6 +72,12 @@ const links = [
     text: "Home Manager",
     path: "homeManager",
     icon: <Home />
+  },
+  {
+    id: 20,
+    text: "Home Admin",
+    path: "homeAdmin",
+    icon: <Home />
   }
 ];
 

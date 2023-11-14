@@ -13,6 +13,8 @@ const CreateMode = ({ onClose, onSubmitSuccess }) => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -20,10 +22,34 @@ const CreateMode = ({ onClose, onSubmitSuccess }) => {
       ...prevData,
       [name]: value,
     }));
+
+    setValidationErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: undefined,
+    }));
   };
+
+  const validateInputs = () => {
+    const errors = {};
+    if(!data.name.trim()) {
+      errors.name = "Mode Name is required";
+    }
+
+    if(!data.description.trim()) {
+      errors.description = "Description is required";
+    };
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  }
 
   const handleSubmitMode = async (e) => {
     e.preventDefault();
+
+    if(!validateInputs()) {
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await createMode(data);
