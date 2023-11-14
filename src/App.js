@@ -38,6 +38,7 @@ import CustomizedSteppers from './pages/dashboard/Customer/CustomizedSteppers';
 import RequestIssue from './pages/dashboard/Customer/RequestIssue';
 import CreateTicketTaskTc from './pages/dashboard/Technician/CreateTicketTaskTc';
 import MyRequestList from './pages/dashboard/Customer/MyRequestList';
+import HomeManager from './pages/dashboard/Manager/HomeManager';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -87,6 +88,7 @@ function App() {
           <Route path='createRequest' element={<RequestIssue />} />
           <Route path='requestCustomerList' element={<MyRequestList />} />
           {(hasManagerRole || hasTechnicianRole) && <Route path='listTicket' element={<ManagersTabs />} />}
+          <Route path='homeManager' element={<HomeManager />} />
           </Route>
         <Route path='login' element={<Login />} />
         <Route path='forgot-password' element={<ForgetPassword /> }  />

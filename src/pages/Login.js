@@ -68,13 +68,13 @@ function Login() {
             });
             break;
           case 2:
-            navigate("/home/listTicket");
+            navigate("/home/homeTechnician");
             toast.success(`Welcome Manager: ${lastName} ${firstName}`, {
               autoClose: 1000,
               hideProgressBar: false,
             });
-          case 3: 
-            navigate("/home/homeTechnician");
+          case 3:
+            navigate("/home/homeManager");
             toast.success(`Welcome Technician: ${lastName} ${firstName}`, {
               autoClose: 1000,
               hideProgressBar: false,

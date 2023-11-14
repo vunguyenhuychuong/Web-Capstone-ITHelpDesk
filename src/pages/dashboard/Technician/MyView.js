@@ -9,9 +9,10 @@ import {
   More,
   Notifications,
   PermDeviceInformation,
+  Replay,
   SyncProblem,
 } from "@mui/icons-material";
-import { Button, Card, CardContent, Grid } from "@mui/material";
+import { Card, CardContent, Grid } from "@mui/material";
 import "../../../assets/css/MyView.css";
 import React, { useEffect, useState } from "react";
 import {
@@ -29,6 +30,7 @@ import { getAssignAvailable } from "../../../app/api/assign";
 import { formatTicketDate } from "../../helpers/FormatAMPM";
 import { useNavigate } from "react-router-dom";
 import { getSummaryTechnician } from "../../../app/api/dashboard";
+import LoadingImg from "../../../assets/images/loading.gif";
 
 const MyView = () => {
   const [dataListTicketsTask, setDataListTicketsTask] = useState([]);
@@ -39,14 +41,25 @@ const MyView = () => {
     try {
       setLoading(true);
       const response = await getAssignAvailable();
-      const summaryTechnician = await getSummaryTechnician();
       setDataListTicketsTask(response);
-      setDataSummary(summaryTechnician);
     } catch (error) {
       console.log(error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchTechnicianSummary = async () => {
+    try {
+      const summaryTechnician = await getSummaryTechnician();
+      setDataSummary(summaryTechnician);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleReloadClick = () => {
+    fetchTechnicianSummary();
   };
 
   const handleOpenCreateTicketTask = () => {
@@ -55,6 +68,7 @@ const MyView = () => {
 
   useEffect(() => {
     fetchDataListTicketTask();
+    fetchTechnicianSummary();
   }, []);
 
   return (
@@ -87,6 +101,16 @@ const MyView = () => {
           >
             My Summary
           </h4>
+          <div style={{ marginLeft: "auto" }}>
+            <button
+              variant="contained"
+              color="secondary"
+              className="custom-button"
+              onClick={handleReloadClick}
+            >
+              <Replay />
+            </button>
+          </div>
         </div>
         <MDBCardBody
           style={{
@@ -279,7 +303,17 @@ const MyView = () => {
         <Grid item xs={12}>
           <Card style={{ height: "290px", overflowY: "auto" }}>
             <CardContent>
-              {dataListTicketsTask && dataListTicketsTask.length > 0 ? (
+              {loading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <img src={LoadingImg} alt="Loading" />
+                </div>
+              ) : dataListTicketsTask && dataListTicketsTask.length > 0 ? (
                 dataListTicketsTask.map((ticket, index) => (
                   <div
                     key={index}

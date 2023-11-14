@@ -20,6 +20,7 @@ import {
   Avatar,
   Badge,
   Box,
+  Drawer,
   IconButton,
   InputBase,
   Menu,
@@ -86,7 +87,11 @@ const Navbar = ({ notifications }) => {
   const userRole = roleOptions.find((role) => role.id === user.user.role)?.name;
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
+  const handleDrawerClose = () => {
+    setDrawerOpen(false);
+  };
   const [data, setData] = useState({
     firstName: "",
     lastName: "",
@@ -94,8 +99,9 @@ const Navbar = ({ notifications }) => {
     avatarUrl: "",
   });
 
-  const handleNotificationClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleNotificationClick = () => {
+    // setAnchorEl(event.currentTarget);
+    setDrawerOpen(true);
   };
 
   const handlePopoverClose = () => {
@@ -182,12 +188,36 @@ const Navbar = ({ notifications }) => {
               </IconButton>
             </Tooltip>
             <Tooltip title="Notifications">
-              <IconButton size="large" style={{ color: "#0099FF" }} onClick={handleNotificationClick}>
+              <IconButton
+                size="large"
+                style={{ color: "#0099FF" }}
+                onClick={handleNotificationClick}
+              >
                 <Badge badgeContent={17} color="error">
                   <NotificationAdd />
                 </Badge>
               </IconButton>
             </Tooltip>
+            <Drawer
+              anchor="right"
+              open={drawerOpen}
+              onClose={handleDrawerClose}
+            >
+              <div
+                style={{
+                  width: 300,
+                  padding: 16,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="h6" gutterBottom>
+                  Notifications
+                </Typography>
+                <NotificationList notifications={notifications} />
+              </div>
+            </Drawer>
             <Popover
               id={id}
               open={open}

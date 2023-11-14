@@ -1,9 +1,8 @@
-import React from 'react';
-import { useEffect } from 'react';
-import { getAllNotification } from '../../../app/api/notification';
-import { useState } from 'react';
-import { Paper } from '@mui/material';
-import { formatAMPM } from '../../helpers/FormatAMPM';
+import React from "react";
+import { useEffect } from "react";
+import { getAllNotification } from "../../../app/api/notification";
+import { useState } from "react";
+import { List, ListItem, ListItemText, Paper, Typography } from "@mui/material";
 import "../../../assets/css/notification.css";
 
 const NotificationList = ({ notifications }) => {
@@ -23,7 +22,7 @@ const NotificationList = ({ notifications }) => {
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   useEffect(() => {
     fetchDataListNotification();
@@ -31,21 +30,37 @@ const NotificationList = ({ notifications }) => {
 
   return (
     <div className="notification-list-container">
-    <h2 className="notification-list-mainTitle">Notifications</h2>
-    <Paper elevation={3}>
-      <ul>
-        {dataListNotification.map((notification) => (
-          <li key={notification.id} className="notification-list-notification">
-            <h3 className="notification-list-title">{notification.title}</h3>
-            <p>{notification.body}</p>
-            <span className="notification-list-createdAt">
-              Created At: {formatAMPM(notification.createdAt)}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </Paper>
-  </div>
+      <Paper elevation={3}>
+        <List>
+          {dataListNotification.map((notification) => (
+            <ListItem key={notification.id}>
+              <ListItemText
+                primary={notification.title}
+                secondary={
+                  <>
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      color="textPrimary"
+                    >
+                      {notification.body}
+                    </Typography>
+                    <br />
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      color="textSecondary"
+                    >
+                      Created At: {notification.createdAt}
+                    </Typography>
+                  </>
+                }
+              />
+            </ListItem>
+          ))}
+        </List>
+      </Paper>
+    </div>
   );
 };
 

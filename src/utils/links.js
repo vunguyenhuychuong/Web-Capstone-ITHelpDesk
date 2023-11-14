@@ -1,4 +1,4 @@
-import { FaAd, FaLightbulb, FaTicketAlt, FaWpforms } from "react-icons/fa";
+import { FaAd, FaLightbulb, FaTicketAlt } from "react-icons/fa";
 import { ImProfile } from "react-icons/im";
 import {
   Build,
@@ -66,6 +66,12 @@ const links = [
     text: "My Request list",
     path: "requestCustomerList",
     icon: <IosShare />
+  },
+  {
+    id: 19,
+    text: "Home Manager",
+    path: "homeManager",
+    icon: <Home />
   }
 ];
 

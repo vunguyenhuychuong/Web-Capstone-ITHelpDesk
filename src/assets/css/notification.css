@@ -1,5 +1,5 @@
 .notification-list-container {
-  max-width: 400px;
+  max-width: 300px;
   margin: auto;
   margin-top: 16px;
   text-align: center;
@@ -8,7 +8,7 @@
 .notification-list-mainTitle {
   font-weight: bold;
   color: #0099FF; /* Blue color */
-  font-size: 2rem; /* Adjust font size as needed */
+  font-size: "10px"; /* Adjust font size as needed */
   margin-bottom: 16px;
   margin-left: 20px; /* Adjust left margin as needed */
   margin-top: 20px; /* Adjust top margin as needed */
@@ -17,6 +17,7 @@
 .notification-list-notification {
   padding: 16px;
   border-bottom: 1px solid #ddd;
+  font-size: 14px;
 }
 
 .notification-list-title {
@@ -26,4 +27,5 @@
 
 .notification-list-createdAt {
   color: #555;
+  font-size: 12px;
 }

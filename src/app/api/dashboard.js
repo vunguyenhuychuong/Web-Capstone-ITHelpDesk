@@ -28,4 +28,18 @@ export async function getSummaryCustomer() {
   }catch(error){
     console.log(error);
   }
+};
+
+export async function getSummaryManager() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/dashboard/ticket/manager`,{
+      headers: {
+        Authorization: header,
+      }
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
 }
