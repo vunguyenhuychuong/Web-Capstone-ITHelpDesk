@@ -4,9 +4,6 @@ import { axisClasses } from "@mui/x-charts";
 
 const chartSetting = {
     yAxis: [
-      {
-        label: "number ",
-      },
     ],
     width: 620,
     height: 300,

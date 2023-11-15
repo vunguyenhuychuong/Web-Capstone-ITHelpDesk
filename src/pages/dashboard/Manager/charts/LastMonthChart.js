@@ -4,9 +4,7 @@ import { axisClasses } from "@mui/x-charts";
 
 const chartSetting = {
   yAxis: [
-    {
-      label: "number ",
-    },
+
   ],
   width: 620,
   height: 300,
@@ -17,7 +15,7 @@ const chartSetting = {
   },
 };
 
-const valueFormatter = (value) => `${value}mm`;
+const valueFormatter = (value) => `${value}`;
 
 export default function LastMonthChart(props) {
   const { dataSummary } = props;
