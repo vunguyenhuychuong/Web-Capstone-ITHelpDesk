@@ -20,6 +20,7 @@ import {
   Typography,
   Pagination,
   FormControl,
+  Stack,
 } from "@mui/material";
 import {
   MDBBtn,
@@ -55,6 +56,7 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { useCallback } from "react";
 import { FaSearch } from "react-icons/fa";
 import { genderOptions, roleOptions } from "../helpers/tableComlumn";
+import PageSizeSelector from "../dashboard/Pagination/Pagination";
 
 export default function Customer() {
   const [users, setUsers] = useState([]);
@@ -156,7 +158,9 @@ export default function Customer() {
         toast.info("No users selected for deletion.");
         return;
       }
-      const confirmed = window.confirm("Are you sure you want to delete selected users?");
+      const confirmed = window.confirm(
+        "Are you sure you want to delete selected users?"
+      );
       if (!confirmed) {
         return;
       }
@@ -164,19 +168,25 @@ export default function Customer() {
         try {
           const res = await DeleteDataUser(userId);
           if (res.isError) {
-            toast.error(`Error deleting user with ID ${userId}: ${res.message}`);
+            toast.error(
+              `Error deleting user with ID ${userId}: ${res.message}`
+            );
           } else {
             toast.success(`User with ID ${userId} deleted successfully`);
           }
           return userId;
         } catch (error) {
-          toast.error(`Error deleting user with ID ${userId}: ${error.message}`);
+          toast.error(
+            `Error deleting user with ID ${userId}: ${error.message}`
+          );
           return null;
         }
       });
-  
+
       const deletedUserIds = await Promise.all(deletePromises);
-      const updatedUsers = users.filter((user) => !deletedUserIds.includes(user.id));
+      const updatedUsers = users.filter(
+        (user) => !deletedUserIds.includes(user.id)
+      );
       setUsers(updatedUsers);
       setSelectedTickets([]);
     } catch (error) {
@@ -184,7 +194,7 @@ export default function Customer() {
       toast.error("Failed to delete selected users. Please try again later.");
     }
   };
-  
+
   const handleChangePageSize = (event) => {
     const newSize = parseInt(event.target.value);
     setPageSize(newSize);
@@ -223,7 +233,7 @@ export default function Customer() {
         gender: null,
       }));
     }
-    setTotalPages(10);
+    setTotalPages(4);
   }, [data.gender, fetchDataUser, data.dateOfBirth]);
 
   const onCreateUser = async (e) => {
@@ -431,186 +441,184 @@ export default function Customer() {
             placeholder="Type to search..."
           />
         </div>
+        <PageSizeSelector
+          pageSize={pageSize}
+          handleChangePageSize={handleChangePageSize}
+        />
       </div>
       {loading ? (
         <div style={{ textAlign: "center" }}>Loading...</div>
       ) : (
-        <Paper sx={{ width: "100%", mb: 2 }}>
-          <TableContainer>
-            <Table sx={{ minWidth: 750 }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell onClick={() => handleSortChange("id")}>
-                    <Typography
-                      variant="subtitle1"
-                      style={{
-                        fontWeight: "bold",
-                        color: "#007bff",
-                        cursor: "pointer",
-                      }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={selectedTickets.length === data.length}
-                        onChange={handleSelectAllTickets}
-                      />
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="subtitle1"
-                      style={{
-                        fontWeight: "bold",
-                        color: "#007bff",
-                        cursor: "pointer",
-                      }}
-                      align="left"
-                    >
-                      {" "}
-                      Avatar{" "}
-                    </Typography>
-                  </TableCell>
-                  <TableCell onClick={() => handleSortChange("firstName")}>
-                    <Typography
-                      variant="subtitle1"
-                      style={{ fontWeight: "bold", color: "#007bff" }}
-                      align="left"
-                    >
-                      Name{" "}
-                      {sortBy === "firstName" &&
-                        (sortDirection === "asc" ? (
-                          <ArrowDropDown />
-                        ) : (
-                          <ArrowDropUp />
-                        ))}
-                    </Typography>
-                  </TableCell>
-                  <TableCell onClick={() => handleSortChange("email")}>
-                    <Typography
-                      variant="subtitle1"
-                      style={{ fontWeight: "bold", color: "#007bff" }}
-                      align="left"
-                    >
-                      Email{" "}
-                      {sortBy === "email" &&
-                        (sortDirection === "asc" ? (
-                          <ArrowDropDown />
-                        ) : (
-                          <ArrowDropUp />
-                        ))}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="subtitle1"
-                      style={{ fontWeight: "bold", color: "#007bff" }}
-                      align="left"
-                    >
-                      Phone Number
-                    </Typography>
-                  </TableCell>
-                  <TableCell onClick={() => handleSortChange("role")}>
-                    <Typography
-                      variant="subtitle1"
-                      style={{ fontWeight: "bold", color: "#007bff" }}
-                      align="left"
-                    >
-                      Role{" "}
-                      {sortBy === "role" &&
-                        (sortDirection === "asc" ? (
-                          <ArrowDropDown />
-                        ) : (
-                          <ArrowDropUp />
-                        ))}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="subtitle1"
-                      style={{ fontWeight: "bold", color: "#007bff" }}
-                      align="left"
-                    ></Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="subtitle1"
-                      style={{ fontWeight: "bold", color: "#007bff" }}
-                      align="left"
-                    ></Typography>
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {users.map((user, index) => {
-                  const isSelected = selectedTickets.includes(user.id);
-                  return (
-                    <TableRow
-                      key={`user-${index}`}
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                      sx={{ cursor: "pointer" }}
-                    >
-                      <TableCell align="left">
+        <>
+          <Paper sx={{ width: "100%", mb: 2 }}>
+            <TableContainer>
+              <Table sx={{ minWidth: 750 }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell onClick={() => handleSortChange("id")}>
+                      <Typography
+                        variant="subtitle1"
+                        style={{
+                          fontWeight: "bold",
+                          color: "#007bff",
+                          cursor: "pointer",
+                        }}
+                      >
                         <input
                           type="checkbox"
-                          checked={isSelected}
-                          onChange={() => handleSelectTicket(user.id)}
+                          checked={selectedTickets.length === data.length}
+                          onChange={handleSelectAllTickets}
                         />
-                      </TableCell>
-                      <TableCell align="left">
-                        {user.avatarUrl && (
-                          <img
-                            src={user.avatarUrl}
-                            alt="Avatar"
-                            style={{ width: "50px", height: "50px" }}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography
+                        variant="subtitle1"
+                        style={{
+                          fontWeight: "bold",
+                          color: "#007bff",
+                          cursor: "pointer",
+                        }}
+                        align="left"
+                      >
+                        {" "}
+                        Avatar{" "}
+                      </Typography>
+                    </TableCell>
+                    <TableCell onClick={() => handleSortChange("firstName")}>
+                      <Typography
+                        variant="subtitle1"
+                        style={{ fontWeight: "bold", color: "#007bff" }}
+                        align="left"
+                      >
+                        Name{" "}
+                        {sortBy === "firstName" &&
+                          (sortDirection === "asc" ? (
+                            <ArrowDropDown />
+                          ) : (
+                            <ArrowDropUp />
+                          ))}
+                      </Typography>
+                    </TableCell>
+                    <TableCell onClick={() => handleSortChange("email")}>
+                      <Typography
+                        variant="subtitle1"
+                        style={{ fontWeight: "bold", color: "#007bff" }}
+                        align="left"
+                      >
+                        Email{" "}
+                        {sortBy === "email" &&
+                          (sortDirection === "asc" ? (
+                            <ArrowDropDown />
+                          ) : (
+                            <ArrowDropUp />
+                          ))}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography
+                        variant="subtitle1"
+                        style={{ fontWeight: "bold", color: "#007bff" }}
+                        align="left"
+                      >
+                        Phone Number
+                      </Typography>
+                    </TableCell>
+                    <TableCell onClick={() => handleSortChange("role")}>
+                      <Typography
+                        variant="subtitle1"
+                        style={{ fontWeight: "bold", color: "#007bff" }}
+                        align="left"
+                      >
+                        Role{" "}
+                        {sortBy === "role" &&
+                          (sortDirection === "asc" ? (
+                            <ArrowDropDown />
+                          ) : (
+                            <ArrowDropUp />
+                          ))}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography
+                        variant="subtitle1"
+                        style={{ fontWeight: "bold", color: "#007bff" }}
+                        align="left"
+                      ></Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography
+                        variant="subtitle1"
+                        style={{ fontWeight: "bold", color: "#007bff" }}
+                        align="left"
+                      ></Typography>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {users.map((user, index) => {
+                    const isSelected = selectedTickets.includes(user.id);
+                    return (
+                      <TableRow
+                        key={`user-${index}`}
+                        hover
+                        role="checkbox"
+                        tabIndex={-1}
+                        sx={{ cursor: "pointer" }}
+                      >
+                        <TableCell align="left">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => handleSelectTicket(user.id)}
                           />
-                        )}
-                      </TableCell>
-                      <TableCell align="left">
-                        {user.firstName} {user.lastName}
-                      </TableCell>
-                      <TableCell align="left">{user.email}</TableCell>
-                      <TableCell align="left">{user.phoneNumber}</TableCell>
-                      <TableCell align="left">{user.role}</TableCell>
-                      <TableCell align="left">
-                        <EditIcon
-                          fontSize="small"
-                          color="primary"
-                          onClick={() => handleDetailUser(user.id)}
-                        />
-                      </TableCell>
-                      <TableCell align="left">
-                        <Delete
-                          fontSize="small"
-                          color="error"
-                          onClick={() => onDeleteUser(user.id)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
+                        </TableCell>
+                        <TableCell align="left">
+                          {user.avatarUrl && (
+                            <img
+                              src={user.avatarUrl}
+                              alt="Avatar"
+                              style={{ width: "50px", height: "50px" }}
+                            />
+                          )}
+                        </TableCell>
+                        <TableCell align="left">
+                          {user.firstName} {user.lastName}
+                        </TableCell>
+                        <TableCell align="left">{user.email}</TableCell>
+                        <TableCell align="left">{user.phoneNumber}</TableCell>
+                        <TableCell align="left">{user.role}</TableCell>
+                        <TableCell align="left">
+                          <EditIcon
+                            fontSize="small"
+                            color="primary"
+                            onClick={() => handleDetailUser(user.id)}
+                          />
+                        </TableCell>
+                        <TableCell align="left">
+                          <Delete
+                            fontSize="small"
+                            color="error"
+                            onClick={() => onDeleteUser(user.id)}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+          <Stack spacing={2} justifyContent="center">
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={(event, value) => handleChangePage(event, value)}
+            />
+          </Stack>
+        </>
       )}
-      <div style={{ textAlign: "center", marginTop: "10px" }}>
-        <label>Items per page: </label>
-        <select value={pageSize} onChange={handleChangePageSize}>
-          <option value={5}>5</option>
-          <option value={10}>10</option>
-          <option value={20}>20</option>
-          <option value={50}>50</option>
-        </select>
-      </div>
-      <Box display="flex" justifyContent="center" mt={2}>
-        <Pagination
-          count={totalPages}
-          page={currentPage}
-          onChange={handleChangePage}
-        />
-      </Box>
+
       <Dialog open={openAdd} fullWidth maxWidth="lg">
         <DialogTitle className="text-center">
           <IconButton

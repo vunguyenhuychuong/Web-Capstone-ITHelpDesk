@@ -16,13 +16,27 @@ import {
 } from "@mui/material";
 import "../../../assets/css/homeManager.css";
 import React, { useEffect, useState } from "react";
-import { getChartCategory, getChartMode, getChartPriority, getChartService, getSummaryManager } from "../../../app/api/dashboard";
+import {
+  getChartCategory,
+  getChartLastMonth,
+  getChartLastWeek,
+  getChartMode,
+  getChartPriority,
+  getChartService,
+  getChartThisMonth,
+  getChartWeek,
+  getSummaryManager,
+} from "../../../app/api/dashboard";
 import LoadingImg from "../../../assets/images/loading.gif";
 import { BarChart, LineChart, PieChart } from "@mui/x-charts";
 import CustomizeChart from "./charts/CustomizeChart";
 import PriorityChart from "./charts/PriorityChart";
 import ModeChart from "./charts/ModeChart";
 import ServiceChart from "./charts/ServiceChart";
+import WeekChart from "./charts/WeekChart";
+import LastWeekChart from "./charts/LastWeekChart";
+import LastMonthChart from "./charts/LastMonthChart";
+import MonthChart from "./charts/MonthChart";
 
 const ChartManager = () => {
   const [dataCategory, setDataCategory] = useState([]);
@@ -30,8 +44,14 @@ const ChartManager = () => {
   const [dataMode, setDataMode] = useState([]);
   const [dataService, setDataService] = useState([]);
   const [dataTotal, setDataTotal] = useState([]);
+  const [dataWeek, setDataWeek] = useState("");
+  const [dataLastWeek, setDataLastWeek] = useState("");
+  const [dataMonth, setDataMonth] = useState("");
+  const [dataLastMonth, setDataLastMonth] = useState("");
   const [loading, setLoading] = useState(true);
-  const [selectedChart, setSelectedChart] = useState('Request By Category');
+  const [selectedChart, setSelectedChart] = useState("Request By Category");
+  const [selectedTime, setSelectedTime] = useState("1");
+
   const fetchDataListTicketTask = async () => {
     try {
       setLoading(true);
@@ -51,13 +71,31 @@ const ChartManager = () => {
   };
 
   const fetchDataTotalChart = async () => {
-    try{
+    try {
       setLoading(true);
       const totalChart = await getSummaryManager();
       setDataTotal(totalChart);
-    }catch(error){
+    } catch (error) {
       console.log(error);
-    }finally{
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchDataBarChart = async () => {
+    try {
+      setLoading(true);
+      const weekChart = await getChartWeek();
+      const lastWeekChart = await getChartLastWeek();
+      const monthChart = await getChartThisMonth();
+      const lastMonthChart = await getChartLastMonth();
+      setDataLastWeek(lastWeekChart);
+      setDataWeek(weekChart);
+      setDataMonth(monthChart);
+      setDataLastMonth(lastMonthChart);
+    } catch (error) {
+      console.log(error);
+    } finally {
       setLoading(false);
     }
   };
@@ -70,30 +108,72 @@ const ChartManager = () => {
     fetchDataTotalChart();
   };
 
+  const handleReloadBarChart = () => {
+    fetchDataBarChart();
+  };
+
   useEffect(() => {
     fetchDataTotalChart();
+  }, []); // Run once on mount to fetch initial data
+
+  useEffect(() => {
     fetchDataListTicketTask();
-  }, []);
+  }, []); // Run once on mount to fetch initial data
+
+  useEffect(() => {
+    fetchDataBarChart();
+  }, []); // Run once on mount to fetch initial data
 
   const data = [
     { id: 0, value: dataTotal.totalOpenTicket, label: "Total Open Ticket" },
-    { id: 1, value: dataTotal.totalAssignedTicket, label: "Total Assigned Ticket" },
-    { id: 2, value: dataTotal.totalInProgressTicket, label: "Total InProgress Ticket" },
-    { id: 3, value: dataTotal.totalResolvedTicket, label: "Total Resolved Ticket" },
+    {
+      id: 1,
+      value: dataTotal.totalAssignedTicket,
+      label: "Total Assigned Ticket",
+    },
+    {
+      id: 2,
+      value: dataTotal.totalInProgressTicket,
+      label: "Total InProgress Ticket",
+    },
+    {
+      id: 3,
+      value: dataTotal.totalResolvedTicket,
+      label: "Total Resolved Ticket",
+    },
     { id: 4, value: dataTotal.totalClosedTicket, label: "Total Closed Ticket" },
-    { id: 5, value: dataTotal.totalCancelledTicket, label: "Total Cancelled Ticket" },
+    {
+      id: 5,
+      value: dataTotal.totalCancelledTicket,
+      label: "Total Cancelled Ticket",
+    },
   ];
 
   const renderSelectedChart = () => {
     switch (selectedChart) {
-      case 'Request By Category':
+      case "Request By Category":
         return <CustomizeChart dataSummary={dataCategory} />;
-      case 'Request By Priority':
+      case "Request By Priority":
         return <PriorityChart dataSummary={dataPriority} />;
-      case 'Request By Mode':
+      case "Request By Mode":
         return <ModeChart dataSummary={dataMode} />;
-      case 'Request By Service':
+      case "Request By Service":
         return <ServiceChart dataSummary={dataService} />;
+      default:
+        return null;
+    }
+  };
+
+  const renderSelectedTime = () => {
+    switch (selectedTime) {
+      case "1":
+        return <WeekChart dataSummary={dataWeek} />;
+      case "2":
+        return <LastWeekChart dataSummary={dataLastWeek} />;
+      case "3":
+        return <MonthChart dataSummary={dataMonth} />;
+      case "4":
+        return <LastMonthChart dataSummary={dataLastMonth} />;
       default:
         return null;
     }
@@ -101,6 +181,10 @@ const ChartManager = () => {
 
   const handleTechnicianChange = (event) => {
     setSelectedChart(event.target.value);
+  };
+
+  const handleTimeChange = (event) => {
+    setSelectedTime(event.target.value);
   };
 
   return (
@@ -128,14 +212,20 @@ const ChartManager = () => {
               <Select
                 labelId="technician-select-label"
                 id="technician-select"
-                value={selectedChart} 
+                value={selectedChart}
                 onChange={handleTechnicianChange}
-                style={{ height: "30px"}}
+                style={{ height: "30px" }}
               >
-                <MenuItem value="Request By Category">Request By Technician</MenuItem>
-                <MenuItem value="Request By Priority">Request By Priority</MenuItem>
+                <MenuItem value="Request By Category">
+                  Request By Technician
+                </MenuItem>
+                <MenuItem value="Request By Priority">
+                  Request By Priority
+                </MenuItem>
                 <MenuItem value="Request By Mode">Request By Mode</MenuItem>
-                <MenuItem value="Request By Service">Request By Service</MenuItem>
+                <MenuItem value="Request By Service">
+                  Request By Service
+                </MenuItem>
               </Select>
             </FormControl>
             <div style={{ marginLeft: "auto" }}>
@@ -185,47 +275,50 @@ const ChartManager = () => {
             }}
           >
             <Assessment sx={{ margin: 1, color: "#9966FF" }} />
-            <h4
-              style={{
-                marginLeft: "8px",
-                marginTop: "4px",
-                fontWeight: "bold",
-                fontSize: "14px",
-              }}
-            >
-              Request Summary
-            </h4>
-            <div style={{ marginLeft: "auto" }}>
-              <button
-                variant="contained"
-                color="secondary"
-                className="custom-button"
+            <FormControl sx={{ marginLeft: "8px", marginRight: "8px" }}>
+              <Select
+                labelId="technician-select-label"
+                id="technician-select"
+                value={selectedTime}
+                onChange={handleTimeChange}
+                style={{ height: "30px" }}
               >
-                This Week
-              </button>
+                <MenuItem value="1">This Week</MenuItem>
+                <MenuItem value="2">Last Week</MenuItem>
+                <MenuItem value="3">This Month</MenuItem>
+                <MenuItem value="4">Last Month</MenuItem>
+              </Select>
+            </FormControl>
+            <div style={{ marginLeft: "auto" }}>
+              <Tooltip title="Refresh" arrow>
+                <button
+                  variant="contained"
+                  color="secondary"
+                  className="custom-button"
+                  onClick={handleReloadBarChart}
+                >
+                  <Replay />
+                </button>
+              </Tooltip>
             </div>
           </div>
         </Grid>
         <Grid item xs={12}>
-          {/* Card content goes here */}
           <Card style={{ height: "290px" }}>
             <CardContent>
-              <BarChart
-                xAxis={[
-                  {
-                    id: "barCategories",
-                    data: ["bar A", "bar B", "bar C"],
-                    scaleType: "band",
-                  },
-                ]}
-                series={[
-                  {
-                    data: [2, 5, 3],
-                  },
-                ]}
-                width={500}
-                height={300}
-              />
+              {loading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <img src={LoadingImg} alt="Loading" />
+                </div>
+              ) : (
+                renderSelectedTime()
+              )}
             </CardContent>
           </Card>
         </Grid>
