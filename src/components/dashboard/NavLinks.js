@@ -21,13 +21,11 @@ const NavLinks = ({ toggleSidebar }) => {
         link.id === 2 ||
         link.id === 3 ||
         link.id === 5 
-        
-        
     );
   } else if (roleUser === 2) {
     filteredLink = links.filter(
       (link) =>
-        link.id === 1 || link.id === 3 || link.id === 2  || link.id === 13 || link.id === 16  || link.id === 19
+        link.id === 1 || link.id === 13 || link.id === 16  || link.id === 19 || link.id === 21
     );
   } else if (roleUser === 3) {
     filteredLink = links.filter(

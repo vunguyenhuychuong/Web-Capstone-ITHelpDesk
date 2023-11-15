@@ -16,13 +16,10 @@ const EditService = ({ onClose, serviceId }) => {
   });
 
   useEffect(() => {
-    console.log("Service ID changed:", serviceId);
-
     const fetchDataService = async () => {
       try {
         const result = await getServiceDetail(serviceId);
         console.log(result);
-
         setData({
           description: result.description,
           type: result.type,

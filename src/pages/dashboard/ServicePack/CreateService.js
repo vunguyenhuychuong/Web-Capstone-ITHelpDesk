@@ -14,6 +14,11 @@ const CreateService = ({ onClose }) => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({
+    type: "",
+    description: "",
+    amount: "",
+  });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -21,10 +26,36 @@ const CreateService = ({ onClose }) => {
       ...prevData,
       [name]: value,
     }));
+    setFieldErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
   };
 
   const handleSubmitService = async (e) => {
     e.preventDefault();
+
+    const errors = {};
+
+    if(!data.type) {
+      errors.type = "Type is required";
+    }
+
+    if(!data.description) {
+      errors.description = "Description required";
+    }
+
+    if (!data.amount) {
+      errors.amount = "Amount required";
+    } else if (!/^\d+(,\d{3})*(\.\d{0,2})?$/.test(data.amount.replace(/,/g, ''))) {
+      errors.amount = "Invalid amount format. Please enter a valid numeric value.";
+    }
+
+    if(Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await createService(data);
@@ -49,9 +80,8 @@ const CreateService = ({ onClose }) => {
           </MDBCol>
         </MDBRow>
         <form method="post" onSubmit={handleSubmitService}>
-
           <MDBRow className="mb-4">
-          <MDBCol md="2" className="text-center mt-2 mb-4">
+            <MDBCol md="2" className="text-center mt-2 mb-4">
               <label htmlFor="title" className="narrow-input">
                 <span style={{ color: "red" }}>*</span>Type
               </label>
@@ -65,6 +95,9 @@ const CreateService = ({ onClose }) => {
                 value={data.type}
                 onChange={handleInputChange}
               />
+              {fieldErrors.type && (
+                <div style={{ color: 'red' }}>{fieldErrors.type}</div>
+              )}
             </MDBCol>
             <MDBCol md="2" className="text-center mt-2 mb-4">
               <label htmlFor="requesterId" className="narrow-input">
@@ -80,11 +113,14 @@ const CreateService = ({ onClose }) => {
                 value={data.description}
                 onChange={handleInputChange}
               />
+              {fieldErrors.description && (
+                <div style={{ color: 'red' }}>{fieldErrors.description}</div>
+              )}
             </MDBCol>
-            
+
             <MDBCol md="2" className="text-center mt-2">
               <label htmlFor="title" className="narrow-input">
-                <span style={{ color: "red" }}>*</span>amount
+                <span style={{ color: "red" }}>*</span>Amount
               </label>
             </MDBCol>
             <MDBCol md="10">
@@ -96,6 +132,9 @@ const CreateService = ({ onClose }) => {
                 value={data.amount}
                 onChange={handleInputChange}
               />
+              {fieldErrors.amount && (
+                <div style={{ color: 'red' }}>{fieldErrors.amount}</div>
+              )}
             </MDBCol>
           </MDBRow>
           <MDBRow className="mb-4">

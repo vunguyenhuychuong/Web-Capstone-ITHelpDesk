@@ -1,12 +1,12 @@
 import React from 'react';
 import "../../assets/css/ChatBox.css"
 
-const ChatBox = () => {
+const ChatBox = ({toggleChatBox}) => {
   return (
     <div className="chat-box-container">
       <div className="chat-header">
         <h3>Chat</h3>
-        <button className="close-button">X</button>
+        <button className="close-button" onClick={toggleChatBox}>X</button>
       </div>
       <div className="chat-messages">
         {/* Chat messages go here */}

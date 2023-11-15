@@ -20,13 +20,28 @@ const ModeApi = {
     },
 };
 
-export async function getDataMode() {
+export async function getDataMode(
+    searchField,
+    searchQuery,
+    page = 1,
+    pageSize = 5,
+    sortBy = "id",
+    sortDirection = "asc"
+) {
     const header = getAuthHeader();
     try{
-        const res = await axios.get(`${baseURL}/mode/all`,{
+        let filter = `${searchField}.contains("${searchQuery}")`;
+        const params = {
+            filter: filter,
+            page: page,
+            pageSize: pageSize,
+            sort: `${sortBy} ${sortDirection}`,
+        }
+        const res = await axios.get(`${baseURL}/mode`,{
             headers: {
                 Authorization: header,
             },
+            params: params,
         })
         return res.data.result;
     }catch(error){
@@ -38,12 +53,13 @@ export async function getDataMode() {
 export async function createMode(data){
     const header = getAuthHeader();
     try{
-        const result = await axios.post(`${baseURL}/mode`,data,{
+        const res = await axios.post(`${baseURL}/mode`,data,{
             headers: {
                 Authorization: header,
             },
         });
-        return result.data;
+        console.log(res.data.result);
+        return res.data;
     }catch(error){
         console.log(error);
     }

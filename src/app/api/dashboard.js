@@ -5,7 +5,7 @@ import { baseURL } from "./link";
 export async function getSummaryTechnician() {
   const header = getAuthHeader();
   try {
-    const res = await axios.get(`${baseURL}/dashboard/ticket/technician`, {
+    const res = await axios.get(`${baseURL}/dashboard/technician/ticket`, {
       headers: {
         Authorization: header,
       }
@@ -19,7 +19,7 @@ export async function getSummaryTechnician() {
 export async function getSummaryCustomer() {
   const header = getAuthHeader();
   try{
-    const res = await axios.get(`${baseURL}/dashboard/ticket/customer`, {
+    const res = await axios.get(`${baseURL}/dashboard/customer/ticket`, {
       headers: {
         Authorization: header,
       }

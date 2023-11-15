@@ -148,7 +148,17 @@ const Navbar = ({ notifications }) => {
     } else if (setting === "Profile") {
       navigate("/home/profile");
     } else if (setting === "Dashboard") {
-      navigate("/home/listTicket");
+      const role = user.user.role;
+      console.log("User Role:", role); 
+      if(role === 2) {
+        navigate("/home/homeManager");
+      }else if(role === 3) {
+        navigate("/home/homeTechnician");
+      }else if(role === 0) {
+        navigate("/home/homeAdmin");
+      }else if(role === 1) {
+        navigate("/home/mains");
+      }
     }
     setAnchorElUser(null);
   };
@@ -317,7 +327,7 @@ const Navbar = ({ notifications }) => {
           </div>
         </div>
       </div>
-      {chatBoxVisible && <ChatBox />}
+      {chatBoxVisible && <ChatBox toggleChatBox={toggleChatBox} />}
     </Wrapper>
   );
 };

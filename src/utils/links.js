@@ -1,7 +1,7 @@
 import { FaAd, FaLightbulb, FaTicketAlt } from "react-icons/fa";
 import { ImProfile } from "react-icons/im";
 import {
-  Build,
+  Business,
   Category,
   DesignServices,
   Details,
@@ -11,6 +11,7 @@ import {
   IosShare,
   Menu,
   ModeComment,
+  ReceiptLong,
 } from "@mui/icons-material";
 
 const links = [
@@ -53,7 +54,7 @@ const links = [
     id: 16,
     text: "Company",
     path: "companyList",
-    icon: <Build />
+    icon: <Business />
   },
   {
     id: 10,
@@ -78,7 +79,13 @@ const links = [
     text: "Home Admin",
     path: "homeAdmin",
     icon: <Home />
-  }
+  },
+  {
+    id: 21,
+    text: "Contract",
+    path: "contractList",
+    icon: <ReceiptLong />
+  },
 ];
 
 export default links;

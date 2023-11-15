@@ -81,6 +81,13 @@ function Login() {
               hideProgressBar: false,
             });
             break;
+          case 4:
+            navigate("/home/profile");
+            toast.success(`Welcome Accountant: ${lastName} ${firstName}`, {
+              autoClose: 1000,
+              hideProgressBar: false,
+            });
+            break;
           default:
             navigate("/login");
             toast.error("Login Fail", {
@@ -158,10 +165,9 @@ function Login() {
                   src={logoAvatar}
                   alt="Logo"
                   style={{
-                    maxWidth: "100%",
                     height: "auto",
                     maxWidth: "200px",
-                  }} // Adjust the maxWidth as per your requirement
+                  }}
                 />{" "}
               </Typography>
               <Typography

@@ -8,36 +8,53 @@ import {
   MDBTableBody,
   MDBTableHead,
 } from "mdb-react-ui-kit";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { ContentCopy, Delete, DeleteForeverSharp, Edit } from "@mui/icons-material";
 import { useEffect } from "react";
-import ModeApi, { deleteDataMode, deleteMode } from "../../../app/api/mode";
-import { FaPlus } from "react-icons/fa";
-import { Dialog } from "@mui/material";
+import { deleteDataMode, deleteMode, getDataMode } from "../../../app/api/mode";
+import { FaPlus, FaSearch } from "react-icons/fa";
+import { Dialog, FormControl, MenuItem, Pagination, Select } from "@mui/material";
 import CreateMode from "./CreateMode";
 import EditMode from "./EditMode";
 import { toast } from "react-toastify";
 import { formatDate } from "../../helpers/FormatDate";
+import PageSizeSelector from "../Pagination/Pagination";
+import { Box } from "@mui/system";
+
 const ModeList = () => {
   const [dataModes, setDataModes] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectMode, setSelectMode] = useState(null);
   const [dialogEdit, setDialogEdit] = useState(false);
   const [selectedModes, setSelectedModes] = useState([]);
-
-   const fetchAllMode = async () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [loading, setLoading] = useState(true);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchField, setSearchField] = useState("name");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortDirection, setSortDirection] = useState("asc");
+  const [sortBy, setSortBy] = useState("id");
+   const fetchAllMode =  useCallback(async () => {
     try {
-      const mode = await ModeApi.getMode();
-      console.log(mode);
+      let filter = "";
+      if (searchQuery) {
+        filter = `title="${encodeURIComponent(searchQuery)}"`;
+      }
+      setLoading(true);
+      const mode = await getDataMode(
+        searchField,
+        searchQuery,
+        currentPage,
+        pageSize,
+        sortBy,
+        sortDirection
+      );
       setDataModes(mode);
     } catch (error) {
       console.error(error);
     }
-  };
-
-  const handleSubmitModeSuccess = () => {
-    fetchAllMode(); // Refresh data after successful form submission
-  };
+  }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection]);
 
   const handleSelectMode = (modeId) => {
     if (selectedModes.includes(modeId)) {
@@ -54,6 +71,10 @@ const ModeList = () => {
     } else {
       setSelectedModes(dataModes.map((mode) => mode.id));
     }
+  };
+
+  const handleChangePage = (event, value) => {
+    setCurrentPage(value);
   };
 
   const handleDeleteSelectedModes = async (id) => {
@@ -113,6 +134,12 @@ const ModeList = () => {
     }
   };
 
+  const handleChangePageSize = (event) => {
+    const newSize = parseInt(event.target.value);
+    setPageSize(newSize);
+    setCurrentPage(1);
+  };
+
   const handleEditClick = async (modeId) => {
     setSelectMode(modeId);
     setDialogEdit(true);
@@ -130,14 +157,14 @@ const ModeList = () => {
     setDialogOpen(true);
   };
 
-  const handleCloseMode = (e) => {
-    e.preventDefault();
+  const handleCloseMode = () => {
     setDialogOpen(false);
   };
 
   useEffect(() => {
     fetchAllMode();
-  }, []);
+    setTotalPages(4);
+  }, [fetchAllMode]);
 
   return (
     <section style={{ backgroundColor: "#FFF" }}>
@@ -164,6 +191,48 @@ const ModeList = () => {
               >
                 <Delete onClick={handleDeleteSelectedModes} /> Delete
               </MDBBtn>
+              <FormControl
+                variant="outlined"
+                style={{
+                  minWidth: 120,
+                  marginRight: 10,
+                  marginTop: 10,
+                  marginLeft: 10,
+                }}
+                size="small"
+              >
+                <Select
+                  value={searchField}
+                  onChange={(e) => setSearchField(e.target.value)}
+                  inputProps={{
+                    name: "searchField",
+                    id: "search-field",
+                  }}
+                >
+                  <MenuItem value="name">name</MenuItem>
+                  <MenuItem value="description">Title</MenuItem>
+                  <MenuItem value="id">id</MenuItem>
+                </Select>
+              </FormControl>
+              <div className="input-wrapper">
+                <FaSearch id="search-icon" />
+                <input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      fetchAllMode();
+                    }
+                  }}
+                  className="input-search"
+                  placeholder="Type to search..."
+                />
+              </div>
+              <PageSizeSelector
+                pageSize={pageSize}
+                handleChangePageSize={handleChangePageSize}
+              />
             </MDBNavbarNav>
           </MDBContainer>
         </MDBNavbar>
@@ -183,6 +252,7 @@ const ModeList = () => {
               </th>
               <th style={{ fontWeight: "bold" }}>Edit</th>
               <th style={{ fontWeight: "bold" }}>Delete</th>
+              <th style={{ fontWeight: "bold" }}>ID</th>
               <th style={{ fontWeight: "bold" }}>Mode Name</th>
               <th style={{ fontWeight: "bold" }}>Description</th>
               <th style={{ fontWeight: "bold" }}>Create Time</th>
@@ -207,6 +277,7 @@ const ModeList = () => {
                   <td onClick={() => onDeleteMode(mode.id)}>
                     <DeleteForeverSharp />
                   </td>
+                  <td>{mode.id}</td>
                   <td>{mode.name}</td>
                   <td>{mode.description}</td>
                   <td>{formatDate(mode.createdAt || "-")}</td>
@@ -218,11 +289,18 @@ const ModeList = () => {
           <MDBTableBody className="bg-light"></MDBTableBody>
         </MDBTable>
       </MDBContainer>
+      <Box display="flex" justifyContent="center" mt={2}>
+        <Pagination
+          count={totalPages}
+          page={currentPage}
+          onChange={handleChangePage}
+        />
+      </Box>
       <Dialog
         open={dialogOpen}
         onClose={handleCloseMode}
       >
-        <CreateMode onClose={handleCloseMode} onSubmitSuccess={handleSubmitModeSuccess} />
+        <CreateMode onClose={handleCloseMode} />
       </Dialog>
 
       <Dialog open={dialogEdit} onClose={handleCloseEdit}>

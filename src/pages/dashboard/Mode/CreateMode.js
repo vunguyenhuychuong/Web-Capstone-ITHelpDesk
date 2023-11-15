@@ -13,8 +13,10 @@ const CreateMode = ({ onClose, onSubmitSuccess }) => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [validationErrors, setValidationErrors] = useState({});
-
+  const [fieldErrors, setFieldErrors] = useState({
+    name: "",
+    description: "",
+  });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -23,50 +25,46 @@ const CreateMode = ({ onClose, onSubmitSuccess }) => {
       [name]: value,
     }));
 
-    setValidationErrors((prevErrors) => ({
+    setFieldErrors((prevErrors) => ({
       ...prevErrors,
-      [name]: undefined,
+      [name]: "",
     }));
   };
 
-  const validateInputs = () => {
-    const errors = {};
-    if(!data.name.trim()) {
-      errors.name = "Mode Name is required";
-    }
+  const handleSubmitMode = async (e) => {
+  e.preventDefault();
 
-    if(!data.description.trim()) {
-      errors.description = "Description is required";
-    };
-
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
+  const errors = {};
+  if (!data.name) {
+    errors.name = "Mode Name is required";
   }
 
-  const handleSubmitMode = async (e) => {
-    e.preventDefault();
+  if (!data.description) {
+    errors.description = "Description is required";
+  }
 
-    if(!validateInputs()) {
-      return;
-    }
+  if (Object.keys(errors).length > 0) {
+    setFieldErrors(errors);
+    return;
+  }
 
-    setIsSubmitting(true);
-    try {
-      await createMode(data);
-      setIsSubmitting(false);
-      toast.success("Create Mode successful", {
-        autoClose: 1000,
-        hideProgressBar: false,
-      });
+  setIsSubmitting(true);
+  try {
+    console.log(data);
+    const response = await createMode(data);
+    console.log(response);
+    setIsSubmitting(false);
+    toast.success("Create Mode successful", {
+      autoClose: 1000,
+      hideProgressBar: false,
+    });
       onClose();
-      if (typeof onSubmitSuccess === "function") {
-        onSubmitSuccess();
-      }
-    } catch (error) {
-      console.log(error);
-      setIsSubmitting(false);
-    }
-  };
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <section style={{ backgroundColor: "#eee" }}>
@@ -92,6 +90,9 @@ const CreateMode = ({ onClose, onSubmitSuccess }) => {
                 value={data.name}
                 onChange={handleInputChange}
               />
+              {fieldErrors.name && (
+                <div style={{ color: 'red' }}>{fieldErrors.name}</div>
+              )}
             </MDBCol>
             <MDBCol md="2" className="text-center mt-2 mb-2">
               <label htmlFor="title" className="narrow-input">
@@ -107,6 +108,9 @@ const CreateMode = ({ onClose, onSubmitSuccess }) => {
                 value={data.description}
                 onChange={handleInputChange}
               />
+              {fieldErrors.description && (
+                <div style={{ color: 'red' }}>{fieldErrors.description}</div>
+              )}
             </MDBCol>
           </MDBRow>
           <MDBRow className="mb-4">

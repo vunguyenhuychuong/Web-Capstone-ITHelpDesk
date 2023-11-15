@@ -31,7 +31,7 @@ const CompanyList = () => {
   const [refreshData, setRefreshData] = useState(false);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
   const [searchField, setSearchField] = useState("companyName");
   const [searchQuery, setSearchQuery] = useState("");
@@ -282,10 +282,10 @@ const CompanyList = () => {
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}>Status</th>
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}>
-                  Create At
+                  Created
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}>
-                  Modify At
+                  Modified
                 </th>
               </tr>
             </MDBTableHead>
@@ -321,7 +321,17 @@ const CompanyList = () => {
                       </td>
                       <td>{company.companyName}</td>
                       <td>{company.taxCode}</td>
-                      <td>{company.website}</td>
+                      <td>
+                        {company.website && (
+                          <a
+                            href={company.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {company.website}
+                          </a>
+                        )}
+                      </td>
                       <td>{company.isActive || "-"}</td>
                       <td>{formatDate(company.createdAt || "-")}</td>
                       <td>{formatDate(company.deletedAt || "-")}</td>

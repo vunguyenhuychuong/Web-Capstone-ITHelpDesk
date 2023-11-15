@@ -7,7 +7,6 @@ import {
   SharedLayout,
 } from './pages/dashboard';
 import ForgetPassword from './pages/ForgetPassword';
-import Customer from './pages/dashboard/Customer';
 import { useSelector } from 'react-redux';
 import ManagersTabs from './pages/dashboard/Manager/ManagerTabs';
 import AccessibleTabs1 from './pages/dashboard/Customer/CustomerTabs';
@@ -41,6 +40,8 @@ import MyRequestList from './pages/dashboard/Customer/MyRequestList';
 import HomeManager from './pages/dashboard/Manager/HomeManager';
 import HomeAdmin from './pages/dashboard/Admin/HomeAdmin';
 import Customers from './pages/dashboard/Customers';
+import ContractList from './pages/dashboard/Contract/ContractList';
+import CreateContract from './pages/dashboard/Contract/CreateContract';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -92,6 +93,8 @@ function App() {
           {(hasManagerRole || hasTechnicianRole) && <Route path='listTicket' element={<ManagersTabs />} />}
           <Route path='homeManager' element={<HomeManager />} />
           <Route path='homeAdmin' element={<HomeAdmin />} />
+          <Route path='contractList' element={<ContractList />} />
+          <Route path='createContract' element={<CreateContract />} />
           </Route>
         <Route path='login' element={<Login />} />
         <Route path='forgot-password' element={<ForgetPassword /> }  />

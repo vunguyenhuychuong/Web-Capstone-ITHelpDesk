@@ -10,6 +10,7 @@ import React from "react";
 import { useState } from "react";
 import LoadingSkeleton from "../../../components/iconify/LoadingSkeleton";
 import ChartManager from "./ChartManager";
+import TicketSolutionList from "../Technician/TicketSolutionList";
 
 const HomeManager = () => {
   const [value, setValue] = useState(0);
@@ -122,10 +123,10 @@ const HomeManager = () => {
               {value === 0 ? <ChartManager /> : <LoadingSkeleton />}
             </Box>
             <Box role="tabpanel" hidden={value !== 1}>
-              {/* {value === 1 ? <ManagersTabs /> : <LoadingSkeleton />} */}
+              {/* {value === 1 ? <IndexTicekt /> : <LoadingSkeleton />} */}
             </Box>
             <Box role="tabpanel" hidden={value !== 2}>
-              {/* {value === 2 ? <TicketSolutionList /> : <LoadingSkeleton />} */}
+              {value === 2 ? <TicketSolutionList /> : <LoadingSkeleton />}
             </Box>
           </Box>
         </Grid>
