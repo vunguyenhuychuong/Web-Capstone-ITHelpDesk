@@ -78,7 +78,7 @@ function App() {
           <Route path='editSolution/:solutionId' element={<EditTicketSolution />} />
           <Route path='detailSolution/:solutionId' element={<TicketSolutionDetail />} />
           <Route path='detailTicket/:ticketId' element={<DetailTicket />} />
-          <Route path='homeTechnician' element={<HomeTechnician />} />
+          {(hasTechnicianRole) &&<Route path='homeTechnician' element={<HomeTechnician />} />}
           <Route path='ticketTask' element={<TicketTaskList />} />
           <Route path='createTask/:ticketId' element={<CreateTicketTask />} />
           <Route path='createTask' element={<CreateTicketTaskTc />} />
@@ -91,8 +91,8 @@ function App() {
           <Route path='createRequest' element={<RequestIssue />} />
           <Route path='requestCustomerList' element={<MyRequestList />} />
           {(hasManagerRole || hasTechnicianRole) && <Route path='listTicket' element={<ManagersTabs />} />}
-          <Route path='homeManager' element={<HomeManager />} />
-          <Route path='homeAdmin' element={<HomeAdmin />} />
+          {(hasManagerRole) &&<Route path='homeManager' element={<HomeManager />} />}
+          {(hasAdminRole) &&<Route path='homeAdmin' element={<HomeAdmin />} />}
           <Route path='contractList' element={<ContractList />} />
           <Route path='createContract' element={<CreateContract />} />
           </Route>

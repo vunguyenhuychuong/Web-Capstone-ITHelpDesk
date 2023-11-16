@@ -8,7 +8,6 @@ import {
   TableBody,
   Typography,
   Dialog,
-  DialogTitle,
   IconButton,
   InputLabel,
   Box,
@@ -22,41 +21,36 @@ import {
 import { toast } from "react-toastify";
 import React, { useEffect, useState } from "react";
 import {
-  AddTeam,
   DeleteDataTeam,
-  UpdateTeam,
   getAllTeam,
-  getTeamById,
 } from "../../../app/api/team";
 import {
   ArrowDropDown,
   ArrowDropUp,
-  Close,
   ContentCopy,
   Delete,
   Edit,
 } from "@mui/icons-material";
 import {
   MDBBtn,
-  MDBCol,
   MDBContainer,
-  MDBInput,
   MDBNavbar,
   MDBNavbarBrand,
   MDBNavbarNav,
-  MDBRow,
 } from "mdb-react-ui-kit";
 import { FaPlus } from "react-icons/fa";
 import { useCallback } from "react";
 import PageSizeSelector from "../Pagination/Pagination";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
-
+import CreateTeam from "./CreateTeam";
+import EditTeam from "./EditTeam";
 
 const Team = () => {
   const [open, setOpen] = React.useState(false);
   const [openAdd, setOpenAdd] = React.useState(false);
   const [teams, setTeams] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [selectTeam, setSelectTeam] = useState(null);
+  const [selectedTeams, setSelectedTeams] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -112,32 +106,6 @@ const Team = () => {
     }
   }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection]);
 
-  const onCreateTeam = async (e) => {
-    e.preventDefault();
-    try {
-      const result = await AddTeam({
-        name: data.name,
-        location: data.location,
-        description: data.description,
-        managerId: data.managerId,
-      });
-
-      if (result.isError === false) {
-        setData({
-          name: "",
-          location: "",
-          managerId: 0,
-          description: "",
-        });
-      }
-      toast.success("Team created successfully");
-      setOpenAdd(false);
-      fetchDataTeam();
-    } catch (error) {
-      toast.error("Fail to create team");
-    }
-  };
-
   const handleSortChange = (field) => {
     if (sortBy === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -147,38 +115,9 @@ const Team = () => {
     }
   };
 
-  const handleDetailTeam = async (id) => {
-    setLoading(true);
-    try {
-      const user = await getTeamById(id);
-      setData({
-        id: user.result.id,
-        name: user.result.name || "",
-        location: user.result.location || "",
-        description: user.result.description || "",
-        isActive: user.result.isActive || true,
-        managerId: user.result.managerId || 0,
-        createdAt: user.result.createdAt || "",
-        modifiedAt: user.result.modifiedAt || "",
-      });
-    } catch (error) {
-      toast.error("Can not get team id");
-      console.log(error);
-    }
-    setLoading(false);
+  const handleEditClick = async (teamId) => {
+    setSelectTeam(teamId);
     setOpen(true);
-  };
-
-  const onHandleEditTeam = async () => {
-    try {
-      const response = UpdateTeam(data.id, data);
-      toast.success("Update Team successful");
-      setOpen(false);
-      fetchDataTeam();
-    } catch (error) {
-      toast.error("Failed to update team");
-      console.log(error);
-    }
   };
 
   const onDeleteTeam = async (id) => {
@@ -199,6 +138,23 @@ const Team = () => {
       }
     }
   };
+  
+
+  const handleSelectTeam = (teamId) => {
+    if (selectedTeams.includes(teamId)) {
+      setSelectedTeams(selectedTeams.filter((id) => id !== teamId));
+    } else {
+      setSelectedTeams([...selectedTeams, teamId]);
+    }
+  };
+
+  const handleSelectAllTeams = () => {
+    if (selectedTeams.length === teams.length) {
+      setSelectedTeams([]);
+    } else {
+      setSelectedTeams(teams.map((team) => team.id));
+    }
+  };
 
   useEffect(() => {
     fetchDataTeam();
@@ -215,25 +171,21 @@ const Team = () => {
     setCurrentPage(value);
   };
 
-  const handleChange = React.useCallback((e) => {
-    const { name, value } = e.target;
-    setData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  }, []);
-
   const handleOpenAdd = (e) => {
     e.preventDefault();
-    console.log('Open Add')
     clearFormData();
     setOpenAdd(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleCloseTeam = () => {
     setOpenAdd(false);
-    fetchDataTeam();
+  };
+
+  const handleCloseEdit = (e) => {
+    if(e){
+      e.preventDefault();
+    }
+    setOpen(false);
   };
 
   return (
@@ -251,7 +203,7 @@ const Team = () => {
               <MDBBtn
                 color="#eee"
                 style={{ fontWeight: "bold", fontSize: "20px" }}
-                onClick={handleOpenAdd} 
+                onClick={handleOpenAdd}
               >
                 <FaPlus /> New
               </MDBBtn>
@@ -300,119 +252,129 @@ const Team = () => {
           </MDBContainer>
         </MDBNavbar>
         {isLoading ? (
-           <CustomizedProgressBars />
-          ) : (
-        <TableContainer component={Paper}>
-          <Table arial-label="arial-label">
-            <TableHead>
-              <TableRow>
-                <TableCell style={{ paddingLeft: "16px" }} padding="checkbox">
-                  <Checkbox />
-                </TableCell>
-                <TableCell
-                  style={{
-                    fontWeight: "bold",
-                    cursor: "pointer",
-                  }}
-                >
-                  Edit
-                </TableCell>
-                <TableCell
-                  style={{
-                    fontWeight: "bold",
-                    cursor: "pointer",
-                  }}
-                >
-                  Delete
-                </TableCell>
-                <TableCell onClick={() => handleSortChange("name")}>
-                  <Typography
-                    variant="subtitle1"
+          <CustomizedProgressBars />
+        ) : (
+          <TableContainer component={Paper}>
+            <Table arial-label="arial-label">
+              <TableHead>
+                <TableRow>
+                  <TableCell style={{ paddingLeft: "16px" }} padding="checkbox">
+                    <Checkbox
+                      checked={selectedTeams.length === teams.length}
+                      onChange={handleSelectAllTeams}
+                    />
+                  </TableCell>
+                  <TableCell
                     style={{
                       fontWeight: "bold",
                       cursor: "pointer",
                     }}
                   >
-                    Name
-                    {sortBy === "name" &&
-                      (sortDirection === "asc" ? (
-                        <ArrowDropDown />
-                      ) : (
-                        <ArrowDropUp />
-                      ))}
-                  </Typography>
-                </TableCell>
-                <TableCell onClick={() => handleSortChange("location")}>
-                  <Typography
-                    variant="subtitle1"
+                    Edit
+                  </TableCell>
+                  <TableCell
                     style={{
                       fontWeight: "bold",
                       cursor: "pointer",
                     }}
-                    align="left"
                   >
-                    District
-                    {sortBy === "location" &&
-                      (sortDirection === "asc" ? (
-                        <ArrowDropDown />
-                      ) : (
-                        <ArrowDropUp />
-                      ))}
-                  </Typography>
-                </TableCell>
-                <TableCell onClick={() => handleSortChange("description")}>
-                  <Typography
-                    variant="subtitle1"
-                    style={{ fontWeight: "bold" }}
-                    align="left"
-                  >
-                    City
-                    {sortBy === "description" &&
-                      (sortDirection === "asc" ? (
-                        <ArrowDropDown />
-                      ) : (
-                        <ArrowDropUp />
-                      ))}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography
-                    variant="subtitle1"
-                    style={{ fontWeight: "bold", color: "#007bff" }}
-                    align="left"
-                  ></Typography>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {teams.map((team) => (
-                <TableRow key={team.id}>
-                  <TableCell align="left">
-                    <Checkbox inputProps={{ "aria-label": "controlled" }} />
+                    Delete
                   </TableCell>
-                  <TableCell component="th" scope="row">
-                    <IconButton onClick={() => handleDetailTeam(team.id)}>
-                      <Edit />
-                    </IconButton>
+                  <TableCell onClick={() => handleSortChange("name")}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{
+                        fontWeight: "bold",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Name
+                      {sortBy === "name" &&
+                        (sortDirection === "asc" ? (
+                          <ArrowDropDown />
+                        ) : (
+                          <ArrowDropUp />
+                        ))}
+                    </Typography>
                   </TableCell>
-                  <TableCell component="th" scope="row">
-                    <IconButton onClick={() => onDeleteTeam(team.id)}>
-                      <Delete />
-                    </IconButton>
+                  <TableCell onClick={() => handleSortChange("location")}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{
+                        fontWeight: "bold",
+                        cursor: "pointer",
+                      }}
+                      align="left"
+                    >
+                      District
+                      {sortBy === "location" &&
+                        (sortDirection === "asc" ? (
+                          <ArrowDropDown />
+                        ) : (
+                          <ArrowDropUp />
+                        ))}
+                    </Typography>
                   </TableCell>
-                  <TableCell component="th" scope="row">
-                    {team.description}
+                  <TableCell onClick={() => handleSortChange("description")}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{ fontWeight: "bold" }}
+                      align="left"
+                    >
+                      City
+                      {sortBy === "description" &&
+                        (sortDirection === "asc" ? (
+                          <ArrowDropDown />
+                        ) : (
+                          <ArrowDropUp />
+                        ))}
+                    </Typography>
                   </TableCell>
-                  <TableCell align="left">{team.name}</TableCell>
-                  <TableCell align="left">{team.location}</TableCell>
-                  <TableCell align="left">
-                    <div style={{ display: "flex", gap: "10px" }}></div>
+                  <TableCell>
+                    <Typography
+                      variant="subtitle1"
+                      style={{ fontWeight: "bold", color: "#007bff" }}
+                      align="left"
+                    ></Typography>
                   </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {teams.map((team) => {
+                   const isSelected = selectedTeams.includes(team.id);
+                  return (
+                    <TableRow key={team.id}>
+                      <TableCell align="left">
+                        <Checkbox 
+                          inputProps={{ "aria-label": "controlled" }} 
+                          checked={isSelected}
+                          onChange={() => handleSelectTeam(team.id)}
+                          />
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        <IconButton onClick={() => handleEditClick(team.id)}>
+                          <Edit />
+                        </IconButton>
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        <IconButton onClick={() => onDeleteTeam(team.id)}>
+                          <Delete />
+                        </IconButton>
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        {team.description}
+                      </TableCell>
+                      <TableCell align="left">{team.name}</TableCell>
+                      <TableCell align="left">{team.location}</TableCell>
+                      <TableCell align="left">
+                        <div style={{ display: "flex", gap: "10px" }}></div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
         )}
       </MDBContainer>
 
@@ -423,144 +385,12 @@ const Team = () => {
           onChange={handleChangePage}
         />
       </Box>
-      <Dialog open={openAdd} fullWidth maxWidth="lg">
-        <DialogTitle className="text-center">
-          <IconButton
-            edge="end"
-            onClick={handleClose}
-            aria-label="close"
-            color="#3b71ca"
-            style={{
-              position: "absolute",
-              right: "32px",
-              top: "8px",
-              width: "36px", // Set the width and height to create a square button
-              height: "36px",
-              backgroundColor: "#2196f3", // Set the background color to blue
-              borderRadius: "4px", // Optional: Add border-radius for rounded corners
-            }}
-          >
-            <Close style={{ color: "white" }} />
-          </IconButton>
-          Create Team
-        </DialogTitle>
-        <form style={{ margin: "0px 40px" }} className="custom-dialog ">
-          <MDBRow>
-            <MDBCol>
-              <InputLabel>Name</InputLabel>
-              <MDBInput
-                id="name"
-                value={data.name}
-                onChange={handleChange}
-                name="name"
-              />
-            </MDBCol>
-            <MDBCol>
-              <InputLabel>Manger ID</InputLabel>
-              <MDBInput
-                id="managerId"
-                value={data.managerId}
-                onChange={handleChange}
-                name="managerId"
-              />
-            </MDBCol>
-            <MDBCol>
-              <InputLabel>Location</InputLabel>
-              <MDBInput
-                id="location"
-                value={data.location}
-                onChange={handleChange}
-                name="location"
-              />
-            </MDBCol>
-          </MDBRow>
-          <MDBRow>
-            <MDBCol>
-              <InputLabel>Description</InputLabel>
-              <MDBInput
-                id="description"
-                value={data.description}
-                onChange={handleChange}
-                name="description"
-                style={{ height: "80px" }}
-              />
-            </MDBCol>
-          </MDBRow>
-          <div className="text-center customer-center-btn">
-            <MDBBtn className="mb-4 mt-4" type="submit" onClick={onCreateTeam}>
-              Add
-            </MDBBtn>
-          </div>
-        </form>
+      <Dialog open={openAdd} onClose={handleCloseTeam} fullWidth maxWidth="lg">
+        <CreateTeam onClose={handleCloseTeam} onFetchDataTeam={fetchDataTeam} />
       </Dialog>
 
       <Dialog open={open} fullWidth maxWidth="lg">
-        <DialogTitle className="text-center">
-          <IconButton
-            edge="end"
-            onClick={handleClose}
-            aria-label="close"
-            color="#3b71ca"
-            style={{
-              position: "absolute",
-              right: "32px",
-              top: "8px",
-              width: "36px", // Set the width and height to create a square button
-              height: "36px",
-              backgroundColor: "#2196f3", // Set the background color to blue
-              borderRadius: "4px", // Optional: Add border-radius for rounded corners
-            }}
-          >
-            <Close style={{ color: "white" }} />
-          </IconButton>
-          Create Team
-        </DialogTitle>
-        {loading ? (
-          <div>loading...</div>
-        ) : (
-          <form style={{ margin: "0px 40px" }} className="custom-dialog ">
-            <MDBRow>
-              <MDBCol>
-                <InputLabel>Name</InputLabel>
-                <MDBInput
-                  id="name"
-                  name="name"
-                  value={data.name}
-                  onChange={handleChange}
-                />
-              </MDBCol>
-              <MDBCol>
-                <InputLabel>Location</InputLabel>
-                <MDBInput
-                  id="location"
-                  name="location"
-                  value={data.location}
-                  onChange={handleChange}
-                />
-              </MDBCol>
-            </MDBRow>
-            <MDBRow>
-              <MDBCol>
-                <InputLabel>Description</InputLabel>
-                <MDBInput
-                  id="description"
-                  name="description"
-                  value={data.description}
-                  onChange={handleChange}
-                />
-              </MDBCol>
-            </MDBRow>
-            <div className="text-center customer-center-btn">
-              <MDBBtn
-                className="mb-4 mt-4"
-                type="button"
-                onClick={onHandleEditTeam}
-              >
-                <Edit />
-              </MDBBtn>
-            </div>
-          </form>
-        )}
+        <EditTeam teamId={selectTeam} onClose={handleCloseEdit} onFetchDataTeam={fetchDataTeam}/>
       </Dialog>
     </section>
   );

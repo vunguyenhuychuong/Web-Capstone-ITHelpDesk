@@ -104,7 +104,6 @@ const ModeList = () => {
           toast.error(result.reason.message); // Handle error messages here
         }
       });
-  
       const updateModes = dataModes.filter((mode) => !successfulDeletes.includes(mode.id));
       setDataModes(updateModes);
       setSelectMode([]);
