@@ -15,17 +15,21 @@ const EditService = ({ onClose, serviceId }) => {
     amount: "",
   });
 
+  const [fieldErrors, setFieldErrors] = useState({
+    type: "",
+    description: "",
+    amount: "",
+  });
+
   useEffect(() => {
     const fetchDataService = async () => {
       try {
         const result = await getServiceDetail(serviceId);
-        console.log(result);
         setData({
           description: result.description,
           type: result.type,
           amount: result.amount,
         });
-
       } catch (error) {
         console.log(error);
       }
@@ -38,11 +42,37 @@ const EditService = ({ onClose, serviceId }) => {
   const handleCancelEdit = () => {
     onClose();
   };
+  
+  
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const validateAmount = (value) => {
+    const errors = {};
+    if (!value) {
+      errors.amount = "Amount is required";
+    } else if (!/^\d+(,\d{3})*(\.\d{0,2})?$/.test(value.replace(/,/g, ""))) {
+      errors.amount =
+        "Invalid amount format. Please enter a valid numeric value.";
+    }
+    return errors;
+  };
+
   const onHandleEditService = async (e) => {
     e.preventDefault();
+
+    const errors = {
+      description: !data.description ? "Description is required" : "",
+      type: !data.type ? "Type is required" : "",
+      amount: !data.amount ? "Amount is required" : "",
+      ...validateAmount(data.amount),
+    };
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+
+    setFieldErrors({});
     setIsSubmitting(true);
     try {
       await updateService(serviceId, data);
@@ -84,8 +114,13 @@ const EditService = ({ onClose, serviceId }) => {
                   name="description"
                   className="form-control"
                   value={data.description}
-                  onChange={(e) => setData({ ...data, description: e.target.value })}
+                  onChange={(e) =>
+                    setData({ ...data, description: e.target.value })
+                  }
                 />
+                {fieldErrors.description && (
+                  <div style={{ color: "red" }}>{fieldErrors.description}</div>
+                )}
               </MDBCol>
             </MDBRow>
             <MDBRow className="mb-4">
@@ -101,10 +136,11 @@ const EditService = ({ onClose, serviceId }) => {
                   name="type"
                   className="form-control"
                   value={data.type}
-                  onChange={(e) =>
-                    setData({ ...data, type: e.target.value })
-                  }
+                  onChange={(e) => setData({ ...data, type: e.target.value })}
                 />
+                {fieldErrors.type && (
+                  <div style={{ color: "red" }}>{fieldErrors.type}</div>
+                )}
               </MDBCol>
             </MDBRow>
             <MDBRow className="mb-4">
@@ -120,10 +156,14 @@ const EditService = ({ onClose, serviceId }) => {
                   name="amount"
                   className="form-control"
                   value={data.amount}
-                  onChange={(e) =>
-                    setData({ ...data, amount: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setData({ ...data, amount: e.target.value });
+                    setFieldErrors({ ...fieldErrors, amount: "" });
+                  }}
                 />
+                {fieldErrors.amount && (
+                  <div style={{ color: "red" }}>{fieldErrors.amount}</div>
+                )}
               </MDBCol>
             </MDBRow>
           </MDBRow>
@@ -141,7 +181,7 @@ const EditService = ({ onClose, serviceId }) => {
               <MDBBtn
                 color="danger"
                 className="ms-2"
-                onClick={handleCancelEdit}
+                onClick={() => handleCancelEdit()}
               >
                 Cancel
               </MDBBtn>

@@ -12,3 +12,7 @@
 .boldText {
   font-weight: bold;
 }
+
+.pie-chart-container {
+  margin-right: 20px; /* Adjust the margin as needed */
+}

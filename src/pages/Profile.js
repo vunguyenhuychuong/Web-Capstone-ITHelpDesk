@@ -35,7 +35,11 @@ import { GetDataProfileUser, UpdateProfile } from "../../app/api";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import ChangePassword from "../ChangePassword";
-import { genderOptions, getRoleNameById, roleOptions } from "../helpers/tableComlumn";
+import {
+  genderOptions,
+  getRoleNameById,
+  roleOptions,
+} from "../helpers/tableComlumn";
 import { formatTicketDate } from "../helpers/FormatAMPM";
 import { LocalPhone, Mail } from "@mui/icons-material";
 
@@ -54,16 +58,51 @@ const Profile = () => {
     role: "",
   });
 
+  const [formData, setFormData] = useState({
+    firstName: data.firstName || "",
+    lastName: data.lastName || "",
+    username: data.username || "",
+    email: data.email || "",
+    avatarUrl: data.avatarUrl || "",
+    phoneNumber: data.phoneNumber || "",
+    dateOfBirth: data.dateOfBirth || "",
+    gender: data.gender || "",
+    team: data.team || "",
+    address: data.address || "",
+    role: data.role || "",
+  });
+
   const [open, setOpen] = React.useState(false);
   const [openAdd, setOpenAdd] = React.useState(false);
   const [openChangePassword, setChangePassword] = React.useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [date, setDate] = useState(moment());
+  const [fieldErrors, setFieldErrors] = useState({
+    firstName: "",
+    lastName: "",
+    username: "",
+    email: "",
+    phoneNumber: "",
+    gender: "",
+    emailError: "",
+  });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setData((prevInputs) => ({
+    let error = "";
+
+    if (name === "email" && !/^\S+@\S+\.\S+$/.test(value)) {
+      error = "Invalid email format";
+    }
+    setFormData((prevInputs) => ({
       ...prevInputs,
       [name]: value,
+    }));
+
+    setFieldErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: error,
+      emailError: name === "email" ? error : prevErrors.emailError,
     }));
   };
 
@@ -113,27 +152,64 @@ const Profile = () => {
   }, []);
 
   const onHandleEditProfile = async () => {
+    const errors = {};
+    if (!formData.firstName) {
+      errors.firstName = "First Name is required";
+    }
+    if (!formData.lastName) {
+      errors.lastName = "Last Name is required";
+    }
+    if (!formData.username) {
+      errors.username = "User Name is required";
+    }
+    if (!formData.email) {
+      errors.email = "Email is required";
+    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+      errors.email = "Invalid email format";
+    } else {
+      errors.email = ""; // Clear the error when the input is valid
+    }
+
+    if (!formData.phoneNumber) {
+      errors.phoneNumber = "Phone Number is required";
+    } else if (!/^\d{10}$/.test(formData.phoneNumber)) {
+      errors.phoneNumber = "Phone Number must be 10 digits";
+    }
+    if (!formData.gender) {
+      errors.gender = "Gender is required";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+
     try {
-      let avatarUrl = data.avatarUrl; // Use the current avatarUrl by default
+      let avatarUrl = data.avatarUrl;
 
       if (selectedFile) {
-        // If a new file is selected, upload it and get the download URL
         const storage = getStorage();
         const storageRef = ref(storage, "images/" + selectedFile.name);
         await uploadBytes(storageRef, selectedFile);
-        avatarUrl = await getDownloadURL(storageRef); // Update avatarUrl with the new URL
+        avatarUrl = await getDownloadURL(storageRef);
       }
 
       const formattedDateOfBirth = moment(date).format("YYYY-MM-DD");
 
-      const updatedData = {
-        ...data,
-        avatarUrl: avatarUrl, // Update the avatarUrl property with the new URL
-        dateOfBirth: formattedDateOfBirth,
-      };
+      // const updatedData = {
+      //   ...data,
+      //   avatarUrl: avatarUrl,
+      //   dateOfBirth: formattedDateOfBirth,
+      // };
 
-      setData(updatedData); // Update the local state with the new data (including the updated avatarUrl)
-      await UpdateProfile(updatedData); // Send the updated data to the API
+      setFormData((prevData) => ({
+        ...prevData,
+        avatarUrl: avatarUrl,
+        dateOfBirth: formattedDateOfBirth,
+      }));
+
+      setData(updatedData);
+      await UpdateProfile(updatedData);
       toast.success("Edit Successful");
       setOpenAdd(false);
       fetchDataProfile();
@@ -175,7 +251,10 @@ const Profile = () => {
                       fluid
                     />
                   )}
-                  <p className="text-muted mb-1" style={{ fontSize: '24px', fontWeight: 'bold' }}>
+                  <p
+                    className="text-muted mb-1"
+                    style={{ fontSize: "24px", fontWeight: "bold" }}
+                  >
                     {data && data.firstName ? data.firstName : "N/A"} {""}
                     {data && data.lastName ? data.lastName : "N/A"}
                   </p>
@@ -494,6 +573,9 @@ const Profile = () => {
                     value={data && data.firstName ? data.firstName : ""}
                     onChange={handleChange}
                   />
+                  {fieldErrors.firstName && (
+                    <div style={{ color: "red" }}>{fieldErrors.firstName}</div>
+                  )}
                   <TextField
                     name="lastName"
                     fullWidth
@@ -503,6 +585,9 @@ const Profile = () => {
                     value={data.lastName}
                     onChange={handleChange}
                   />
+                  {fieldErrors.lastName && (
+                    <div style={{ color: "red" }}>{fieldErrors.lastName}</div>
+                  )}
                   <TextField
                     name="email"
                     fullWidth
@@ -512,6 +597,11 @@ const Profile = () => {
                     value={data.email}
                     onChange={handleChange}
                   />
+                  {fieldErrors.emailError && (
+                    <div style={{ color: "red", marginTop: "5px" }}>
+                      {fieldErrors.emailError}
+                    </div>
+                  )}
                   <TextField
                     name="phoneNumber"
                     fullWidth
@@ -521,6 +611,11 @@ const Profile = () => {
                     value={data.phoneNumber}
                     onChange={handleChange}
                   />
+                  {fieldErrors.phoneNumber && (
+                    <div style={{ color: "red" }}>
+                      {fieldErrors.phoneNumber}
+                    </div>
+                  )}
                   <br />
                   <Select
                     name="gender"
@@ -537,6 +632,9 @@ const Profile = () => {
                       </MenuItem>
                     ))}
                   </Select>
+                  {fieldErrors.gender && (
+                    <div style={{ color: "red" }}>{fieldErrors.gender}</div>
+                  )}
                   <TextField
                     name="address"
                     fullWidth

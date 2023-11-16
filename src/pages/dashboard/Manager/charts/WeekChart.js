@@ -5,7 +5,7 @@ import { axisClasses } from "@mui/x-charts";
 const chartSetting = {
     yAxis: [
     ],
-    width: 620,
+    width: 700,
     height: 300,
     sx: {
       [`.${axisClasses.left} .${axisClasses.label}`]: {
@@ -31,6 +31,7 @@ export default function WeekChart(props) {
 
   return (
     <BarChart
+    style={{ margin: "20px", padding: "20px", border: "1px solid #ddd" }}
       dataset={dataset}
       xAxis={[{ scaleType: "band", dataKey: "lineName" }]}
       series={[

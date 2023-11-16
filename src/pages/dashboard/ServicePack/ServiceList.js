@@ -84,10 +84,11 @@ const ServiceList = () => {
     setDialogOpen(false);
   };
 
-  const handleCloseEdit = (e) => {
-    e.preventDefault();
+  const handleCloseEdit = () => {
     setDialogEdit(false);
   };
+
+  
 
   const onDeleteService = async (id) => {
     const shouldDelete = window.confirm(

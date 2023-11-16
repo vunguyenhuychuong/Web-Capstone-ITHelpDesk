@@ -28,7 +28,7 @@ import {
   getSummaryManager,
 } from "../../../app/api/dashboard";
 import LoadingImg from "../../../assets/images/loading.gif";
-import { BarChart, LineChart, PieChart } from "@mui/x-charts";
+import { LineChart, PieChart } from "@mui/x-charts";
 import CustomizeChart from "./charts/CustomizeChart";
 import PriorityChart from "./charts/PriorityChart";
 import ModeChart from "./charts/ModeChart";
@@ -303,9 +303,9 @@ const ChartManager = () => {
             </div>
           </div>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} >
           <Card style={{ height: "290px" }}>
-            <CardContent>
+            <CardContent style={{ marginLeft: "auto", marginRight: "20px" }}>
               {loading ? (
                 <div
                   style={{

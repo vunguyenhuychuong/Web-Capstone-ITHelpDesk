@@ -1,6 +1,6 @@
 import {
   BadgeRounded,
-  ConnectWithoutContact,
+  Diversity3,
   FolderShared,
   Inventory,
   Replay,
@@ -8,28 +8,143 @@ import {
 import {
   Card,
   CardContent,
+  FormControl,
   Grid,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
+  MenuItem,
+  Select,
   Tooltip,
 } from "@mui/material";
 import "../../../assets/css/homeManager.css";
 import React, { useEffect, useState } from "react";
 import LoadingImg from "../../../assets/images/loading.gif";
-import { BarChart, LineChart, PieChart } from "@mui/x-charts";
+import {
+  getChartActiveCount,
+  getChartRoleCount,
+  getChartTeamActiveCount,
+  getChartTeamMemberCount,
+  getChartTeamRecentCreated,
+  getChartTeamRecentUpdated,
+  getChartUserCreated,
+  getChartUserUpdated,
+} from "../../../app/api/dashboard";
+import UserRecentChart from "./charts/UserRecentChart";
+import UserUpdatedChart from "./charts/UserUpdatedChart";
+import UserActiveCount from "./charts/UserActiveCount";
+import UserRoleCount from "./charts/UserRoleCount";
+import TeamRecentChart from "./charts/TeamRecentChart";
+import TeamUpdatedChart from "./charts/TeamUpdatedChart";
+import TeamActiveCount from "./charts/TeamActiveCount";
+import TeamMemberCount from "./charts/TeamMemberCount";
 
 const ViewAdmin = () => {
   const [loading, setLoading] = useState(true);
+  const [dataUserRecentUpdated, setDataUserRecentUpdated] = useState([]);
+  const [dataUserRecentCreated, setDataUserRecentCreated] = useState([]);
+  const [dataUserActiveCount, setDataUserActiveCount] = useState([]);
+  const [dataUserRoleCount, setDataUserRoleCount] = useState([]);
+  const [dataTeamRecentCreated, setDataTeamRecentCreated] = useState([]);
+  const [dataTeamRecentUpdated, setDataTeamRecentUpdated] = useState([]);
+  const [dataTeamActiveCount, setDataTeamActiveCount] = useState([]);
+  const [dataTeamMemberCount, setDataTeamMemberCount] = useState([]);
+  const [selectedChart, setSelectedChart] = useState("1");
+  const [selectedChart2, setSelectedChart2] = useState("2");
+  const [selectedChart3, setSelectedChart3] = useState("1");
+  const [selectedChart4, setSelectedChart4] = useState("1");
+  const fetchDatListChart = async () => {
+    try {
+      setLoading(true);
+      const userCreated = await getChartUserCreated();
+      const userUpdated = await getChartUserUpdated();
+      const activeCount = await getChartActiveCount();
+      const roleCount = await getChartRoleCount();
+      const teamCreated = await getChartTeamRecentCreated();
+      const teamUpdated = await getChartTeamRecentUpdated();
+      const teamActiveCount = await getChartTeamActiveCount();
+      const teamMemberCount = await getChartTeamMemberCount();
+      setDataUserRecentCreated(userCreated);
+      setDataUserRecentUpdated(userUpdated);
+      setDataUserActiveCount(activeCount);
+      setDataUserRoleCount(roleCount);
+      setDataTeamRecentCreated(teamCreated);
+      setDataTeamRecentUpdated(teamUpdated);
+      setDataTeamActiveCount(teamActiveCount);
+      setDataTeamMemberCount(teamMemberCount);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    fetchDatListChart();
+  }, []);
 
-  const data = [
-    { id: 0, value: 10, label: "series A" },
-    { id: 1, value: 15, label: "series B" },
-    { id: 2, value: 20, label: "series C" },
-  ];
+  const renderSelectedChart = () => {
+    switch (selectedChart) {
+      case "1":
+        return <UserRecentChart dataSummary={dataUserRecentCreated} />;
+      case "2":
+        return <UserUpdatedChart dataSummary={dataUserRecentUpdated} />;
+      default:
+        return null;
+    }
+  };
+
+  const renderSelectedChart2 = () => {
+    switch (selectedChart2) {
+      case "1":
+        return <UserActiveCount dataSummary={dataUserActiveCount} />;
+      case "2":
+        return <UserRoleCount dataSummary={dataUserRoleCount} />;
+      default:
+        return null;
+    }
+  };
+
+  const renderSelectedChart3 = () => {
+    switch (selectedChart3) {
+      case "1":
+        return <TeamRecentChart dataSummary={dataTeamRecentCreated} />;
+      case "2":
+        return <TeamUpdatedChart dataSummary={dataTeamRecentUpdated} />;
+      default:
+        return null;
+    }
+  };
+
+  const renderSelectedChart4 = () => {
+    switch (selectedChart4) {
+      case "1":
+        return <TeamActiveCount dataSummary={dataTeamActiveCount} />;
+      case "2":
+        return <TeamMemberCount dataSummary={dataTeamMemberCount} />;
+      default:
+        return null;
+    }
+  };
+
+  const handleReloadClick = () => {
+    fetchDatListChart();
+  };
+
+
+
+  const handleAdminChange = (event) => {
+    setSelectedChart(event.target.value);
+  };
+
+  const handleAdminChange2 = (event) => {
+    setSelectedChart2(event.target.value);
+  };
+
+  const handleAdminChange3 = (event) => {
+    setSelectedChart3(event.target.value);
+  };
+
+  const handleAdminChange4 = (event) => {
+    setSelectedChart4(event.target.value);
+  };
 
   return (
     <Grid
@@ -52,16 +167,18 @@ const ViewAdmin = () => {
             }}
           >
             <FolderShared sx={{ margin: 1, color: "#33CC66" }} />
-            <h4
-              style={{
-                marginLeft: "8px",
-                marginTop: "4px",
-                fontWeight: "bold",
-                fontSize: "14px",
-              }}
-            >
-              Manager Users
-            </h4>
+            <FormControl sx={{ marginLeft: "8px", marginRight: "8px" }}>
+              <Select
+                labelId="technician-select-label"
+                id="technician-select"
+                value={selectedChart}
+                onChange={handleAdminChange}
+                style={{ height: "30px" }}
+              >
+                <MenuItem value="1">Users Created Recently</MenuItem>
+                <MenuItem value="2">Users Updated Recently</MenuItem>
+              </Select>
+            </FormControl>
             <div
               style={{
                 marginLeft: "auto",
@@ -74,6 +191,7 @@ const ViewAdmin = () => {
                   variant="contained"
                   color="secondary"
                   className="custom-button"
+                  onClick={handleReloadClick}
                 >
                   <Replay />
                 </button>
@@ -103,26 +221,7 @@ const ViewAdmin = () => {
                   <img src={LoadingImg} alt="Loading" />
                 </div>
               ) : (
-                <Table>
-                  <TableBody>
-                    {/* Table Header Row */}
-                    <TableRow className="hoverCell">
-                      <TableCell colSpan={3}></TableCell>
-                      <TableCell className="boldText">Close</TableCell>
-                      <TableCell className="boldText">Open</TableCell>
-                      <TableCell className="boldText">Overdue</TableCell>
-                    </TableRow>
-                    <TableRow className="hoverCell">
-                      <TableCell colSpan={3}>Unassigned</TableCell>
-                      <TableCell>1</TableCell>
-                      <TableCell>2</TableCell>
-                      <TableCell>3</TableCell>
-                    </TableRow>
-                    <TableRow className="hoverCell">
-                      <TableCell colSpan={3}>Total</TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
+                renderSelectedChart()
               )}
             </CardContent>
           </Card>
@@ -141,23 +240,42 @@ const ViewAdmin = () => {
             }}
           >
             <Inventory sx={{ margin: 1, color: "#9966FF" }} />
-            <h4
+            <FormControl sx={{ marginLeft: "8px", marginRight: "8px" }}>
+              <Select
+                labelId="technician-select-label"
+                id="technician-select"
+                value={selectedChart2}
+                onChange={handleAdminChange2}
+                style={{ height: "30px" }}
+              >
+                <MenuItem value="1">Users Active Count</MenuItem>
+                <MenuItem value="2">Users Role Count</MenuItem>
+              </Select>
+            </FormControl>
+            <div
               style={{
-                marginLeft: "8px",
-                marginTop: "4px",
-                fontWeight: "bold",
-                fontSize: "14px",
+                marginLeft: "auto",
+                display: "flex",
+                alignItems: "center",
               }}
             >
-              Manager Service
-            </h4>
-            <div style={{ marginLeft: "auto" }}>
+              <Tooltip title="Refresh" arrow>
+                <button
+                  variant="contained"
+                  color="secondary"
+                  className="custom-button"
+                  onClick={handleReloadClick}
+                >
+                  <Replay />
+                </button>
+              </Tooltip>
               <button
                 variant="contained"
                 color="secondary"
                 className="custom-button"
+                style={{ marginLeft: "8px" }}
               >
-                This Week
+                Show All
               </button>
             </div>
           </div>
@@ -166,22 +284,19 @@ const ViewAdmin = () => {
           {/* Card content goes here */}
           <Card style={{ height: "290px" }}>
             <CardContent>
-              <BarChart
-                xAxis={[
-                  {
-                    id: "barCategories",
-                    data: ["bar A", "bar B", "bar C"],
-                    scaleType: "band",
-                  },
-                ]}
-                series={[
-                  {
-                    data: [2, 5, 3],
-                  },
-                ]}
-                width={500}
-                height={300}
-              />
+              {loading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <img src={LoadingImg} alt="Loading" />
+                </div>
+              ) : (
+                renderSelectedChart2()
+              )}
             </CardContent>
           </Card>
         </Grid>
@@ -199,47 +314,64 @@ const ViewAdmin = () => {
               background: "#FFFFFF",
             }}
           >
-            <ConnectWithoutContact sx={{ margin: 1, color: "#33CC66" }} />
-            <h4
+            <Diversity3 sx={{ margin: 1, color: "#FF99CC" }} />
+            <FormControl sx={{ marginLeft: "8px", marginRight: "8px" }}>
+              <Select
+                labelId="technician-select-label"
+                id="technician-select"
+                value={selectedChart3}
+                onChange={handleAdminChange3}
+                style={{ height: "30px" }}
+              >
+                <MenuItem value="1">Team Recently Created</MenuItem>
+                <MenuItem value="2">Team Recently Updated</MenuItem>
+              </Select>
+            </FormControl>
+
+            <div
               style={{
-                marginLeft: "8px",
-                marginTop: "4px",
-                fontWeight: "bold",
-                fontSize: "14px",
+                marginLeft: "auto",
+                display: "flex",
+                alignItems: "center",
               }}
             >
-              Manager Mode
-            </h4>
-            <div style={{ marginLeft: "auto" }}>
               <Tooltip title="Refresh" arrow>
                 <button
                   variant="contained"
                   color="secondary"
                   className="custom-button"
+                  onClick={handleReloadClick}
                 >
                   <Replay />
                 </button>
               </Tooltip>
+              <button
+                variant="contained"
+                color="secondary"
+                className="custom-button"
+                style={{ marginLeft: "8px" }}
+              >
+                Show All
+              </button>
             </div>
           </div>
         </Grid>
         <Grid item xs={12}>
           <Card style={{ height: "290px", overflowY: "auto" }}>
             <CardContent>
-              <PieChart
-                series={[
-                  {
-                    data,
-                    highlightScope: { faded: "global", highlighted: "item" },
-                    faded: {
-                      innerRadius: 30,
-                      additionalRadius: -30,
-                      color: "gray",
-                    },
-                  },
-                ]}
-                height={200}
-              />
+              {loading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <img src={LoadingImg} alt="Loading" />
+                </div>
+              ) : (
+                renderSelectedChart3()
+              )}
             </CardContent>
           </Card>
         </Grid>
@@ -256,24 +388,43 @@ const ViewAdmin = () => {
               background: "#FFFFFF",
             }}
           >
-            <BadgeRounded sx={{ margin: 1, color: "#9966FF" }} />
-            <h4
+            <BadgeRounded sx={{ margin: 1, color: "#9999FF" }} />
+            <FormControl sx={{ marginLeft: "8px", marginRight: "8px" }}>
+              <Select
+                labelId="technician-select-label"
+                id="technician-select"
+                value={selectedChart4}
+                onChange={handleAdminChange4}
+                style={{ height: "30px" }}
+              >
+                <MenuItem value="1">Team Active Counts</MenuItem>
+                <MenuItem value="2">Team Member Counts</MenuItem>
+              </Select>
+            </FormControl>
+            <div
               style={{
-                marginLeft: "8px",
-                marginTop: "4px",
-                fontWeight: "bold",
-                fontSize: "14px",
+                marginLeft: "auto",
+                display: "flex",
+                alignItems: "center",
               }}
             >
-              Manager Team
-            </h4>
-            <div style={{ marginLeft: "auto" }}>
+              <Tooltip title="Refresh" arrow>
+                <button
+                  variant="contained"
+                  color="secondary"
+                  className="custom-button"
+                  onClick={handleReloadClick}
+                >
+                  <Replay />
+                </button>
+              </Tooltip>
               <button
                 variant="contained"
                 color="secondary"
                 className="custom-button"
+                style={{ marginLeft: "8px" }}
               >
-                This Week
+                Show All
               </button>
             </div>
           </div>
@@ -282,17 +433,19 @@ const ViewAdmin = () => {
           {/* Card content goes here */}
           <Card style={{ height: "290px" }}>
             <CardContent>
-              <LineChart
-                xAxis={[{ data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }]}
-                series={[
-                  {
-                    data: [2, 3, 5.5, 8.5, 1.5, 5, 1, 4, 3, 8],
-                    showMark: ({ index }) => index % 2 === 0,
-                  },
-                ]}
-                width={500}
-                height={300}
-              />
+              {loading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <img src={LoadingImg} alt="Loading" />
+                </div>
+              ) : (
+                renderSelectedChart4()
+              )}
             </CardContent>
           </Card>
         </Grid>

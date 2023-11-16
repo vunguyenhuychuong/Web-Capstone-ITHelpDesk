@@ -1,6 +1,7 @@
 import axios from "axios";
 import { getAuthHeader } from "./auth";
 import { baseURL } from "./link";
+import { RssFeed } from "@mui/icons-material";
 
 export async function getSummaryTechnician() {
   const header = getAuthHeader();
@@ -154,6 +155,132 @@ export async function getChartLastMonth() {
   }catch(error) {
     console.log(error);
   }
-}
+};
+
+export async function getChartUserCreated() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/dashboard/user/recent-created?amount=5`,{
+      headers: {
+        Authorization: header,
+      }
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};
+
+export async function getChartUserUpdated() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/dashboard/user/recent-updated?amount=5`, {
+      headers: {
+        Authorization: header,
+      }
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};
+
+export async function getChartActiveCount() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/dashboard/user/active-count`,{
+      headers: {
+        Authorization: header,
+      }
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};
+
+export async function getChartRoleCount() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/dashboard/user/role-count`, {
+      headers: {
+        Authorization: header,
+      }
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};
+
+export async function getChartRecentCreated() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/dashboard/user/role-count`, {
+      headers: {
+        Authorization: header,
+      }
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};
+
+export async function getChartTeamRecentCreated() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/dashboard/team/recent-created?amount=5`, {
+      headers: {
+        Authorization: header,
+      }
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};
+
+export async function getChartTeamRecentUpdated() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/dashboard/team/recent-updated?amount=5`, {
+      headers: {
+        Authorization: header,
+      }
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};
+
+export async function getChartTeamActiveCount() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/dashboard/team/active-count`, {
+      headers: {
+        Authorization: header,
+      }
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};
+
+export async function getChartTeamMemberCount() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/dashboard/team/member-count`, {
+      headers: {
+        Authorization: header,
+      }
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};
 
 
