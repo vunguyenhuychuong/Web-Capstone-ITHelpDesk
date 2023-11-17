@@ -4,7 +4,6 @@ import { Grid, TextField } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { getDataCategories } from "../../../app/api/category";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { createTicketSolution } from "../../../app/api/ticketSolution";
@@ -12,7 +11,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment from "moment";
-import { getDataUser } from "../../../app/api";
+import { createContract } from "../../../app/api/contract";
 
 const CreateContract = () => {
   const navigate = useNavigate();
@@ -27,15 +26,13 @@ const CreateContract = () => {
     accountantId: 1,
     companyId: 1,
     attachmentUrl: "",
-    serviceIds: []
+    serviceIds: [],
   });
 
-  const [dataCategories, setDataCategories] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [startDate, setStartDate] = useState(moment());
   const [endDate, setEndDate] = useState(moment());
-  const [dataUsers, setDataUsers] = useState([]);
 
   const handleReviewDateChange = (newDate) => {
     const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
@@ -55,26 +52,10 @@ const CreateContract = () => {
     }));
   };
 
-  const fetchDataSolution = async () => {
-    try {
-      const fetchCategories = await getDataCategories();
-      const fetchUsers = await getDataUser();
-      setDataCategories(fetchCategories);
-      setDataUsers(fetchUsers);
-    } catch (error) {
-      console.log("Error while fetching data", error);
-    } finally {
-    }
-  };
-
-  useEffect(() => {
-    fetchDataSolution();
-  }, []);
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "categoryId") {
+    if (name === "parentContractId" || name === "accountantId" || name === "companyId") {
       const selectedValue = parseInt(value, 10);
       setData((prevData) => ({ ...prevData, [name]: selectedValue }));
     } else {
@@ -96,10 +77,6 @@ const CreateContract = () => {
 
   const handleSubmitContract = async (e) => {
     e.preventDefault();
-    if (!data.title) {
-      toast.warning("Please fill out all fields");
-      return;
-    }
     setIsSubmitting(true);
     try {
       let attachmentUrl = data.attachmentUrl;
@@ -131,7 +108,7 @@ const CreateContract = () => {
       };
 
       setData(updatedData);
-      const response = await createTicketSolution({
+      const response = await createContract({
         name: data.name,
         description: data.description,
         value: data.value,
@@ -150,7 +127,7 @@ const CreateContract = () => {
       } else {
         toast.success("Ticket created successfully");
       }
-      toast.success("Ticket created successfully");
+      // toast.success("Ticket created successfully");
     } catch (error) {
       console.error(error);
     } finally {
@@ -257,21 +234,14 @@ const CreateContract = () => {
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
-                      <select
+                      <input
                         id="value"
+                        type="number"
                         name="value"
-                        className="form-select"
+                        className="form-control input-field"
                         value={data.value}
                         onChange={handleInputChange}
-                      >
-                        {dataCategories
-                          .filter((category) => category.id !== "")
-                          .map((category) => (
-                            <option key={category.id} value={category.id}>
-                              {category.name}
-                            </option>
-                          ))}
-                      </select>
+                      />
                     </Grid>
                   </Grid>
                 </Grid>
@@ -279,24 +249,17 @@ const CreateContract = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right">parentContractId</h2>
+                      <h2 className="align-right">Parent Contract</h2>
                     </Grid>
                     <Grid item xs={5}>
-                      <select
+                      <input
                         id="parentContractId"
+                        type="number"
                         name="parentContractId"
-                        className="form-select"
+                        className="form-control input-field"
                         value={data.parentContractId}
                         onChange={handleInputChange}
-                      >
-                        {dataUsers
-                          .filter((owner) => owner.id !== "")
-                          .map((owner) => (
-                            <option key={owner.id} value={owner.id}>
-                              {owner.lastName} {owner.firstName}
-                            </option>
-                          ))}
-                      </select>
+                      />
                     </Grid>
                   </Grid>
                 </Grid>
@@ -357,25 +320,18 @@ const CreateContract = () => {
                   <Grid container>
                     <Grid item xs={6}>
                       <h2 className="align-right">
-                        <span style={{ color: "red" }}>*</span>accountantId
+                        <span style={{ color: "red" }}>*</span>Accountant
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
-                      <select
+                      <input
                         id="accountantId"
+                        type="number"
                         name="accountantId"
-                        className="form-select"
+                        className="form-control input-field"
                         value={data.accountantId}
                         onChange={handleInputChange}
-                      >
-                        {dataCategories
-                          .filter((category) => category.id !== "")
-                          .map((category) => (
-                            <option key={category.id} value={category.id}>
-                              {category.name}
-                            </option>
-                          ))}
-                      </select>
+                      />
                     </Grid>
                   </Grid>
                 </Grid>
@@ -386,21 +342,14 @@ const CreateContract = () => {
                       <h2 className="align-right">Company </h2>
                     </Grid>
                     <Grid item xs={5}>
-                      <select
+                      <input
                         id="companyId"
+                        type="number"
                         name="companyId"
-                        className="form-select"
+                        className="form-control input-field"
                         value={data.companyId}
                         onChange={handleInputChange}
-                      >
-                        {dataUsers
-                          .filter((owner) => owner.id !== "")
-                          .map((owner) => (
-                            <option key={owner.id} value={owner.id}>
-                              {owner.lastName} {owner.firstName}
-                            </option>
-                          ))}
-                      </select>
+                      />
                     </Grid>
                   </Grid>
                 </Grid>

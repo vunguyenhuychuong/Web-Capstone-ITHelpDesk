@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route} from 'react-router-dom';
 import { Landing, Error, Login} from './pages';
 import 'react-toastify/dist/ReactToastify.css';
+import './assets/css/toast.css'
 import {
   Profile,
   SharedLayout,
@@ -42,10 +43,11 @@ import Customers from './pages/dashboard/Customers';
 import ContractList from './pages/dashboard/Contract/ContractList';
 import CreateContract from './pages/dashboard/Contract/CreateContract';
 import HomeAccountant from './pages/dashboard/Accountant/HomeAccountant';
-import { getToken } from "firebase/messaging";
-import { useEffect } from 'react';
-import { getApp, initializeApp } from 'firebase/app';
 import IndexTicket from './pages/dashboard/Manager/IndexTicket';
+import { ToastContainer } from 'react-toastify';
+import PaymentList from './pages/dashboard/Payment/PaymentList';
+import CreatePayment from './pages/dashboard/Payment/CreatePayment';
+import EditPayment from './pages/dashboard/Payment/EditPayment';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -101,12 +103,16 @@ function App() {
           <Route path='contractList' element={<ContractList />} />
           <Route path='createContract' element={<CreateContract />} />
           <Route path='homeAccountant' element={<HomeAccountant />} />
+          <Route path='paymentList' element={<PaymentList />} />
+          <Route path='createPayment' element={<CreatePayment />} />
+          <Route path='editPayment/:paymentId' element={<EditPayment />} />
           </Route>
         <Route path='login' element={<Login />} />
         <Route path='forgot-password' element={<ForgetPassword /> }  />
         <Route path='unauthorize' element={<Unauthorize />} />
         <Route path='*' element={<Error  />} />
       </Routes>
+      <ToastContainer />
     </BrowserRouter>
   );
 }

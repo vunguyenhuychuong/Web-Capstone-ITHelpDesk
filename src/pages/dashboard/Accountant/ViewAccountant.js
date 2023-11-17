@@ -66,6 +66,14 @@ const ViewAccountant = () => {
     navigate("/home/createTask");
   };
 
+  const handleOpenListContract = () => {
+    navigate("/home/contractList");
+  };
+
+  const handleOpenListPayment = () => {
+    navigate("/home/paymentList");
+  };
+
   useEffect(() => {
     // fetchDataListContract();
     fetchAccountSummary();
@@ -294,6 +302,7 @@ const ViewAccountant = () => {
                 variant="contained"
                 color="secondary"
                 className="custom-button"
+                onClick={() => handleOpenListContract()}
               >
                 Show All
               </button>
@@ -466,13 +475,14 @@ const ViewAccountant = () => {
                 fontSize: "14px",
               }}
             >
-              Announcements
+              Payment 
             </h4>
             <div style={{ marginLeft: "auto" }}>
               <button
                 variant="contained"
                 color="secondary"
                 className="custom-button"
+                onClick={() => handleOpenListPayment()}
               >
                 Show All
               </button>

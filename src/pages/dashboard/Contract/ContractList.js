@@ -13,6 +13,7 @@ import "../../../assets/css/ticketCustomer.css";
 import PageSizeSelector from "../Pagination/Pagination";
 import {
   ContentCopy,
+  DeleteForever,
   Lock,
   LockOpen,
   Square,
@@ -204,7 +205,7 @@ const ContractList = () => {
                 style={{ fontWeight: "bold", fontSize: "14px" }}
                 onClick={() => handleDeleteSelectedSolutions()}
               >
-                Delete
+               <DeleteForever /> Delete
               </MDBBtn>
 
               <FormControl

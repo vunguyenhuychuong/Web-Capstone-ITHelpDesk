@@ -1,12 +1,11 @@
 import React, {useState, useEffect} from 'react'
-import toast, { Toaster } from 'react-hot-toast';
 import { requestForToken } from './requestForToken';
 import { onMessageListener } from '../../firebase';
 
 
 const Notification = () => {
     const [notification, setNotification] = useState({title: '', body: ''});
-    const notify = () =>  toast(<ToastDisplay/>);
+    // const notify = () =>  toast(<ToastDisplay/>);
     function ToastDisplay() {
       return (
         <div>
@@ -17,9 +16,9 @@ const Notification = () => {
     };
   
     useEffect(() => {
-      if (notification?.title ){
-       notify()
-      }
+      // if (notification?.title ){
+      //  notify()
+      // }
     }, [notification])
   
     requestForToken();
@@ -30,9 +29,9 @@ const Notification = () => {
     //   })
     //   .catch((err) => console.log('failed: ', err));
   
-    return (
-       <Toaster/>
-    )
+    // return (
+    //   //  <Toaster/>
+    // )
 };
 
 export default Notification;

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import CssBaseline from "@mui/material/CssBaseline";
-import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
@@ -20,6 +19,7 @@ import { setUser, setError, clearError } from "../features/user/authSlice";
 import { LoginUser } from "../app/api";
 import LoginPage from "../assets/images/loginpage.png";
 import logoAvatar from "../assets/images/icon.png";
+import { toast } from "react-toastify";
 
 function Login() {
   const dispatch = useDispatch();
@@ -58,6 +58,7 @@ function Login() {
             toast.success(`Welcome Admin: ${lastName} ${firstName}`, {
               autoClose: 1000,
               hideProgressBar: false,
+              position: toast.POSITION.TOP_CENTER,
             });
             break;
           case 1:
@@ -65,6 +66,7 @@ function Login() {
             toast.success(`Welcome User: ${lastName} ${firstName}`, {
               autoClose: 1000,
               hideProgressBar: false,
+              position: toast.POSITION.TOP_CENTER,
             });
             break;
           case 2:
@@ -72,6 +74,7 @@ function Login() {
             toast.success(`Welcome Manager: ${lastName} ${firstName}`, {
               autoClose: 1000,
               hideProgressBar: false,
+              position: toast.POSITION.TOP_CENTER,
             });
             break;
           case 3:
@@ -79,6 +82,7 @@ function Login() {
             toast.success(`Welcome Technician: ${lastName} ${firstName}`, {
               autoClose: 1000,
               hideProgressBar: false,
+              position: toast.POSITION.TOP_CENTER,
             });
             break;
           case 4:
@@ -86,6 +90,7 @@ function Login() {
             toast.success(`Welcome Accountant: ${lastName} ${firstName}`, {
               autoClose: 1000,
               hideProgressBar: false,
+              position: toast.POSITION.TOP_CENTER,
             });
             break;
           default:
@@ -93,6 +98,7 @@ function Login() {
             toast.error("Login Fail", {
               autoClose: 1000,
               hideProgressBar: false,
+              position: toast.POSITION.TOP_CENTER,
             });
         }
       } else {

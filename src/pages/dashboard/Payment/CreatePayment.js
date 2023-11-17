@@ -4,77 +4,47 @@ import { Grid, TextField } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { getDataCategories } from "../../../app/api/category";
 import { toast } from "react-toastify";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { createTicketSolution } from "../../../app/api/ticketSolution";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment from "moment";
-import { getDataUser } from "../../../app/api";
+import { createPayment } from "../../../app/api/payment";
 
 const CreatePayment = () => {
   const navigate = useNavigate();
 
   const [data, setData] = useState({
-    name: "",
+    contractId: 1,
     description: "",
-    value: 1,
-    startDate: "",
-    endDate: "",
-    parentContractId: 1,
-    accountantId: 1,
-    companyId: 1,
-    attachmentUrl: "",
-    serviceIds: []
+    numberOfTerms: 0,
+    firstDateOfPayment: "",
+    duration: 0,
+    initialPaymentAmount: 0,
+    note: "",
   });
 
-  const [dataCategories, setDataCategories] = useState([]);
-  const [selectedFile, setSelectedFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [startDate, setStartDate] = useState(moment());
-  const [endDate, setEndDate] = useState(moment());
-  const [dataUsers, setDataUsers] = useState([]);
+  const [firstDateOfPayment, setStartDate] = useState(moment());
 
-  const handleReviewDateChange = (newDate) => {
+  const handleReviewDateOfPayment = (newDate) => {
     const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
     setStartDate(newDate);
     setData((prevInputs) => ({
       ...prevInputs,
-      startDate: formattedDate,
+      firstDateOfPayment: formattedDate,
     }));
   };
-
-  const handleExpiredDateChange = (newDate) => {
-    const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
-    setEndDate(newDate);
-    setData((prevInputs) => ({
-      ...prevInputs,
-      endDate: formattedDate,
-    }));
-  };
-
-  const fetchDataSolution = async () => {
-    try {
-      const fetchCategories = await getDataCategories();
-      const fetchUsers = await getDataUser();
-      setDataCategories(fetchCategories);
-      setDataUsers(fetchUsers);
-    } catch (error) {
-      console.log("Error while fetching data", error);
-    } finally {
-    }
-  };
-
-  useEffect(() => {
-    fetchDataSolution();
-  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "categoryId") {
+    if (
+      name === "contractId" ||
+      name === "numberOfTerms" ||
+      name === "initialPaymentAmount" ||
+      name === "duration"
+    ) {
       const selectedValue = parseInt(value, 10);
       setData((prevData) => ({ ...prevData, [name]: selectedValue }));
     } else {
@@ -82,65 +52,29 @@ const CreatePayment = () => {
     }
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
-  };
-
-  const validateDate = (startDate, endDate) => {
-    if (!startDate || !endDate) {
-      return false; // If either date is missing, return false
-    }
-    return moment(startDate).isBefore(endDate);
-  };
-
-  const handleSubmitContract = async (e) => {
+  const handleSubmitPayment = async (e) => {
     e.preventDefault();
-    if (!data.title) {
-      toast.warning("Please fill out all fields");
-      return;
-    }
+
     setIsSubmitting(true);
     try {
-      let attachmentUrl = data.attachmentUrl;
-      if (selectedFile) {
-        const storage = getStorage();
-        const storageRef = ref(storage, "images/" + selectedFile.name);
-        await uploadBytes(storageRef, selectedFile);
-        attachmentUrl = await getDownloadURL(storageRef);
-      }
-
-      const isDataValid = validateDate(data.startDate, data.endDate);
-      if (!isDataValid) {
-        toast.info("Start Date must be earlier than End Date.");
-        return;
-      }
-
-      const formattedReviewDate = moment(data.startDate).format(
-        "YYYY-MM-DDTHH:mm:ss"
-      );
-      const formattedExpiredDate = moment(data.endDate).format(
+      const formattedReviewDate = moment(data.firstDateOfPayment).format(
         "YYYY-MM-DDTHH:mm:ss"
       );
 
       const updatedData = {
         ...data,
-        attachmentUrl: attachmentUrl,
-        startDate: formattedReviewDate,
-        endDate: formattedExpiredDate,
+        firstDateOfPayment: formattedReviewDate,
       };
 
       setData(updatedData);
-      const response = await createTicketSolution({
-        name: data.name,
+      const response = await createPayment({
+        contractId: data.contractId,
         description: data.description,
-        value: data.value,
-        startDate: formattedReviewDate,
-        endDate: formattedExpiredDate,
-        parentContractId: data.parentContractId,
-        accountantId: data.accountantId,
-        companyId: data.companyId,
-        attachmentUrl: attachmentUrl,
+        numberOfTerms: data.numberOfTerms,
+        firstDateOfPayment: data.firstDateOfPayment,
+        duration: data.duration,
+        initialPaymentAmount: data.initialPaymentAmount,
+        note: data.note,
       });
       if (
         response.data.isError &&
@@ -148,9 +82,9 @@ const CreatePayment = () => {
       ) {
         console.log(response.data.responseException.exceptionMessage);
       } else {
-        toast.success("Ticket created successfully");
+        toast.success("Payment created successfully");
       }
-      toast.success("Ticket created successfully");
+      toast.success("Payment created successfully");
     } catch (error) {
       console.error(error);
     } finally {
@@ -158,15 +92,8 @@ const CreatePayment = () => {
     }
   };
 
-  const handlePublicToggle = () => {
-    setData((prevData) => ({
-      ...prevData,
-      isPublic: !prevData.isPublic,
-    }));
-  };
-
   const handleGoBack = () => {
-    navigate(`/home/contractList`);
+    navigate(`/home/paymentList`);
   };
 
   return (
@@ -190,7 +117,7 @@ const CreatePayment = () => {
                   />
                 </button>
 
-                <h2 style={{ marginLeft: "10px" }}>New Contract</h2>
+                <h2 style={{ marginLeft: "10px" }}>New Payment</h2>
               </div>
             </MDBCol>
           </MDBRow>
@@ -210,16 +137,16 @@ const CreatePayment = () => {
               {/* Set justifyContent to 'flex-end' */}
               <Grid item xs={3}>
                 <h2 className="align-right">
-                  <span style={{ color: "red" }}>*</span>Name
+                  <span style={{ color: "red" }}>*</span>contractId
                 </h2>
               </Grid>
               <Grid item xs={9}>
                 <input
-                  id="name"
-                  type="text"
-                  name="name"
+                  id="contractId"
+                  type="number"
+                  name="contractId"
                   className="form-control input-field"
-                  value={data.name}
+                  value={data.contractId}
                   onChange={handleInputChange}
                 />
               </Grid>
@@ -240,15 +167,16 @@ const CreatePayment = () => {
                 />
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">Attachment</h2>
+                <h2 className="align-right">numberOfTerms</h2>
               </Grid>
               <Grid item xs={9}>
                 <input
-                  type="file"
-                  name="file"
+                  id="numberOfTerms"
+                  type="number"
+                  name="numberOfTerms"
                   className="form-control input-field"
-                  id="attachmentUrl"
-                  onChange={handleFileChange}
+                  value={data.numberOfTerms}
+                  onChange={handleInputChange}
                 />
               </Grid>
               <Grid
@@ -260,25 +188,18 @@ const CreatePayment = () => {
                   <Grid container>
                     <Grid item xs={6}>
                       <h2 className="align-right">
-                        <span style={{ color: "red" }}>*</span>value
+                        <span style={{ color: "red" }}>*</span>duration
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
-                      <select
-                        id="value"
-                        name="value"
-                        className="form-select"
-                        value={data.value}
+                      <input
+                        id="duration"
+                        type="text"
+                        name="duration"
+                        className="form-control input-field"
+                        value={data.duration}
                         onChange={handleInputChange}
-                      >
-                        {dataCategories
-                          .filter((category) => category.id !== "")
-                          .map((category) => (
-                            <option key={category.id} value={category.id}>
-                              {category.name}
-                            </option>
-                          ))}
-                      </select>
+                      />
                     </Grid>
                   </Grid>
                 </Grid>
@@ -286,24 +207,17 @@ const CreatePayment = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right">parentContractId</h2>
+                      <h2 className="align-right">initialPaymentAmount</h2>
                     </Grid>
                     <Grid item xs={5}>
-                      <select
-                        id="parentContractId"
-                        name="parentContractId"
-                        className="form-select"
-                        value={data.parentContractId}
+                      <input
+                        id="initialPaymentAmount"
+                        type="text"
+                        name="initialPaymentAmount"
+                        className="form-control input-field"
+                        value={data.initialPaymentAmount}
                         onChange={handleInputChange}
-                      >
-                        {dataUsers
-                          .filter((owner) => owner.id !== "")
-                          .map((owner) => (
-                            <option key={owner.id} value={owner.id}>
-                              {owner.lastName} {owner.firstName}
-                            </option>
-                          ))}
-                      </select>
+                      />
                     </Grid>
                   </Grid>
                 </Grid>
@@ -312,102 +226,43 @@ const CreatePayment = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Start Date</h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <DateTimePicker
-                          slotProps={{
-                            textField: {
-                              helperText: `${startDate}`,
-                            },
-                          }}
-                          value={startDate}
-                          onChange={(newValue) =>
-                            handleReviewDateChange(newValue)
-                          }
-                          renderInput={(props) => <TextField {...props} />}
-                        />
-                      </LocalizationProvider>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2 className="align-right">End Date</h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <DateTimePicker
-                          slotProps={{
-                            textField: {
-                              helperText: `${endDate}`,
-                            },
-                          }}
-                          value={endDate}
-                          onChange={(newValue) =>
-                            handleExpiredDateChange(newValue)
-                          }
-                        />
-                      </LocalizationProvider>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid
-                container
-                justifyContent="flex-end"
-                style={{ marginBottom: "20px" }}
-              >
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
                       <h2 className="align-right">
-                        <span style={{ color: "red" }}>*</span>accountantId
+                        <span style={{ color: "red" }}>*</span>note
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
-                      <select
-                        id="accountantId"
-                        name="accountantId"
-                        className="form-select"
-                        value={data.accountantId}
+                      <input
+                        id="note"
+                        type="text"
+                        name="note"
+                        className="form-control input-field"
+                        value={data.note}
                         onChange={handleInputChange}
-                      >
-                        {dataCategories
-                          .filter((category) => category.id !== "")
-                          .map((category) => (
-                            <option key={category.id} value={category.id}>
-                              {category.name}
-                            </option>
-                          ))}
-                      </select>
+                      />
                     </Grid>
                   </Grid>
                 </Grid>
 
                 <Grid item xs={6}>
-                  <Grid container alignItems="center">
+                  <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Company </h2>
+                      <h2 className="align-right">firstDateOfPayment</h2>
                     </Grid>
                     <Grid item xs={5}>
-                      <select
-                        id="companyId"
-                        name="companyId"
-                        className="form-select"
-                        value={data.companyId}
-                        onChange={handleInputChange}
-                      >
-                        {dataUsers
-                          .filter((owner) => owner.id !== "")
-                          .map((owner) => (
-                            <option key={owner.id} value={owner.id}>
-                              {owner.lastName} {owner.firstName}
-                            </option>
-                          ))}
-                      </select>
+                      <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <DateTimePicker
+                          slotProps={{
+                            textField: {
+                              helperText: `${firstDateOfPayment}`,
+                            },
+                          }}
+                          value={firstDateOfPayment}
+                          onChange={(newValue) =>
+                            handleReviewDateOfPayment(newValue)
+                          }
+                          renderInput={(props) => <TextField {...props} />}
+                        />
+                      </LocalizationProvider>
                     </Grid>
                   </Grid>
                 </Grid>
@@ -423,7 +278,7 @@ const CreatePayment = () => {
                 <button
                   type="button"
                   className="btn btn-primary custom-btn-margin"
-                  onClick={handleSubmitContract}
+                  onClick={handleSubmitPayment}
                   disabled={isSubmitting}
                 >
                   Save

@@ -13,6 +13,7 @@ import "../../../assets/css/ticketCustomer.css";
 import PageSizeSelector from "../Pagination/Pagination";
 import {
   ContentCopy,
+  DeleteForever,
   Lock,
   LockOpen,
   Square,
@@ -28,132 +29,120 @@ import {
 } from "../../../app/api/ticketSolution";
 import { toast } from "react-toastify";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
-import { getAllContract, getAllContracts } from "../../../app/api/contract";
+import { deletePaymentById, getAllPayment } from "../../../app/api/payment";
 
-const ContractList = () => {
-  const [dataListContract, setDataListContract] = useState([]);
-  const [selectedContractIds, setSelectedContractIds] = useState([]);
+const PaymentList = () => {
+  const [dataListPayment, setDataListPayment] = useState([]);
+  const [selectedPaymentIds, setSelectedPaymentIds] = useState([]);
   const [refreshData, setRefreshData] = useState(false);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
-  const [searchField, setSearchField] = useState("");
+  const [searchField, setSearchField] = useState("description");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
   const [sortBy, setSortBy] = useState("id");
   const navigate = useNavigate();
 
-  // const fetchDataListContract = useCallback(async () => {
-  //   try {
-  //     let filter = "";
-  //     if (searchQuery) {
-  //       filter = `title="${encodeURIComponent(searchQuery)}"`;
-  //     }
-  //     setLoading(true);
-  //     const response = await getAllContract(
-  //       searchField,
-  //       searchQuery,
-  //       currentPage,
-  //       pageSize,
-  //     );
-  //     setDataListContract(response);
-  //   } catch (error) {
-  //     console.log(error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }, [currentPage, pageSize, searchField, searchQuery ]);
-
-  const fetchDataListContract = async () => {
+  const fetchDataListPayment = useCallback(async () => {
     try {
+      let filter = "";
+      if (searchQuery) {
+        filter = `title="${encodeURIComponent(searchQuery)}"`;
+      }
       setLoading(true);
-      const response = await getAllContracts();
-      setDataListContract(response);
+      const response = await getAllPayment(
+        searchField,
+        searchQuery,
+        currentPage,
+        pageSize,
+        sortBy,
+        sortDirection,
+      );
+      setDataListPayment(response);
     } catch (error) {
       console.log(error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection ]);
 
-
-
-  const handleSelectSolution = (solutionId) => {
-    if (selectedContractIds.includes(solutionId)) {
-      setSelectedContractIds(
-        selectedContractIds.filter((id) => id !== solutionId)
+  const handleSelectPayment = (paymentId) => {
+    if (selectedPaymentIds.includes(paymentId)) {
+      setSelectedPaymentIds(
+        selectedPaymentIds.filter((id) => id !== paymentId)
       );
     } else {
-      setSelectedContractIds([...selectedContractIds, solutionId]);
+      setSelectedPaymentIds([...selectedPaymentIds, paymentId]);
     }
   };
 
-  const handleSelectAllSolutions = () => {
-    if (selectedContractIds.length === dataListContract.length) {
-      setSelectedContractIds([]);
+  const handleSelectAllPayments = () => {
+    if (selectedPaymentIds.length === dataListPayment.length) {
+      setSelectedPaymentIds([]);
     } else {
-      setSelectedContractIds(
-        dataListContract.map((solution) => solution.id)
+      setSelectedPaymentIds(
+        dataListPayment.map((solution) => solution.id)
       );
     }
   };
 
-  const handleDeleteSelectedSolutions = (id) => {
+  const handleDeleteSelectedPayments = (id) => {
     try {
-      console.log("Deleting selected solutions...");
+      console.log("Deleting selected payments...");
 
-      if (selectedContractIds.length === 0) {
-        console.log("No selected solutions to delete.");
+      if (selectedPaymentIds.length === 0) {
+        console.log("No selected payments to delete.");
         return;
       }
 
       let currentIndex = 0;
 
       const deleteNextSolution = () => {
-        if (currentIndex < selectedContractIds.length) {
-          const solutionId = selectedContractIds[currentIndex];
+        if (currentIndex < selectedPaymentIds.length) {
+          const paymentId = selectedPaymentIds[currentIndex];
 
-          deleteTicketSolution(solutionId)
+          deletePaymentById(paymentId)
             .then(() => {
               console.log(
-                `Solution with ID ${solutionId} deleted successfully`
+                `Payment with ID ${paymentId} deleted successfully`
               );
               currentIndex++;
               deleteNextSolution();
             })
             .catch((error) => {
               console.error(
-                `Error deleting solution with ID ${solutionId}: `,
+                `Error deleting Payment with ID ${paymentId}: `,
                 error
               );
               toast.error(
-                `Error deleting solution with ID ${solutionId}: `,
+                `Error deleting Payment with ID ${paymentId}: `,
                 error
               );
             });
         } else {
-          setSelectedContractIds([]);
-          toast.success("Selected solutions deleted successfully");
+          setSelectedPaymentIds([]);
+          toast.success("Selected Payment deleted successfully");
           setRefreshData((prev) => !prev);
         }
       };
 
       deleteNextSolution();
     } catch (error) {
-      console.error("Failed to delete selected solutions: ", error);
+      console.error("Failed to delete selected Payments: ", error);
       toast.error(
-        "Failed to delete selected solutions, Please try again later"
+        "Failed to delete selected Payments, Please try again later"
       );
     }
   };
 
   const handleOpenCreateTicketSolution = () => {
-    navigate("/home/createContract");
+    navigate("/home/createPayment");
   };
 
-  const handleOpenDetailTicketSolution = (solutionId) => {
-    navigate(`/home/detailSolution/${solutionId}`);
+  const handleOpenDetailPayment = (paymentId) => {
+    navigate(`/home/editPayment/${paymentId}`);
   };
 
   const handleChangePage = (event, value) => {
@@ -175,14 +164,10 @@ const ContractList = () => {
     }
   };
 
-  // useEffect(() => {
-  //   fetchDataListContract();
-  //   setTotalPages(4);
-  // }, [fetchDataListContract, refreshData]);
   useEffect(() => {
-    fetchDataListContract();
+    fetchDataListPayment();
     setTotalPages(4);
-  }, []);
+  }, [fetchDataListPayment, refreshData]);
 
   return (
     <section style={{ backgroundColor: "#eee" }}>
@@ -190,7 +175,7 @@ const ContractList = () => {
         <MDBNavbar expand="lg" light bgColor="inherit">
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "16px" }}>
-              <ContentCopy style={{ marginRight: "20px" }} /> All Contracts
+              <ContentCopy style={{ marginRight: "20px" }} /> All Payments
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
@@ -203,9 +188,9 @@ const ContractList = () => {
               <MDBBtn
                 color="#eee"
                 style={{ fontWeight: "bold", fontSize: "14px" }}
-                onClick={() => handleDeleteSelectedSolutions()}
+                onClick={() => handleDeleteSelectedPayments()}
               >
-                Delete
+               <DeleteForever /> Delete
               </MDBBtn>
 
               <FormControl
@@ -226,12 +211,12 @@ const ContractList = () => {
                     id: "search-field",
                   }}
                 >
-                  <MenuItem value="id">ID</MenuItem>
-                  <MenuItem value="name">Name</MenuItem>
+                  <MenuItem value="contractId">ContractId</MenuItem>
                   <MenuItem value="description">Description</MenuItem>
-                  <MenuItem value="value">Value</MenuItem>
-                  <MenuItem value="status">Status</MenuItem>
-                  <MenuItem value="startDate">StartDate</MenuItem>
+                  <MenuItem value="numberOfTerms">NumberOfTerms</MenuItem>
+                  <MenuItem value="note">Note</MenuItem>
+                  <MenuItem value="initialPaymentAmount">Initial Payment Amount</MenuItem>
+                  <MenuItem value="firstDateOfPayment">First Date Of Payment</MenuItem>
                 </Select>
               </FormControl>
               <div className="input-wrapper">
@@ -242,7 +227,7 @@ const ContractList = () => {
                   onKeyPress={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
-                      fetchDataListContract();
+                      fetchDataListPayment();
                     }
                   }}
                   className="input-search"
@@ -265,18 +250,18 @@ const ContractList = () => {
                   <input
                     type="checkbox"
                     checked={
-                      selectedContractIds.length ===
-                      dataListContract.length
+                      selectedPaymentIds.length ===
+                      dataListPayment.length
                     }
-                    onChange={handleSelectAllSolutions}
+                    onChange={handleSelectAllPayments}
                   />
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
-                  onClick={() => handleSortChange("name")}
+                  onClick={() => handleSortChange("contractId")}
                 >
-                  Name
+                  contractId
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
@@ -286,18 +271,24 @@ const ContractList = () => {
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
-                  onClick={() => handleSortChange("value")}
+                  onClick={() => handleSortChange("numberOfTerms")}
                 >
-                  Status
+                  NumberOfTerms
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
-                  onClick={() => handleSortChange("status")}
+                  onClick={() => handleSortChange("firstDateOfPayment")}
                 >
-                  Visibility
+                  firstDateOfPayment
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}>
-                  Review Date
+                  duration
+                </th>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                  initialPaymentAmount
+                </th>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                  isFullyPaid
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}>
                   Created
@@ -311,71 +302,40 @@ const ContractList = () => {
               <CustomizedProgressBars />
             ) : (
               <MDBTableBody className="bg-light">
-                {dataListContract.map((TicketSolution, index) => {
-                  const isSelected = selectedContractIds.includes(
-                    TicketSolution.id
+                {dataListPayment.map((Payment, index) => {
+                  const isSelected = selectedPaymentIds.includes(
+                    Payment.id
                   );
                   return (
                     <tr key={index}>
-                      <td>{TicketSolution.id}</td>
+                      <td>{Payment.id}</td>
                       <td>
                         <input
                           type="checkbox"
                           checked={isSelected}
                           onChange={() =>
-                            handleSelectSolution(TicketSolution.id)
+                            handleSelectPayment(Payment.id)
                           }
                         />
                       </td>
                       <td>
                         <ViewCompact
                           onClick={() =>
-                            handleOpenDetailTicketSolution(TicketSolution.id)
+                            handleOpenDetailPayment(Payment.id)
                           }
                         />{" "}
                       </td>
-                      <td>{TicketSolution.title}</td>
-                      <td>{TicketSolution.keyword}</td>
+                      <td>{Payment.contractId}</td>
+                      <td>{Payment.description}</td>
+                      <td>{Payment.numberOfTerms}</td>
+                      <td>{Payment.firstDateOfPayment}</td>
+                      <td>{Payment.duration}</td>
+                      <td>{Payment.initialPaymentAmount}</td>
+                      <td>{Payment.isFullyPaid}</td>
                       <td>
-                        {TicketSolution.isApproved ? (
-                          <>
-                            <Square
-                              className="square-icon"
-                              style={{ color: "green" }}
-                            />
-                            <span>Approved</span>
-                          </>
-                        ) : (
-                          <>
-                            <Square className="square-icon" />
-                            <span>Not Approved</span>
-                          </>
-                        )}
+                        {formatDate(Payment.createdAt)}
                       </td>
-                      <td>
-                        {TicketSolution.isPublic ? (
-                          <>
-                            <LockOpen
-                              className="square-icon"
-                              style={{ color: "green" }}
-                            />{" "}
-                            <span>Public</span>
-                          </>
-                        ) : (
-                          <>
-                            <Lock className="square-icon" /> Private
-                          </>
-                        )}
-                      </td>
-                      <td>{formatDate(TicketSolution.reviewDate)}</td>
-                      <td>
-                        {TicketSolution.createdAt
-                          ? new Date(
-                              TicketSolution.createdAt
-                            ).toLocaleDateString()
-                          : ""}
-                      </td>
-                      <td>{formatDate(TicketSolution.modifiedAt)}</td>
+                      <td>{formatDate(Payment.modifiedAt)}</td>
                     </tr>
                   );
                 })}
@@ -395,4 +355,4 @@ const ContractList = () => {
   );
 };
 
-export default ContractList;
+export default PaymentList;

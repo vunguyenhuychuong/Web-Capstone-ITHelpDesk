@@ -81,7 +81,7 @@ const HomeAccountant = () => {
                     <ConfirmationNumber
                       sx={{ marginRight: 1, color: "#0099FF" }}
                     />{" "}
-                    List Ticket
+                    List Contract
                   </div>
                 }
                 className="custom-tab-label"
@@ -96,7 +96,7 @@ const HomeAccountant = () => {
                     }}
                   >
                     <LocalActivity sx={{ marginRight: 1, color: "#0099FF" }} />{" "}
-                    Ticket Solution
+                    List Payment
                   </div>
                 }
                 className="custom-tab-label"
