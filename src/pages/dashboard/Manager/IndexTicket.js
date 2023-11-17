@@ -44,7 +44,7 @@ const IndexTicket = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
   const [searchField, setSearchField] = useState("title");
   const [searchQuery, setSearchQuery] = useState("");

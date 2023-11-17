@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { UpdateTeam, getManagerList, getTeamById } from "../../../app/api/team";
+import { UpdateTeam, getCityList, getManagerList, getTeamById } from "../../../app/api/team";
 import { toast } from "react-toastify";
 import { MDBBtn, MDBCol, MDBContainer, MDBRow } from "mdb-react-ui-kit";
 
@@ -12,6 +12,7 @@ const EditTeam = ({ onClose, teamId, onFetchDataTeam }) => {
     isActive: true,
   });
   const [dataManagers, setDataManagers] = useState([]);
+  const [dataCity, setDataCity] = useState([]);
   const [fieldErrors, setFieldErrors] = useState({
     name: "",
     managerId: "",
@@ -41,9 +42,19 @@ const EditTeam = ({ onClose, teamId, onFetchDataTeam }) => {
       }
     };
     if (teamId) {
+      fetchDataCityList();
       fetchData();
     }
   }, [teamId]);
+
+  const fetchDataCityList = async () => {
+    try{
+      const cities = await getCityList();
+      setDataCity(cities);
+    }catch(error){
+      console.log(error);
+    }
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -146,14 +157,20 @@ const EditTeam = ({ onClose, teamId, onFetchDataTeam }) => {
                 </label>
               </MDBCol>
               <MDBCol md="10">
-                <input
+                <select
                   id="location"
-                  type="text"
                   name="location"
-                  className="form-control"
+                  className="form-select"
                   value={data.location}
                   onChange={handleInputChange}
-                />
+                  style={{ marginTop: "10px" }}
+                >
+                  {dataCity.map((city) => (
+                    <option key={city.code} value={city.name}>
+                      {city.name}
+                    </option>
+                  ))}
+                </select>
                 {fieldErrors.location && (
                   <div style={{ color: "red" }}>{fieldErrors.location}</div>
                 )}

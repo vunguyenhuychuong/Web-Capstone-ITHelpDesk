@@ -283,4 +283,32 @@ export async function getChartTeamMemberCount() {
   }
 };
 
+export async function getChartAccountantContract() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/dashboard/accountant/contract`, {
+      headers: {
+        Authorization: header,
+      }
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};
+
+export async function getChartAccountantContractStatus() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/dashboard/accountant/contract/status`, {
+      headers: {
+        Authorization: header,
+      }
+    });
+    return res.data.result;
+  }catch(error) {
+    console.log(error);
+  }
+};
+
 

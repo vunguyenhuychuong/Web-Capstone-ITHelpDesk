@@ -86,6 +86,12 @@ const links = [
     path: "contractList",
     icon: <ReceiptLong />
   },
+  {
+    id: 22,
+    text: "Home Accountant",
+    path: "homeAccountant",
+    icon: <ReceiptLong />
+  },
 ];
 
 export default links;

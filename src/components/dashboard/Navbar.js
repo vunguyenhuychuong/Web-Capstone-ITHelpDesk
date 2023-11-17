@@ -36,6 +36,7 @@ import { GetDataProfileUser } from "../../app/api";
 import { useState } from "react";
 import NotificationList from "../../pages/dashboard/Notificate/NotificationList";
 import ChatBox from "./ChatBox";
+import Notification from "../notification/Notification";
 
 export function stringToColor(string) {
   let hash = 0;
@@ -327,6 +328,7 @@ const Navbar = ({ notifications }) => {
           </div>
         </div>
       </div>
+      {/* <Notification /> */}
       {chatBoxVisible && <ChatBox toggleChatBox={toggleChatBox} />}
     </Wrapper>
   );

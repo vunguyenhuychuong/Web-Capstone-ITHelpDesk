@@ -82,7 +82,7 @@ function Login() {
             });
             break;
           case 4:
-            navigate("/home/profile");
+            navigate("/home/homeAccountant");
             toast.success(`Welcome Accountant: ${lastName} ${firstName}`, {
               autoClose: 1000,
               hideProgressBar: false,

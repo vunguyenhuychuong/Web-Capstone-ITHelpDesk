@@ -20,7 +20,7 @@ import { getAllTeams } from "../../../app/api/team";
 
 const CreateTicketTask = () => {
   const navigate = useNavigate();
-  const {ticketId} = useParams();
+  const { ticketId } = useParams();
   const [data, setData] = useState({
     ticketId: ticketId,
     title: "",
@@ -41,6 +41,10 @@ const CreateTicketTask = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [scheduledStartTime, setScheduledStartTime] = useState(moment());
   const [scheduledEndTime, setScheduledEndTime] = useState(moment());
+  const [fieldErrors, setFieldErrors] = useState({
+    title: "",
+    description: "",
+  });
 
   const handleScheduledStartTimeChange = (newDate) => {
     const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
@@ -73,7 +77,7 @@ const CreateTicketTask = () => {
   const handleTeamChange = async (event) => {
     const selectedTeamId = event.target.value;
     setSelectedTeamId(selectedTeamId);
-  
+
     try {
       const technicians = await AssignApi.getTechnician(selectedTeamId);
       console.log(technicians);
@@ -96,6 +100,11 @@ const CreateTicketTask = () => {
     } else {
       setData((prevData) => ({ ...prevData, [name]: value }));
     }
+
+    setFieldErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
   };
 
   const handleFileChange = (e) => {
@@ -112,11 +121,21 @@ const CreateTicketTask = () => {
 
   const handleSubmitTicket = async (e) => {
     e.preventDefault();
-    if (!data.title || !data.ticketId || !data.taskStatus) {
-      // Handle validation errors
-      console.log("Validation error: Please fill out all required fields.");
+
+    const errors = {};
+    if (!data.title) {
+      errors.title = "Title Ticket is required";
+    }
+
+    if (!data.description) {
+      errors.description = "Description is required";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
+
     setIsSubmitting(true);
     try {
       let attachmentUrl = data.attachmentUrl;
@@ -127,7 +146,10 @@ const CreateTicketTask = () => {
         attachmentUrl = await getDownloadURL(storageRef);
       }
 
-      const isDataValid = validateDate(data.scheduledStartTime, data.scheduledEndTime);
+      const isDataValid = validateDate(
+        data.scheduledStartTime,
+        data.scheduledEndTime
+      );
       if (!isDataValid) {
         toast.info("Review Date must be earlier than Expired Date.");
         return;
@@ -145,7 +167,7 @@ const CreateTicketTask = () => {
         attachmentUrl: attachmentUrl,
         scheduledStartTime: formattedScheduledStartTime,
         scheduledEndTime: formattedScheduledEndTime,
-        technicianId: selectedTechnicianId
+        technicianId: selectedTechnicianId,
       };
 
       setData(updatedData);
@@ -237,6 +259,9 @@ const CreateTicketTask = () => {
                         value={data.title}
                         onChange={handleInputChange}
                       />
+                      {fieldErrors.title && (
+                        <div style={{ color: "red" }}>{fieldErrors.title}</div>
+                      )}
                     </Grid>
                   </Grid>
                 </Grid>
@@ -275,6 +300,9 @@ const CreateTicketTask = () => {
                   value={data.description}
                   onChange={handleInputChange}
                 />
+                {fieldErrors.description && (
+                  <div style={{ color: "red" }}>{fieldErrors.description}</div>
+                )}
               </Grid>
               <Grid item xs={3}>
                 <h2 className="align-right">Attachment</h2>
@@ -322,8 +350,10 @@ const CreateTicketTask = () => {
                         name="technician"
                         className="form-select"
                         value={selectedTechnicianId}
-                        onChange={(e) => setSelectedTechnicianId(e.target.value)}
-                        >
+                        onChange={(e) =>
+                          setSelectedTechnicianId(e.target.value)
+                        }
+                      >
                         {dataTechnician
                           .filter((technician) => technician.id !== "")
                           .map((technician) => (
@@ -443,7 +473,7 @@ const CreateTicketTask = () => {
                         id="progress"
                         name="progress"
                         className="form-select"
-                        value={data.progress} 
+                        value={data.progress}
                         onChange={handleInputChange}
                       >
                         <option value="">Select Progress</option>{" "}

@@ -43,7 +43,6 @@ export async function getAllTeams() {
         Authorization: header,
       },
     });
-    console.log(res);
     return res.data.result;
   } catch (error) {
     console.log(error);
@@ -89,7 +88,6 @@ export async function DeleteDataTeam(id) {
         Authorization: header,
       },
     });
-    console.log(res.data);
     return res.data;
   } catch (error) {
     console.log(error);
@@ -105,7 +103,6 @@ export async function getTeamById(id) {
         Authorization: header,
       },
     });
-    console.log(res.data.result)
     return res.data.result;
   } catch (error) {
     console.log(error);
@@ -125,7 +122,17 @@ export async function UpdateTeam(id, data) {
     });
     return res.data;
   } catch (error) {
-    console.log(error);
+    if (
+      error.response &&
+      error.response.data &&
+      error.response.data.responseException
+    ) {
+      const errorMessage =
+        error.response.data.responseException.exceptionMessage;
+      toast.error(`Failed to edit team: ${errorMessage}`);
+    } else {
+      toast.error("An unexpected error occurred while adding the team.");
+    }
   }
 }
 
@@ -139,6 +146,15 @@ export async function getManagerList() {
     });
     return res.data.result;
   } catch (error) {
+    console.log(error);
+  }
+};
+
+export async function getCityList() {
+  try{
+    const res = await axios.get(`https://provinces.open-api.vn/api/?fbclid=IwAR3163YbjjVD3neOn1YZkYGdQYxz2Q0Y9_WiB__rSw8gmGsScxtvj-Z7TQE`);
+    return res.data;
+  }catch(error){
     console.log(error);
   }
 }

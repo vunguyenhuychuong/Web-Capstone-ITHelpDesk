@@ -46,6 +46,7 @@ const TicketTaskList = () => {
   const [sortBy, setSortBy] = useState("id");
   const { ticketId } = useParams();
   const navigate = useNavigate();
+  
 
   const fetchDataListTicketTask = useCallback(async () => {
     try {
@@ -69,7 +70,7 @@ const TicketTaskList = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection]);
+  }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection, ticketId]);
 
   const handleSelectSolution = (solutionId) => {
     if (selectedSolutionIds.includes(solutionId)) {

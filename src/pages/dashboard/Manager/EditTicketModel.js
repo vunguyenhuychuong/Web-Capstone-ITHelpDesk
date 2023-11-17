@@ -1,25 +1,41 @@
 import { Button, Dialog, DialogActions } from "@mui/material";
 import { MDBCol, MDBContainer, MDBRow } from "mdb-react-ui-kit";
-import React, { useEffect, useState } from "react";
-import { getAllTeams } from "../../../app/api/team";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { ImpactOptions, UrgencyOptions } from "../../helpers/tableComlumn";
 import { UpdateTicketForTechnician } from "../../../app/api/ticket";
-import { useTicket } from "./dispatch/TicketContext";
 
-const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket  }) => {
-    const [editedData, setEditedData] = useState({
+const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket }) => {
+  const [editedData, setEditedData] = useState({
     impact: data.impact,
     impactDetail: data.impactDetail || "",
     urgency: data.urgency,
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({
+    impactDetail: "",
   });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditedData({ ...editedData, [name]: value });
+
+    setFieldErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
   };
 
   const handleSaveChanges = async () => {
+    const errors = {};
+    if (!data.impactDetail) {
+      errors.impactDetail = "ImpactDetail is required";
+    }
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+    setIsSubmitting(true);
     try {
       const updatedData = {
         impact: parseInt(editedData.impact, 10),
@@ -91,6 +107,9 @@ const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket  }) => {
               value={editedData.impactDetail}
               onChange={handleInputChange}
             />
+            {fieldErrors.impactDetail && (
+              <div style={{ color: "red" }}>{fieldErrors.impactDetail}</div>
+            )}
           </MDBCol>
         </MDBRow>
         <MDBRow className="mb-4">
@@ -129,6 +148,7 @@ const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket  }) => {
           autoFocus
           style={{ color: "white", backgroundColor: "#007bff" }}
           onClick={() => handleSaveChanges()}
+          disabled={isSubmitting}
         >
           Submit
         </Button>

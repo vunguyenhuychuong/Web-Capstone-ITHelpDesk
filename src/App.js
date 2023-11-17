@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route} from 'react-router-dom';
 import { Landing, Error, Login} from './pages';
-import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
   Profile,
@@ -42,6 +41,11 @@ import HomeAdmin from './pages/dashboard/Admin/HomeAdmin';
 import Customers from './pages/dashboard/Customers';
 import ContractList from './pages/dashboard/Contract/ContractList';
 import CreateContract from './pages/dashboard/Contract/CreateContract';
+import HomeAccountant from './pages/dashboard/Accountant/HomeAccountant';
+import { getToken } from "firebase/messaging";
+import { useEffect } from 'react';
+import { getApp, initializeApp } from 'firebase/app';
+import IndexTicket from './pages/dashboard/Manager/IndexTicket';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -79,6 +83,7 @@ function App() {
           <Route path='detailSolution/:solutionId' element={<TicketSolutionDetail />} />
           <Route path='detailTicket/:ticketId' element={<DetailTicket />} />
           {(hasTechnicianRole) &&<Route path='homeTechnician' element={<HomeTechnician />} />}
+          <Route path='listTicket' element={<IndexTicket />} />
           <Route path='ticketTask' element={<TicketTaskList />} />
           <Route path='createTask/:ticketId' element={<CreateTicketTask />} />
           <Route path='createTask' element={<CreateTicketTaskTc />} />
@@ -95,13 +100,13 @@ function App() {
           {(hasAdminRole) &&<Route path='homeAdmin' element={<HomeAdmin />} />}
           <Route path='contractList' element={<ContractList />} />
           <Route path='createContract' element={<CreateContract />} />
+          <Route path='homeAccountant' element={<HomeAccountant />} />
           </Route>
         <Route path='login' element={<Login />} />
         <Route path='forgot-password' element={<ForgetPassword /> }  />
         <Route path='unauthorize' element={<Unauthorize />} />
         <Route path='*' element={<Error  />} />
       </Routes>
-      <ToastContainer position='top-center' />
     </BrowserRouter>
   );
 }

@@ -1,29 +1,21 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Grid, Switch, TextField } from "@mui/material";
+import { Grid} from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import moment from "moment";
-import AssignApi from "../../../app/api/assign";
-import Process, {
+import {
   TicketStatusOptions,
   UrgencyOptions,
   priorityOption,
 } from "../../helpers/tableComlumn";
-import { createTicketTask } from "../../../app/api/ticketTask";
-import { getAllTeams } from "../../../app/api/team";
 import { getDataCategories } from "../../../app/api/category";
 import { getDataUser } from "../../../app/api";
 import { getDataMode } from "../../../app/api/mode";
 import { getDataServices } from "../../../app/api/service";
 import {
-  createTicketByManager,
   editTicketByManager,
   getTicketByTicketId,
 } from "../../../app/api/ticket";
@@ -51,6 +43,7 @@ const EditTickets = () => {
   const [dataUser, setDataUser] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
 
   const fetchDataManager = async () => {
     try {
@@ -86,6 +79,7 @@ const EditTickets = () => {
     } else {
       setData((prevData) => ({ ...prevData, [name]: value }));
     }
+    
   };
 
   useEffect(() => {

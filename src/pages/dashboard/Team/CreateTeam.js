@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AddTeam, getManagerList } from "../../../app/api/team";
+import { AddTeam, getCityList, getManagerList } from "../../../app/api/team";
 import { MDBBtn, MDBCol, MDBContainer, MDBRow } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
 import { useEffect } from "react";
@@ -14,6 +14,7 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dataManagers, setDataManagers] = useState([]);
+  const [dataCity, setDataCity] = useState([]);
   const [fieldErrors, setFieldErrors] = useState({
     name: "",
     managerId: 1,
@@ -21,10 +22,20 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
     description: "",
   });
 
+  const fetchDataCityList = async () => {
+    try{
+      const cities = await getCityList();
+      setDataCity(cities);
+    }catch(error){
+      console.log(error);
+    }
+  }
+
   const fetchDataManagerList = async () => {
     try {
       const Managers = await getManagerList();
       setDataManagers(Managers);
+
     } catch (error) {
       console.log(error);
     }
@@ -32,6 +43,7 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
 
   useEffect(() => {
     fetchDataManagerList();
+    fetchDataCityList();
   }, []);
 
   const handleInputChange = (e) => {
@@ -143,15 +155,21 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
               </label>
             </MDBCol>
             <MDBCol md="10">
-              <input
+              <select
                 id="location"
-                type="text"
                 name="location"
-                className="form-control"
+                className="form-select"
                 value={data.location}
                 onChange={handleInputChange}
                 style={{ marginTop: '10px' }}
-              />
+              >
+                {dataCity
+                  .map((city) => (
+                    <option key={city.code} value={city.name}>
+                      {city.name}
+                    </option>
+                  ))}
+              </select>
               {fieldErrors.location && (
                 <div style={{ color: "red" }}>{fieldErrors.location}</div>
               )}

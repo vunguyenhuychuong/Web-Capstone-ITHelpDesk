@@ -8,12 +8,10 @@ import { Grid, Tab, Tabs } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
 import { useState } from "react";
-import MyView from "./MyView";
 import LoadingSkeleton from "../../../components/iconify/LoadingSkeleton";
-import TicketSolutionList from "./TicketSolutionList";
-import IndexTicket from "../Manager/IndexTicket";
+import ViewAccountant from "./ViewAccountant";
 
-const HomeTechnician = () => {
+const HomeAccountant = () => {
   const [value, setValue] = useState(0);
 
   const handleTabChange = (event, newValue) => {
@@ -80,7 +78,9 @@ const HomeTechnician = () => {
                       textTransform: "none",
                     }}
                   >
-                    <ConfirmationNumber sx={{ marginRight: 1, color: "#0099FF" }} />{" "}
+                    <ConfirmationNumber
+                      sx={{ marginRight: 1, color: "#0099FF" }}
+                    />{" "}
                     List Ticket
                   </div>
                 }
@@ -121,51 +121,51 @@ const HomeTechnician = () => {
             </Tabs>
 
             <Box role="tabpanel" hidden={value !== 0}>
-              {value === 0 ? <MyView /> : <LoadingSkeleton />}
+              {value === 0 ? <ViewAccountant /> : <LoadingSkeleton />}
             </Box>
             <Box role="tabpanel" hidden={value !== 1}>
-              {value === 1 ? <IndexTicket /> : <LoadingSkeleton />}
+              {/* {value === 1 ? <ManagersTabs /> : <LoadingSkeleton />} */}
             </Box>
             <Box role="tabpanel" hidden={value !== 2}>
-              {value === 2 ? <TicketSolutionList /> : <LoadingSkeleton />}
+              {/* {value === 2 ? <TicketSolutionList /> : <LoadingSkeleton />} */}
             </Box>
           </Box>
         </Grid>
         {/* <Grid item xs={1}>
-        <FormControl fullWidth sx={{ m: 1, minWidth: 120 }}>
-          <Select
-            labelId="demo-controlled-open-select-label"
-            id="demo-controlled-open-select"
-            open={open}
-            onClose={handleClose}
-            onOpen={handleOpen}
-            value={age}
-            label="Age"
-            onChange={handleChange}
-            startAdornment={
-              <InputAdornment position="start">
-                <IconButton>
-                  <Settings />
-                </IconButton>
-                Customize
-              </InputAdornment>
-            }
-            inputProps={{
-              style: { border: "1px solid white" }, // White fade border
-            }}
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
-          </Select>
-        </FormControl>
-      </Grid> */}
+          <FormControl fullWidth sx={{ m: 1, minWidth: 120 }}>
+            <Select
+              labelId="demo-controlled-open-select-label"
+              id="demo-controlled-open-select"
+              open={open}
+              onClose={handleClose}
+              onOpen={handleOpen}
+              value={age}
+              label="Age"
+              onChange={handleChange}
+              startAdornment={
+                <InputAdornment position="start">
+                  <IconButton>
+                    <Settings />
+                  </IconButton>
+                  Customize
+                </InputAdornment>
+              }
+              inputProps={{
+                style: { border: "1px solid white" }, // White fade border
+              }}
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={10}>Ten</MenuItem>
+              <MenuItem value={20}>Twenty</MenuItem>
+              <MenuItem value={30}>Thirty</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid> */}
       </Grid>
     </Grid>
   );
 };
 
-export default HomeTechnician;
+export default HomeAccountant;

@@ -41,6 +41,10 @@ const CreateTicketTaskTc = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [scheduledStartTime, setScheduledStartTime] = useState(moment());
   const [scheduledEndTime, setScheduledEndTime] = useState(moment());
+  const [fieldErrors, setFieldErrors] = useState({
+    title: "",
+    description: "",
+  });
 
   const handleScheduledStartTimeChange = (newDate) => {
     const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
@@ -96,6 +100,11 @@ const CreateTicketTaskTc = () => {
     } else {
       setData((prevData) => ({ ...prevData, [name]: value }));
     }
+
+    setFieldErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
   };
 
   const handleFileChange = (e) => {
@@ -112,9 +121,17 @@ const CreateTicketTaskTc = () => {
 
   const handleSubmitTicket = async (e) => {
     e.preventDefault();
-    if (!data.title || !data.ticketId || !data.taskStatus) {
-      // Handle validation errors
-      console.log("Validation error: Please fill out all required fields.");
+    const errors = {};
+    if (!data.title) {
+      errors.title = "Title Ticket is required";
+    }
+
+    if (!data.description) {
+      errors.description = "Description is required";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
     setIsSubmitting(true);
@@ -237,6 +254,9 @@ const CreateTicketTaskTc = () => {
                         value={data.title}
                         onChange={handleInputChange}
                       />
+                      {fieldErrors.title && (
+                        <div style={{ color: "red" }}>{fieldErrors.title}</div>
+                      )}
                     </Grid>
                   </Grid>
                 </Grid>
@@ -275,6 +295,9 @@ const CreateTicketTaskTc = () => {
                   value={data.description}
                   onChange={handleInputChange}
                 />
+                {fieldErrors.description && (
+                  <div style={{ color: "red" }}>{fieldErrors.description}</div>
+                )}
               </Grid>
               <Grid item xs={3}>
                 <h2 className="align-right">Attachment</h2>

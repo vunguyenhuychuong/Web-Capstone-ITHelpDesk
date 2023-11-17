@@ -1,23 +1,16 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Grid, Switch, TextField } from "@mui/material";
+import { Grid } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import moment from "moment";
-import AssignApi from "../../../app/api/assign";
-import Process, {
+import {
   TicketStatusOptions,
   UrgencyOptions,
   priorityOption,
 } from "../../helpers/tableComlumn";
-import { createTicketTask } from "../../../app/api/ticketTask";
-import { getAllTeams } from "../../../app/api/team";
 import { getDataCategories } from "../../../app/api/category";
 import { getDataUser } from "../../../app/api";
 import { getDataMode } from "../../../app/api/mode";
@@ -47,12 +40,15 @@ const CreateTickets = () => {
   const [dataUser, setDataUser] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({
+    title: "",
+    description: "",
+  });
 
   const fetchDataManager = async () => {
     try {
       const fetchCategories = await getDataCategories();
       const fetchUsers = await getDataUser();
-      console.log(fetchUsers);
       const fetchModes = await getDataMode();
       const responseService = await getDataServices();
       setDataCategories(fetchCategories);
@@ -83,6 +79,11 @@ const CreateTickets = () => {
     } else {
       setData((prevData) => ({ ...prevData, [name]: value }));
     }
+
+    setFieldErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
   };
 
   useEffect(() => {
@@ -96,10 +97,21 @@ const CreateTickets = () => {
 
   const handleSubmitTicket = async (e) => {
     e.preventDefault();
+
+    const errors = {};
     if (!data.title) {
-      toast.warning("Please fill out all fields");
+      errors.title = "Title Ticket is required";
+    }
+
+    if (!data.description) {
+      errors.description = "Description is required";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
+
     setIsSubmitting(true);
     try {
       let attachmentUrl = data.attachmentUrl;
@@ -147,10 +159,6 @@ const CreateTickets = () => {
   const handleGoBack = () => {
     navigate(`/home/listTicket`);
   };
-
-  // const handleGoBack = (ticketId) => {
-  //   navigate(`/home/detailTicket/${ticketId}`);
-  // };
 
   return (
     <Grid
@@ -234,6 +242,9 @@ const CreateTickets = () => {
                         value={data.title}
                         onChange={handleInputChange}
                       />
+                      {fieldErrors.title && (
+                        <div style={{ color: "red" }}>{fieldErrors.title}</div>
+                      )}
                     </Grid>
                   </Grid>
                 </Grid>
@@ -253,6 +264,9 @@ const CreateTickets = () => {
                   value={data.description}
                   onChange={handleInputChange}
                 />
+                {fieldErrors.description && (
+                  <div style={{ color: "red" }}>{fieldErrors.description}</div>
+                )}
               </Grid>
               <Grid item xs={3}>
                 <h2 className="align-right">Attachment</h2>
@@ -338,13 +352,13 @@ const CreateTickets = () => {
                         value={data.urgency}
                         onChange={handleInputChange}
                       >
-                        {UrgencyOptions
-                          .filter((urgency) => urgency.id !== "")
-                          .map((urgency) => (
-                            <option key={urgency.id} value={urgency.id}>
-                              {urgency.name}
-                            </option>
-                          ))}
+                        {UrgencyOptions.filter(
+                          (urgency) => urgency.id !== ""
+                        ).map((urgency) => (
+                          <option key={urgency.id} value={urgency.id}>
+                            {urgency.name}
+                          </option>
+                        ))}
                       </select>
                     </Grid>
                   </Grid>
@@ -374,7 +388,11 @@ const CreateTickets = () => {
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid container justifyContent="flex-end">
+              <Grid
+                container
+                justifyContent="flex-end"
+                style={{ marginTop: "15px" }}
+              >
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
@@ -421,19 +439,27 @@ const CreateTickets = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-
-                <Grid item xs={3}>
-                  <h2 className="align-right">Impact Detail</h2>
-                </Grid>
-                <Grid item xs={9}>
-                  <input
-                    id="impactDetail"
-                    type="text"
-                    name="impactDetail"
-                    className="form-control"
-                    value={data.impactDetail}
-                    onChange={handleInputChange}
-                  />
+              </Grid>
+              <Grid
+                container
+                justifyContent="flex-end"
+                style={{ marginTop: "15px" }}
+              >
+                <Grid container>
+                  <Grid item xs={3}>
+                    <h2 className="align-right">Impact Detail</h2>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <textarea
+                      id="impactDetail"
+                      type="text"
+                      name="impactDetail"
+                      row="4"
+                      className="form-control"
+                      value={data.impactDetail}
+                      onChange={handleInputChange}
+                    />
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>

@@ -26,22 +26,21 @@ import NoPending from "../../../assets/images/NoPending.jpg";
 import MyTask from "../../../assets/images/MyTask.jpg";
 import AlarmTechnician from "../../../assets/images/alarm.jpg";
 import Announcements from "../../../assets/images/announcements.jpg";
-import { getAssignAvailable } from "../../../app/api/assign";
 import { formatTicketDate } from "../../helpers/FormatAMPM";
 import { useNavigate } from "react-router-dom";
-import { getSummaryTechnician } from "../../../app/api/dashboard";
+import { getChartAccountantContract, getChartAccountantContractStatus, getSummaryTechnician } from "../../../app/api/dashboard";
 import LoadingImg from "../../../assets/images/loading.gif";
 
-const MyView = () => {
-  const [dataListTicketsTask, setDataListTicketsTask] = useState([]);
+const ViewAccountant = () => {
+  const [dataListContract, setDataContract] = useState([]);
   const [dataSummary, setDataSummary] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const fetchDataListTicketTask = async () => {
+  const fetchDataListContract = async () => {
     try {
       setLoading(true);
-      const response = await getAssignAvailable();
-      setDataListTicketsTask(response);
+      const response = await getChartAccountantContractStatus();
+      setDataContract(response);
     } catch (error) {
       console.log(error);
     } finally {
@@ -49,30 +48,27 @@ const MyView = () => {
     }
   };
 
-  const fetchTechnicianSummary = async () => {
+  const fetchAccountSummary = async () => {
     try {
-      const summaryTechnician = await getSummaryTechnician();
-      setDataSummary(summaryTechnician);
+      const summaryAccountant = await getChartAccountantContract();
+      setDataSummary(summaryAccountant);
     } catch (error) {
       console.log(error);
     }
   };
 
+
   const handleReloadClick = () => {
-    fetchTechnicianSummary();
+    // fetchTechnicianSummary();
   };
 
   const handleOpenCreateTicketTask = () => {
     navigate("/home/createTask");
   };
 
-  const handleOpenListTicketTask = () => {
-    navigate("/home/ticketTask");
-  };
-
   useEffect(() => {
-    fetchDataListTicketTask();
-    fetchTechnicianSummary();
+    // fetchDataListContract();
+    fetchAccountSummary();
   }, []);
 
   return (
@@ -133,19 +129,19 @@ const MyView = () => {
             >
               <MDBCardText
                 style={{ fontSize: "14px", color: "#666" }}
-                className={dataSummary.totalTicket ? "text-hover" : ""}
+                className={dataSummary.totalContractCount ? "text-hover" : ""}
               >
                 <PermDeviceInformation
                   style={{
-                    color: dataSummary.totalTicket ? "#3399FF" : "#AAAAAA",
+                    color: dataSummary.totalContractCount ? "#3399FF" : "#AAAAAA",
                   }}
                 />
-                Requests OverDue
+                Total Contract
               </MDBCardText>
             </MDBCol>
             <MDBCol sm="1" style={{ marginLeft: "5px", marginTop: "10px" }}>
               <span style={{ fontSize: "14px", fontWeight: "bold" }}>
-                {dataSummary.totalTicket}
+                {dataSummary.totalContractCount}
               </span>
             </MDBCol>
           </MDBRow>
@@ -159,19 +155,19 @@ const MyView = () => {
                   transition: "color 0.3s",
                   cursor: "pointer",
                 }}
-                className={dataSummary.totalAssignedTicket ? "text-hover" : ""}
+                className={dataSummary.contractPaymentDoneCount ? "text-hover" : ""}
               >
                 <More
                   style={{
-                    color: dataSummary.totalAssignedTicket ? "#3399FF" : "#000",
+                    color: dataSummary.contractPaymentDoneCount ? "#3399FF" : "#000",
                   }}
                 />
-                Assign Ticket
+                Contract Payment Done 
               </MDBCardText>
             </MDBCol>
             <MDBCol sm="1" style={{ marginLeft: "5px" }}>
               <span style={{ fontSize: "14px", fontWeight: "bold" }}>
-                {dataSummary.totalAssignedTicket}
+                {dataSummary.contractPaymentDoneCount}
               </span>
             </MDBCol>
           </MDBRow>
@@ -186,22 +182,22 @@ const MyView = () => {
                   cursor: "pointer",
                 }}
                 className={
-                  dataSummary.totalInProgressTicket ? "text-hover" : ""
+                  dataSummary.contractPaymentNotDoneCount ? "text-hover" : ""
                 }
               >
                 <SyncProblem
                   style={{
-                    color: dataSummary.totalInProgressTicket
+                    color: dataSummary.contractPaymentNotDoneCount
                       ? "#3399FF"
                       : "#000",
                   }}
                 />
-                Pending Ticket
+                Contract Payment Not Done 
               </MDBCardText>
             </MDBCol>
             <MDBCol sm="1" style={{ marginLeft: "5px" }}>
               <span style={{ fontSize: "14px", fontWeight: "bold" }}>
-                {dataSummary.totalInProgressTicket}
+                {dataSummary.contractPaymentNotDoneCount}
               </span>
             </MDBCol>
           </MDBRow>
@@ -215,19 +211,19 @@ const MyView = () => {
                   transition: "color 0.3s",
                   cursor: "pointer",
                 }}
-                className={dataSummary.totalResolvedTicket ? "text-hover" : ""}
+                className={dataSummary.contractTermDoneCount ? "text-hover" : ""}
               >
                 <DoDisturb
                   style={{
-                    color: dataSummary.totalResolvedTicket ? "blue" : "#AAAAAA",
+                    color: dataSummary.contractTermDoneCount ? "blue" : "#AAAAAA",
                   }}
                 />
-                Resolve Ticket
+                Contract Term Done 
               </MDBCardText>
             </MDBCol>
             <MDBCol sm="1" style={{ marginLeft: "5px" }}>
               <span style={{ fontSize: "14px", fontWeight: "bold" }}>
-                {dataSummary.totalResolvedTicket}
+                {dataSummary.contractTermDoneCount}
               </span>
             </MDBCol>
           </MDBRow>
@@ -241,21 +237,21 @@ const MyView = () => {
                   transition: "color 0.3s",
                   cursor: "pointer",
                 }}
-                className={dataSummary.totalCompletedTicket ? "text-hover" : ""}
+                className={dataSummary.contractTermNotDoneCount ? "text-hover" : ""}
               >
                 <BugReport
                   style={{
-                    color: dataSummary.totalCompletedTicket
+                    color: dataSummary.contractTermNotDoneCount
                       ? "#3399FF"
                       : "#000",
                   }}
                 />
-                Close Ticket
+               Contract Term Not Done 
               </MDBCardText>
             </MDBCol>
             <MDBCol sm="1" style={{ marginLeft: "5px" }}>
               <span style={{ fontSize: "14px", fontWeight: "bold" }}>
-                {dataSummary.totalCompletedTicket}
+                {dataSummary.contractTermNotDoneCount}
               </span>
             </MDBCol>
           </MDBRow>
@@ -298,7 +294,6 @@ const MyView = () => {
                 variant="contained"
                 color="secondary"
                 className="custom-button"
-                onClick={() => handleOpenListTicketTask()}
               >
                 Show All
               </button>
@@ -318,8 +313,8 @@ const MyView = () => {
                 >
                   <img src={LoadingImg} alt="Loading" />
                 </div>
-              ) : dataListTicketsTask && dataListTicketsTask.length > 0 ? (
-                dataListTicketsTask.map((ticket, index) => (
+              ) : dataListContract && dataListContract.length > 0 ? (
+                dataListContract.map((ticket, index) => (
                   <div
                     key={index}
                     style={{ display: "flex", flexDirection: "column" }}
@@ -590,4 +585,4 @@ const MyView = () => {
   );
 };
 
-export default MyView;
+export default ViewAccountant;
