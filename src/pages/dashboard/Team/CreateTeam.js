@@ -3,6 +3,8 @@ import { AddTeam, getCityList, getManagerList } from "../../../app/api/team";
 import { MDBBtn, MDBCol, MDBContainer, MDBRow } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
 import { useEffect } from "react";
+import MuiAlert from '@mui/material/Alert';
+import { Snackbar } from "@mui/material";
 
 const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
   const [data, setData] = useState({
@@ -15,6 +17,19 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dataManagers, setDataManagers] = useState([]);
   const [dataCity, setDataCity] = useState([]);
+  const [open, setOpen] = useState(false);
+  
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
   const [fieldErrors, setFieldErrors] = useState({
     name: "",
     managerId: 1,
@@ -88,6 +103,7 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
     try {
       await AddTeam(data);
       setIsSubmitting(false);
+      handleClick();
       onClose();
       onFetchDataTeam();
     } catch (error) {
@@ -211,6 +227,11 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
             </MDBCol>
           </MDBRow>
         </form>
+        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <MuiAlert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+          Team created successfully!
+        </MuiAlert>
+      </Snackbar>
       </MDBContainer>
     </section>
   );

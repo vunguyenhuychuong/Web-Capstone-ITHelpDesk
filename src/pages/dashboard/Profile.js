@@ -89,15 +89,15 @@ const Profile = (props) => {
     address: "",
   });
 
-  const [formData, setFormData] = useState({
-    firstName: data.firstName || "",
-    lastName: data.lastName || "",
-    email: data.email || "",
-    phoneNumber: data.phoneNumber || "",
-    gender: data.gender || "",
-    dateOfBirth: data.dateOfBirth || "",
-    address: data.address || "",
-  });
+  // const [formData, setFormData] = useState({
+  //   firstName: data.firstName || "",
+  //   lastName: data.lastName || "",
+  //   email: data.email || "",
+  //   phoneNumber: data.phoneNumber || "",
+  //   gender: data.gender || "",
+  //   dateOfBirth: data.dateOfBirth || "",
+  //   address: data.address || "",
+  // });
 
   const [open, setOpen] = React.useState(false);
   const [openAdd, setOpenAdd] = React.useState(false);

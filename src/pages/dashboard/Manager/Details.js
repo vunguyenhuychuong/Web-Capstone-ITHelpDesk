@@ -20,7 +20,6 @@ import {
 } from "../../helpers/tableComlumn";
 import { formatDate } from "../../helpers/FormatDate";
 import EditTicketModel from "./EditTicketModel";
-import { useTicket } from "./dispatch/TicketContext";
 import { UpdateTicketForTechnician } from "../../../app/api/ticket";
 
 const Details = ({ data, loading, dataCategories, dataMode }) => {
