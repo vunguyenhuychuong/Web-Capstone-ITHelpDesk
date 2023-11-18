@@ -13,10 +13,12 @@ import "../../../assets/css/detailTicket.css";
 import { ArrowBack, CreditScore } from "@mui/icons-material";
 import UploadComponent from "../../helpers/UploadComponent";
 import PropTypes from "prop-types";
+import "../../../assets/css/homeManager.css";
 import {
   getImpactById,
   getPriorityOption,
   getUrgencyById,
+  ticketStatus,
 } from "../../helpers/tableComlumn";
 import { formatDate } from "../../helpers/FormatDate";
 import EditTicketModel from "./EditTicketModel";
@@ -30,10 +32,9 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
 
   const reloadData = () => {
     try {
-      // Pass the current data to the updateTicket function to update the context state
       UpdateTicketForTechnician(data);
     } catch (error) {
-      console.error('Error while reloading data', error);
+      console.error("Error while reloading data", error);
     }
   };
 
@@ -86,7 +87,7 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
               <div
                 className="descriptionLabel"
                 style={{ cursor: "pointer", color: "blue" }}
-                onClick={reloadData} // Call the reloadData function when "Properties" section is clicked
+                onClick={reloadData}
               >
                 Properties <CreditScore /> <span>Reload</span>
               </div>{" "}
@@ -101,7 +102,7 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
           </div>
           <Table>
             <TableBody>
-              <TableRow>
+              <TableRow className="hoverCell">
                 <TableCell style={{ textAlign: "right" }}>Requester</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
                   {data.requester.lastName} {data.requester.firstName}
@@ -114,7 +115,9 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
               <TableRow>
                 <TableCell style={{ textAlign: "right" }}>Status</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {data.ticketStatus}
+                  {ticketStatus.find(
+                    (status) => status.id === data.ticketStatus
+                  )?.name || "Unknown Status"}
                 </TableCell>
                 <TableCell style={{ textAlign: "right" }}>
                   Impact Detail
@@ -150,7 +153,11 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
                 </TableCell>
                 <TableCell style={{ textAlign: "right" }}>Category</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {data.impact}
+                  {dataCategories.find(
+                    (category) => category.id === data.categoryId
+                  )?.name || "Unknown Priority"}
+
+                  {/* {data.categoryId} */}
                 </TableCell>
               </TableRow>
               <TableRow>

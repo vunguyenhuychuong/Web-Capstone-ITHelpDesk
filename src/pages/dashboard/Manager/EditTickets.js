@@ -365,7 +365,7 @@ const EditTickets = () => {
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid container justifyContent="flex-end">
+              <Grid container justifyContent="flex-end" style={{marginTop: "15px"}}>
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
@@ -413,6 +413,7 @@ const EditTickets = () => {
                   </Grid>
                 </Grid>
 
+                <Grid container justifyContent="flex-end" style={{marginTop: "15px"}}>
                 <Grid item xs={3}>
                   <h2 className="align-right">Impact Detail</h2>
                 </Grid>
@@ -426,6 +427,8 @@ const EditTickets = () => {
                     onChange={handleInputChange}
                   />
                 </Grid>
+                </Grid>
+                
               </Grid>
             </Grid>
           </MDBCol>
@@ -442,12 +445,6 @@ const EditTickets = () => {
                   disabled={isSubmitting}
                 >
                   Save
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary custom-btn-margin"
-                >
-                  Save and Approve
                 </button>
                 <button
                   type="button"

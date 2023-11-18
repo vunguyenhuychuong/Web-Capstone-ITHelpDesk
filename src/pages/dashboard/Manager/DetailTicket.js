@@ -22,7 +22,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import useTicketData from "./useTicketData";
 import AssignTicketModal from "./AssignTicketModal";
-import { Avatar, Dialog, Grid, Tab, Tabs } from "@mui/material";
+import { Avatar, Grid, Tab, Tabs } from "@mui/material";
 import {
   getGenderById,
   priorityOption,
@@ -64,21 +64,12 @@ const DetailTicket = () => {
 
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
-  const toggleSidebar = () => {
-    setIsSidebarVisible(!isSidebarVisible);
-  };
-
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
   };
 
   const handleOpenEditTicket = (ticketId) => {
-    // setEditDialogOpen(true);
     navigate(`/home/editTicket/${ticketId}`);
-  };
-
-  const handleCloseEditTicket = () => {
-    setEditDialogOpen(false);
   };
 
   const handleOpenAssignTicket = () => {
@@ -90,7 +81,7 @@ const DetailTicket = () => {
   };
 
   const handleGoBack = () => {
-    navigate(`/home/listTicket`);
+    navigate(`/home/homeTechnician`);
   };
 
 
@@ -462,8 +453,8 @@ const DetailTicket = () => {
                 <tr>
                   <th>BirthDay</th>
                   <th>
-                    {data.requester && data.requester.dateOfBirth
-                      ? data.requester.dateOfBirth
+                    {formatDate(data.requester) && formatDate(data.requester.dateOfBirth)
+                      ? formatDate(data.requester.dateOfBirth)
                       : "-"}
                   </th>
                 </tr>
@@ -487,7 +478,7 @@ const DetailTicket = () => {
         ticketId={ticketId}
       />
 
-      <button
+      {/* <button
         onClick={toggleSidebar}
         style={{
           position: "fixed",
@@ -502,7 +493,7 @@ const DetailTicket = () => {
         }}
       >
         {isSidebarVisible ? "Hide Sidebar" : "Show Sidebar"}
-      </button>
+      </button> */}
     </section>
   );
 };

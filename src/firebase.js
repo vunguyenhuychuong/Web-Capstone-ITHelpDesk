@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
-import { getMessaging } from "firebase/messaging";
+import { getMessaging, onMessage } from "firebase/messaging";
 
 
 const firebaseConfig = {
@@ -21,16 +21,11 @@ export const storage = getStorage(app);
 
 export const messaging = getMessaging(app);
 
-// messaging.onBackgroundMessage(function(payload) {
-//   console.log('Received background message ', payload);
-//  // Customize notification here
-//   const notificationTitle = payload.notification.title;
-//   const notificationOptions = {
-//     body: payload.notification.body,
-//   };
-
-//   self.registration.showNotification(notificationTitle,
-//     notificationOptions);
-// });
+export const onMessageListener = () => 
+  new Promise((resolve) => {
+    onMessage(messaging, (payload) => {
+      resolve(payload)
+    })
+  });
 
 

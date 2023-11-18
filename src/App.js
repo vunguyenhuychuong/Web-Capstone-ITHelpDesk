@@ -88,7 +88,9 @@ function App() {
           <Route path='listTicket' element={<IndexTicket />} />
           <Route path='ticketTask' element={<TicketTaskList />} />
           <Route path='createTask/:ticketId' element={<CreateTicketTask />} />
-          <Route path='createTask' element={<CreateTicketTaskTc />} />
+          <Route path='
+          
+          ' element={<CreateTicketTaskTc />} />
           <Route path='editTask/:ticketId' element={<EditTicketTask />} />
           <Route path='dashBoard' element={<ChartManager />} />
           <Route path='companyList' element={<CompanyList />} />

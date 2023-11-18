@@ -145,6 +145,15 @@ export const getImpactById = (impactId) => {
   return impact ? impact.name : 'Unknown Impact';
 }
 
+export const ticketStatus = [
+  {id:0, name: "Open"},
+  {id:1, name: "Assigned"},
+  {id:2, name: "Progress"},
+  {id:3, name: "Resolved"},
+  {id:4, name: "Closed"},
+  {id:5, name: "Cancelled"},
+]
+
 export const TicketStatusOptions = [
   {
     id: 0,

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../../../assets/css/ticket.css";
 import "../../../assets/css/ServiceTicket.css";
-import { Box, Grid, MenuItem, Select, Tab, Tabs} from "@mui/material";
+import { Box, Grid, MenuItem, Select, Tab, Tabs } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import {
   ArrowBack,
@@ -27,7 +27,7 @@ import {
 import { toast } from "react-toastify";
 import { getRoleName } from "../../helpers/tableComlumn";
 import { Button } from "flowbite-react";
-
+import { useSelector } from "react-redux";
 
 const TicketSolutionDetail = () => {
   const [value, setValue] = useState(0);
@@ -35,8 +35,11 @@ const TicketSolutionDetail = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const { solutionId } = useParams();
   const navigate = useNavigate();
-  const { loading, data, dataCategories,error, refetch } = useSolutionTicketData(solutionId);
+  const { loading, data, dataCategories, error, refetch } =
+    useSolutionTicketData(solutionId);
   const associationsRequesterCount = 42;
+  const user = useSelector((state) => state.auth);
+  const isUserRole2 = user.role === 2;
   const [fileName, setFileName] = useState("");
 
   const handleTabChange = (event, newValue) => {
@@ -53,7 +56,6 @@ const TicketSolutionDetail = () => {
     if (file) {
       setFileName(file.name);
     }
-    // Handle other actions related to the file if needed
   };
 
   const handleBackTicketSolution = () => {
@@ -118,7 +120,10 @@ const TicketSolutionDetail = () => {
             <MDBCol md="1" className="mt-2">
               <div className="d-flex align-items-center">
                 <button type="button" className="btn btn-link icon-label">
-                  <ArrowBack onClick={handleBackTicketSolution} style={{color: "#0099FF"}} />
+                  <ArrowBack
+                    onClick={handleBackTicketSolution}
+                    style={{ color: "#0099FF" }}
+                  />
                 </button>
               </div>
             </MDBCol>
@@ -132,26 +137,31 @@ const TicketSolutionDetail = () => {
                     borderRadius: "5px",
                     paddingLeft: "10px",
                     height: "45px",
-                    padding: "10px 0", 
+                    padding: "10px 0",
                     marginBottom: "10px",
                   }}
                   onClick={() => handleOpenEditTicketSolution()}
                 >
-                  <span className="action-menu-item" style={{fontSize: "16px", textTransform: "none"}} >Edit</span>
+                  <span
+                    className="action-menu-item"
+                    style={{ fontSize: "16px", textTransform: "none" }}
+                  >
+                    Edit
+                  </span>
                 </Button>
                 <Select
                   displayEmpty
                   value={selectedValue}
                   onChange={handleChange}
                   inputProps={{ "aria-label": "Without label" }}
-                  style={{                
+                  style={{
                     backgroundColor: "#f2f2f2",
                     borderRadius: "5px",
                     paddingLeft: "10px",
                     height: "45px", // Set the height of the select box
                     padding: "10px 0", // Set the top and bottom padding
                     marginBottom: "10px",
-                    zIndex: 9999
+                    zIndex: 9999,
                   }}
                 >
                   {selectedValue !== "" ? null : (
@@ -163,20 +173,24 @@ const TicketSolutionDetail = () => {
                     value={10}
                     onClick={() => handleClickChangePublic(solutionId)}
                   >
-                    Public
+                    {data.isPublic ? <>Private</> : <>Public</>}
                   </MenuItem>
-                  <MenuItem
-                    value={20}
-                    onClick={() => handleApproveTicketSolution(solutionId)}
-                  >
-                    Approve
-                  </MenuItem>
-                  <MenuItem
-                    value={30}
-                    onClick={() => handleRejectTicketSolution(solutionId)}
-                  >
-                    Reject
-                  </MenuItem>
+                  {isUserRole2 && (
+                    <MenuItem
+                      value={20}
+                      onClick={() => handleApproveTicketSolution(solutionId)}
+                    >
+                      Approve
+                    </MenuItem>
+                  )}
+                  {isUserRole2 && (
+                    <MenuItem
+                      value={30}
+                      onClick={() => handleRejectTicketSolution(solutionId)}
+                    >
+                      Reject
+                    </MenuItem>
+                  )}
                 </Select>
               </div>
             </MDBCol>
@@ -196,7 +210,12 @@ const TicketSolutionDetail = () => {
                 {data.title}
               </span>
               <span style={{ fontSize: "0.8em" }}>
-                <span>Topic: </span> <span className="bold-text">{dataCategories.find(category => category.id === data.categoryId)?.name || 'Unknown Category'}</span>
+                <span>Topic: </span>{" "}
+                <span className="bold-text">
+                  {dataCategories.find(
+                    (category) => category.id === data.categoryId
+                  )?.name || "Unknown Category"}
+                </span>
               </span>
             </div>
           </MDBCol>
@@ -234,15 +253,34 @@ const TicketSolutionDetail = () => {
               },
             }}
           >
-            <Tab label={
-            <div style={{ display: "flex", alignItems: "center",textTransform: "none" }}>
-              <Feedback sx={{ marginRight: 1 }} /> Feedback
-            </div>
-          } className="custom-tab-label" />
-            <Tab label={
-            <div style={{ display: "flex", alignItems: "center",textTransform: "none" }}>
-              <WorkHistory sx={{ marginRight: 1 }} /> History
-            </div> }  className="custom-tab-label" />
+            <Tab
+              label={
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    textTransform: "none",
+                  }}
+                >
+                  <Feedback sx={{ marginRight: 1 }} /> Feedback
+                </div>
+              }
+              className="custom-tab-label"
+            />
+            <Tab
+              label={
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    textTransform: "none",
+                  }}
+                >
+                  <WorkHistory sx={{ marginRight: 1 }} /> History
+                </div>
+              }
+              className="custom-tab-label"
+            />
           </Tabs>
           <Box role="tabpanel" hidden={value !== 0}>
             {value === 0 ? <CommentSolution /> : <LoadingSkeleton />}
@@ -279,7 +317,10 @@ const TicketSolutionDetail = () => {
               <div className="data-col col-md-8">
                 {data.isApproved ? (
                   <>
-                    <Square className="square-icon"  style={{ color: "green" }} />
+                    <Square
+                      className="square-icon"
+                      style={{ color: "green" }}
+                    />
                     <span>Approved</span>
                   </>
                 ) : (
