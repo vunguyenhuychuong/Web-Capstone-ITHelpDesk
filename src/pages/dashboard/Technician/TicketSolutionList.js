@@ -13,6 +13,7 @@ import "../../../assets/css/ticketCustomer.css";
 import PageSizeSelector from "../Pagination/Pagination";
 import {
   ContentCopy,
+  DeleteForever,
   Lock,
   LockOpen,
   Square,
@@ -169,28 +170,28 @@ const TicketSolutionList = () => {
   }, [fetchDataListTicketSolution, refreshData]);
 
   return (
-    <section style={{ backgroundColor: "#eee" }}>
+      <>
       <MDBContainer className="py-5 custom-container">
-        <MDBNavbar expand="lg" light bgColor="inherit">
-          <MDBContainer fluid>
-            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "16px" }}>
-              <ContentCopy style={{ marginRight: "20px" }} /> All Ticket
-              Solutions
+        <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
+          <MDBContainer fluid style={{ color: "#FFFFFF" }}>
+            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px"  }}>
+            <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
+            <span style={{ color: "#FFFFFF" }}>All Solutions</span>          
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "14px" }}
+                style={{ fontWeight: "bold", fontSize: "20px", color: "#FFFFFF" }}
                 onClick={() => handleOpenCreateTicketSolution()}
               >
-                <FaPlus /> New
+                <FaPlus style={{ color: "#FFFFFF" }}/> <span style={{ color: "#FFFFFF" }}>New</span>
               </MDBBtn>
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "14px" }}
+                style={{ fontWeight: "bold", fontSize: "20px", color: "#FFFFFF" }}
                 onClick={() => handleDeleteSelectedSolutions()}
               >
-                Delete
+               <DeleteForever style={{ color: "#FFFFFF" }}/> <span style={{ color: "#FFFFFF" }}>Delete</span>
               </MDBBtn>
 
               <FormControl
@@ -376,7 +377,7 @@ const TicketSolutionList = () => {
           onChange={handleChangePage}
         />
       </Box>
-    </section>
+    </>
   );
 };
 

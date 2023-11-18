@@ -37,16 +37,16 @@ const TicketSolution = () => {
   }, [dataTicketSolution]);
 
   return (
-    <section style={{ backgroundColor: "#FFF" }}>
+    <>
       <MDBContainer
         className="py-5"
         style={{ paddingLeft: 20, paddingRight: 20, maxWidth: "100%" }}
       >
-        <MDBNavbar expand="lg" light bgColor="inherit">
+        <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
-            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
-              <ContentCopy style={{ marginRight: "20px" }} /> All Ticket
-              Solutions
+          <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "16px" }}>
+              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
+              <span style={{ color: "#FFFFFF" }}>All Ticket Solution</span>
             </MDBNavbarBrand>
           </MDBContainer>
         </MDBNavbar>
@@ -96,7 +96,7 @@ const TicketSolution = () => {
           </MDBTable>
         )}
       </MDBContainer>
-    </section>
+      </>
   );
 };
 

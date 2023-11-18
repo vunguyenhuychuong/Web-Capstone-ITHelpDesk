@@ -47,6 +47,21 @@ export async function getAllContracts() {
   }
 }
 
+//
+export async function getContractById(contractId) {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/contract/${contractId}`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+}
+
 //Get contract child
 export async function getContractChild(contractId) {
   const header = getAuthHeader();
@@ -176,3 +191,59 @@ export async function updateContractReNew(data, contractId) {
     console.log(error);
   }
 }
+
+export async function getParentContract() {
+  const header = getAuthHeader();
+  try {
+    const res = await axios.get(`${baseURL}/contract/parent-contracts`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data.result;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getAllAccountList() {
+  const header = getAuthHeader();
+  try {
+    const res = await axios.get(`${baseURL}/user/list/accountants`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data.result;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export async function getAllCompanyList() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/company/all`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};
+
+export async function getAllContractSelect() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/contract/all`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};

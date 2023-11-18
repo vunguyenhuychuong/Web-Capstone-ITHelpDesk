@@ -287,7 +287,8 @@ const ViewAccountant = () => {
                 fontSize: "14px",
               }}
             >
-              My Task
+              Contract
+
             </h4>
             <div style={{ marginLeft: "auto" }}>
               <button

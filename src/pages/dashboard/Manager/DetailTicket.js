@@ -62,8 +62,6 @@ const DetailTicket = () => {
     }
   };
 
-  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
-
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
   };

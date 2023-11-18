@@ -35,7 +35,14 @@ export async function getAllTicket(
 };
 
 //Get Ticket User By Id Pagination
-export async function getTicketByUserIdPagination(searchField, searchQuery, page = 1, pageSize = 5, sortBy = "id", sortDirection = "asc", id) {
+export async function getTicketByUserIdPagination(
+  searchField, 
+  searchQuery, 
+  page = 1, 
+  pageSize = 5, 
+  sortBy = "id", 
+  sortDirection = "asc", 
+  id) {
   const header = getAuthHeader();
   try {
     const filter = `${searchField}.contains("${searchQuery}")`;

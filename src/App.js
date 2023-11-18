@@ -48,6 +48,7 @@ import { ToastContainer } from 'react-toastify';
 import PaymentList from './pages/dashboard/Payment/PaymentList';
 import CreatePayment from './pages/dashboard/Payment/CreatePayment';
 import EditPayment from './pages/dashboard/Payment/EditPayment';
+import EditContract from './pages/dashboard/Contract/EditContract';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -88,9 +89,7 @@ function App() {
           <Route path='listTicket' element={<IndexTicket />} />
           <Route path='ticketTask' element={<TicketTaskList />} />
           <Route path='createTask/:ticketId' element={<CreateTicketTask />} />
-          <Route path='
-          
-          ' element={<CreateTicketTaskTc />} />
+          <Route path='createTask' element={<CreateTicketTaskTc />} />
           <Route path='editTask/:ticketId' element={<EditTicketTask />} />
           <Route path='dashBoard' element={<ChartManager />} />
           <Route path='companyList' element={<CompanyList />} />
@@ -104,6 +103,7 @@ function App() {
           {(hasAdminRole) &&<Route path='homeAdmin' element={<HomeAdmin />} />}
           <Route path='contractList' element={<ContractList />} />
           <Route path='createContract' element={<CreateContract />} />
+          <Route path='editContract/:contractId' element={<EditContract />} />
           <Route path='homeAccountant' element={<HomeAccountant />} />
           <Route path='paymentList' element={<PaymentList />} />
           <Route path='createPayment' element={<CreatePayment />} />

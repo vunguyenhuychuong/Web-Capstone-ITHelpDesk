@@ -10,6 +10,8 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment from "moment";
 import { createPayment } from "../../../app/api/payment";
+import { getAllContractSelect } from "../../../app/api/contract";
+import { numberOfDuration, numberOfTerms } from "../../helpers/tableComlumn";
 
 const CreatePayment = () => {
   const navigate = useNavigate();
@@ -20,12 +22,17 @@ const CreatePayment = () => {
     numberOfTerms: 0,
     firstDateOfPayment: "",
     duration: 0,
-    initialPaymentAmount: 0,
+    initialPaymentAmount: 10000,
     note: "",
   });
 
+  const [dataContract, setDataContract] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [firstDateOfPayment, setStartDate] = useState(moment());
+  const [fieldErrors, setFieldErrors] = useState({
+    description: "",
+    initialPaymentAmount: "",
+  });
 
   const handleReviewDateOfPayment = (newDate) => {
     const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
@@ -36,24 +43,57 @@ const CreatePayment = () => {
     }));
   };
 
+  const fetchDataSelect = async () => {
+    try {
+      const dataContract = await getAllContractSelect();
+      setDataContract(dataContract);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDataSelect();
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
     if (
       name === "contractId" ||
       name === "numberOfTerms" ||
-      name === "initialPaymentAmount" ||
       name === "duration"
     ) {
       const selectedValue = parseInt(value, 10);
       setData((prevData) => ({ ...prevData, [name]: selectedValue }));
+    } else if (name === "initialPaymentAmount") {
+      const numericValue = parseInt(value);
+      if (numericValue >= 10000 && numericValue <= 99999999) {
+        setData((prevData) => ({ ...prevData, [name]: numericValue }));
+        setFieldErrors((prevData) => ({ ...prevData, [name]: "" }));
+      } else {
+        setFieldErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "Initial PaymentAmount must be between 10000 and 99999999",
+        }));
+      }
     } else {
       setData((prevData) => ({ ...prevData, [name]: value }));
+      setFieldErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
     }
   };
 
   const handleSubmitPayment = async (e) => {
     e.preventDefault();
+
+    const errors = {};
+    if (!data.description) {
+      errors.description = "Description contract is required";
+    }
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -133,29 +173,34 @@ const CreatePayment = () => {
             }}
           >
             <Grid container justifyContent="flex-end">
-              {" "}
-              {/* Set justifyContent to 'flex-end' */}
               <Grid item xs={3}>
                 <h2 className="align-right">
                   <span style={{ color: "red" }}>*</span>contractId
                 </h2>
               </Grid>
               <Grid item xs={9}>
-                <input
+                <select
                   id="contractId"
-                  type="number"
                   name="contractId"
-                  className="form-control input-field"
+                  className="form-select"
                   value={data.contractId}
                   onChange={handleInputChange}
-                />
+                >
+                  {dataContract
+                    .filter((contract) => contract.id !== "")
+                    .map((contract) => (
+                      <option key={contract.id} value={contract.id}>
+                        {contract.name || "null"}
+                      </option>
+                    ))}
+                </select>
               </Grid>
-              <Grid item xs={3}>
+              <Grid item xs={3} style={{ marginTop: "10px" }}>
                 <h2 className="align-right">
                   <span style={{ color: "red" }}>*</span>Description
                 </h2>
               </Grid>
-              <Grid item xs={9}>
+              <Grid item xs={9} style={{ marginTop: "15px" }}>
                 <textarea
                   type="text"
                   id="description"
@@ -165,26 +210,36 @@ const CreatePayment = () => {
                   value={data.description}
                   onChange={handleInputChange}
                 />
+                {fieldErrors.description && (
+                  <div style={{ color: "red" }}>{fieldErrors.description}</div>
+                )}
               </Grid>
               <Grid item xs={3}>
                 <h2 className="align-right">numberOfTerms</h2>
               </Grid>
               <Grid item xs={9}>
-                <input
+                <select
                   id="numberOfTerms"
-                  type="number"
                   name="numberOfTerms"
-                  className="form-control input-field"
+                  className="form-select"
                   value={data.numberOfTerms}
                   onChange={handleInputChange}
-                />
+                >
+                  {numberOfTerms
+                    .filter((term) => term.id !== "")
+                    .map((term) => (
+                      <option key={term.id} value={term.id}>
+                        {term.name}
+                      </option>
+                    ))}
+                </select>
               </Grid>
               <Grid
                 container
                 justifyContent="flex-end"
                 style={{ marginBottom: "20px" }}
               >
-                <Grid item xs={6}>
+                <Grid item xs={6} style={{ marginTop: "20px" }}>
                   <Grid container>
                     <Grid item xs={6}>
                       <h2 className="align-right">
@@ -192,14 +247,21 @@ const CreatePayment = () => {
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
-                      <input
+                      <select
                         id="duration"
-                        type="text"
                         name="duration"
-                        className="form-control input-field"
+                        className="form-select"
                         value={data.duration}
                         onChange={handleInputChange}
-                      />
+                      >
+                        {numberOfDuration
+                          .filter((duration) => duration.id !== "")
+                          .map((duration) => (
+                            <option key={duration.id} value={duration.id}>
+                              {duration.name}
+                            </option>
+                          ))}
+                      </select>
                     </Grid>
                   </Grid>
                 </Grid>
@@ -209,15 +271,18 @@ const CreatePayment = () => {
                     <Grid item xs={6}>
                       <h2 className="align-right">initialPaymentAmount</h2>
                     </Grid>
-                    <Grid item xs={5}>
+                    <Grid item xs={5} style={{ marginTop: "20px" }}>
                       <input
                         id="initialPaymentAmount"
-                        type="text"
+                        type="number"
                         name="initialPaymentAmount"
                         className="form-control input-field"
                         value={data.initialPaymentAmount}
                         onChange={handleInputChange}
                       />
+                      {fieldErrors.initialPaymentAmount && (
+                        <div style={{ color: "red" }}>{fieldErrors.initialPaymentAmount}</div>
+                      )}
                     </Grid>
                   </Grid>
                 </Grid>
@@ -227,7 +292,7 @@ const CreatePayment = () => {
                   <Grid container>
                     <Grid item xs={6}>
                       <h2 className="align-right">
-                        <span style={{ color: "red" }}>*</span>note
+                        note
                       </h2>
                     </Grid>
                     <Grid item xs={5}>

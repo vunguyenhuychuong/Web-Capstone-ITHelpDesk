@@ -81,6 +81,41 @@ const Navbar = ({ notifications }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [chatBoxVisible, setChatBoxVisible] = useState(false);
+  const [sessionTimeoutId, setSessionTimeoutId] = useState(null);
+
+  const resetSessionTimeout = () => {
+    if(sessionTimeoutId) {
+      clearTimeout(sessionTimeoutId);
+    }
+    const newTimeoutId = setTimeout(() => {
+      logout();
+    }, 30 * 60 * 1000);
+    setSessionTimeoutId(newTimeoutId);
+  };
+
+  const handleUserActivity = () => {
+    resetSessionTimeout();
+  };
+
+  // useEffect(() => {
+  //   resetSessionTimeout();
+  
+  //   const handleUserActivity = () => {
+  //     resetSessionTimeout();
+  //   };
+  
+  //   document.addEventListener("mousemove", handleUserActivity);
+  //   document.addEventListener("keydown", handleUserActivity);
+  
+  //   return () => {
+  //     if (sessionTimeoutId) {
+  //       clearTimeout(sessionTimeoutId);
+  //     }
+  //     document.removeEventListener("mousemove", handleUserActivity);
+  //     document.removeEventListener("keydown", handleUserActivity);
+  //   };
+  // }, [sessionTimeoutId, resetSessionTimeout]);
+  
 
   const toggleChatBox = () => {
     setChatBoxVisible((prevVisible) => !prevVisible);
@@ -128,9 +163,9 @@ const Navbar = ({ notifications }) => {
     }
   };
 
-  useEffect(() => {
-    fetchDataProfile();
-  }, []);
+  // useEffect(() => {
+  //   fetchDataProfile();
+  // }, []);
 
   const logout = () => {
     localStorage.removeItem("profile");

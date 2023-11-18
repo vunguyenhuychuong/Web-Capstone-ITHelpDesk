@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Grid, Switch, TextField } from "@mui/material";
+import { Grid, TextField } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
@@ -16,26 +16,39 @@ import { toast } from "react-toastify";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import DateValidation from "../../helpers/DateValidation";
+import {
+  getAllAccountList,
+  getAllCompanyList,
+  getContractById,
+  getParentContract,
+} from "../../../app/api/contract";
 
 const EditContract = () => {
   const navigate = useNavigate();
   const { contractId } = useParams();
-  const [dataCategories, setDataCategories] = useState([]);
   const [data, setData] = useState({
     name: "",
     description: "",
-    value: 1,
+    value: 10000,
     startDate: "",
     endDate: "",
     parentContractId: 1,
     accountantId: 1,
     companyId: 1,
     attachmentUrl: "",
-    serviceIds: []
+    serviceIds: [],
   });
   const [selectedFile, setSelectedFile] = useState(null);
+  const [dataParentContract, setDataParentContract] = useState([]);
+  const [dataAccountList, setDataAccountList] = useState([]);
+  const [dataCompanyList, setDataCompanyList] = useState([]);
   const [startDate, setStartDate] = useState(moment());
   const [endDate, setEndDate] = useState(moment());
+  const [fieldErrors, setFieldErrors] = useState({
+    name: "",
+    description: "",
+    value: "",
+  });
 
   const handleStartDateChange = (newDate) => {
     const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
@@ -60,20 +73,23 @@ const EditContract = () => {
     setSelectedFile(file);
   };
 
-  const fetchDataSolution = async () => {
+  const fetchDataCreateContract = async () => {
     try {
-      const fetchCategories = await getDataCategories();
-      setDataCategories(fetchCategories);
+      const contractParent = await getParentContract();
+      const accountList = await getAllAccountList();
+      const companyList = await getAllCompanyList();
+      setDataParentContract(contractParent);
+      setDataAccountList(accountList);
+      setDataCompanyList(companyList);
     } catch (error) {
-      console.log("Error while fetching data", error);
-    } finally {
+      console.log(error);
     }
   };
 
   useEffect(() => {
     const fetchContractData = async () => {
       try {
-        const contractData = await getTicketSolutionById(contractId);
+        const contractData = await getContractById(contractId);
         setData((prevData) => ({
           ...prevData,
           name: contractData.name,
@@ -91,7 +107,7 @@ const EditContract = () => {
       }
     };
     fetchContractData();
-    fetchDataSolution();
+    fetchDataCreateContract();
   }, [contractId]);
 
   const validateDate = (startDate, endDate) => {
@@ -103,6 +119,20 @@ const EditContract = () => {
 
   const handleEditContract = async (e) => {
     e.preventDefault();
+
+    const errors = {};
+    if (!data.name) {
+      errors.name = "Name Contract is required";
+    }
+
+    if (!data.description) {
+      errors.description = "Description Contract is required";
+    }
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+
     let attachmentUrl = data.attachmentUrl;
     if (selectedFile) {
       const storage = getStorage();
@@ -115,7 +145,7 @@ const EditContract = () => {
       toast.info("Review Date must be earlier than Expired Date.");
       return;
     }
-  
+
     const formattedReviewDate = moment(data.startDate).format(
       "YYYY-MM-DDTHH:mm:ss"
     );
@@ -143,14 +173,37 @@ const EditContract = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    setData((prevData) => ({
-      ...prevData,
-      [name]: value || "",
-    }));
+    if (
+      name === "parentContractId" ||
+      name === "accountantId" ||
+      name === "companyId"
+    ) {
+      const selectedValue = parseInt(value, 10);
+      setData((prevData) => ({ ...prevData, [name]: selectedValue }));
+    } else if (name === "value") {
+      const numericValue = parseInt(value);
+      if (numericValue >= 10000 && numericValue <= 99999999) {
+        setData((prevData) => ({ ...prevData, [name]: numericValue }));
+        setFieldErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+      } else {
+        setFieldErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "Value must be between 10000 and 99999999",
+        }));
+      }
+    } else {
+      setData((prevData) => ({ ...prevData, [name]: value }));
+      setFieldErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+    }
+
+    // setData((prevData) => ({
+    //   ...prevData,
+    //   [name]: value || "",
+    // }));
   };
 
   const handleGoBack = () => {
-    navigate(`/home/detailSolution/${contractId}`);
+    navigate(`/home/contractList`);
   };
 
   return (
@@ -206,6 +259,9 @@ const EditContract = () => {
                   value={data.name}
                   onChange={handleInputChange}
                 />
+                {fieldErrors.name && (
+                  <div style={{ color: "red" }}>{fieldErrors.name}</div>
+                )}
               </Grid>
               <Grid item xs={3}>
                 <h2 className="align-right">
@@ -222,6 +278,9 @@ const EditContract = () => {
                   value={data.description}
                   onChange={handleInputChange}
                 />
+                {fieldErrors.description && (
+                  <div style={{ color: "red" }}>{fieldErrors.description}</div>
+                )}
               </Grid>
               <Grid item xs={3}>
                 <h2 className="align-right">Attachment</h2>
@@ -249,21 +308,17 @@ const EditContract = () => {
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
-                      <select
+                      <input
                         id="value"
+                        type="number"
                         name="value"
-                        className="form-select"
+                        className="form-control input-field"
                         value={data.value}
                         onChange={handleInputChange}
-                      >
-                        {dataCategories
-                          .filter((category) => category.id !== "")
-                          .map((category) => (
-                            <option key={category.id} value={category.id}>
-                              {category.name}
-                            </option>
-                          ))}
-                      </select>
+                      />
+                      {fieldErrors.value && (
+                        <div style={{ color: "red" }}>{fieldErrors.value}</div>
+                      )}
                     </Grid>
                   </Grid>
                 </Grid>
@@ -271,18 +326,27 @@ const EditContract = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right">parentContractId</h2>
+                      <h2 className="align-right">Parent Contract</h2>
                     </Grid>
                     <Grid item xs={5}>
-                      <input
+                      <select
                         id="parentContractId"
-                        type="text"
                         name="parentContractId"
-                        rows="3"
-                        className="form-control input-field"
-                        value={data.ownerId}
+                        className="form-select"
+                        value={data.parentContractId}
                         onChange={handleInputChange}
-                      />
+                      >
+                        {dataParentContract
+                          .filter((parentContract) => parentContract.id !== "")
+                          .map((parentContract) => (
+                            <option
+                              key={parentContract.id}
+                              value={parentContract.id}
+                            >
+                              {parentContract.name}
+                            </option>
+                          ))}
+                      </select>
                     </Grid>
                   </Grid>
                 </Grid>
@@ -331,9 +395,7 @@ const EditContract = () => {
                             },
                           }}
                           value={endDate}
-                          onChange={(newValue) =>
-                            handleEndDateChange(newValue)
-                          }
+                          onChange={(newValue) => handleEndDateChange(newValue)}
                           renderInput={(props) => <TextField {...props} />}
                         />
                       </LocalizationProvider>
@@ -341,34 +403,61 @@ const EditContract = () => {
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid container justifyContent="flex-end">
-                <Grid item xs={3}>
-                  <h2 className="align-right">Keywords</h2>
+              <Grid
+                container
+                justifyContent="flex-end"
+                style={{ marginBottom: "20px" }}
+              >
+                <Grid item xs={6}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <h2 className="align-right">
+                        <span style={{ color: "red" }}>*</span>Accountant
+                      </h2>
+                    </Grid>
+                    <Grid item xs={5}>
+                      <select
+                        id="accountantId"
+                        name="accountantId"
+                        className="form-select"
+                        value={data.accountantId}
+                        onChange={handleInputChange}
+                      >
+                        {dataAccountList
+                          .filter((accountant) => accountant.id !== "")
+                          .map((accountant) => (
+                            <option key={accountant.id} value={accountant.id}>
+                              {accountant.lastName} {accountant.firstName}
+                            </option>
+                          ))}
+                      </select>
+                    </Grid>
+                  </Grid>
                 </Grid>
-                <Grid item xs={9}>
-                  <input
-                    id="keyword"
-                    type="text"
-                    name="keyword"
-                    className="form-control input-field"
-                    value={data.keyword}
-                    onChange={handleInputChange}
-                  />
-                </Grid>
-              </Grid>
-              <Grid container justifyContent="flex-end">
-                <Grid item xs={3}>
-                  <h2 className="align-right">Internal Comments</h2>
-                </Grid>
-                <Grid item xs={9}>
-                  <input
-                    id="internalComments"
-                    type="text"
-                    name="internalComments"
-                    className="form-control input-field"
-                    value={data.internalComments}
-                    onChange={handleInputChange}
-                  />
+
+                <Grid item xs={6}>
+                  <Grid container alignItems="center">
+                    <Grid item xs={6}>
+                      <h2 className="align-right">Company </h2>
+                    </Grid>
+                    <Grid item xs={5}>
+                      <select
+                        id="companyId"
+                        name="companyId"
+                        className="form-select"
+                        value={data.companyId}
+                        onChange={handleInputChange}
+                      >
+                        {dataCompanyList
+                          .filter((company) => company.id !== "")
+                          .map((company) => (
+                            <option key={company.id} value={company.id}>
+                              {company.companyName}
+                            </option>
+                          ))}
+                      </select>
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>

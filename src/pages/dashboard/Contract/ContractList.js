@@ -8,7 +8,7 @@ import {
   MDBTableBody,
   MDBTableHead,
 } from "mdb-react-ui-kit";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "../../../assets/css/ticketCustomer.css";
 import PageSizeSelector from "../Pagination/Pagination";
 import {
@@ -28,7 +28,7 @@ import {
 } from "../../../app/api/ticketSolution";
 import { toast } from "react-toastify";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
-import { getAllContracts } from "../../../app/api/contract";
+import { getAllContract, getAllContracts } from "../../../app/api/contract";
 
 const ContractList = () => {
   const [dataListContract, setDataListContract] = useState([]);
@@ -38,7 +38,7 @@ const ContractList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
-  const [searchField, setSearchField] = useState("");
+  const [searchField, setSearchField] = useState("name");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
   const [sortBy, setSortBy] = useState("id");
@@ -56,6 +56,8 @@ const ContractList = () => {
   //       searchQuery,
   //       currentPage,
   //       pageSize,
+  //       sortBy,
+  //       sortDirection,
   //     );
   //     setDataListContract(response);
   //   } catch (error) {
@@ -63,7 +65,7 @@ const ContractList = () => {
   //   } finally {
   //     setLoading(false);
   //   }
-  // }, [currentPage, pageSize, searchField, searchQuery ]);
+  // }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection ]);
 
   const fetchDataListContract = async () => {
     try {
@@ -77,15 +79,13 @@ const ContractList = () => {
     }
   };
 
-
-
-  const handleSelectSolution = (solutionId) => {
-    if (selectedContractIds.includes(solutionId)) {
+  const handleSelectSolution = (contractId) => {
+    if (selectedContractIds.includes(contractId)) {
       setSelectedContractIds(
-        selectedContractIds.filter((id) => id !== solutionId)
+        selectedContractIds.filter((id) => id !== contractId)
       );
     } else {
-      setSelectedContractIds([...selectedContractIds, solutionId]);
+      setSelectedContractIds([...selectedContractIds, contractId]);
     }
   };
 
@@ -112,23 +112,23 @@ const ContractList = () => {
 
       const deleteNextSolution = () => {
         if (currentIndex < selectedContractIds.length) {
-          const solutionId = selectedContractIds[currentIndex];
+          const contractId = selectedContractIds[currentIndex];
 
-          deleteTicketSolution(solutionId)
+          deleteTicketSolution(contractId)
             .then(() => {
               console.log(
-                `Solution with ID ${solutionId} deleted successfully`
+                `Solution with ID ${contractId} deleted successfully`
               );
               currentIndex++;
               deleteNextSolution();
             })
             .catch((error) => {
               console.error(
-                `Error deleting solution with ID ${solutionId}: `,
+                `Error deleting solution with ID ${contractId}: `,
                 error
               );
               toast.error(
-                `Error deleting solution with ID ${solutionId}: `,
+                `Error deleting solution with ID ${contractId}: `,
                 error
               );
             });
@@ -152,8 +152,8 @@ const ContractList = () => {
     navigate("/home/createContract");
   };
 
-  const handleOpenDetailTicketSolution = (solutionId) => {
-    navigate(`/home/detailSolution/${solutionId}`);
+  const handleOpenDetailContract = (contractId) => {
+    navigate(`/home/editContract/${contractId}`);
   };
 
   const handleChangePage = (event, value) => {
@@ -175,10 +175,6 @@ const ContractList = () => {
     }
   };
 
-  // useEffect(() => {
-  //   fetchDataListContract();
-  //   setTotalPages(4);
-  // }, [fetchDataListContract, refreshData]);
   useEffect(() => {
     fetchDataListContract();
     setTotalPages(4);
@@ -311,33 +307,33 @@ const ContractList = () => {
               <CustomizedProgressBars />
             ) : (
               <MDBTableBody className="bg-light">
-                {dataListContract.map((TicketSolution, index) => {
+                {dataListContract.map((Contract, index) => {
                   const isSelected = selectedContractIds.includes(
-                    TicketSolution.id
+                    Contract.id
                   );
                   return (
                     <tr key={index}>
-                      <td>{TicketSolution.id}</td>
+                      <td>{Contract.id}</td>
                       <td>
                         <input
                           type="checkbox"
                           checked={isSelected}
                           onChange={() =>
-                            handleSelectSolution(TicketSolution.id)
+                            handleSelectSolution(Contract.id)
                           }
                         />
                       </td>
                       <td>
                         <ViewCompact
                           onClick={() =>
-                            handleOpenDetailTicketSolution(TicketSolution.id)
+                            handleOpenDetailContract(Contract.id)
                           }
                         />{" "}
                       </td>
-                      <td>{TicketSolution.title}</td>
-                      <td>{TicketSolution.keyword}</td>
+                      <td>{Contract.title}</td>
+                      <td>{Contract.keyword}</td>
                       <td>
-                        {TicketSolution.isApproved ? (
+                        {Contract.isApproved ? (
                           <>
                             <Square
                               className="square-icon"
@@ -353,7 +349,7 @@ const ContractList = () => {
                         )}
                       </td>
                       <td>
-                        {TicketSolution.isPublic ? (
+                        {Contract.isPublic ? (
                           <>
                             <LockOpen
                               className="square-icon"
@@ -367,15 +363,15 @@ const ContractList = () => {
                           </>
                         )}
                       </td>
-                      <td>{formatDate(TicketSolution.reviewDate)}</td>
+                      <td>{formatDate(Contract.reviewDate)}</td>
                       <td>
-                        {TicketSolution.createdAt
+                        {Contract.createdAt
                           ? new Date(
-                              TicketSolution.createdAt
+                              Contract.createdAt
                             ).toLocaleDateString()
                           : ""}
                       </td>
-                      <td>{formatDate(TicketSolution.modifiedAt)}</td>
+                      <td>{formatDate(Contract.modifiedAt)}</td>
                     </tr>
                   );
                 })}

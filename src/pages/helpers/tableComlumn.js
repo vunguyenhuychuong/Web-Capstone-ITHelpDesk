@@ -261,6 +261,48 @@ for (let i = 1; i <= 100; i++) {
   Process[i] = `${i}%`;
 }
 
+export const numberOfTerms = [
+  {id:0, name: "1 month"},
+  {id:1, name: "2 months"},
+  {id:2, name: "3 months"},
+  {id:3, name: "4 months"},
+  {id:4, name: "5 months"},
+  {id:5, name: "6 months"},
+  {id:6, name: "7 months"},
+  {id:7, name: "8 months"},
+  {id:7, name: "9 months"},
+  {id:8, name: "10 months"},
+  {id:10, name: "11 months"},
+  {id:11, name: "12 months"},
+  {id:12, name: "13 months"},
+  {id:13, name: "14 months"},
+  {id:14, name: "15 months"},
+  {id:15, name: "16 months"},
+  {id:16, name: "17 months"},
+  {id:17, name: "18 months"},
+  {id:18, name: "19 months"},
+  {id:19, name: "20 months"},
+  {id:20, name: "21 months"},
+  {id:21, name: "22 months"},
+  {id:22, name: "23 months"},
+  {id:23, name: "24 months"},
+]
+
+export const numberOfDuration = [
+  {id:0, name: "3 months"},
+  {id:1, name: "6 months"},
+  {id:2, name: "9 months"},
+  {id:3, name: "12 months"},
+  {id:4, name: "15 months"},
+  {id:5, name: "18 months"},
+  {id:6, name: "21 months"},
+  {id:7, name: "24 months"},
+  {id:8, name: "27 months"},
+  {id:9, name: "30 months"},
+  {id:10, name: "33 months"},
+  {id:11, name: "36 months"},
+]
+
 export default Process;
 
 
