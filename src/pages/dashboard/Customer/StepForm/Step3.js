@@ -1,12 +1,24 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Button, Typography, Box, Card, CardMedia, CircularProgress } from "@mui/material";
+import {
+  Button,
+  Typography,
+  Box,
+  Card,
+  CircularProgress,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogActions,
+} from "@mui/material";
 import { useState } from "react";
 
 const Step3 = ({ data, handleSubmit }) => {
   const [loading, setLoading] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
 
-  const handleButtonClick = async () => {
+  const handleButtonClick = async (e) => {
+    e.preventDefault();
     setLoading(true);
 
     await handleSubmit();
@@ -15,48 +27,95 @@ const Step3 = ({ data, handleSubmit }) => {
       setLoading(false);
     }, 3000);
   };
-  return(
-    <Card style={{ backgroundColor: "#f0f0f0" }}>
-      {/* <CardMedia
-        component="img"
-        alt="Ticket Image"
-        height="140"
-        image={data.avatarUrl} // Use the appropriate property from your data object
-      /> */}
-      <Box p={2}>
-        <Typography variant="h6" gutterBottom>
-          Summary Your Ticket Send
-        </Typography>
-        <Typography variant="body1" paragraph>
-          <strong>Category:</strong> {data.categoryId}
-        </Typography>
-        <Typography variant="body1" paragraph>
-          <strong>Priority:</strong> {data.priority }
-        </Typography>
-        <Typography variant="body1" paragraph>
-          <strong>Title:</strong> {data.title || "Not Type"}
-        </Typography>
-        <Typography variant="body1" paragraph>
-          <strong>Description:</strong> {data.description || "Not Type"}
-        </Typography>
-  
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleButtonClick }
-          style={{ marginTop: 16 }}
-        >
-           {loading ? (
-            <CircularProgress size={24} color="inherit" />
-          ) : (
-            "Submit"
-          )}
-        </Button>
-      </Box>
-    </Card>
-  );
-} 
 
+  const handleDialogOpen = () => {
+    setOpenDialog(true);
+  };
+
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+  };
+  return (
+    <>
+      <Card style={{ display: "flex", backgroundColor: "#f0f0f0" }}>
+        <Box
+          p={2}
+          style={{ flex: "1", display: "flex", flexDirection: "column" }}
+        >
+          <div>
+            <Typography variant="h6" gutterBottom>
+              Summary Your Ticket Send
+            </Typography>
+          </div>
+          <div style={{ flexGrow: 1 }}>
+            <Typography variant="body1" paragraph>
+              <strong>Category:</strong> {data.categoryId}
+            </Typography>
+            <Typography variant="body1" paragraph>
+              <strong>Priority:</strong> {data.priority}
+            </Typography>
+            <Typography variant="body1" paragraph>
+              <strong>Title:</strong> {data.title || "Not Type"}
+            </Typography>
+            <Typography variant="body1" paragraph>
+              <strong>Description:</strong> {data.description || "Not Type"}
+            </Typography>
+            <Typography variant="body1" paragraph>
+              <strong>Image:</strong>{" "}
+              {data.avatarUrl ? (
+                <Button color="primary" onClick={handleDialogOpen}>
+                  View Image
+                </Button>
+              ) : (
+                "Not Type"
+              )}
+            </Typography>
+          </div>
+          <div>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleButtonClick}
+              style={{ marginTop: 16 }}
+            >
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Submit"
+              )}
+            </Button>
+          </div>
+        </Box>
+      </Card>
+
+      <Dialog
+        open={openDialog}
+        onClose={handleDialogClose}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Image</DialogTitle>
+        <DialogContent>
+          <div
+            style={{
+              background: `url(${data.avatarUrl})`,
+              backgroundSize: "contain",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+              width: "100%",
+              height: "70vh", // Adjust the height as needed
+            }}
+          ></div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+};
 
 Step3.propTypes = {
   data: PropTypes.object.isRequired,

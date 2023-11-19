@@ -5,9 +5,7 @@ import "../../../assets/css/EditTicket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "draft-js/dist/Draft.css";
 import CategoryApi from "../../../app/api/category";
-import { getAllServices } from "../../../app/api/service";
 import ModeApi from "../../../app/api/mode";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { FaPlus, FaTicketAlt } from "react-icons/fa";
 import {
   ArrowBack,
@@ -34,27 +32,26 @@ import LoadingSkeleton from "../../../components/iconify/LoadingSkeleton";
 import Details from "./Details";
 import TicketTaskList from "../Technician/TicketTaskList";
 import { stringAvatar } from "../../../components/dashboard/Navbar";
+import { useSelector } from "react-redux";
+import AccessibleTable from "../Technician/CommentSolution.js/HistorySolution";
 
 const DetailTicket = () => {
   const { ticketId } = useParams();
   const { data, loading, setData } = useTicketData(ticketId);
   const [dataCategories, setDataCategories] = useState([]);
-  const [dataServices, setDataServices] = useState([]);
   const [dataMode, setDataMode] = useState([]);
-  const [selectedFile, setSelectedFile] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [value, setValue] = useState(0);
   const navigate = useNavigate();
+  const user = useSelector((state) => state.auth);
+  const userRole = user.user.role;
   const userName = data.requester ? `${data.requester.lastName} ${data.requester.firstName}` : "";
 
   const fetchDataManager = async () => {
     try {
       const fetchCategories = await CategoryApi.getAllCategories();
       const fetchModes = await ModeApi.getMode();
-      const responseService = await getAllServices();
       setDataCategories(fetchCategories);
-      setDataServices(responseService);
       setDataMode(fetchModes);
     } catch (error) {
       console.log("Error while fetching data", error);
@@ -79,25 +76,26 @@ const DetailTicket = () => {
   };
 
   const handleGoBack = () => {
-    navigate(`/home/homeTechnician`);
+    if (userRole === 2) {
+      navigate(`/home/homeManager?tab=1`);
+    } else if (userRole === 3) {
+      navigate(`/home/homeTechnician?tab=1`);
+    } else {
+      navigate(`/home`);
+    }
   };
 
 
   useEffect(() => {
     fetchDataManager();
+    setValue(0);
   }, []);
-
-  const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-    console.log(selectedFile);
-  };
 
   const roleName =
     data.requester && data.requester.role
       ? roleOptions.find((role) => role.id === data.requester.role)
       : null;
 
-  const roleNameString = roleName ? roleName.name : "Unknown Role";
 
   if (loading) {
     return <div>Loading...</div>;
@@ -224,7 +222,7 @@ const DetailTicket = () => {
                       textTransform: "none",
                     }}
                   >
-                    <WorkHistory sx={{ marginRight: 1 }} /> Resolution
+                    <WorkHistory sx={{ marginRight: 1 }} /> Ticket Log
                   </div>
                 }
                 className="custom-tab-label"
@@ -300,6 +298,10 @@ const DetailTicket = () => {
             </Box>
             <Box role="tabpanel" hidden={value !== 1}>
               {value === 1 ? <TicketTaskList /> : <LoadingSkeleton />}
+            </Box>
+            <Box role="tabpanel" hidden={value !== 2}>
+              {value === 2 ? 
+              <AccessibleTable ticketId={ticketId} /> : <LoadingSkeleton />}
             </Box>
           </Box>
         </Grid>

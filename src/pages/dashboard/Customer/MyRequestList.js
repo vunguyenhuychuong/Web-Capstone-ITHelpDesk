@@ -22,6 +22,8 @@ import {
   getPriorityOption,
 } from "../../helpers/tableComlumn";
 import { getAllCategories } from "../../../app/api/category";
+import { useNavigate } from "react-router-dom";
+import TicketLogList from "./TicketLogList";
 
 const MyRequestList = () => {
   const [dataListTicketsCustomer, setDataListTicketsCustomer] = useState([]);
@@ -37,6 +39,7 @@ const MyRequestList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
   const [sortBy, setSortBy] = useState("id");
+  const navigate = useNavigate();
 
   const fetchDataListTicketCustomer = useCallback(async () => {
     try {
@@ -123,6 +126,10 @@ const MyRequestList = () => {
     }
   };
 
+  const handleOpenDetailTicketLog = (solutionId) => {
+    navigate(`/home/ticketLog/${solutionId}`);
+  };
+
   useEffect(() => {
     fetchDataListTicketCustomer();
     fetchAllCategories();
@@ -202,7 +209,7 @@ const MyRequestList = () => {
                     onChange={handleSelectAllSolutions}
                   />
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}>Log</th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("title")}
@@ -259,8 +266,12 @@ const MyRequestList = () => {
                         />
                       </td>
                       <td>
-                        <ViewCompact />{" "}
-                      </td>
+                    <ViewCompact
+                      onClick={() =>
+                        handleOpenDetailTicketLog(TicketSolution.id)
+                      }
+                    />{" "}                  
+                  </td>
                       <td>{TicketSolution.title}</td>
                       <td>{getCategoryNameById(TicketSolution.categoryId)}</td>
                       <td>{getPriorityOption(TicketSolution.priority)}</td>

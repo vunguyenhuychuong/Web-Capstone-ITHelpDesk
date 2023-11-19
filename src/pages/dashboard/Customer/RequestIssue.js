@@ -127,7 +127,7 @@ const RequestIssue = () => {
                   />
                 </button>
 
-                <h2 style={{ marginLeft: "10px" }}>New Solution</h2>
+                <h2 style={{ marginLeft: "10px" }}>New Ticket</h2>
               </div>
             </MDBCol>
           </MDBRow>
@@ -152,12 +152,6 @@ const RequestIssue = () => {
                   disabled={isSubmitting}
                 >
                   Save
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary custom-btn-margin"
-                >
-                  Save and Approve
                 </button>
                 <button
                   type="button"

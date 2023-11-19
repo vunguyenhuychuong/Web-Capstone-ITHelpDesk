@@ -18,7 +18,6 @@ import CountBox from "../../helpers/CountBox";
 import useSolutionTicketData from "./SolutionTicketData";
 import { useNavigate, useParams } from "react-router-dom";
 import { formatDate } from "../../helpers/FormatDate";
-import HistorySolution from "./CommentSolution.js/HistorySolution";
 import {
   approveTicketSolution,
   changePublicSolution,
@@ -39,7 +38,7 @@ const TicketSolutionDetail = () => {
     useSolutionTicketData(solutionId);
   const associationsRequesterCount = 42;
   const user = useSelector((state) => state.auth);
-  const isUserRole2 = user.role === 2;
+  const userRole = user.user.role;
   const [fileName, setFileName] = useState("");
 
   const handleTabChange = (event, newValue) => {
@@ -158,8 +157,8 @@ const TicketSolutionDetail = () => {
                     backgroundColor: "#f2f2f2",
                     borderRadius: "5px",
                     paddingLeft: "10px",
-                    height: "45px", // Set the height of the select box
-                    padding: "10px 0", // Set the top and bottom padding
+                    height: "45px",
+                    padding: "10px 0",
                     marginBottom: "10px",
                     zIndex: 9999,
                   }}
@@ -169,28 +168,30 @@ const TicketSolutionDetail = () => {
                       <em className="action-menu-item">Action</em>
                     </MenuItem>
                   )}
+
                   <MenuItem
                     value={10}
                     onClick={() => handleClickChangePublic(solutionId)}
                   >
                     {data.isPublic ? <>Private</> : <>Public</>}
                   </MenuItem>
-                  {isUserRole2 && (
+
+                  {userRole === 2 && [
                     <MenuItem
+                      key={20}
                       value={20}
                       onClick={() => handleApproveTicketSolution(solutionId)}
                     >
                       Approve
-                    </MenuItem>
-                  )}
-                  {isUserRole2 && (
+                    </MenuItem>,
                     <MenuItem
+                      key={30}
                       value={30}
                       onClick={() => handleRejectTicketSolution(solutionId)}
                     >
                       Reject
-                    </MenuItem>
-                  )}
+                    </MenuItem>,
+                  ]}
                 </Select>
               </div>
             </MDBCol>
@@ -285,9 +286,9 @@ const TicketSolutionDetail = () => {
           <Box role="tabpanel" hidden={value !== 0}>
             {value === 0 ? <CommentSolution /> : <LoadingSkeleton />}
           </Box>
-          <Box role="tabpanel" hidden={value !== 1}>
+          {/* <Box role="tabpanel" hidden={value !== 1}>
             {value === 1 ? <HistorySolution /> : <LoadingSkeleton />}
-          </Box>
+          </Box> */}
         </Box>
       </Grid>
       <Grid

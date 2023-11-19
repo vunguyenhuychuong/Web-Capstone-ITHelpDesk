@@ -21,117 +21,123 @@ const HomeTechnician = () => {
   };
 
   return (
-    <Grid
-      container
-      style={{
-        border: "1px solid #ccc",
-        paddingRight: "10px",
-        paddingLeft: "10px",
-      }}
+    <div
     >
-      <Grid item container xs={12}>
-        <Grid item xs={12}>
-          <Box sx={{ width: "100%" }}>
-            <Tabs
-              onChange={handleTabChange}
-              value={value}
-              aria-label="Tabs where selection follows focus"
-              selectionFollowsFocus
-              sx={{
-                "& .MuiTabs-root": {
-                  color: "#007bff",
-                },
-                "& .MuiTab-root": {
-                  minHeight: "70px",
-                  fontSize: "1rem",
-                },
-                "& .MuiTab-wrapper": {
-                  display: "flex",
-                  alignItems: "center",
-                  textTransform: "none",
-                  fontSize: "1.2rem",
-                },
-                "& .MuiSvgIcon-root": {
-                  fontSize: "2  .5rem",
-                  marginRight: "0.5rem",
-                },
-              }}
-            >
-              <Tab
-                label={
-                  <div
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      textTransform: "none",
-                    }}
-                  >
-                    <PieChart sx={{ marginRight: 1, color: "#0099FF" }} />
-                    <span style={{ whiteSpace: "nowrap" }}>My View</span>
-                  </div>
-                }
-              />
-              <Tab
-                label={
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      textTransform: "none",
-                    }}
-                  >
-                    <ConfirmationNumber sx={{ marginRight: 1, color: "#0099FF" }} />{" "}
-                    List Ticket
-                  </div>
-                }
-                className="custom-tab-label"
-              />
-              <Tab
-                label={
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      textTransform: "none",
-                    }}
-                  >
-                    <LocalActivity sx={{ marginRight: 1, color: "#0099FF" }} />{" "}
-                    Ticket Solution
-                  </div>
-                }
-                className="custom-tab-label"
-              />
-              <Tab
-                label={
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      textTransform: "none",
-                    }}
-                  >
-                    <SupervisedUserCircle
-                      sx={{ marginRight: 1, color: "#0099FF" }}
-                    />{" "}
-                    Resource Management
-                  </div>
-                }
-                className="custom-tab-label"
-              />
-            </Tabs>
+      <Grid
+        container
+        style={{
+          border: "1px solid #ccc",
+          paddingRight: "10px",
+          paddingLeft: "10px",
+        }}
+      >
+        <Grid item container xs={12}>
+          <Grid item xs={12}>
+            <Box sx={{ width: "100%" }}>
+              <Tabs
+                onChange={handleTabChange}
+                value={value}
+                aria-label="Tabs where selection follows focus"
+                selectionFollowsFocus
+                sx={{
+                  "& .MuiTabs-root": {
+                    color: "#007bff",
+                  },
+                  "& .MuiTab-root": {
+                    minHeight: "70px",
+                    fontSize: "1rem",
+                  },
+                  "& .MuiTab-wrapper": {
+                    display: "flex",
+                    alignItems: "center",
+                    textTransform: "none",
+                    fontSize: "1.2rem",
+                  },
+                  "& .MuiSvgIcon-root": {
+                    fontSize: "2  .5rem",
+                    marginRight: "0.5rem",
+                  },
+                }}
+              >
+                <Tab
+                  label={
+                    <div
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        textTransform: "none",
+                      }}
+                    >
+                      <PieChart sx={{ marginRight: 1, color: "#0099FF" }} />
+                      <span style={{ whiteSpace: "nowrap" }}>My View</span>
+                    </div>
+                  }
+                />
+                <Tab
+                  label={
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        textTransform: "none",
+                      }}
+                    >
+                      <ConfirmationNumber
+                        sx={{ marginRight: 1, color: "#0099FF" }}
+                      />{" "}
+                      List Ticket
+                    </div>
+                  }
+                  className="custom-tab-label"
+                />
+                <Tab
+                  label={
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        textTransform: "none",
+                      }}
+                    >
+                      <LocalActivity
+                        sx={{ marginRight: 1, color: "#0099FF" }}
+                      />{" "}
+                      Ticket Solution
+                    </div>
+                  }
+                  className="custom-tab-label"
+                />
+                <Tab
+                  label={
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        textTransform: "none",
+                      }}
+                    >
+                      <SupervisedUserCircle
+                        sx={{ marginRight: 1, color: "#0099FF" }}
+                      />{" "}
+                      Resource Management
+                    </div>
+                  }
+                  className="custom-tab-label"
+                />
+              </Tabs>
 
-            <Box role="tabpanel" hidden={value !== 0}>
-              {value === 0 ? <MyView /> : <LoadingSkeleton />}
+              <Box role="tabpanel" hidden={value !== 0}>
+                {value === 0 ? <MyView /> : <LoadingSkeleton />}
+              </Box>
+              <Box role="tabpanel" hidden={value !== 1}>
+                {value === 1 ? <IndexTicket /> : <LoadingSkeleton />}
+              </Box>
+              <Box role="tabpanel" hidden={value !== 2}>
+                {value === 2 ? <TicketSolutionList /> : <LoadingSkeleton />}
+              </Box>
             </Box>
-            <Box role="tabpanel" hidden={value !== 1}>
-              {value === 1 ? <IndexTicket /> : <LoadingSkeleton />}
-            </Box>
-            <Box role="tabpanel" hidden={value !== 2}>
-              {value === 2 ? <TicketSolutionList /> : <LoadingSkeleton />}
-            </Box>
-          </Box>
-        </Grid>
-        {/* <Grid item xs={1}>
+          </Grid>
+          {/* <Grid item xs={1}>
         <FormControl fullWidth sx={{ m: 1, minWidth: 120 }}>
           <Select
             labelId="demo-controlled-open-select-label"
@@ -163,8 +169,9 @@ const HomeTechnician = () => {
           </Select>
         </FormControl>
       </Grid> */}
+        </Grid>
       </Grid>
-    </Grid>
+    </div>
   );
 };
 

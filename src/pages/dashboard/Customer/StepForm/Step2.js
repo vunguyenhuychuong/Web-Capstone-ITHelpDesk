@@ -81,7 +81,7 @@ const Step2 = ({ data, handleInputChange, handleFileChange }) => {
             id="attachmentUrl"
             type="file"
             name="file"
-            onChange={handleFileUpload}
+            onChange={handleFileChange}
             style={{ display: "none" }}
           />
           <label htmlFor="attachmentUrl">

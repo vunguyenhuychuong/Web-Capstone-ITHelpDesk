@@ -7,21 +7,13 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { ListAlt } from "@mui/icons-material";
 import { useState } from "react";
-import { Button, Input } from "@mui/material";
-import { getTicketLog } from "../../../../app/api/ticketLog";
-import { useSelector } from "react-redux";
+import { Input } from "@mui/material";
+import { getTicketLog } from "../../../app/api/ticketLog";
+import { useParams } from "react-router-dom";
 
-const iconStyle = {
-  borderRadius: "100%",
-  border: "1px solid #000",
-  marginRight: "20px",
-};
-
-export default function AccessibleTable({ticketId}) {
+export default function TicketLogList() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const user = useSelector((state) => state.auth);
-
+  const {ticketId} = useParams();
   const [dataTicketLog, setDataTicketLog] = useState([]);
 
   const fetchDataTicketLog = async () => {
@@ -53,40 +45,22 @@ export default function AccessibleTable({ticketId}) {
           <label style={{ marginRight: "10px" }}>Filter:</label>
           <Input
             type="text"
-            placeholder="FIlter by solution operations"
+            placeholder="Filter by solution operations"
             fullWidth
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ marginRight: "10px", width: "400px" }}
           />
         </div>
-        <div style={{ marginBottom: "10px" }}>
-        {dataTicketLog && (  // Check if dataTicketLog is defined
-          <Button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            style={{
-              marginLeft: '10px',
-              cursor: 'pointer',
-              color: '#000',
-              backgroundColor: '#CCCCCC',
-              textTransform: 'none',
-            }}
-          >
-            {isDropdownOpen
-              ? `History ▲ (${dataTicketLog.length})`
-              : `History ▼ (${dataTicketLog.length})`}
-          </Button>
-        )}
-        </div>
         <TableBody>
-          {isDropdownOpen &&
+          {dataTicketLog && dataTicketLog.length > 0 ? (
             dataTicketLog.map((entry, index) => (
               <TableRow key={index}>
-                <TableCell align="right" style={{ width: '50px' }}>
+                <TableCell align="right" style={{ width: "50px" }}>
                   {entry.timestamp}
                 </TableCell>
-                <TableCell align="left" style={{ width: '500px' }}>
-                  <ListAlt style={iconStyle} /> {entry.entries[0].message}
+                <TableCell align="left" style={{ width: "500px" }}>
+                  <ListAlt /> {entry.entries[0].message || "none message"}
                 </TableCell>
                 <TableCell align="left">
                   {entry.username}
@@ -94,7 +68,12 @@ export default function AccessibleTable({ticketId}) {
                   {entry.action}
                 </TableCell>
               </TableRow>
-            ))}
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={3}>No ticket log entries found.</TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </TableContainer>

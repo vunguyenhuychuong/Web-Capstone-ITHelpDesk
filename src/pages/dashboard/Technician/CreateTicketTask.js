@@ -22,7 +22,7 @@ const CreateTicketTask = () => {
   const navigate = useNavigate();
   const { ticketId } = useParams();
   const [data, setData] = useState({
-    ticketId: ticketId,
+    ticketId: parseInt(ticketId, 10),
     title: "",
     description: "",
     taskStatus: 1,
@@ -54,7 +54,7 @@ const CreateTicketTask = () => {
       scheduledStartTime: formattedDate,
     }));
   };
-
+  
   const handleScheduledEndTimeChange = (newDate) => {
     const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
     setScheduledEndTime(newDate);
@@ -93,112 +93,109 @@ const CreateTicketTask = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
-    if (name === "categoryId") {
-      const selectedValue = parseInt(value, 10);
-      setData((prevData) => ({ ...prevData, [name]: selectedValue }));
-    } else {
-      setData((prevData) => ({ ...prevData, [name]: value }));
+    let processedValue = value;
+    if (name === "taskStatus" || name === "teamId" || name === "priority" || name === "ticketId" || name === "technicianId" || name === "progress" ) {
+      processedValue = parseInt(value, 10);
     }
-
+    setData((prevData) => ({
+      ...prevData,
+      [name]: processedValue,
+    }));
     setFieldErrors((prevErrors) => ({
       ...prevErrors,
       [name]: "",
     }));
   };
+  console.log("Updated data:", data);
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     setSelectedFile(file);
   };
 
-  const validateDate = (reviewDate, expiredDate) => {
-    if (!reviewDate || !expiredDate) {
-      return false; // If either date is missing, return false
+  const validateDate = (scheduledStartTime, scheduledEndTime) => {
+    if (!scheduledStartTime || !scheduledStartTime) {
+      return false; 
     }
     return moment(scheduledStartTime).isBefore(scheduledEndTime);
-  };
+    };
 
-  const handleSubmitTicket = async (e) => {
-    e.preventDefault();
-
-    const errors = {};
-    if (!data.title) {
-      errors.title = "Title Ticket is required";
-    }
-
-    if (!data.description) {
-      errors.description = "Description is required";
-    }
-
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      let attachmentUrl = data.attachmentUrl;
-      if (selectedFile) {
-        const storage = getStorage();
-        const storageRef = ref(storage, "images/" + selectedFile.name);
-        await uploadBytes(storageRef, selectedFile);
-        attachmentUrl = await getDownloadURL(storageRef);
+    const handleSubmitTicket = async (e) => {
+      e.preventDefault();
+    
+      const errors = {};
+      if (!data.title) {
+        errors.title = "Title Ticket is required";
       }
-
-      const isDataValid = validateDate(
-        data.scheduledStartTime,
-        data.scheduledEndTime
-      );
-      if (!isDataValid) {
-        toast.info("Review Date must be earlier than Expired Date.");
+    
+      if (!data.description) {
+        errors.description = "Description is required";
+      }
+    
+      if (Object.keys(errors).length > 0) {
+        setFieldErrors(errors);
         return;
       }
+    
+      setIsSubmitting(true);
+      try {
+        let attachmentUrl = data.attachmentUrl;
+        if (selectedFile) {
+          const storage = getStorage();
+          const storageRef = ref(storage, "images/" + selectedFile.name);
+          await uploadBytes(storageRef, selectedFile);
+          attachmentUrl = await getDownloadURL(storageRef);
+        }
 
-      const formattedScheduledStartTime = moment(data.reviewDate).format(
-        "YYYY-MM-DDTHH:mm:ss"
-      );
-      const formattedScheduledEndTime = moment(data.expiredDate).format(
-        "YYYY-MM-DDTHH:mm:ss"
-      );
-
-      const updatedData = {
-        ...data,
-        attachmentUrl: attachmentUrl,
-        scheduledStartTime: formattedScheduledStartTime,
-        scheduledEndTime: formattedScheduledEndTime,
-        technicianId: selectedTechnicianId,
-      };
-
-      setData(updatedData);
-      const response = await createTicketTask({
-        ticketId: data.ticketId,
-        title: data.title,
-        description: data.description,
-        taskStatus: data.taskStatus,
-        technicianId: data.technicianId,
-        priority: parseInt(data.priority, 10),
-        scheduledStartTime: data.scheduledStartTime,
-        scheduledEndTime: data.scheduledEndTime,
-        progress: data.progress,
-        attachmentUrl: data.attachmentUrl,
-      });
-      console.log(response);
-      toast.success("Ticket created successfully");
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+        const isDataValid = validateDate(
+          data.scheduledStartTime,
+          data.scheduledEndTime
+        );
+          
+        if (!isDataValid) {
+          toast.info(
+            "scheduledStartTime must be earlier than scheduledEndTime."
+          );
+          return;
+        }
+        // Move the formatted time code here
+        const formattedScheduledStartTime = moment(data.scheduledStartTime).format(
+          "YYYY-MM-DDTHH:mm:ss"
+        );
+    
+        const formattedScheduledEndTime = moment(data.scheduledEndTime).format(
+          "YYYY-MM-DDTHH:mm:ss"
+        );
+    
+        const updatedData = {
+          ...data,
+          attachmentUrl: attachmentUrl,
+          scheduledStartTime: formattedScheduledStartTime,
+          scheduledEndTime: formattedScheduledEndTime,
+        };
+        setData(updatedData);
+        await createTicketTask({
+          ticketId: data.ticketId,
+          title: data.title,
+          description: data.description,
+          taskStatus: parseInt(data.taskStatus),
+          technicianId: parseInt(data.technicianId),
+          priority: parseInt(data.priority, 10),
+          scheduledStartTime: data.scheduledStartTime,
+          scheduledEndTime: data.scheduledEndTime,
+          progress: parseInt(data.progress),
+          attachmentUrl: data.attachmentUrl,
+        });  
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
 
   const handleGoBack = (ticketId) => {
     navigate(`/home/detailTicket/${ticketId}`);
   };
-
-  // const handleGoBack = (ticketId) => {
-  //   navigate(`/home/detailTicket/${ticketId}`);
-  // };
 
   return (
     <Grid
@@ -346,13 +343,15 @@ const CreateTicketTask = () => {
                           ))}
                       </select>
                       <select
-                        id="technician"
-                        name="technician"
+                        id="technicianId"
+                        name="technicianId"
                         className="form-select"
-                        value={selectedTechnicianId}
-                        onChange={(e) =>
-                          setSelectedTechnicianId(e.target.value)
-                        }
+                        // value={selectedTechnicianId}
+                        // onChange={(e) =>
+                        //   setSelectedTechnicianId(e.target.value)
+                        // }
+                        value={data.technicianId}
+                        onChange={handleInputChange}
                       >
                         {dataTechnician
                           .filter((technician) => technician.id !== "")
@@ -499,15 +498,9 @@ const CreateTicketTask = () => {
                   type="button"
                   className="btn btn-primary custom-btn-margin"
                   onClick={handleSubmitTicket}
-                  disabled={isSubmitting}
+                  // disabled={isSubmitting}
                 >
                   Save
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary custom-btn-margin"
-                >
-                  Save and Approve
                 </button>
                 <button
                   type="button"

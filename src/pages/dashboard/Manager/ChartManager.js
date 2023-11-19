@@ -114,15 +114,9 @@ const ChartManager = () => {
 
   useEffect(() => {
     fetchDataTotalChart();
-  }, []); // Run once on mount to fetch initial data
-
-  useEffect(() => {
     fetchDataListTicketTask();
-  }, []); // Run once on mount to fetch initial data
-
-  useEffect(() => {
     fetchDataBarChart();
-  }, []); // Run once on mount to fetch initial data
+  }, []); 
 
   const data = [
     { id: 0, value: dataTotal.totalOpenTicket, label: "Total Open Ticket" },

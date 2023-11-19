@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import {
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Grid,
   Table,
   TableBody,
@@ -26,6 +30,8 @@ import { UpdateTicketForTechnician } from "../../../app/api/ticket";
 
 const Details = ({ data, loading, dataCategories, dataMode }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [openImageDialog, setOpenImageDialog] = useState(false);
+
   const handleEditClick = () => {
     setIsEditDialogOpen(true);
   };
@@ -36,6 +42,14 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
     } catch (error) {
       console.error("Error while reloading data", error);
     }
+  };
+
+  const handleImageDialogOpen = () => {
+    setOpenImageDialog(true);
+  };
+
+  const handleImageDialogClose = () => {
+    setOpenImageDialog(false);
   };
 
   Details.propTypes = {
@@ -63,7 +77,7 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
             rows={4}
             fullWidth
             variant="outlined"
-            value={data.description}
+            value={data?.description || ""} 
             disabled
           />
           <UploadComponent />
@@ -71,12 +85,15 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
             <Button variant="contained" className="button">
               Reply All
             </Button>
-            <Button variant="contained" className="button">
-              Reply
-            </Button>
-            <Button variant="contained" className="button">
-              Forward
-            </Button>
+            {data.avatarUrl && (
+              <Button
+                variant="contained"
+                className="button"
+                onClick={handleImageDialogOpen}
+              >
+                See Image
+              </Button>
+            )}
           </div>
           <div className="labelContainer">
             <Typography
@@ -211,6 +228,31 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
           </Table>
         </Grid>
       </Grid>
+      <Dialog
+        open={openImageDialog}
+        onClose={handleImageDialogClose}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Image</DialogTitle>
+        <DialogContent>
+          <div
+            style={{
+              background: `url(${data.avatarUrl})`,
+              backgroundSize: "contain",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+              width: "100%",
+              height: "70vh", // Adjust the height as needed
+            }}
+          ></div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleImageDialogClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

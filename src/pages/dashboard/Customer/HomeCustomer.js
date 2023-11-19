@@ -15,12 +15,11 @@ import {
 } from "@mui/icons-material";
 import "../../../assets/css/profile.css";
 import "../../../assets/css/ticketCustomer.css";
-import { Card, CardContent, Dialog, Grid } from "@mui/material";
+import { Card, CardContent, Grid } from "@mui/material";
 import { useState } from "react";
 import { GetTicketUserAvailable } from "../../../app/api/ticket";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import RequestIssues from "./RequestIssues";
 import Announcements from "../../../assets/images/announcements.jpg";
 import HoldTicket from "../../../assets/images/holding ticket.png";
 import AwaitTicket from "../../../assets/images/await ticket.png";
@@ -32,7 +31,6 @@ import { getSummaryCustomer } from "../../../app/api/dashboard";
 
 
 const HomeCustomer = () => {
-  const [dialogOpen, setDialogOpen] = useState(false);
   const navigate = useNavigate();
   const [dataListTicket, setDataListTicket] = useState([]);
   const [dataSummary, setDataSummary] = useState([]);
@@ -42,17 +40,13 @@ const HomeCustomer = () => {
     navigate(`/home/createRequest`);
   };
 
-  const handleCloseRequestTicket = () => {
-    setDialogOpen(false);
-  };
-
   const handleOpenListTicket = () => {
     navigate(`/home/requestCustomerList`);
   };
 
-  // const handleOpenListTicketSolution = () => {
-  //   navigate('/home/ticketSolution');
-  // };
+  const handleOpenListTicketLog = () => {
+    navigate('/home/ticketLog');
+  };
 
   useEffect(() => {
     const fetchDataTicketByUserId = async () => {
@@ -258,7 +252,7 @@ const HomeCustomer = () => {
                   fontSize: "14px",
                 }}
               >
-                Announcements
+                Ticket Log
               </h4>
               <div style={{ marginLeft: "auto" }}>
                 <button
@@ -426,14 +420,6 @@ const HomeCustomer = () => {
         </Grid>
       </Grid>
 
-      <Dialog
-        maxWidth="lg"
-        fullWidth
-        open={dialogOpen}
-        onClose={handleCloseRequestTicket}
-      >
-        <RequestIssues onClose={handleCloseRequestTicket} />
-      </Dialog>
     </section>
   );
 };

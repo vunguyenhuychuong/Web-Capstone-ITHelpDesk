@@ -55,7 +55,7 @@ const EditTicketTask = () => {
       scheduledStartTime: formattedDate,
     }));
   };
-
+  
   const handleScheduledEndTimeChange = (newDate) => {
     const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
     setScheduledEndTime(newDate);
@@ -132,8 +132,8 @@ const EditTicketTask = () => {
     setSelectedFile(file);
   };
 
-  const validateDate = (reviewDate, expiredDate) => {
-    if (!reviewDate || !expiredDate) {
+  const validateDate = (scheduledStartTime, scheduledEndTime) => {
+    if (!scheduledStartTime || !scheduledEndTime) {
       return false;
     }
     return moment(scheduledStartTime).isBefore(scheduledEndTime);
@@ -164,10 +164,10 @@ const EditTicketTask = () => {
         return;
       }
 
-      const formattedScheduledStartTime = moment(data.reviewDate).format(
+      const formattedScheduledStartTime = moment(data.scheduledStartTime).format(
         "YYYY-MM-DDTHH:mm:ss"
       );
-      const formattedScheduledEndTime = moment(data.expiredDate).format(
+      const formattedScheduledEndTime = moment(data.scheduledEndTime).format(
         "YYYY-MM-DDTHH:mm:ss"
       );
 
@@ -180,7 +180,7 @@ const EditTicketTask = () => {
       };
 
       setData(updatedData);
-      const response = await updateTicketTask({
+       await updateTicketTask(ticketId, {
         title: data.title,
         description: data.description,
         taskStatus: data.taskStatus,
@@ -193,8 +193,6 @@ const EditTicketTask = () => {
         attachmentUrl: data.attachmentUrl,
         note: data.note,
       });
-      console.log(response);
-      toast.success("Ticket created successfully");
     } catch (error) {
       console.error(error);
     } finally {
@@ -205,7 +203,6 @@ const EditTicketTask = () => {
   const handleGoBack = (ticketId) => {
     navigate(`/home/detailTicket/${ticketId}`);
   };
-
 
   return (
     <Grid
@@ -466,52 +463,21 @@ const EditTicketTask = () => {
                 </Grid>
               </Grid>
               <Grid container justifyContent="flex-end">
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2 className="align-right">Team</h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <select
-                        id="teamId"
-                        name="teamId"
-                        className="form-select"
-                        value={data.taskStatus}
-                        onChange={handleInputChange}
-                      >
-                        {TicketStatusOptions.filter(
-                          (status) => status.id !== ""
-                        ).map((status) => (
-                          <option key={status.id} value={status.id}>
-                            {status.name}
-                          </option>
-                        ))}
-                      </select>
-                    </Grid>
-                  </Grid>
+                <Grid item xs={3}>
+                  <h2 className="align-right">
+                    <span style={{ color: "red" }}>*</span>Note
+                  </h2>
                 </Grid>
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2 className="align-right">Progress</h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <select
-                        id="progress"
-                        name="progress"
-                        className="form-select"
-                        value={data.progress}
-                        onChange={handleInputChange}
-                      >
-                        <option value="">Select Progress</option>{" "}
-                        {Object.keys(Process).map((processId) => (
-                          <option key={processId} value={processId}>
-                            {Process[processId]}
-                          </option>
-                        ))}
-                      </select>
-                    </Grid>
-                  </Grid>
+                <Grid item xs={9}>
+                  <textarea
+                    type="text"
+                    id="note"
+                    name="note"
+                    className="form-control input-field-2"
+                    rows="6"
+                    value={data.note}
+                    onChange={handleInputChange}
+                  />
                 </Grid>
               </Grid>
             </Grid>

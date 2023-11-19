@@ -50,7 +50,7 @@ const CreateMode = ({ onClose, onSubmitSuccess }) => {
 
   setIsSubmitting(true);
   try {
-    const response = await createMode(data);
+    await createMode(data);
     setIsSubmitting(false);
     toast.success("Create Mode successful", {
       autoClose: 1000,

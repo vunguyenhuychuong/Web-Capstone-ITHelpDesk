@@ -49,6 +49,7 @@ import PaymentList from './pages/dashboard/Payment/PaymentList';
 import CreatePayment from './pages/dashboard/Payment/CreatePayment';
 import EditPayment from './pages/dashboard/Payment/EditPayment';
 import EditContract from './pages/dashboard/Contract/EditContract';
+import TicketLogList from './pages/dashboard/Customer/TicketLogList';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -108,6 +109,7 @@ function App() {
           <Route path='paymentList' element={<PaymentList />} />
           <Route path='createPayment' element={<CreatePayment />} />
           <Route path='editPayment/:paymentId' element={<EditPayment />} />
+          <Route path='ticketLog/:ticketId' element={<TicketLogList />} />
           </Route>
         <Route path='login' element={<Login />} />
         <Route path='forgot-password' element={<ForgetPassword /> }  />

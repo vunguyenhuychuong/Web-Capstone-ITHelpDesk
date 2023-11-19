@@ -40,6 +40,11 @@ const EditTicketSolution = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [reviewDate, setReviewDate] = useState(moment());
   const [expiredDate, setExpiredDate] = useState(moment());
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({
+    title: "",
+    content: "",
+  });
 
   const handleReviewDateChange = (newDate) => {
     const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
@@ -119,34 +124,50 @@ const EditTicketSolution = () => {
 
   const handleEditSolutionTicket = async (e) => {
     e.preventDefault();
-    let attachmentUrl = data.attachmentUrl;
-    if (selectedFile) {
-      const storage = getStorage();
-      const storageRef = ref(storage, "images/" + selectedFile.name);
-      await uploadBytes(storageRef, selectedFile);
-      attachmentUrl = await getDownloadURL(storageRef);
+    const errors = {};
+    if (!data.title) {
+      errors.title = "Title is required";
     }
-    const isDataValid = validateDate(data.reviewDate, data.expiredDate);
-    if (!isDataValid) {
-      toast.info("Review Date must be earlier than Expired Date.");
+    if (!data.description) {
+      errors.description = "Description is required";
+    }
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
-  
-    const formattedReviewDate = moment(data.reviewDate).format(
-      "YYYY-MM-DDTHH:mm:ss"
-    );
-    const formattedExpiredDate = moment(data.expiredDate).format(
-      "YYYY-MM-DDTHH:mm:ss"
-    );
-
-    const updatedData = {
-      ...data,
-      attachmentUrl: attachmentUrl,
-      reviewDate: formattedReviewDate,
-      expiredDate: formattedExpiredDate,
-    };
-    setData(updatedData);
+    setIsSubmitting(true);
     try {
+      let attachmentUrl = data.attachmentUrl;
+      if (selectedFile) {
+        const storage = getStorage();
+        const storageRef = ref(storage, "images/" + selectedFile.name);
+        await uploadBytes(storageRef, selectedFile);
+        attachmentUrl = await getDownloadURL(storageRef);
+      }
+
+      const isDataValid = validateDate(
+        data.scheduledStartTime,
+        data.scheduledEndTime
+      );
+      if (!isDataValid) {
+        toast.info("Review Date must be earlier than Expired Date.");
+        return;
+      }
+      const formattedReviewDate = moment(data.reviewDate).format(
+        "YYYY-MM-DDTHH:mm:ss"
+      );
+      const formattedExpiredDate = moment(data.expiredDate).format(
+        "YYYY-MM-DDTHH:mm:ss"
+      );
+
+      const updatedData = {
+        ...data,
+        attachmentUrl: attachmentUrl,
+        reviewDate: formattedReviewDate,
+        expiredDate: formattedExpiredDate,
+      };
+
+      setData(updatedData);
       const res = await editTicketSolution(solutionId, data);
       console.log(res);
       toast.success("Ticket Solution edit successful");
@@ -415,15 +436,10 @@ const EditTicketSolution = () => {
                 <button
                   type="button"
                   className="btn btn-primary custom-btn-margin"
+                  disabled={isSubmitting}
                   onClick={handleEditSolutionTicket}
                 >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary custom-btn-margin"
-                >
-                  Save and Approve
+                  {isSubmitting ? "Saving..." : "Save"}
                 </button>
                 <button
                   type="button"
