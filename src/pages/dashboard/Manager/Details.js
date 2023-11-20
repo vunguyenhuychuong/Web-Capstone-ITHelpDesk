@@ -27,10 +27,13 @@ import {
 import { formatDate } from "../../helpers/FormatDate";
 import EditTicketModel from "./EditTicketModel";
 import { UpdateTicketForTechnician } from "../../../app/api/ticket";
+import { useSelector } from "react-redux";
 
 const Details = ({ data, loading, dataCategories, dataMode }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [openImageDialog, setOpenImageDialog] = useState(false);
+  const user = useSelector((state) => state.auth);
+  const userRole = user.user.role;
 
   const handleEditClick = () => {
     setIsEditDialogOpen(true);
@@ -77,7 +80,7 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
             rows={4}
             fullWidth
             variant="outlined"
-            value={data?.description || ""} 
+            value={data?.description || ""}
             disabled
           />
           <UploadComponent />
@@ -156,7 +159,7 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
               <TableRow>
                 <TableCell style={{ textAlign: "right" }}>Service</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {data.service.description}
+                  {/* {data.service.description} */}
                 </TableCell>
                 <TableCell style={{ textAlign: "right" }}>Priority</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
@@ -215,8 +218,7 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
                   {formatDate(data.modifiedAt)}
                 </TableCell>
               </TableRow>
-
-              {isEditDialogOpen && (
+              {isEditDialogOpen && (userRole === 2 || userRole === 3) && (
                 <EditTicketModel
                   open={isEditDialogOpen}
                   onClose={() => setIsEditDialogOpen(false)}

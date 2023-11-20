@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Grid, Switch, TextField } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, Grid, IconButton, Switch, TextField } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import {
@@ -41,6 +41,8 @@ const EditTicketSolution = () => {
   const [reviewDate, setReviewDate] = useState(moment());
   const [expiredDate, setExpiredDate] = useState(moment());
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
     title: "",
     content: "",
@@ -74,6 +76,20 @@ const EditTicketSolution = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedFile(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreviewUrl(reader.result);
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreviewUrl(null);
+    }
+  };
+
+  const closeImagePreview = () => {
+    setIsImagePreviewOpen(false);
   };
 
   const fetchDataSolution = async () => {
@@ -128,8 +144,8 @@ const EditTicketSolution = () => {
     if (!data.title) {
       errors.title = "Title is required";
     }
-    if (!data.description) {
-      errors.description = "Description is required";
+    if (!data.content) {
+      errors.content = "Content is required";
     }
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
@@ -184,6 +200,11 @@ const EditTicketSolution = () => {
       ...prevData,
       [name]: value || "",
     }));
+
+    setFieldErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
   };
 
   const handleGoBack = () => {
@@ -211,7 +232,26 @@ const EditTicketSolution = () => {
                   />
                 </button>
 
-                <h2 style={{ marginLeft: "10px" }}>Edit Solution</h2>
+                <div
+                  style={{
+                    marginLeft: "40px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontSize: "30px",
+                      fontWeight: "bold",
+                      marginRight: "10px",
+                    }}
+                  >
+                    Edit Solution
+                  </h2>
+                  <span style={{ fontSize: "18px", color: "#888" }}>
+                    Edit a new solution for assistance.
+                  </span>
+                </div>
               </div>
             </MDBCol>
           </MDBRow>
@@ -230,7 +270,11 @@ const EditTicketSolution = () => {
               {" "}
               {/* Set justifyContent to 'flex-end' */}
               <Grid item xs={3}>
-                <h2 className="align-right">
+                <h2 className="align-right"  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>
                   <span style={{ color: "red" }}>*</span>Title
                 </h2>
               </Grid>
@@ -243,9 +287,16 @@ const EditTicketSolution = () => {
                   value={data.title}
                   onChange={handleInputChange}
                 />
+                 {fieldErrors.title && (
+                  <div style={{ color: "red" }}>{fieldErrors.title}</div>
+                )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">
+                <h2 className="align-right"  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>
                   <span style={{ color: "red" }}>*</span>Content
                 </h2>
               </Grid>
@@ -259,9 +310,16 @@ const EditTicketSolution = () => {
                   value={data.content}
                   onChange={handleInputChange}
                 />
+                 {fieldErrors.content && (
+                  <div style={{ color: "red" }}>{fieldErrors.content}</div>
+                )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">Attachment</h2>
+                <h2 className="align-right" style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>Attachment</h2>
               </Grid>
               <Grid item xs={9}>
                 <input
@@ -276,12 +334,26 @@ const EditTicketSolution = () => {
                     ? data.attachmentUrl.name
                     : "No file selected"}
                 </div>
+                {imagePreviewUrl && (
+                  <div
+                    className="image-preview"
+                    onClick={() => setIsImagePreviewOpen(true)}
+                  >
+                    <p className="preview-text">
+                      Click here to view attachment
+                    </p>
+                  </div>
+                )}
               </Grid>
               <Grid container justifyContent="flex-end">
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">
+                      <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>
                         <span style={{ color: "red" }}>*</span>Category
                       </h2>
                     </Grid>
@@ -308,7 +380,11 @@ const EditTicketSolution = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right">Solution Owner</h2>
+                      <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>Solution Owner</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <input
@@ -328,7 +404,11 @@ const EditTicketSolution = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Review Date</h2>
+                      <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>Review Date</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -357,7 +437,11 @@ const EditTicketSolution = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Expiry Date</h2>
+                      <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>Expiry Date</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -380,7 +464,11 @@ const EditTicketSolution = () => {
               </Grid>
               <Grid container justifyContent="flex-end">
                 <Grid item xs={3}>
-                  <h2 className="align-right">Keywords</h2>
+                  <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>Keywords</h2>
                 </Grid>
                 <Grid item xs={9}>
                   <input
@@ -412,7 +500,11 @@ const EditTicketSolution = () => {
               </Grid>
               <Grid container justifyContent="flex-end">
                 <Grid item xs={3}>
-                  <h2 className="align-right">Internal Comments</h2>
+                  <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>Internal Comments</h2>
                 </Grid>
                 <Grid item xs={9}>
                   <input
@@ -452,6 +544,31 @@ const EditTicketSolution = () => {
           </MDBRow>
         </MDBCol>
       </Grid>
+      <Dialog
+        open={isImagePreviewOpen}
+        onClose={closeImagePreview}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          Image Preview
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={closeImagePreview}
+            aria-label="close"
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <img
+            src={imagePreviewUrl}
+            alt="Attachment Preview"
+            style={{ width: "100%" }}
+          />
+        </DialogContent>
+      </Dialog>
     </Grid>
   );
 };

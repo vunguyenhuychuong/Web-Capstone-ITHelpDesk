@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Grid } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  IconButton,
+} from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
@@ -13,7 +19,7 @@ import {
 } from "../../helpers/tableComlumn";
 import { getDataCategories } from "../../../app/api/category";
 import { getDataUser } from "../../../app/api";
-import { getDataMode } from "../../../app/api/mode";
+import ModeApi from "../../../app/api/mode";
 import { getDataServices } from "../../../app/api/service";
 import { createTicketByManager } from "../../../app/api/ticket";
 
@@ -40,6 +46,8 @@ const CreateTickets = () => {
   const [dataUser, setDataUser] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
     title: "",
     description: "",
@@ -49,7 +57,7 @@ const CreateTickets = () => {
     try {
       const fetchCategories = await getDataCategories();
       const fetchUsers = await getDataUser();
-      const fetchModes = await getDataMode();
+      const fetchModes = await ModeApi.getMode();
       const responseService = await getDataServices();
       setDataCategories(fetchCategories);
       setDataServices(responseService);
@@ -93,6 +101,20 @@ const CreateTickets = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedFile(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreviewUrl(reader.result);
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreviewUrl(null);
+    }
+  };
+
+  const closeImagePreview = () => {
+    setIsImagePreviewOpen(false);
   };
 
   const handleSubmitTicket = async (e) => {
@@ -181,7 +203,26 @@ const CreateTickets = () => {
                   />
                 </button>
 
-                <h2 style={{ marginLeft: "10px" }}>New Ticket</h2>
+                <div
+                  style={{
+                    marginLeft: "40px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontSize: "30px",
+                      fontWeight: "bold",
+                      marginRight: "10px",
+                    }}
+                  >
+                    New Ticket
+                  </h2>
+                  <span style={{ fontSize: "18px", color: "#888" }}>
+                    Create a new ticket for assistance.
+                  </span>
+                </div>
               </div>
             </MDBCol>
           </MDBRow>
@@ -204,9 +245,45 @@ const CreateTickets = () => {
                 style={{ marginBottom: "20px" }}
               >
                 <Grid item xs={6}>
+                  <Grid container alignItems="center">
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        <span style={{ color: "red" }}>*</span>Title
+                      </h2>
+                    </Grid>
+                    <Grid item xs={5}>
+                      <input
+                        id="title"
+                        type="text"
+                        name="title"
+                        className="form-control"
+                        value={data.title}
+                        onChange={handleInputChange}
+                      />
+                      {fieldErrors.title && (
+                        <div style={{ color: "red" }}>{fieldErrors.title}</div>
+                      )}
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
                         <span style={{ color: "red" }}>*</span>Requester
                       </h2>
                     </Grid>
@@ -227,30 +304,16 @@ const CreateTickets = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-
-                <Grid item xs={6}>
-                  <Grid container alignItems="center">
-                    <Grid item xs={6}>
-                      <h2 className="align-right">Title</h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <input
-                        id="title"
-                        type="text"
-                        name="title"
-                        className="form-control"
-                        value={data.title}
-                        onChange={handleInputChange}
-                      />
-                      {fieldErrors.title && (
-                        <div style={{ color: "red" }}>{fieldErrors.title}</div>
-                      )}
-                    </Grid>
-                  </Grid>
-                </Grid>
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
                   <span style={{ color: "red" }}>*</span>Description
                 </h2>
               </Grid>
@@ -269,7 +332,16 @@ const CreateTickets = () => {
                 )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">Attachment</h2>
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
+                  Attachment
+                </h2>
               </Grid>
               <Grid item xs={9}>
                 <input
@@ -280,6 +352,16 @@ const CreateTickets = () => {
                   onChange={handleFileChange}
                   value={data.attachmentUrl}
                 />
+                {imagePreviewUrl && (
+                  <div
+                    className="image-preview"
+                    onClick={() => setIsImagePreviewOpen(true)}
+                  >
+                    <p className="preview-text">
+                      Click here to view attachment
+                    </p>
+                  </div>
+                )}
               </Grid>
               <Grid
                 container
@@ -289,7 +371,14 @@ const CreateTickets = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
                         <span style={{ color: "red" }}>*</span>Mode Id
                       </h2>
                     </Grid>
@@ -316,7 +405,16 @@ const CreateTickets = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right">Service</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Service
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -342,7 +440,16 @@ const CreateTickets = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Urgency</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Urgency
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -366,7 +473,16 @@ const CreateTickets = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Category</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Category
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -396,7 +512,16 @@ const CreateTickets = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Ticket Status</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Ticket Status
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -418,7 +543,16 @@ const CreateTickets = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Priority</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Priority
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -447,7 +581,16 @@ const CreateTickets = () => {
               >
                 <Grid container>
                   <Grid item xs={3}>
-                    <h2 className="align-right">Impact Detail</h2>
+                    <h2
+                      className="align-right"
+                      style={{
+                        fontSize: "20px",
+                        fontWeight: "bold",
+                        textAlign: "right",
+                      }}
+                    >
+                      Impact Detail
+                    </h2>
                   </Grid>
                   <Grid item xs={9}>
                     <textarea
@@ -476,13 +619,7 @@ const CreateTickets = () => {
                   onClick={handleSubmitTicket}
                   disabled={isSubmitting}
                 >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary custom-btn-margin"
-                >
-                  Save and Approve
+                  {isSubmitting ? "Submitting..." : "Save"}
                 </button>
                 <button
                   type="button"
@@ -495,6 +632,32 @@ const CreateTickets = () => {
           </MDBRow>
         </MDBCol>
       </Grid>
+
+      <Dialog
+        open={isImagePreviewOpen}
+        onClose={closeImagePreview}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          Image Preview
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={closeImagePreview}
+            aria-label="close"
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <img
+            src={imagePreviewUrl}
+            alt="Attachment Preview"
+            style={{ width: "100%" }}
+          />
+        </DialogContent>
+      </Dialog>
     </Grid>
   );
 };

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Grid, Switch, TextField } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, Grid, IconButton, TextField } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
@@ -36,11 +36,12 @@ const CreateTicketTask = () => {
   const [dataTeam, setDataTeam] = useState([]);
   const [dataTechnician, setDataTechnician] = useState([]);
   const [selectedTeamId, setSelectedTeamId] = useState("");
-  const [selectedTechnicianId, setSelectedTechnicianId] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [scheduledStartTime, setScheduledStartTime] = useState(moment());
   const [scheduledEndTime, setScheduledEndTime] = useState(moment());
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
     title: "",
     description: "",
@@ -54,7 +55,7 @@ const CreateTicketTask = () => {
       scheduledStartTime: formattedDate,
     }));
   };
-  
+
   const handleScheduledEndTimeChange = (newDate) => {
     const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
     setScheduledEndTime(newDate);
@@ -94,7 +95,14 @@ const CreateTicketTask = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     let processedValue = value;
-    if (name === "taskStatus" || name === "teamId" || name === "priority" || name === "ticketId" || name === "technicianId" || name === "progress" ) {
+    if (
+      name === "taskStatus" ||
+      name === "teamId" ||
+      name === "priority" ||
+      name === "ticketId" ||
+      name === "technicianId" ||
+      name === "progress"
+    ) {
       processedValue = parseInt(value, 10);
     }
     setData((prevData) => ({
@@ -106,74 +114,91 @@ const CreateTicketTask = () => {
       [name]: "",
     }));
   };
-  console.log("Updated data:", data);
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     setSelectedFile(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreviewUrl(reader.result);
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreviewUrl(null);
+    }
+  };
+
+  const closeImagePreview = () => {
+    setIsImagePreviewOpen(false);
   };
 
   const validateDate = (scheduledStartTime, scheduledEndTime) => {
     if (!scheduledStartTime || !scheduledStartTime) {
-      return false; 
+      return false;
     }
     return moment(scheduledStartTime).isBefore(scheduledEndTime);
-    };
+  };
 
-    const handleSubmitTicket = async (e) => {
-      e.preventDefault();
-    
-      const errors = {};
-      if (!data.title) {
-        errors.title = "Title Ticket is required";
+  const handleSubmitTicket = async (e) => {
+    e.preventDefault();
+
+    const errors = {};
+    if (!data.title) {
+      errors.title = "Title Ticket is required";
+    }
+
+    if (!data.description) {
+      errors.description = "Description is required";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      let attachmentUrl = data.attachmentUrl;
+      if (selectedFile) {
+        const storage = getStorage();
+        const storageRef = ref(storage, "images/" + selectedFile.name);
+        await uploadBytes(storageRef, selectedFile);
+        attachmentUrl = await getDownloadURL(storageRef);
       }
-    
-      if (!data.description) {
-        errors.description = "Description is required";
-      }
-    
-      if (Object.keys(errors).length > 0) {
-        setFieldErrors(errors);
+
+      const isDataValid = validateDate(
+        data.scheduledStartTime,
+        data.scheduledEndTime
+      );
+
+      if (!isDataValid) {
+        toast.warning(
+          "scheduledStartTime must be earlier than scheduledEndTime.",
+          {
+            autoClose: 2000,
+            hideProgressBar: false,
+            position: toast.POSITION.TOP_CENTER,
+          }
+        );
         return;
       }
-    
-      setIsSubmitting(true);
-      try {
-        let attachmentUrl = data.attachmentUrl;
-        if (selectedFile) {
-          const storage = getStorage();
-          const storageRef = ref(storage, "images/" + selectedFile.name);
-          await uploadBytes(storageRef, selectedFile);
-          attachmentUrl = await getDownloadURL(storageRef);
-        }
+      const formattedScheduledStartTime = moment(
+        data.scheduledStartTime
+      ).format("YYYY-MM-DDTHH:mm:ss");
 
-        const isDataValid = validateDate(
-          data.scheduledStartTime,
-          data.scheduledEndTime
-        );
-          
-        if (!isDataValid) {
-          toast.info(
-            "scheduledStartTime must be earlier than scheduledEndTime."
-          );
-          return;
-        }
-        // Move the formatted time code here
-        const formattedScheduledStartTime = moment(data.scheduledStartTime).format(
-          "YYYY-MM-DDTHH:mm:ss"
-        );
-    
-        const formattedScheduledEndTime = moment(data.scheduledEndTime).format(
-          "YYYY-MM-DDTHH:mm:ss"
-        );
-    
-        const updatedData = {
-          ...data,
-          attachmentUrl: attachmentUrl,
-          scheduledStartTime: formattedScheduledStartTime,
-          scheduledEndTime: formattedScheduledEndTime,
-        };
-        setData(updatedData);
+      const formattedScheduledEndTime = moment(data.scheduledEndTime).format(
+        "YYYY-MM-DDTHH:mm:ss"
+      );
+
+      const updatedData = {
+        ...data,
+        attachmentUrl: attachmentUrl,
+        scheduledStartTime: formattedScheduledStartTime,
+        scheduledEndTime: formattedScheduledEndTime,
+      };
+      setData(updatedData);
         await createTicketTask({
           ticketId: data.ticketId,
           title: data.title,
@@ -185,13 +210,13 @@ const CreateTicketTask = () => {
           scheduledEndTime: data.scheduledEndTime,
           progress: parseInt(data.progress),
           attachmentUrl: data.attachmentUrl,
-        });  
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsSubmitting(false);
-      }
-    };
+        });    
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleGoBack = (ticketId) => {
     navigate(`/home/detailTicket/${ticketId}`);
@@ -218,7 +243,26 @@ const CreateTicketTask = () => {
                   />
                 </button>
 
-                <h2 style={{ marginLeft: "10px" }}>New Task</h2>
+                <div
+                  style={{
+                    marginLeft: "40px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontSize: "30px",
+                      fontWeight: "bold",
+                      marginRight: "10px",
+                    }}
+                  >
+                    New Task
+                  </h2>
+                  <span style={{ fontSize: "18px", color: "#888" }}>
+                    Create a new task for assistance.
+                  </span>
+                </div>
               </div>
             </MDBCol>
           </MDBRow>
@@ -243,8 +287,18 @@ const CreateTicketTask = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">
-                        <span style={{ color: "red" }}>*</span>Title
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        <span style={{ color: "red", marginRight: "5px" }}>
+                          *
+                        </span>
+                        Title
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
@@ -266,7 +320,17 @@ const CreateTicketTask = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right">TicketId</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                          marginBottom: "25px",
+                        }}
+                      >
+                        TicketId
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <input
@@ -283,7 +347,14 @@ const CreateTicketTask = () => {
                 </Grid>
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    marginBottom: "25px",
+                  }}
+                >
                   <span style={{ color: "red" }}>*</span>Description
                 </h2>
               </Grid>
@@ -302,7 +373,16 @@ const CreateTicketTask = () => {
                 )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">Attachment</h2>
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    marginBottom: "25px",
+                  }}
+                >
+                  Attachment
+                </h2>
               </Grid>
               <Grid item xs={9}>
                 <input
@@ -313,6 +393,16 @@ const CreateTicketTask = () => {
                   onChange={handleFileChange}
                   value={data.attachmentUrl}
                 />
+                 {imagePreviewUrl && (
+                  <div
+                    className="image-preview"
+                    onClick={() => setIsImagePreviewOpen(true)}
+                  >
+                    <p className="preview-text">
+                      Click here to view attachment
+                    </p>
+                  </div>
+                )}
               </Grid>
               <Grid
                 container
@@ -322,7 +412,14 @@ const CreateTicketTask = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          marginBottom: "25px",
+                        }}
+                      >
                         <span style={{ color: "red" }}>*</span>TechnicianId
                       </h2>
                     </Grid>
@@ -346,10 +443,6 @@ const CreateTicketTask = () => {
                         id="technicianId"
                         name="technicianId"
                         className="form-select"
-                        // value={selectedTechnicianId}
-                        // onChange={(e) =>
-                        //   setSelectedTechnicianId(e.target.value)
-                        // }
                         value={data.technicianId}
                         onChange={handleInputChange}
                       >
@@ -368,7 +461,16 @@ const CreateTicketTask = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right">Priority</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          marginBottom: "25px",
+                        }}
+                      >
+                        Priority
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -394,7 +496,16 @@ const CreateTicketTask = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Schedule startTime</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          marginBottom: "25px",
+                        }}
+                      >
+                        Schedule startTime
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -417,7 +528,16 @@ const CreateTicketTask = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Schedule endTime</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          marginBottom: "25px",
+                        }}
+                      >
+                        Schedule endTime
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -441,7 +561,16 @@ const CreateTicketTask = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Task Status</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          marginBottom: "25px",
+                        }}
+                      >
+                        Task Status
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -465,7 +594,16 @@ const CreateTicketTask = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Progress</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          marginBottom: "25px",
+                        }}
+                      >
+                        Progress
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -498,9 +636,9 @@ const CreateTicketTask = () => {
                   type="button"
                   className="btn btn-primary custom-btn-margin"
                   onClick={handleSubmitTicket}
-                  // disabled={isSubmitting}
+                  disabled={isSubmitting}
                 >
-                  Save
+                   {isSubmitting ? 'Submitting...' : 'Save'}
                 </button>
                 <button
                   type="button"
@@ -513,6 +651,31 @@ const CreateTicketTask = () => {
           </MDBRow>
         </MDBCol>
       </Grid>
+      <Dialog
+        open={isImagePreviewOpen}
+        onClose={closeImagePreview}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          Image Preview
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={closeImagePreview}
+            aria-label="close"
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <img
+            src={imagePreviewUrl}
+            alt="Attachment Preview"
+            style={{ width: "100%" }}
+          />
+        </DialogContent>
+      </Dialog>
     </Grid>
   );
 };

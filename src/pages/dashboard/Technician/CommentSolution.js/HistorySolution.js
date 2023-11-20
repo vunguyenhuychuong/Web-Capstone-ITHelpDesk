@@ -9,7 +9,7 @@ import { ListAlt } from "@mui/icons-material";
 import { useState } from "react";
 import { Button, Input } from "@mui/material";
 import { getTicketLog } from "../../../../app/api/ticketLog";
-import { useSelector } from "react-redux";
+import { formatTicketDate } from "../../../helpers/FormatAMPM";
 
 const iconStyle = {
   borderRadius: "100%",
@@ -20,7 +20,6 @@ const iconStyle = {
 export default function AccessibleTable({ticketId}) {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const user = useSelector((state) => state.auth);
 
   const [dataTicketLog, setDataTicketLog] = useState([]);
 
@@ -83,7 +82,7 @@ export default function AccessibleTable({ticketId}) {
             dataTicketLog.map((entry, index) => (
               <TableRow key={index}>
                 <TableCell align="right" style={{ width: '50px' }}>
-                  {entry.timestamp}
+                  {formatTicketDate(entry.timestamp)}
                 </TableCell>
                 <TableCell align="left" style={{ width: '500px' }}>
                   <ListAlt style={iconStyle} /> {entry.entries[0].message}

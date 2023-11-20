@@ -45,7 +45,9 @@ const DetailTicket = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth);
   const userRole = user.user.role;
-  const userName = data.requester ? `${data.requester.lastName} ${data.requester.firstName}` : "";
+  const userName = data.requester
+    ? `${data.requester.lastName} ${data.requester.firstName}`
+    : "";
 
   const fetchDataManager = async () => {
     try {
@@ -80,11 +82,10 @@ const DetailTicket = () => {
       navigate(`/home/homeManager?tab=1`);
     } else if (userRole === 3) {
       navigate(`/home/homeTechnician?tab=1`);
-    } else {
-      navigate(`/home`);
+    } else if (userRole === 1) {
+      navigate(`/home/requestCustomerList`);
     }
   };
-
 
   useEffect(() => {
     fetchDataManager();
@@ -95,7 +96,6 @@ const DetailTicket = () => {
     data.requester && data.requester.role
       ? roleOptions.find((role) => role.id === data.requester.role)
       : null;
-
 
   if (loading) {
     return <div>Loading...</div>;
@@ -164,7 +164,10 @@ const DetailTicket = () => {
                   #{data.requesterId} {data.title}
                 </span>
                 <span style={{ fontSize: "0.8em" }}>
-                  by <span className="bold-text">{roleName && roleName.name ? roleName.name : "Unknown Role"}</span>{" "}
+                  by{" "}
+                  <span className="bold-text">
+                    {roleName && roleName.name ? roleName.name : "Unknown Role"}
+                  </span>{" "}
                   <ChatOutlined color="#007bff" /> on:
                   {formatDate(data.scheduledStartTime)} |
                   <span className="bold-text">DueBy:</span>{" "}
@@ -199,90 +202,52 @@ const DetailTicket = () => {
                 }
                 className="custom-tab-label"
               />
-              <Tab
-                label={
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      textTransform: "none",
-                    }}
-                  >
-                    <Task sx={{ marginRight: 1 }} /> Task
-                  </div>
-                }
-                className="custom-tab-label"
-              />
-              <Tab
-                label={
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      textTransform: "none",
-                    }}
-                  >
-                    <WorkHistory sx={{ marginRight: 1 }} /> Ticket Log
-                  </div>
-                }
-                className="custom-tab-label"
-              />
-              <Tab
-                label={
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      textTransform: "none",
-                    }}
-                  >
-                    <WorkHistory sx={{ marginRight: 1 }} /> Checklist
-                  </div>
-                }
-                className="custom-tab-label"
-              />
-              <Tab
-                label={
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      textTransform: "none",
-                    }}
-                  >
-                    <WorkHistory sx={{ marginRight: 1 }} /> WorkLogs
-                  </div>
-                }
-                className="custom-tab-label"
-              />
-              <Tab
-                label={
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      textTransform: "none",
-                    }}
-                  >
-                    <WorkHistory sx={{ marginRight: 1 }} /> Time Analysis
-                  </div>
-                }
-                className="custom-tab-label"
-              />
-              <Tab
-                label={
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      textTransform: "none",
-                    }}
-                  >
-                    <WorkHistory sx={{ marginRight: 1 }} /> History
-                  </div>
-                }
-                className="custom-tab-label"
-              />
+              {userRole === 2 || userRole === 3 ? ( 
+                <>
+                  <Tab
+                    label={
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          textTransform: "none",
+                        }}
+                      >
+                        <Task sx={{ marginRight: 1 }} /> Task
+                      </div>
+                    }
+                    className="custom-tab-label"
+                  />
+                  <Tab
+                    label={
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          textTransform: "none",
+                        }}
+                      >
+                        <WorkHistory sx={{ marginRight: 1 }} /> Ticket Log
+                      </div>
+                    }
+                    className="custom-tab-label"
+                  />
+                  <Tab
+                    label={
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          textTransform: "none",
+                        }}
+                      >
+                        <WorkHistory sx={{ marginRight: 1 }} /> Checklist
+                      </div>
+                    }
+                    className="custom-tab-label"
+                  />
+                </>
+              ) : null}
             </Tabs>
             <Box role="tabpanel" hidden={value !== 0}>
               {value === 0 ? (
@@ -300,8 +265,11 @@ const DetailTicket = () => {
               {value === 1 ? <TicketTaskList /> : <LoadingSkeleton />}
             </Box>
             <Box role="tabpanel" hidden={value !== 2}>
-              {value === 2 ? 
-              <AccessibleTable ticketId={ticketId} /> : <LoadingSkeleton />}
+              {value === 2 ? (
+                <AccessibleTable ticketId={ticketId} />
+              ) : (
+                <LoadingSkeleton />
+              )}
             </Box>
           </Box>
         </Grid>
@@ -453,7 +421,8 @@ const DetailTicket = () => {
                 <tr>
                   <th>BirthDay</th>
                   <th>
-                    {formatDate(data.requester) && formatDate(data.requester.dateOfBirth)
+                    {formatDate(data.requester) &&
+                    formatDate(data.requester.dateOfBirth)
                       ? formatDate(data.requester.dateOfBirth)
                       : "-"}
                   </th>

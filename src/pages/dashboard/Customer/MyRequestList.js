@@ -23,14 +23,13 @@ import {
 } from "../../helpers/tableComlumn";
 import { getAllCategories } from "../../../app/api/category";
 import { useNavigate } from "react-router-dom";
-import TicketLogList from "./TicketLogList";
 
 const MyRequestList = () => {
   const [dataListTicketsCustomer, setDataListTicketsCustomer] = useState([]);
   const user = useSelector((state) => state.auth);
   const userId = user.user.id;
   const [dataCategories, setDataCategories] = useState([]);
-  const [selectedSolutionIds, setSelectedSolutionIds] = useState([]);
+  const [selectedTicketIds, setSelectedTicketIds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -73,22 +72,22 @@ const MyRequestList = () => {
     userId,
   ]);
 
-  const handleSelectSolution = (solutionId) => {
-    if (selectedSolutionIds.includes(solutionId)) {
-      setSelectedSolutionIds(
-        selectedSolutionIds.filter((id) => id !== solutionId)
+  const handleSelectTicket = (ticketId) => {
+    if (selectedTicketIds.includes(ticketId)) {
+      setSelectedTicketIds(
+        selectedTicketIds.filter((id) => id !== ticketId)
       );
     } else {
-      setSelectedSolutionIds([...selectedSolutionIds, solutionId]);
+      setSelectedTicketIds([...selectedTicketIds, ticketId]);
     }
   };
 
   const handleSelectAllSolutions = () => {
-    if (selectedSolutionIds.length === dataListTicketsCustomer.length) {
-      setSelectedSolutionIds([]);
+    if (selectedTicketIds.length === dataListTicketsCustomer.length) {
+      setSelectedTicketIds([]);
     } else {
-      setSelectedSolutionIds(
-        dataListTicketsCustomer.map((solution) => solution.id)
+      setSelectedTicketIds(
+        dataListTicketsCustomer.map((ticket) => ticket.id)
       );
     }
   };
@@ -126,8 +125,12 @@ const MyRequestList = () => {
     }
   };
 
-  const handleOpenDetailTicketLog = (solutionId) => {
-    navigate(`/home/ticketLog/${solutionId}`);
+  const handleOpenDetailTicketLog = (ticketId) => {
+    navigate(`/home/ticketLog/${ticketId}`);
+  };
+
+  const handleOpenDetailTicket = (ticketId) => {
+    navigate(`/home/detailTicket/${ticketId}`);
   };
 
   useEffect(() => {
@@ -137,13 +140,13 @@ const MyRequestList = () => {
   }, [fetchDataListTicketCustomer]);
 
   return (
-<>
+    <>
       <MDBContainer className="py-5 custom-container">
         <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "16px" }}>
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
-              <span style={{ color: "#FFFFFF" }}>All My Request</span>
+              <span style={{ color: "#FFFFFF" }}>All My Requests</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <FormControl
@@ -203,13 +206,14 @@ const MyRequestList = () => {
                   <input
                     type="checkbox"
                     checked={
-                      selectedSolutionIds.length ===
+                      selectedTicketIds.length ===
                       dataListTicketsCustomer.length
                     }
                     onChange={handleSelectAllSolutions}
                   />
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}>Log</th>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}>Detail</th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("title")}
@@ -246,43 +250,50 @@ const MyRequestList = () => {
               <CustomizedProgressBars />
             ) : (
               <MDBTableBody className="bg-light">
-                {dataListTicketsCustomer.map((TicketSolution, index) => {
-                  const isSelected = selectedSolutionIds.includes(
-                    TicketSolution.id
+                {dataListTicketsCustomer.map((Ticket, index) => {
+                  const isSelected = selectedTicketIds.includes(
+                    Ticket.id
                   );
                   const ticketStatusOption = TicketStatusOptions.find(
-                    (option) => option.id === TicketSolution.ticketStatus
+                    (option) => option.id === Ticket.ticketStatus
                   );
                   return (
                     <tr key={index}>
-                      <td>{TicketSolution.id}</td>
+                      <td>{Ticket.id}</td>
                       <td>
                         <input
                           type="checkbox"
                           checked={isSelected}
                           onChange={() =>
-                            handleSelectSolution(TicketSolution.id)
+                            handleSelectTicket(Ticket.id)
                           }
                         />
                       </td>
                       <td>
-                    <ViewCompact
-                      onClick={() =>
-                        handleOpenDetailTicketLog(TicketSolution.id)
-                      }
-                    />{" "}                  
-                  </td>
-                      <td>{TicketSolution.title}</td>
-                      <td>{getCategoryNameById(TicketSolution.categoryId)}</td>
-                      <td>{getPriorityOption(TicketSolution.priority)}</td>
+                        <ViewCompact
+                          onClick={() =>
+                            handleOpenDetailTicketLog(Ticket.id)
+                          }
+                        />{" "}
+                      </td>
+                      <td>
+                        <ViewCompact
+                          onClick={() =>
+                            handleOpenDetailTicket(Ticket.id)
+                          }
+                        />{" "}
+                      </td>
+                      <td>{Ticket.title}</td>
+                      <td>{getCategoryNameById(Ticket.categoryId)}</td>
+                      <td>{getPriorityOption(Ticket.priority)}</td>
                       <td>
                         <span style={ticketStatusOption.badgeStyle}>
                           {ticketStatusOption.icon}
                           {ticketStatusOption.name}
                         </span>
                       </td>
-                      <td>{formatDate(TicketSolution.createdAt)}</td>
-                      <td>{formatDate(TicketSolution.modifiedAt)}</td>
+                      <td>{formatDate(Ticket.createdAt)}</td>
+                      <td>{formatDate(Ticket.modifiedAt)}</td>
                     </tr>
                   );
                 })}
@@ -298,7 +309,7 @@ const MyRequestList = () => {
           onChange={handleChangePage}
         />
       </Box>
-      </>
+    </>
   );
 };
 

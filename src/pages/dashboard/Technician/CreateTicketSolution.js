@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Grid, Switch, TextField } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, Grid, IconButton, Switch, TextField } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { getDataCategories } from "../../../app/api/category";
 import { toast } from "react-toastify";
@@ -36,6 +36,12 @@ const CreateTicketSolution = () => {
   const [reviewDate, setReviewDate] = useState(moment());
   const [expiredDate, setExpiredDate] = useState(moment());
   const [dataUsers, setDataUsers] = useState([]);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({
+    title: "",
+    content: "",
+  });
 
   const handleReviewDateChange = (newDate) => {
     const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
@@ -74,17 +80,35 @@ const CreateTicketSolution = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "categoryId") {
+    if (name === "categoryId" || name === "ownerId") {
       const selectedValue = parseInt(value, 10);
       setData((prevData) => ({ ...prevData, [name]: selectedValue }));
     } else {
       setData((prevData) => ({ ...prevData, [name]: value }));
     }
+    setFieldErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedFile(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreviewUrl(reader.result);
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreviewUrl(null);
+    }
+  };
+
+  const closeImagePreview = () => {
+    setIsImagePreviewOpen(false);
   };
 
   const validateDate = (reviewDate, expiredDate) => {
@@ -96,8 +120,18 @@ const CreateTicketSolution = () => {
 
   const handleSubmitTicket = async (e) => {
     e.preventDefault();
+
+    const errors = {};
     if (!data.title) {
-      toast.warning("Please fill out all fields");
+      errors.title = "Title Ticket is required";
+    }
+
+    if (!data.content) {
+      errors.content = "Content is required";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
     setIsSubmitting(true);
@@ -112,7 +146,14 @@ const CreateTicketSolution = () => {
 
       const isDataValid = validateDate(data.reviewDate, data.expiredDate);
       if (!isDataValid) {
-        toast.info("Review Date must be earlier than Expired Date.");
+        toast.warning(
+          "scheduledStartTime must be earlier than scheduledEndTime.",
+          {
+            autoClose: 2000,
+            hideProgressBar: false,
+            position: toast.POSITION.TOP_CENTER,
+          }
+        );
         return;
       }
 
@@ -191,7 +232,26 @@ const CreateTicketSolution = () => {
                   />
                 </button>
 
-                <h2 style={{ marginLeft: "10px" }}>New Solution</h2>
+                <div
+                  style={{
+                    marginLeft: "40px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontSize: "30px",
+                      fontWeight: "bold",
+                      marginRight: "10px",
+                    }}
+                  >
+                    New Solution
+                  </h2>
+                  <span style={{ fontSize: "18px", color: "#888" }}>
+                    Create a new solution for assistance.
+                  </span>
+                </div>
               </div>
             </MDBCol>
           </MDBRow>
@@ -210,7 +270,14 @@ const CreateTicketSolution = () => {
               {" "}
               {/* Set justifyContent to 'flex-end' */}
               <Grid item xs={3}>
-                <h2 className="align-right">
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
                   <span style={{ color: "red" }}>*</span>Title
                 </h2>
               </Grid>
@@ -223,9 +290,19 @@ const CreateTicketSolution = () => {
                   value={data.title}
                   onChange={handleInputChange}
                 />
+                {fieldErrors.title && (
+                  <div style={{ color: "red" }}>{fieldErrors.title}</div>
+                )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
                   <span style={{ color: "red" }}>*</span>Content
                 </h2>
               </Grid>
@@ -239,9 +316,21 @@ const CreateTicketSolution = () => {
                   value={data.content}
                   onChange={handleInputChange}
                 />
+                {fieldErrors.content && (
+                  <div style={{ color: "red" }}>{fieldErrors.content}</div>
+                )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">Attachment</h2>
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
+                  Attachment
+                </h2>
               </Grid>
               <Grid item xs={9}>
                 <input
@@ -251,6 +340,16 @@ const CreateTicketSolution = () => {
                   id="attachmentUrl"
                   onChange={handleFileChange}
                 />
+                {imagePreviewUrl && (
+                  <div
+                    className="image-preview"
+                    onClick={() => setIsImagePreviewOpen(true)}
+                  >
+                    <p className="preview-text">
+                      Click here to view attachment
+                    </p>
+                  </div>
+                )}
               </Grid>
               <Grid
                 container
@@ -260,7 +359,14 @@ const CreateTicketSolution = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
                         <span style={{ color: "red" }}>*</span>Category
                       </h2>
                     </Grid>
@@ -287,7 +393,16 @@ const CreateTicketSolution = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right">Solution Owner</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Solution Owner
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -313,7 +428,16 @@ const CreateTicketSolution = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Review Date</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Review Date
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -336,7 +460,16 @@ const CreateTicketSolution = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Expiry Date</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Expiry Date
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -358,7 +491,16 @@ const CreateTicketSolution = () => {
               </Grid>
               <Grid container justifyContent="flex-end">
                 <Grid item xs={3}>
-                  <h2 className="align-right">Keywords</h2>
+                  <h2
+                    className="align-right"
+                    style={{
+                      fontSize: "20px",
+                      fontWeight: "bold",
+                      textAlign: "right",
+                    }}
+                  >
+                    Keywords
+                  </h2>
                 </Grid>
                 <Grid item xs={9}>
                   <input
@@ -388,7 +530,16 @@ const CreateTicketSolution = () => {
               </Grid>
               <Grid container justifyContent="flex-end">
                 <Grid item xs={3}>
-                  <h2 className="align-right">Internal Comments</h2>
+                  <h2
+                    className="align-right"
+                    style={{
+                      fontSize: "20px",
+                      fontWeight: "bold",
+                      textAlign: "right",
+                    }}
+                  >
+                    Internal Comments
+                  </h2>
                 </Grid>
                 <Grid item xs={9}>
                   <textarea
@@ -435,6 +586,31 @@ const CreateTicketSolution = () => {
           </MDBRow>
         </MDBCol>
       </Grid>
+      <Dialog
+        open={isImagePreviewOpen}
+        onClose={closeImagePreview}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          Image Preview
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={closeImagePreview}
+            aria-label="close"
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <img
+            src={imagePreviewUrl}
+            alt="Attachment Preview"
+            style={{ width: "100%" }}
+          />
+        </DialogContent>
+      </Dialog>
     </Grid>
   );
 };

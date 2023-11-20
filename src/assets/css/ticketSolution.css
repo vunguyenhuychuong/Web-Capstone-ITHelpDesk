@@ -46,3 +46,12 @@
 .square-icon {
   color: #FF6600;
 }
+
+.image-preview {
+  cursor: pointer;
+}
+
+.preview-text:hover {
+  text-decoration: underline;
+  color: blue; /* Change the color as per your preference */
+}
