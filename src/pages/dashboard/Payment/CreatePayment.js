@@ -157,7 +157,26 @@ const CreatePayment = () => {
                   />
                 </button>
 
-                <h2 style={{ marginLeft: "10px" }}>New Payment</h2>
+                <div
+                  style={{
+                    marginLeft: "40px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontSize: "30px",
+                      fontWeight: "bold",
+                      marginRight: "10px",
+                    }}
+                  >
+                    Create Payment
+                  </h2>
+                  <span style={{ fontSize: "18px", color: "#888" }}>
+                    Create a payment for assistance.
+                  </span>
+                </div>
               </div>
             </MDBCol>
           </MDBRow>
@@ -174,7 +193,11 @@ const CreatePayment = () => {
           >
             <Grid container justifyContent="flex-end">
               <Grid item xs={3}>
-                <h2 className="align-right">
+                <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>
                   <span style={{ color: "red" }}>*</span>contractId
                 </h2>
               </Grid>
@@ -196,7 +219,11 @@ const CreatePayment = () => {
                 </select>
               </Grid>
               <Grid item xs={3} style={{ marginTop: "10px" }}>
-                <h2 className="align-right">
+                <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>
                   <span style={{ color: "red" }}>*</span>Description
                 </h2>
               </Grid>
@@ -215,7 +242,11 @@ const CreatePayment = () => {
                 )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">numberOfTerms</h2>
+                <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>numberOfTerms</h2>
               </Grid>
               <Grid item xs={9}>
                 <select
@@ -242,7 +273,11 @@ const CreatePayment = () => {
                 <Grid item xs={6} style={{ marginTop: "20px" }}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">
+                      <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>
                         <span style={{ color: "red" }}>*</span>duration
                       </h2>
                     </Grid>
@@ -269,7 +304,11 @@ const CreatePayment = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right">initialPaymentAmount</h2>
+                      <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>Initial Payment Amount</h2>
                     </Grid>
                     <Grid item xs={5} style={{ marginTop: "20px" }}>
                       <input
@@ -291,8 +330,12 @@ const CreatePayment = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">
-                        note
+                      <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>
+                        Note
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
@@ -311,7 +354,11 @@ const CreatePayment = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">firstDateOfPayment</h2>
+                      <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>firstDateOfPayment</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -346,13 +393,7 @@ const CreatePayment = () => {
                   onClick={handleSubmitPayment}
                   disabled={isSubmitting}
                 >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary custom-btn-margin"
-                >
-                  Save and Approve
+                  {isSubmitting ? 'Submitting...' : 'Save'}
                 </button>
                 <button
                   type="button"

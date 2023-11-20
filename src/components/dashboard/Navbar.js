@@ -30,13 +30,11 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import React, { useEffect } from "react";
+import React from "react";
 import { roleOptions } from "../../pages/helpers/tableComlumn";
-import { GetDataProfileUser } from "../../app/api";
 import { useState } from "react";
 import NotificationList from "../../pages/dashboard/Notificate/NotificationList";
 import ChatBox from "./ChatBox";
-import Notification from "../notification/Notification";
 
 export function stringToColor(string) {
   let hash = 0;
@@ -81,41 +79,6 @@ const Navbar = ({ notifications }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [chatBoxVisible, setChatBoxVisible] = useState(false);
-  const [sessionTimeoutId, setSessionTimeoutId] = useState(null);
-
-  const resetSessionTimeout = () => {
-    if(sessionTimeoutId) {
-      clearTimeout(sessionTimeoutId);
-    }
-    const newTimeoutId = setTimeout(() => {
-      logout();
-    }, 30 * 60 * 1000);
-    setSessionTimeoutId(newTimeoutId);
-  };
-
-  const handleUserActivity = () => {
-    resetSessionTimeout();
-  };
-
-  // useEffect(() => {
-  //   resetSessionTimeout();
-  
-  //   const handleUserActivity = () => {
-  //     resetSessionTimeout();
-  //   };
-  
-  //   document.addEventListener("mousemove", handleUserActivity);
-  //   document.addEventListener("keydown", handleUserActivity);
-  
-  //   return () => {
-  //     if (sessionTimeoutId) {
-  //       clearTimeout(sessionTimeoutId);
-  //     }
-  //     document.removeEventListener("mousemove", handleUserActivity);
-  //     document.removeEventListener("keydown", handleUserActivity);
-  //   };
-  // }, [sessionTimeoutId, resetSessionTimeout]);
-  
 
   const toggleChatBox = () => {
     setChatBoxVisible((prevVisible) => !prevVisible);
@@ -154,19 +117,6 @@ const Navbar = ({ notifications }) => {
     setAnchorElUser(null);
   };
 
-  const fetchDataProfile = async () => {
-    try {
-      const res = await GetDataProfileUser();
-      setData(res);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // useEffect(() => {
-  //   fetchDataProfile();
-  // }, []);
-
   const logout = () => {
     localStorage.removeItem("profile");
     sessionStorage.removeItem("profile");
@@ -194,6 +144,8 @@ const Navbar = ({ notifications }) => {
         navigate("/home/homeAdmin");
       }else if(role === 1) {
         navigate("/home/mains");
+      }else if(role === 4) {
+        navigate("/home/homeAccountant")
       }
     }
     setAnchorElUser(null);

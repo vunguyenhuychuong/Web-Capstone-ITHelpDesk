@@ -567,13 +567,7 @@ const CreateTicketSolution = () => {
                   onClick={handleSubmitTicket}
                   disabled={isSubmitting}
                 >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary custom-btn-margin"
-                >
-                  Save and Approve
+                   {isSubmitting ? 'Submitting...' : 'Save'}
                 </button>
                 <button
                   type="button"

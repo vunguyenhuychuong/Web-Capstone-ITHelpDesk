@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Grid, TextField } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, Grid, IconButton, TextField } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
@@ -38,6 +38,8 @@ const CreateContract = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [startDate, setStartDate] = useState(moment());
   const [endDate, setEndDate] = useState(moment());
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
     name: "",
     description: "",
@@ -105,6 +107,20 @@ const CreateContract = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedFile(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreviewUrl(reader.result);
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreviewUrl(null);
+    }
+  };
+
+  const closeImagePreview = () => {
+    setIsImagePreviewOpen(false);
   };
 
   const validateDate = (startDate, endDate) => {
@@ -216,7 +232,26 @@ const CreateContract = () => {
                   />
                 </button>
 
-                <h2 style={{ marginLeft: "10px" }}>New Contract</h2>
+                <div
+                  style={{
+                    marginLeft: "40px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontSize: "30px",
+                      fontWeight: "bold",
+                      marginRight: "10px",
+                    }}
+                  >
+                    New Contract
+                  </h2>
+                  <span style={{ fontSize: "18px", color: "#888" }}>
+                    Create a new contract for assistance.
+                  </span>
+                </div>
               </div>
             </MDBCol>
           </MDBRow>
@@ -234,7 +269,11 @@ const CreateContract = () => {
             <Grid container justifyContent="flex-end">
               {" "}
               <Grid item xs={3}>
-                <h2 className="align-right">
+                <h2 className="align-right"  style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>
                   <span style={{ color: "red" }}>*</span>Name
                 </h2>
               </Grid>
@@ -252,7 +291,11 @@ const CreateContract = () => {
                 )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">
+                <h2 className="align-right"  style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>
                   <span style={{ color: "red" }}>*</span>Description
                 </h2>
               </Grid>
@@ -271,7 +314,11 @@ const CreateContract = () => {
                 )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">Attachment</h2>
+                <h2 className="align-right"  style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>Attachment</h2>
               </Grid>
               <Grid item xs={9}>
                 <input
@@ -281,6 +328,16 @@ const CreateContract = () => {
                   id="attachmentUrl"
                   onChange={handleFileChange}
                 />
+                 {imagePreviewUrl && (
+                  <div
+                    className="image-preview"
+                    onClick={() => setIsImagePreviewOpen(true)}
+                  >
+                    <p className="preview-text">
+                      Click here to view attachment
+                    </p>
+                  </div>
+                )}
               </Grid>
               <Grid
                 container
@@ -290,8 +347,12 @@ const CreateContract = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">
-                        <span style={{ color: "red" }}>*</span>value
+                      <h2 className="align-right"  style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>
+                        <span style={{ color: "red" }}>*</span>value(VND)
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
@@ -313,7 +374,11 @@ const CreateContract = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right">Parent Contract</h2>
+                      <h2 className="align-right"  style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>Parent Contract</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -342,7 +407,11 @@ const CreateContract = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Start Date</h2>
+                      <h2 className="align-right"  style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>Start Date</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -365,7 +434,11 @@ const CreateContract = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">End Date</h2>
+                      <h2 className="align-right"  style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>End Date</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -393,7 +466,11 @@ const CreateContract = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">
+                      <h2 className="align-right"  style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>
                         <span style={{ color: "red" }}>*</span>Accountant
                       </h2>
                     </Grid>
@@ -420,7 +497,11 @@ const CreateContract = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right">Company </h2>
+                      <h2 className="align-right"  style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>Company </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -456,13 +537,7 @@ const CreateContract = () => {
                   onClick={handleSubmitContract}
                   disabled={isSubmitting}
                 >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary custom-btn-margin"
-                >
-                  Save and Approve
+                  {isSubmitting ? 'Submitting...' : 'Save'}
                 </button>
                 <button
                   type="button"
@@ -475,6 +550,31 @@ const CreateContract = () => {
           </MDBRow>
         </MDBCol>
       </Grid>
+      <Dialog
+        open={isImagePreviewOpen}
+        onClose={closeImagePreview}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          Image Preview
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={closeImagePreview}
+            aria-label="close"
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <img
+            src={imagePreviewUrl}
+            alt="Attachment Preview"
+            style={{ width: "100%" }}
+          />
+        </DialogContent>
+      </Dialog>
     </Grid>
   );
 };

@@ -1,17 +1,15 @@
 import React, { useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Grid, TextField } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, Grid, IconButton, TextField } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import {
   editTicketSolution,
-  getTicketSolutionById,
 } from "../../../app/api/ticketSolution";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import moment from "moment";
-import { getDataCategories } from "../../../app/api/category";
 import { toast } from "react-toastify";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
@@ -44,6 +42,8 @@ const EditContract = () => {
   const [dataCompanyList, setDataCompanyList] = useState([]);
   const [startDate, setStartDate] = useState(moment());
   const [endDate, setEndDate] = useState(moment());
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
     name: "",
     description: "",
@@ -71,6 +71,20 @@ const EditContract = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedFile(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreviewUrl(reader.result);
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreviewUrl(null);
+    }
+  };
+
+  const closeImagePreview = () => {
+    setIsImagePreviewOpen(false);
   };
 
   const fetchDataCreateContract = async () => {
@@ -112,7 +126,7 @@ const EditContract = () => {
 
   const validateDate = (startDate, endDate) => {
     if (!startDate || !endDate) {
-      return false; // If either date is missing, return false
+      return false; 
     }
     return moment(startDate).isBefore(endDate);
   };
@@ -227,7 +241,26 @@ const EditContract = () => {
                   />
                 </button>
 
-                <h2 style={{ marginLeft: "10px" }}>Edit Contract</h2>
+                <div
+                  style={{
+                    marginLeft: "40px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontSize: "30px",
+                      fontWeight: "bold",
+                      marginRight: "10px",
+                    }}
+                  >
+                    Edit Contract
+                  </h2>
+                  <span style={{ fontSize: "18px", color: "#888" }}>
+                    Edit a contract for assistance.
+                  </span>
+                </div>
               </div>
             </MDBCol>
           </MDBRow>
@@ -246,7 +279,11 @@ const EditContract = () => {
               {" "}
               {/* Set justifyContent to 'flex-end' */}
               <Grid item xs={3}>
-                <h2 className="align-right">
+                <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>
                   <span style={{ color: "red" }}>*</span>Name
                 </h2>
               </Grid>
@@ -264,7 +301,11 @@ const EditContract = () => {
                 )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">
+                <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>
                   <span style={{ color: "red" }}>*</span>Description
                 </h2>
               </Grid>
@@ -283,7 +324,11 @@ const EditContract = () => {
                 )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">Attachment</h2>
+                <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>Attachment</h2>
               </Grid>
               <Grid item xs={9}>
                 <input
@@ -293,18 +338,27 @@ const EditContract = () => {
                   id="attachmentUrl"
                   onChange={handleFileChange}
                 />
-                <div style={{ marginBottom: "10px" }}>
-                  {data.attachmentUrl
-                    ? data.attachmentUrl.name
-                    : "No file selected"}
-                </div>
+                {imagePreviewUrl && (
+                  <div
+                    className="image-preview"
+                    onClick={() => setIsImagePreviewOpen(true)}
+                  >
+                    <p className="preview-text">
+                      Click here to view attachment
+                    </p>
+                  </div>
+                )}
               </Grid>
               <Grid container justifyContent="flex-end">
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">
-                        <span style={{ color: "red" }}>*</span>value
+                      <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>
+                        <span style={{ color: "red" }}>*</span>value(VND)
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
@@ -326,7 +380,11 @@ const EditContract = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right">Parent Contract</h2>
+                      <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>Parent Contract</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -355,7 +413,11 @@ const EditContract = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Start Date</h2>
+                      <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>Start Date</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -384,7 +446,11 @@ const EditContract = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">End Date</h2>
+                      <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>End Date</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -411,7 +477,11 @@ const EditContract = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">
+                      <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>
                         <span style={{ color: "red" }}>*</span>Accountant
                       </h2>
                     </Grid>
@@ -438,7 +508,11 @@ const EditContract = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right">Company </h2>
+                      <h2 className="align-right" style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}>Company </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -479,12 +553,6 @@ const EditContract = () => {
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
                 >
-                  Save and Approve
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary custom-btn-margin"
-                >
                   Cancel
                 </button>
               </div>
@@ -492,6 +560,31 @@ const EditContract = () => {
           </MDBRow>
         </MDBCol>
       </Grid>
+      <Dialog
+        open={isImagePreviewOpen}
+        onClose={closeImagePreview}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          Image Preview
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={closeImagePreview}
+            aria-label="close"
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <img
+            src={imagePreviewUrl}
+            alt="Attachment Preview"
+            style={{ width: "100%" }}
+          />
+        </DialogContent>
+      </Dialog>
     </Grid>
   );
 };

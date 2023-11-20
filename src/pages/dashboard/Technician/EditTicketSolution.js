@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Dialog, DialogContent, DialogTitle, Grid, IconButton, Switch, TextField } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  IconButton,
+  Switch,
+  TextField,
+} from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
@@ -16,6 +24,7 @@ import { toast } from "react-toastify";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import DateValidation from "../../helpers/DateValidation";
+import { getDataUser } from "../../../app/api";
 
 const EditTicketSolution = () => {
   const navigate = useNavigate();
@@ -39,6 +48,7 @@ const EditTicketSolution = () => {
   });
   const [selectedFile, setSelectedFile] = useState(null);
   const [reviewDate, setReviewDate] = useState(moment());
+  const [dataUsers, setDataUsers] = useState([]);
   const [expiredDate, setExpiredDate] = useState(moment());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
@@ -95,7 +105,9 @@ const EditTicketSolution = () => {
   const fetchDataSolution = async () => {
     try {
       const fetchCategories = await getDataCategories();
+      const fetchUsers = await getDataUser();
       setDataCategories(fetchCategories);
+      setDataUsers(fetchUsers);
     } catch (error) {
       console.log("Error while fetching data", error);
     } finally {
@@ -270,11 +282,14 @@ const EditTicketSolution = () => {
               {" "}
               {/* Set justifyContent to 'flex-end' */}
               <Grid item xs={3}>
-                <h2 className="align-right"  style={{
+                <h2
+                  className="align-right"
+                  style={{
                     fontSize: "20px",
                     fontWeight: "bold",
                     textAlign: "right",
-                  }}>
+                  }}
+                >
                   <span style={{ color: "red" }}>*</span>Title
                 </h2>
               </Grid>
@@ -287,16 +302,19 @@ const EditTicketSolution = () => {
                   value={data.title}
                   onChange={handleInputChange}
                 />
-                 {fieldErrors.title && (
+                {fieldErrors.title && (
                   <div style={{ color: "red" }}>{fieldErrors.title}</div>
                 )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right"  style={{
+                <h2
+                  className="align-right"
+                  style={{
                     fontSize: "20px",
                     fontWeight: "bold",
                     textAlign: "right",
-                  }}>
+                  }}
+                >
                   <span style={{ color: "red" }}>*</span>Content
                 </h2>
               </Grid>
@@ -310,16 +328,21 @@ const EditTicketSolution = () => {
                   value={data.content}
                   onChange={handleInputChange}
                 />
-                 {fieldErrors.content && (
+                {fieldErrors.content && (
                   <div style={{ color: "red" }}>{fieldErrors.content}</div>
                 )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right" style={{
+                <h2
+                  className="align-right"
+                  style={{
                     fontSize: "20px",
                     fontWeight: "bold",
                     textAlign: "right",
-                  }}>Attachment</h2>
+                  }}
+                >
+                  Attachment
+                </h2>
               </Grid>
               <Grid item xs={9}>
                 <input
@@ -349,11 +372,14 @@ const EditTicketSolution = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
+                      <h2
+                        className="align-right"
+                        style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                        }}>
+                        }}
+                      >
                         <span style={{ color: "red" }}>*</span>Category
                       </h2>
                     </Grid>
@@ -380,35 +406,51 @@ const EditTicketSolution = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
+                      <h2
+                        className="align-right"
+                        style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                        }}>Solution Owner</h2>
+                        }}
+                      >
+                        Solution Owner
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
-                      <input
+                      <select
                         id="ownerId"
-                        type="text"
                         name="ownerId"
-                        rows="3"
-                        className="form-control input-field"
+                        className="form-select"
                         value={data.ownerId}
                         onChange={handleInputChange}
-                      />
+                      >
+                        {dataUsers
+                          .filter((owner) => owner.id !== "")
+                          .map((owner) => (
+                            <option key={owner.id} value={owner.id}>
+                              {owner.lastName} {owner.firstName}
+                            </option>
+                          ))}
+                      </select>
                     </Grid>
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid container justifyContent="flex-end">
+              <Grid container justifyContent="flex-end" style={{marginTop: "15px"}}>
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
+                      <h2
+                        className="align-right"
+                        style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                        }}>Review Date</h2>
+                        }}
+                      >
+                        Review Date
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -437,11 +479,16 @@ const EditTicketSolution = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
+                      <h2
+                        className="align-right"
+                        style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                        }}>Expiry Date</h2>
+                        }}
+                      >
+                        Expiry Date
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -464,11 +511,16 @@ const EditTicketSolution = () => {
               </Grid>
               <Grid container justifyContent="flex-end">
                 <Grid item xs={3}>
-                  <h2 className="align-right" style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}>Keywords</h2>
+                  <h2
+                    className="align-right"
+                    style={{
+                      fontSize: "20px",
+                      fontWeight: "bold",
+                      textAlign: "right",
+                    }}
+                  >
+                    Keywords
+                  </h2>
                 </Grid>
                 <Grid item xs={9}>
                   <input
@@ -500,11 +552,16 @@ const EditTicketSolution = () => {
               </Grid>
               <Grid container justifyContent="flex-end">
                 <Grid item xs={3}>
-                  <h2 className="align-right" style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}>Internal Comments</h2>
+                  <h2
+                    className="align-right"
+                    style={{
+                      fontSize: "20px",
+                      fontWeight: "bold",
+                      textAlign: "right",
+                    }}
+                  >
+                    Internal Comments
+                  </h2>
                 </Grid>
                 <Grid item xs={9}>
                   <input

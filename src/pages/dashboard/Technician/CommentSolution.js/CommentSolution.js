@@ -37,7 +37,7 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { formatDate } from "../../../helpers/FormatDate";
 import { toast } from "react-toastify";
-import { comment } from "postcss";
+
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -170,7 +170,7 @@ const CommentSolution = () => {
     setIsSubmitting(true);
     try {
       const result = await createFeedBack({
-        solutionId: data.solutionId,
+        solutionId: solutionId,
         comment: data.comment,
         isPublic: data.isPublic,
       });
@@ -282,7 +282,7 @@ const CommentSolution = () => {
             key={comment.id}
             style={{
               display: "flex",
-              alignItems: "center",
+              // alignItems: "center",
               alignItems: "flex-start",
               marginBottom: "20px",
               marginTop: "20px",

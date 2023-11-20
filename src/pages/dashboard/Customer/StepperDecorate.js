@@ -33,11 +33,11 @@ export const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
 
 export const ColorlibStepIconRoot = styled("div")(({ theme, ownerState }) => ({
   backgroundColor:
-    theme.palette.mode === "dark" ? theme.palette.grey[700] : "#3399FF", // Change background color
+    theme.palette.mode === "dark" ? theme.palette.grey[700] : "#3399FF", 
   zIndex: 1,
   color: "#fff",
-  width: 60, // Adjust the width for a bigger icon
-  height: 60, // Adjust the height for a bigger icon
+  width: 60, 
+  height: 60, 
   display: "flex",
   borderRadius: "50%",
   justifyContent: "center",
