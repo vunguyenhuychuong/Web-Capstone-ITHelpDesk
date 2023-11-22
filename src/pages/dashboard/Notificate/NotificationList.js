@@ -2,36 +2,40 @@ import React from "react";
 import { useEffect } from "react";
 import { getAllNotification } from "../../../app/api/notification";
 import { useState } from "react";
-import { List, ListItem, ListItemText, Paper, Typography } from "@mui/material";
+import {
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  Typography,
+} from "@mui/material";
 import "../../../assets/css/notification.css";
 import { formatDate } from "../../helpers/FormatDate";
 import LoadingImg from "../../../assets/images/empty email.png";
+import { DoneAll } from "@mui/icons-material";
 
-const NotificationList = ({ notifications }) => {
-  const [dataListNotification, setDataListNotification] = useState([]);
+const NotificationList = ({
+  fetchDataListNotification,
+  notifications,
+  readNotifications,
+  onOptionSelect,
+}) => {
   const [loading, setLoading] = useState(true);
-  const fetchDataListNotification = async () => {
-    try {
-      const response = await getAllNotification();
-      console.log(response);
-
-      // Assuming response is an array, update the state
-      if (Array.isArray(response)) {
-        setDataListNotification(response);
-      } else {
-        console.error("Invalid data format received from the API");
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    fetchDataListNotification();
-  }, []);
+    const fetchData = async () => {
+      try {
+        await fetchDataListNotification();
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchData();
+  }, []);
   return (
     <div className="notification-list-container">
       {loading ? (
@@ -56,13 +60,13 @@ const NotificationList = ({ notifications }) => {
               color: "#666",
             }}
           >
-            No Notification 
+            No Notification
           </p>
         </div>
       ) : (
         <Paper elevation={3}>
           <List>
-            {dataListNotification.map((notification) => (
+            {notifications.map((notification) => (
               <ListItem key={notification.id}>
                 <ListItemText
                   primary={notification.title}
@@ -86,6 +90,15 @@ const NotificationList = ({ notifications }) => {
                     </>
                   }
                 />
+                {!readNotifications.includes(notification.id) && (
+                  <IconButton
+                    onClick={() =>
+                      onOptionSelect("Mark as Read", notification.id)
+                    }
+                  >
+                    <DoneAll />
+                  </IconButton>
+                )}
               </ListItem>
             ))}
           </List>

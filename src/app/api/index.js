@@ -85,18 +85,24 @@ export async function LoginUser(data) {
 // Add Data Profile User
 export async function AddDataProfile(userData) {
   const header = getAuthHeader();
-  try{
-    const res = await axios.post(`${baseURL}/user`,
-    userData, 
-    {
-      header: {
+  try {
+    const res = await axios.post(`${baseURL}/user`, userData, {
+      headers: {
         Authorization: header,
       },
     });
-    console.log(res);
-    return res.data;
-  }catch(error) {
-    console.log(error);
+
+    if (res.data && !res.data.isError) {
+      return { success: true, result: res.data.result };
+    } else if (res.data && res.data.responseException && res.data.responseException.exceptionMessage) {
+      console.log(res.data.responseException.exceptionMessage);
+      return { success: false, message: res.data.responseException.exceptionMessage };
+    } else {
+      return { success: false, message: 'An unknown error occurred while creating the user.' };
+    }
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: 'An error occurred while creating the user.' };
   }
 }
 
@@ -146,30 +152,25 @@ export async function UpdateProfileUser() {
 }
 
 //Update User 
-export async function UpdateUser(id, data) {
+export async function UpdateUser(data, id) {
   const header = getAuthHeader();
   try{
     const res = await axios.put(`${baseURL}/user/${id}`, data,{
       headers: {
         Authorization: header,
-        'Content-Type': 'application/json',
       },
     });
-    console.log(res);
-    return res;
-  }catch(error) {
-    if(error.response && error.response.status === 400){
-      const validationErrors = error.response.data.responseException.error;
-      if(validationErrors && validationErrors['$.dateOfBirth']) {
-        toast.error(validationErrors['$.dateOfBirth'][0]);
-      }
-      if(validationErrors && validationErrors.req) {
-        toast.error(validationErrors.req[0]);
-      }
-    }else{
-      toast.error("An error occurred while processing your request.");
-      console.log(error);
+    if (res.data && !res.data.isError) {
+      return { success: true, result: res.data.result };
+    } else if (res.data && res.data.responseException && res.data.responseException.exceptionMessage) {
+      console.log(res.data.responseException.exceptionMessage);
+      return { success: false, message: res.data.responseException.exceptionMessage };
+    } else {
+      return { success: false, message: 'An unknown error occurred while updating the user.' };
     }
+  }catch(error) {
+    console.error(error);
+    return { success: false, message: 'An error occurred while updating the user.' };
   }
 }
 
@@ -182,7 +183,7 @@ export async function getUserById(id) {
         Authorization: header,
       },
     });
-    return res.data;
+    return res.data.result;
   }catch(error){
     console.log(error);
     return [];

@@ -50,6 +50,13 @@ import CreatePayment from './pages/dashboard/Payment/CreatePayment';
 import EditPayment from './pages/dashboard/Payment/EditPayment';
 import EditContract from './pages/dashboard/Contract/EditContract';
 import TicketLogList from './pages/dashboard/Customer/TicketLogList';
+import TeamMemberList from './pages/dashboard/TeamMember/TeamMemberList';
+import CreateTeamMember from './pages/dashboard/TeamMember/CreateTeamMember';
+import EditTeamMember from './pages/dashboard/TeamMember/EditTeamMember';
+import EditTicketCustomer from './pages/dashboard/Manager/EditTicketCustomer';
+import UserList from './pages/dashboard/User/UserList';
+import CreateUser from './pages/dashboard/User/CreateUser';
+import EditUser from './pages/dashboard/User/EditUser';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -71,7 +78,9 @@ function App() {
           <Route index element={<AccessibleTabs1 />} />
           {(hasAdminRole || hasManagerRole) && <Route path='team' element={<Team />} />}
           {(hasCustomerRole || hasAdminRole || hasManagerRole || hasTechnicianRole) && <Route path='profile' element={<Profile />} />} 
-          {hasAdminRole && <Route path='customer' element={<Customers />} />}
+          {hasAdminRole && <Route path='userList' element={<UserList />} />}
+          {hasAdminRole && <Route path='createUser' element={<CreateUser />} />}
+          {hasAdminRole && <Route path='editUser/:userId' element={<EditUser />} />}
           {(hasCustomerRole) && <Route path='mains' element={<HomeCustomer />} />} 
           <Route path='main' element={<AccessibleTabs1 />} />
           <Route path='menu' element={<Menu />} />
@@ -81,6 +90,7 @@ function App() {
           <Route path='ticketService/:ticketId' element={<TicketService />} />
           <Route path='createTicket' element={<CreateTickets />} />
           <Route path='editTicket/:ticketId' element={<EditTickets />} />
+          <Route path='editTicketCustomer/:ticketId' element={<EditTicketCustomer />} />
           <Route path='ticketSolution' element={<TicketSolutionList />} />
           <Route path='createSolution' element={<CreateTicketSolution />} />
           <Route path='editSolution/:solutionId' element={<EditTicketSolution />} />
@@ -110,6 +120,9 @@ function App() {
           <Route path='createPayment' element={<CreatePayment />} />
           <Route path='editPayment/:paymentId' element={<EditPayment />} />
           <Route path='ticketLog/:ticketId' element={<TicketLogList />} />
+          <Route path='teamMember' element={<TeamMemberList />} />
+          <Route path='createTeamMember' element={<CreateTeamMember />} />
+          <Route path='editTeamMember/:teamMemberId' element={<EditTeamMember />} />
           </Route>
         <Route path='login' element={<Login />} />
         <Route path='forgot-password' element={<ForgetPassword /> }  />

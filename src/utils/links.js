@@ -19,7 +19,7 @@ const links = [
   { id: 2, text: "team", path: "team", icon: <Group /> },
   { id: 3, text: "mode", path: "mode", icon: <ModeComment /> },
   { id: 4, text: "profile", path: "profile", icon: <ImProfile /> },
-  { id: 5, text: "customer", path: "customer", icon: <FolderShared /> },
+  { id: 5, text: "userList", path: "userList", icon: <FolderShared /> },
   { id: 6, text: "Home", path: "main", icon: <FaAd /> },
   { id: 7, text: "Home", path: "mains", icon: <Home /> },
   { id: 8, text: "menu", path: "menu", icon: <Menu /> },

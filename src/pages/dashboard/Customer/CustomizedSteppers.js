@@ -9,9 +9,10 @@ import Step1 from "./StepForm/Step1";
 import Step2 from "./StepForm/Step2";
 import Step3 from "./StepForm/Step3";
 import { CheckCircle, FastForward, FastRewind } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-const steps = ['Select Category', 'Fill Request', 'Complete And Send'];
-
+const steps = ["Select Category", "Fill Request", "Complete And Send"];
 
 export default function CustomizedSteppers({
   data,
@@ -21,11 +22,23 @@ export default function CustomizedSteppers({
 }) {
   const [activeStep, setActiveStep] = React.useState(0);
   const [dataCategories, setDataCategories] = useState([]);
+  const navigate = useNavigate();
 
   const totalSteps = steps.length;
-  console.log(data);
   const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    if (activeStep === 0 || activeStep === 2 || activeStep === 3) {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    } else if (activeStep === 1) {
+      if (data.title && data.description) {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      } else {
+        toast.warning("Please fill in all required fields before proceeding.", {
+          autoClose: 3000,
+          hideProgressBar: false,
+          position: toast.POSITION.TOP_CENTER,
+        });
+      }
+    }
   };
 
   const handleBack = () => {
@@ -44,8 +57,22 @@ export default function CustomizedSteppers({
     setActiveStep(0);
   };
 
+  const handleGoBack = () => {
+    const isFormFilled = Object.values(data).every((value) => value !== "");
+
+    if (isFormFilled) {
+      navigate(`home/mains`);
+    } else {
+      toast.warning("Please fill in the form before submit", {
+        autoClose: 3000,
+        hideProgressBar: false,
+        position: toast.POSITION.TOP_CENTER,
+      });
+    }
+  };
+
   return (
-    <Stack sx={{ width: '100%' }} spacing={4}>
+    <Stack sx={{ width: "100%" }} spacing={4}>
       <Stepper
         alternativeLabel
         activeStep={activeStep}
@@ -54,28 +81,35 @@ export default function CustomizedSteppers({
         {steps.map((label, index) => (
           <Step key={index}>
             <StepButton onClick={handleStep(index)}>
-              <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
+              <StepLabel StepIconComponent={ColorlibStepIcon}>
+                {label}
+              </StepLabel>
             </StepButton>
           </Step>
         ))}
       </Stepper>
 
       {activeStep === 0 && (
-        <Step1 data={data} handleInputChange={handleInputChange} dataCategories={dataCategories}/>
+        <Step1
+          data={data}
+          handleInputChange={handleInputChange}
+          dataCategories={dataCategories}
+        />
       )}
 
-       {activeStep === 1 && (
+      {activeStep === 1 && (
         <Step2
           data={data}
           handleInputChange={handleInputChange}
           handleFileChange={handleFileChange}
         />
-      )} 
+      )}
 
-       {activeStep === 2 && (
+      {activeStep === 2 && (
         <Step3 data={data} handleSubmit={handleSubmitTicket} />
-      )}  
-      <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+      )}
+
+      <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
         <Button
           color="inherit"
           disabled={activeStep === 0}
@@ -84,9 +118,15 @@ export default function CustomizedSteppers({
         >
           <FastRewind />
         </Button>
-        <Box sx={{ flex: '1 1 auto' }} />
-        <Button onClick={activeStep === totalSteps - 1 ? handleComplete : handleNext}>
-          {activeStep === totalSteps - 1 ? <CheckCircle /> : <FastForward />}
+        <Box sx={{ flex: "1 1 auto" }} />
+        <Button
+          onClick={activeStep === totalSteps - 1 ? handleComplete : handleNext}
+        >
+          {activeStep === totalSteps - 1 ? (
+            <CheckCircle onClick={() => handleGoBack()} />
+          ) : (
+            <FastForward />
+          )}
         </Button>
       </Box>
     </Stack>

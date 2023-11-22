@@ -28,7 +28,7 @@ import {
 } from "../../../app/api/ticketSolution";
 import { toast } from "react-toastify";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
-import { getAllContract, getAllContracts } from "../../../app/api/contract";
+import { getAllContracts } from "../../../app/api/contract";
 
 const ContractList = () => {
   const [dataListContract, setDataListContract] = useState([]);

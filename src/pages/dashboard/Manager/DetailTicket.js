@@ -48,6 +48,9 @@ const DetailTicket = () => {
   const userName = data.requester
     ? `${data.requester.lastName} ${data.requester.firstName}`
     : "";
+  const ticketStatus = data.ticketStatus;
+  const [allowEdit, setAllowEdit] = useState(false);
+  const [editMessage, setEditMessage] = useState("");
 
   const fetchDataManager = async () => {
     try {
@@ -66,7 +69,11 @@ const DetailTicket = () => {
   };
 
   const handleOpenEditTicket = (ticketId) => {
-    navigate(`/home/editTicket/${ticketId}`);
+    if (userRole === 1) {
+      navigate(`/home/editTicketCustomer/${ticketId}`);
+    } else if (userRole === 3) {
+      navigate(`/home/editTicket/${ticketId}`);
+    }
   };
 
   const handleOpenAssignTicket = () => {
@@ -88,9 +95,16 @@ const DetailTicket = () => {
   };
 
   useEffect(() => {
+    if (ticketStatus === 0) {
+      setAllowEdit(true);
+      setEditMessage("");
+    } else {
+      setAllowEdit(false);
+      setEditMessage("This ticket is not allowed to be edited when it assign");
+    }
     fetchDataManager();
     setValue(0);
-  }, []);
+  }, [ticketStatus]);
 
   const roleName =
     data.requester && data.requester.role
@@ -127,22 +141,32 @@ const DetailTicket = () => {
                   </button>
                 </div>
               </MDBCol>
-              <MDBCol md="2" className="mt-2">
+              <MDBCol md="4" className="mt-2">
                 <div className="d-flex align-items-center">
                   <button
                     type="button"
                     className="btn btn-link narrow-input icon-label"
                     onClick={() => handleOpenEditTicket(ticketId)}
+                    disabled={!allowEdit}
                   >
                     Edit
                   </button>
-                  <button
-                    type="button"
-                    className="btn btn-link narrow-input icon-label"
-                    onClick={handleOpenAssignTicket}
-                  >
-                    Assign
-                  </button>
+                  {userRole === 2 || userRole === 3 ? (
+                    <MDBCol md="2" className="mt-2">
+                      <div className="d-flex align-items-center">
+                        <button
+                          type="button"
+                          className="btn btn-link narrow-input icon-label"
+                          onClick={handleOpenAssignTicket}
+                        >
+                          Assign
+                        </button>
+                      </div>
+                    </MDBCol>
+                  ) : null}
+                   {editMessage && (
+              <div style={{ marginLeft: '10px', color: 'red' }}>{editMessage}</div>
+            )}
                 </div>
               </MDBCol>
             </MDBRow>
@@ -202,7 +226,7 @@ const DetailTicket = () => {
                 }
                 className="custom-tab-label"
               />
-              {userRole === 2 || userRole === 3 ? ( 
+              {userRole === 2 || userRole === 3 ? (
                 <>
                   <Tab
                     label={

@@ -147,7 +147,26 @@ const EditPayment = () => {
                   />
                 </button>
 
-                <h2 style={{ marginLeft: "10px" }}>Edit Payment</h2>
+                <div
+                  style={{
+                    marginLeft: "40px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontSize: "30px",
+                      fontWeight: "bold",
+                      marginRight: "10px",
+                    }}
+                  >
+                    Edit Payment
+                  </h2>
+                  <span style={{ fontSize: "18px", color: "#888" }}>
+                    Edit a payment for assistance.
+                  </span>
+                </div>
               </div>
             </MDBCol>
           </MDBRow>
@@ -165,7 +184,12 @@ const EditPayment = () => {
             <Grid container justifyContent="flex-end">
               {" "}
               <Grid item xs={3}>
-                <h2 className="align-right">
+                <h2 className="align-right" 
+                 style={{
+                  fontSize: "20px",
+                  fontWeight: "bold",
+                  textAlign: "right",
+                }}>
                   <span style={{ color: "red" }}>*</span>Description
                 </h2>
               </Grid>
@@ -184,7 +208,11 @@ const EditPayment = () => {
                 )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">numberOfTerms</h2>
+                <h2 className="align-right"  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>number Of Terms</h2>
               </Grid>
               <Grid item xs={9}>
                 <select
@@ -211,7 +239,11 @@ const EditPayment = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">
+                      <h2 className="align-right"  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>
                         <span style={{ color: "red" }}>*</span>duration
                       </h2>
                     </Grid>
@@ -238,7 +270,11 @@ const EditPayment = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right">initialPaymentAmount</h2>
+                      <h2 className="align-right"  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>initial Payment Amount</h2>
                     </Grid>
                     <Grid item xs={5} style={{ marginTop: "15px" }}>
                       <input
@@ -262,7 +298,11 @@ const EditPayment = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">
+                      <h2 className="align-right"  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>
                         <span style={{ color: "red" }}>*</span>note
                       </h2>
                     </Grid>
@@ -282,7 +322,11 @@ const EditPayment = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">firstDateOfPayment</h2>
+                      <h2 className="align-right"  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>first Date Of Payment</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>

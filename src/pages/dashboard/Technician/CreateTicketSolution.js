@@ -268,7 +268,6 @@ const CreateTicketSolution = () => {
           >
             <Grid container justifyContent="flex-end">
               {" "}
-              {/* Set justifyContent to 'flex-end' */}
               <Grid item xs={3}>
                 <h2
                   className="align-right"

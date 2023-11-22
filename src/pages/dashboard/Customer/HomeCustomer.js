@@ -40,6 +40,10 @@ const HomeCustomer = () => {
     navigate(`/home/createRequest`);
   };
 
+  const handleOpenSolutionTicket = (e) => {
+    navigate(`/home/createRequest`);
+  };
+
   const handleOpenListTicket = () => {
     navigate(`/home/requestCustomerList`);
   };
@@ -72,7 +76,7 @@ const HomeCustomer = () => {
             </div>
           </div>
           <MDBRow>
-            <MDBCol md="4">
+            <MDBCol md="6">
               <MDBCard className="mb-4 mb-md-0">
                 <div className="d-flex align-items-center custom-red-bg">
                   <MDBCol md="3" className="red-bg text-center">
@@ -93,25 +97,7 @@ const HomeCustomer = () => {
                 </div>
               </MDBCard>
             </MDBCol>
-            <MDBCol md="4">
-              <MDBCard className="mb-4 mb-md-0">
-                <div className="d-flex align-items-center custom-green-bg">
-                  <MDBCol md="3" className="red-bg text-center">
-                    <AddBox style={{ fontSize: "100px", color: "white" }} />
-                  </MDBCol>
-                  <MDBCol md="9">
-                    <MDBCardText className="mb-4 custom-card-text ">
-                      I need a something
-                      <div style={{ fontSize: "18px" }}>New</div>
-                    </MDBCardText>
-                    <MDBBtn className="custom-green-btn">
-                      Request a service
-                    </MDBBtn>
-                  </MDBCol>
-                </div>
-              </MDBCard>
-            </MDBCol>
-            <MDBCol md="4">
+            <MDBCol md="6">
               <MDBCard className="mb-4 mb-md-0">
                 <div className="d-flex align-items-center custom-blue-bg">
                   <MDBCol md="3" className="red-bg custom-grey-bg text-center">

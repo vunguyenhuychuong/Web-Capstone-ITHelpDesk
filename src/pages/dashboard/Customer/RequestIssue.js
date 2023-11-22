@@ -11,7 +11,6 @@ import CustomizedSteppers from "./CustomizedSteppers";
 import { useNavigate } from "react-router-dom";
 
 const RequestIssue = () => {
-
   const [data, setData] = useState({
     title: "",
     description: "",
@@ -90,10 +89,20 @@ const RequestIssue = () => {
         categoryId: data.categoryId,
         avatarUrl: avatarUrl,
       });
-      if (result.data && result.data.responseException.exceptionMessage) {
-        console.log(result.data.responseException.exceptionMessage)
-      }else{
-        toast.success("Ticket created successfully");
+      if (result.success) {
+        toast.success("Ticket created successfully", {
+          autoClose: 2000,
+          hideProgressBar: false,
+          position: toast.POSITION.TOP_CENTER,
+        });
+        // Perform navigation here
+        navigate(`/home/mains`);
+      } else {
+        toast.error(result.message, {
+          autoClose: 2000,
+          hideProgressBar: false,
+          position: toast.POSITION.TOP_CENTER,
+        });
       }
     } catch (error) {
       console.log("Please check data input", error);
@@ -104,7 +113,7 @@ const RequestIssue = () => {
 
   const handleGoBack = () => {
     navigate(`/home/mains`);
-  }
+  };
 
   return (
     <Grid
@@ -133,14 +142,13 @@ const RequestIssue = () => {
           </MDBRow>
         </MDBCol>
         <MDBRow className="mb-4" style={{ marginTop: "20px" }}>
-        <CustomizedSteppers
-          data={data}
-          handleInputChange={handleInputChange}
-          handleFileChange={handleFileChange}
-          handleSubmitTicket={handleSubmitTicket}
-        />
+          <CustomizedSteppers
+            data={data}
+            handleInputChange={handleInputChange}
+            handleFileChange={handleFileChange}
+            handleSubmitTicket={handleSubmitTicket}
+          />
         </MDBRow>
-
         <MDBCol md="12">
           <MDBRow className="border-box">
             <MDBCol md="12" className="mt-2 mb-2">

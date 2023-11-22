@@ -1,33 +1,33 @@
 .search-bar {
-    display: flex;
-    align-items: center;
-    padding: 5px;
-    border-radius: 50px; /* This creates a circular border */
-    border: 2px solid #333; /* Border color */
-    margin-right: auto;
-    margin-left: 40px;
-  }
-  
-  .search-input {
-    flex: 1;
-    margin-left: 10px;
-    width: 100%;
-  }
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-radius: 50px; /* This creates a circular border */
+  border: 2px solid #333; /* Border color */
+  margin-right: auto;
+  margin-left: 40px;
+}
 
-  .online-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: #00CC00; /* Green color for the dot */
-    position: absolute;
-    bottom: -1px; /* Adjust the position of the dot from the bottom */
-    right: 1px; /* Adjust the position of the dot from the right */
-    animation: ripple 1.2s infinite ease-in-out; /* Apply the ripple animation */
-    border: 1px solid currentColor;
-    content: "";
-  }
-  
-  /* @keyframes ripple {
+.search-input {
+  flex: 1;
+  margin-left: 10px;
+  width: 100%;
+}
+
+.online-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #00cc00; /* Green color for the dot */
+  position: absolute;
+  bottom: -1px; /* Adjust the position of the dot from the bottom */
+  right: 1px; /* Adjust the position of the dot from the right */
+  animation: ripple 1.2s infinite ease-in-out; /* Apply the ripple animation */
+  border: 1px solid currentColor;
+  content: "";
+}
+
+/* @keyframes ripple {
     0% {
       transform: scale(.8);
       opacity: 1;
@@ -37,3 +37,45 @@
       opacity: 0;
     }
   } */
+
+.drawerContainer {
+  width: 350px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background-color: #f0f0f0;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.notificationsHeader {
+  color: #333;
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 5px;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.notificationsHeader {
+  color: #333;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 5px;
+}
+
+.headerButtons {
+  display: flex;
+  gap: 10px;
+}

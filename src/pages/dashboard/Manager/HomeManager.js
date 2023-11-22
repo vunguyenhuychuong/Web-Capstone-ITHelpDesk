@@ -13,6 +13,7 @@ import ChartManager from "./ChartManager";
 import TicketSolutionList from "../Technician/TicketSolutionList";
 import IndexTicket from "./IndexTicket";
 import { useParams } from "react-router-dom";
+import TeamMemberList from "../TeamMember/TeamMemberList";
 
 const HomeManager = () => {
 
@@ -131,6 +132,9 @@ const HomeManager = () => {
           </Box>
           <Box role="tabpanel" hidden={value !== 2}>
             {value === 2 ? <TicketSolutionList /> : <LoadingSkeleton />}
+          </Box>
+          <Box role="tabpanel" hidden={value !== 3}>
+            {value === 3 ? <TeamMemberList /> : <LoadingSkeleton />}
           </Box>
         </Box>
       </Grid>

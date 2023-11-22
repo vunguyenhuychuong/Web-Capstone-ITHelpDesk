@@ -2,6 +2,7 @@ import axios from "axios";
 import { getAuthHeader } from "./auth";
 import { toast } from "react-toastify";
 import { baseURL } from "./link";
+import { useNavigate } from "react-router-dom";
 
 // Get All List ticket
 export async function getAllTicket(
@@ -124,20 +125,24 @@ export async function getTicketByTicketId(id) {
     return [];
   }
 };
-
 //Create Ticket By Customer
-export async function createTicketByCustomer(data) {
+export async function createTicketByCustomer(data, navigate) {
   const header = getAuthHeader();
+  
   try {
     const res = await axios.post(`${baseURL}/ticket/customer/new`, data, {
       headers: {
         Authorization: header,
       },
     });
-    return res.data.result;
+    if (res.data && res.data.responseException.exceptionMessage) {
+      console.log(res.data.responseException.exceptionMessage);
+      return { success: false, message: res.data.responseException.exceptionMessage}
+    }else{
+      return { success: true, result: res.data.result };
+    }
   } catch (error) {
-    toast.error(error.response.data.responseException.exceptionMessage);
-    return [];
+    return { success: false, message: 'An error occurred while creating the ticket.' };
   }
 };
 
@@ -145,7 +150,7 @@ export async function createTicketByCustomer(data) {
 export async function editTicketByCustomer(ticketId, data) {
   const header = getAuthHeader();
   try{
-    const res = await axios.put(`${baseURL}/ticket/customer/${ticketId}`, JSON.stringify(data),{
+    const res = await axios.put(`${baseURL}/ticket/customer/${ticketId}`, data,{
       headers: {
         Authorization: header,
       },

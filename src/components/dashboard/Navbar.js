@@ -7,10 +7,12 @@ import { toast } from "react-toastify";
 import "../../assets/css/navbar.css";
 import {
   AccountBox,
+  Close,
   Dashboard,
   ExitToApp,
   Help,
   Mail,
+  MoreVert,
   NotificationAdd,
   RotateLeft,
   Search,
@@ -30,11 +32,17 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { roleOptions } from "../../pages/helpers/tableComlumn";
 import { useState } from "react";
 import NotificationList from "../../pages/dashboard/Notificate/NotificationList";
 import ChatBox from "./ChatBox";
+import { notification } from "antd";
+import {
+  ReadNotification,
+  ReadNotificationAll,
+  getAllNotification,
+} from "../../app/api/notification";
 
 export function stringToColor(string) {
   let hash = 0;
@@ -79,6 +87,28 @@ const Navbar = ({ notifications }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [chatBoxVisible, setChatBoxVisible] = useState(false);
+  const [menuAnchor, setMenuAnchor] = useState(null);
+  const [readNotifications, setReadNotifications] = useState([]);
+  const [notificationCount, setNotificationCount] = useState(
+    notifications?.length || 0
+  );
+  const [dataNotification, setDataNotification] = useState({
+    id: 0,
+  });
+  const [dataListNotification, setDataListNotification] = useState([]);
+  const fetchDataListNotification = async () => {
+    try {
+      const response = notifications || (await getAllNotification());
+      console.group(response);
+      setDataListNotification(response);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDataListNotification();
+  }, []);
 
   const toggleChatBox = () => {
     setChatBoxVisible((prevVisible) => !prevVisible);
@@ -93,6 +123,48 @@ const Navbar = ({ notifications }) => {
     username: "",
     avatarUrl: "",
   });
+
+  const handleMoreVertClick = (event) => {
+    setMenuAnchor(event.currentTarget);
+  };
+
+  const handleMoreVertClose = () => {
+    setMenuAnchor(null);
+  };
+
+  const handleOptionSelect = async (option, notificationId) => {
+    switch (option) {
+      case "Mark as Read":
+        try {
+          const dataNotification = {
+            id: 1,         
+          };
+          const res = await ReadNotification(notificationId, dataNotification);
+          setReadNotifications((prevReadNotifications) => [
+            ...prevReadNotifications,
+            notificationId,
+          ]);
+          setNotificationCount((prevCount) => prevCount - 1);
+        } catch (error) {
+          console.log("Error marking notification as read:", error);
+        }
+        break;
+      case "Delete":
+        try {
+          await ReadNotificationAll();
+          setReadNotifications((prevReadNotifications) => [
+            ...prevReadNotifications,
+          ]);
+          setNotificationCount((prevCount) => prevCount - 1);
+        } catch (error) {
+          console.log("Error marking notification as read:", error);
+        }
+        break;
+      default:
+        break;
+    }
+    handleMoreVertClose();
+  };
 
   const handleNotificationClick = () => {
     setDrawerOpen(true);
@@ -135,17 +207,17 @@ const Navbar = ({ notifications }) => {
       navigate("/home/profile");
     } else if (setting === "Dashboard") {
       const role = user.user.role;
-      console.log("User Role:", role); 
-      if(role === 2) {
+      console.log("User Role:", role);
+      if (role === 2) {
         navigate("/home/homeManager");
-      }else if(role === 3) {
+      } else if (role === 3) {
         navigate("/home/homeTechnician");
-      }else if(role === 0) {
+      } else if (role === 0) {
         navigate("/home/homeAdmin");
-      }else if(role === 1) {
+      } else if (role === 1) {
         navigate("/home/mains");
-      }else if(role === 4) {
-        navigate("/home/homeAccountant")
+      } else if (role === 4) {
+        navigate("/home/homeAccountant");
       }
     }
     setAnchorElUser(null);
@@ -168,13 +240,16 @@ const Navbar = ({ notifications }) => {
           </IconButton>
         </Paper>
         <div>
-          {" "}
           <Logo />
         </div>
         <div className="btn-container">
           <div className="icons-wrapper">
             <Tooltip title="Message" arrow>
-              <IconButton size="large" style={{ color: "#0099FF" }} onClick={toggleChatBox}>
+              <IconButton
+                size="large"
+                style={{ color: "#0099FF" }}
+                onClick={toggleChatBox}
+              >
                 <Badge badgeContent={4} color="error">
                   <Mail />
                 </Badge>
@@ -186,7 +261,7 @@ const Navbar = ({ notifications }) => {
                 style={{ color: "#0099FF" }}
                 onClick={handleNotificationClick}
               >
-                <Badge badgeContent={17} color="error">
+                <Badge badgeContent={notificationCount} color="error">
                   <NotificationAdd />
                 </Badge>
               </IconButton>
@@ -196,19 +271,42 @@ const Navbar = ({ notifications }) => {
               open={drawerOpen}
               onClose={handleDrawerClose}
             >
-              <div
-                style={{
-                  width: 300,
-                  padding: 16,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                <Typography variant="h6" gutterBottom>
-                  Notifications
-                </Typography>
-                <NotificationList notifications={notifications} />
+              <div className="drawerContainer">
+                <div className="headerRow">
+                  <Typography variant="h6" className="notificationsHeader">
+                    Notifications
+                  </Typography>
+                  <div className="headerButtons">
+                    <IconButton onClick={handleMoreVertClick}>
+                      <MoreVert />
+                    </IconButton>
+                    <Menu
+                      anchorEl={menuAnchor}
+                      open={Boolean(menuAnchor)}
+                      onClose={handleMoreVertClose}
+                    >
+                      <MenuItem
+                      onClick={() => handleOptionSelect("Mark as Read")}
+                      >
+                        Mark as Read
+                      </MenuItem>
+                      <MenuItem
+                      onClick={() => handleOptionSelect("Delete")}
+                      >
+                        Mark as Delete
+                      </MenuItem>
+                    </Menu>
+                    <IconButton onClick={handleDrawerClose}>
+                      <Close />
+                    </IconButton>
+                  </div>
+                </div>
+                <NotificationList
+                  fetchDataListNotification={fetchDataListNotification}
+                  notifications={dataListNotification}
+                  readNotifications={readNotifications}
+                  onOptionSelect={handleOptionSelect}
+                />
               </div>
             </Drawer>
             <Popover
@@ -225,7 +323,12 @@ const Navbar = ({ notifications }) => {
                 horizontal: "right",
               }}
             >
-              <NotificationList notifications={notifications} />
+              <NotificationList
+                fetchDataListNotification={fetchDataListNotification}
+                readNotifications={readNotifications}
+                onOptionSelect={handleOptionSelect}
+                notificationCount={notificationCount}
+              />
             </Popover>
             <Tooltip title="Open Setting" arrow>
               <IconButton size="large" style={{ color: "#0099FF" }}>

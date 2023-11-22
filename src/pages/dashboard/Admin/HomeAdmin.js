@@ -13,10 +13,9 @@ import {
   import { useState } from "react";
   import LoadingSkeleton from "../../../components/iconify/LoadingSkeleton";
 import ViewAdmin from "./ViewAdmin";
-import Customer from "../Customer";
 import ModeList from "../Mode/ModeList";
 import ServiceList from "../ServicePack/ServiceList";
-import Customers from "../Customers";
+import UserList from "../User/UserList";
   
   const HomeAdmin = () => {
     const [value, setValue] = useState(0);
@@ -146,7 +145,7 @@ import Customers from "../Customers";
                 {value === 0 ? <ViewAdmin /> : <LoadingSkeleton />}
               </Box>
               <Box role="tabpanel" hidden={value !== 1}>
-                {value === 1 ? <Customers /> : <LoadingSkeleton />}
+                {value === 1 ? <UserList /> : <LoadingSkeleton />}
               </Box>
               <Box role="tabpanel" hidden={value !== 2}>
                 {value === 2 ? <ModeList /> : <LoadingSkeleton />}

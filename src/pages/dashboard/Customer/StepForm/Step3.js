@@ -12,6 +12,7 @@ import {
   DialogActions,
 } from "@mui/material";
 import { useState } from "react";
+import { getPriorityOption } from "../../../helpers/tableComlumn";
 
 const Step3 = ({ data, handleSubmit }) => {
   const [loading, setLoading] = useState(false);
@@ -52,13 +53,13 @@ const Step3 = ({ data, handleSubmit }) => {
               <strong>Category:</strong> {data.categoryId}
             </Typography>
             <Typography variant="body1" paragraph>
-              <strong>Priority:</strong> {data.priority}
+              <strong>Priority:</strong> {getPriorityOption(data.priority)}
             </Typography>
             <Typography variant="body1" paragraph>
-              <strong>Title:</strong> {data.title || "Not Type"}
+              <strong>Title:</strong> {data.title || "Not Provided"}
             </Typography>
             <Typography variant="body1" paragraph>
-              <strong>Description:</strong> {data.description || "Not Type"}
+              <strong>Description:</strong> {data.description || "Not Provided"}
             </Typography>
             <Typography variant="body1" paragraph>
               <strong>Image:</strong>{" "}
@@ -67,23 +68,9 @@ const Step3 = ({ data, handleSubmit }) => {
                   View Image
                 </Button>
               ) : (
-                "Not Type"
+                "Not Provided"
               )}
             </Typography>
-          </div>
-          <div>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleButtonClick}
-              style={{ marginTop: 16 }}
-            >
-              {loading ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : (
-                "Submit"
-              )}
-            </Button>
           </div>
         </Box>
       </Card>

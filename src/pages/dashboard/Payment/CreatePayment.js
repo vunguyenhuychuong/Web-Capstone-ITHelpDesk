@@ -193,12 +193,15 @@ const CreatePayment = () => {
           >
             <Grid container justifyContent="flex-end">
               <Grid item xs={3}>
-                <h2 className="align-right" style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}>
-                  <span style={{ color: "red" }}>*</span>contractId
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
+                  <span style={{ color: "red" }}>*</span>Contract
                 </h2>
               </Grid>
               <Grid item xs={9}>
@@ -219,11 +222,14 @@ const CreatePayment = () => {
                 </select>
               </Grid>
               <Grid item xs={3} style={{ marginTop: "10px" }}>
-                <h2 className="align-right" style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}>
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
                   <span style={{ color: "red" }}>*</span>Description
                 </h2>
               </Grid>
@@ -242,11 +248,16 @@ const CreatePayment = () => {
                 )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right" style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}>numberOfTerms</h2>
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
+                  Number Of Terms
+                </h2>
               </Grid>
               <Grid item xs={9}>
                 <select
@@ -273,11 +284,14 @@ const CreatePayment = () => {
                 <Grid item xs={6} style={{ marginTop: "20px" }}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
+                      <h2
+                        className="align-right"
+                        style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                        }}>
+                        }}
+                      >
                         <span style={{ color: "red" }}>*</span>duration
                       </h2>
                     </Grid>
@@ -304,11 +318,16 @@ const CreatePayment = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
+                      <h2
+                        className="align-right"
+                        style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                        }}>Initial Payment Amount</h2>
+                        }}
+                      >
+                        Initial Payment Amount
+                      </h2>
                     </Grid>
                     <Grid item xs={5} style={{ marginTop: "20px" }}>
                       <input
@@ -320,7 +339,9 @@ const CreatePayment = () => {
                         onChange={handleInputChange}
                       />
                       {fieldErrors.initialPaymentAmount && (
-                        <div style={{ color: "red" }}>{fieldErrors.initialPaymentAmount}</div>
+                        <div style={{ color: "red" }}>
+                          {fieldErrors.initialPaymentAmount}
+                        </div>
                       )}
                     </Grid>
                   </Grid>
@@ -330,20 +351,24 @@ const CreatePayment = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
+                      <h2
+                        className="align-right"
+                        style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                        }}>
+                        }}
+                      >
                         Note
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
-                      <input
-                        id="note"
+                      <textarea
                         type="text"
+                        id="note"
                         name="note"
-                        className="form-control input-field"
+                        className="form-control input-field-2"
+                        rows="3"
                         value={data.note}
                         onChange={handleInputChange}
                       />
@@ -354,11 +379,16 @@ const CreatePayment = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
+                      <h2
+                        className="align-right"
+                        style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                        }}>firstDateOfPayment</h2>
+                        }}
+                      >
+                        First Date Of Payment
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -393,7 +423,7 @@ const CreatePayment = () => {
                   onClick={handleSubmitPayment}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'Submitting...' : 'Save'}
+                  {isSubmitting ? "Submitting..." : "Save"}
                 </button>
                 <button
                   type="button"
