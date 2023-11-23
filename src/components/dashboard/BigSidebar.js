@@ -2,13 +2,18 @@ import NavLinks from './NavLinks';
 import '../../assets/css/Logo.css'
 import Wrapper from '../../assets/wrappers/BigSidebar';
 import Logo from './Logo';
+import { useSelector } from 'react-redux';
 
 const BigSidebar = () => {
+  const { isSidebarOpen } = useSelector((store) => store.auth);
+
   return (
     <Wrapper>
       <div
-        className={
-          'sidebar-container show-sidebar'
+         className={
+          isSidebarOpen
+            ? 'sidebar-container '
+            : 'sidebar-container show-sidebar'
         }
       >
         <div className='content'>

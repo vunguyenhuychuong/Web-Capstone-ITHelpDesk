@@ -8,7 +8,6 @@ import {
 } from "mdb-react-ui-kit";
 import React from "react";
 import {
-  AddBox,
   Lightbulb,
   Notifications,
   Warning,
@@ -41,7 +40,7 @@ const HomeCustomer = () => {
   };
 
   const handleOpenSolutionTicket = (e) => {
-    navigate(`/home/createRequest`);
+    navigate(`/home/ticketSolution`);
   };
 
   const handleOpenListTicket = () => {
@@ -108,7 +107,9 @@ const HomeCustomer = () => {
                       I am looking for
                       <div style={{ fontSize: "18px" }}>Solutions</div>
                     </MDBCardText>
-                    <MDBBtn className="custom-blue-btn">View Solution</MDBBtn>
+                    <MDBBtn className="custom-blue-btn"
+                      onClick={handleOpenSolutionTicket}
+                    >View Solution</MDBBtn>
                   </MDBCol>
                 </div>
               </MDBCard>

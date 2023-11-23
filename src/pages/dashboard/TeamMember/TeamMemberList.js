@@ -18,8 +18,9 @@ import { toast } from "react-toastify";
 import { formatDate } from "../../helpers/FormatDate";
 import PageSizeSelector from "../Pagination/Pagination";
 import { Box } from "@mui/system";
-import {  getAllTeamMember } from "../../../app/api/teamMember";
+import { getAllTeamMember } from "../../../app/api/teamMember";
 import { useNavigate } from "react-router-dom";
+import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 
 const TeamMemberList = () => {
   const [dataTeamMembers, setDataTeamMembers] = useState([]);
@@ -27,20 +28,20 @@ const TeamMemberList = () => {
   const [selectedTeamMembers, setSelectedTeamMember] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
   const [searchField, setSearchField] = useState("expertises");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
   const [sortBy, setSortBy] = useState("id");
   const navigate = useNavigate();
-   const fetchAllTeamMember =  useCallback(async () => {
+  const fetchAllTeamMember = useCallback(async () => {
     try {
       let filter = "";
       if (searchQuery) {
         filter = `title="${encodeURIComponent(searchQuery)}"`;
       }
-      setLoading(true);
+
       const mode = await getAllTeamMember(
         searchField,
         searchQuery,
@@ -80,21 +81,25 @@ const TeamMemberList = () => {
     try {
       if (selectedTeamMembers.length === 0) {
         return;
-      }  
+      }
       const deletePromises = selectedTeamMembers.map(async (teamId) => {
         try {
           const res = await Promise.resolve(deleteMode(teamId));
           if (res.isError) {
-            throw new Error(`Error deleting team member with ID ${teamId}: ${res.message}`);
+            throw new Error(
+              `Error deleting team member with ID ${teamId}: ${res.message}`
+            );
           }
           return teamId;
         } catch (error) {
-          throw new Error(`Error deleting team member with ID ${teamId}: ${error.message}`);
+          throw new Error(
+            `Error deleting team member with ID ${teamId}: ${error.message}`
+          );
         }
       });
-  
+
       const results = await Promise.allSettled(deletePromises);
-  
+
       const successfulDeletes = [];
       results.forEach((result) => {
         if (result.status === "fulfilled") {
@@ -103,7 +108,9 @@ const TeamMemberList = () => {
           toast.error(result.reason.message);
         }
       });
-      const updateModes = dataTeamMembers.filter((mode) => !successfulDeletes.includes(mode.id));
+      const updateModes = dataTeamMembers.filter(
+        (mode) => !successfulDeletes.includes(mode.id)
+      );
       setDataTeamMembers(updateModes);
       setSelectTeam([]);
     } catch (error) {
@@ -129,18 +136,20 @@ const TeamMemberList = () => {
   useEffect(() => {
     fetchAllTeamMember();
     setTotalPages(4);
+    setIsLoading(false);
   }, [fetchAllTeamMember]);
 
   return (
-    <section style={{ backgroundColor: "#FFF" }}>
+    <>
       <MDBContainer
         className="py-5"
         style={{ paddingLeft: 20, paddingRight: 20, maxWidth: "100%" }}
       >
-        <MDBNavbar expand="lg" light bgColor="inherit">
+        <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
-            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
-              <ContentCopy style={{ marginRight: "20px" }} /> All TeamMember
+            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "16px" }}>
+              <ContentCopy style={{ marginRight: "20px" }} />{" "}
+              <span style={{ color: "#FFFFFF" }}> All TeamMember</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
@@ -155,7 +164,7 @@ const TeamMemberList = () => {
                 style={{ fontWeight: "bold", fontSize: "20px" }}
                 onClick={handleDeleteSelectedTeamMember}
               >
-                <Delete  /> Delete
+                <Delete /> Delete
               </MDBBtn>
               <FormControl
                 variant="outlined"
@@ -202,54 +211,68 @@ const TeamMemberList = () => {
             </MDBNavbarNav>
           </MDBContainer>
         </MDBNavbar>
-        <MDBTable
-          className="align-middle mb-0"
-          responsive
-          style={{ border: "0.05px solid #50545c" }}
-        >
-          <MDBTableHead className="bg-light">
-            <tr style={{ fontSize: "1.2rem" }}>
-              <th style={{ fontWeight: "bold" }}>
-                <input
-                  type="checkbox"
-                  checked={selectedTeamMembers.length === dataTeamMembers.length}
-                  onChange={handleSelectAllTeamMembers}
-                />
-              </th>
-              <th style={{ fontWeight: "bold" }}>Edit</th>
-              <th style={{ fontWeight: "bold" }}>ID</th>
-              <th style={{ fontWeight: "bold" }}>Member ID</th>
-              <th style={{ fontWeight: "bold" }}>Expertises</th>
-              <th style={{ fontWeight: "bold" }}>Create Time</th>
-              <th style={{ fontWeight: "bold" }}>Modify Time</th>
-            </tr>
-          </MDBTableHead>
-          <MDBTableBody className="bg-light">
-            {dataTeamMembers.map((teamMember, index) => {
-              const isSelected = selectedTeamMembers.includes(teamMember.id);
-              return (
-                <tr key={index}>
-                  <td>
+        {isLoading ? (
+          <CustomizedProgressBars />
+        ) : (
+          <>
+            <MDBTable
+              className="align-middle mb-0"
+              responsive
+              style={{ border: "0.05px solid #50545c" }}
+            >
+              <MDBTableHead className="bg-light">
+                <tr style={{ fontSize: "1.2rem" }}>
+                  <th style={{ fontWeight: "bold" }}>
                     <input
                       type="checkbox"
-                      checked={isSelected}
-                      onChange={() => handleSelectTeamMember(teamMember.id)}
+                      checked={
+                        selectedTeamMembers.length === dataTeamMembers.length
+                      }
+                      onChange={handleSelectAllTeamMembers}
                     />
-                  </td>
-                  <td >
-                    <Edit onClick={() => handleOpenEditTeamMember(teamMember.id)}/>
-                  </td>
-                  <td>{teamMember.id}</td>
-                  <td>{teamMember.memberId}</td>
-                  <td>{teamMember.expertises}</td>
-                  <td>{formatDate(teamMember.createdAt || "-")}</td>
-                  <td>{formatDate(teamMember.modifiedAt || "-")}</td>
+                  </th>
+                  <th style={{ fontWeight: "bold" }}>Edit</th>
+                  <th style={{ fontWeight: "bold" }}>ID</th>
+                  <th style={{ fontWeight: "bold" }}>Member ID</th>
+                  <th style={{ fontWeight: "bold" }}>Expertises</th>
+                  <th style={{ fontWeight: "bold" }}>Create Time</th>
+                  <th style={{ fontWeight: "bold" }}>Modify Time</th>
                 </tr>
-              );
-            })}
-          </MDBTableBody>
-          <MDBTableBody className="bg-light"></MDBTableBody>
-        </MDBTable>
+              </MDBTableHead>
+              <MDBTableBody className="bg-light">
+                {dataTeamMembers.map((teamMember, index) => {
+                  const isSelected = selectedTeamMembers.includes(
+                    teamMember.id
+                  );
+                  return (
+                    <tr key={index}>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => handleSelectTeamMember(teamMember.id)}
+                        />
+                      </td>
+                      <td>
+                        <Edit
+                          onClick={() =>
+                            handleOpenEditTeamMember(teamMember.id)
+                          }
+                        />
+                      </td>
+                      <td>{teamMember.id}</td>
+                      <td>{teamMember.memberId}</td>
+                      <td>{teamMember.expertises}</td>
+                      <td>{formatDate(teamMember.createdAt || "-")}</td>
+                      <td>{formatDate(teamMember.modifiedAt || "-")}</td>
+                    </tr>
+                  );
+                })}
+              </MDBTableBody>
+              <MDBTableBody className="bg-light"></MDBTableBody>
+            </MDBTable>
+          </>
+        )}
       </MDBContainer>
       <Box display="flex" justifyContent="center" mt={2}>
         <Pagination
@@ -258,7 +281,7 @@ const TeamMemberList = () => {
           onChange={handleChangePage}
         />
       </Box>
-    </section>
+    </>
   );
 };
 

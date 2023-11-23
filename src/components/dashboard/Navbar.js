@@ -1,7 +1,7 @@
 import Wrapper from "../../assets/wrappers/Navbar";
 import { FaAlignLeft } from "react-icons/fa";
 import Logo from "./Logo";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "../../assets/css/navbar.css";
@@ -37,12 +37,13 @@ import { roleOptions } from "../../pages/helpers/tableComlumn";
 import { useState } from "react";
 import NotificationList from "../../pages/dashboard/Notificate/NotificationList";
 import ChatBox from "./ChatBox";
-import { notification } from "antd";
 import {
   ReadNotification,
   ReadNotificationAll,
   getAllNotification,
 } from "../../app/api/notification";
+import { toggleSidebar } from "../../features/user/authSlice";
+
 
 export function stringToColor(string) {
   let hash = 0;
@@ -92,14 +93,15 @@ const Navbar = ({ notifications }) => {
   const [notificationCount, setNotificationCount] = useState(
     notifications?.length || 0
   );
-  const [dataNotification, setDataNotification] = useState({
-    id: 0,
-  });
+  const dispatch = useDispatch();
+  const toggle = () => {
+    dispatch(toggleSidebar());
+  };
+
   const [dataListNotification, setDataListNotification] = useState([]);
   const fetchDataListNotification = async () => {
     try {
       const response = notifications || (await getAllNotification());
-      console.group(response);
       setDataListNotification(response);
     } catch (error) {
       console.error(error);
@@ -226,7 +228,7 @@ const Navbar = ({ notifications }) => {
   return (
     <Wrapper>
       <div className="nav-center">
-        <button type="button" className="toggle-btn">
+        <button type="button" className="toggle-btn" onClick={toggle}>
           <FaAlignLeft />
         </button>
         <Paper component="form" className="search-bar">

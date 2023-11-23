@@ -39,7 +39,6 @@ import CreateTicketTaskTc from './pages/dashboard/Technician/CreateTicketTaskTc'
 import MyRequestList from './pages/dashboard/Customer/MyRequestList';
 import HomeManager from './pages/dashboard/Manager/HomeManager';
 import HomeAdmin from './pages/dashboard/Admin/HomeAdmin';
-import Customers from './pages/dashboard/Customers';
 import ContractList from './pages/dashboard/Contract/ContractList';
 import CreateContract from './pages/dashboard/Contract/CreateContract';
 import HomeAccountant from './pages/dashboard/Accountant/HomeAccountant';
@@ -57,6 +56,7 @@ import EditTicketCustomer from './pages/dashboard/Manager/EditTicketCustomer';
 import UserList from './pages/dashboard/User/UserList';
 import CreateUser from './pages/dashboard/User/CreateUser';
 import EditUser from './pages/dashboard/User/EditUser';
+import DetailContract from './pages/dashboard/Manager/Contract/DetailContract';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -114,6 +114,7 @@ function App() {
           {(hasAdminRole) &&<Route path='homeAdmin' element={<HomeAdmin />} />}
           <Route path='contractList' element={<ContractList />} />
           <Route path='createContract' element={<CreateContract />} />
+          <Route path='detailContract/:contractId' element={<DetailContract />} />
           <Route path='editContract/:contractId' element={<EditContract />} />
           <Route path='homeAccountant' element={<HomeAccountant />} />
           <Route path='paymentList' element={<PaymentList />} />

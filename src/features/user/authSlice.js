@@ -4,6 +4,7 @@ const storedUser = JSON.parse(sessionStorage.getItem("profile"));
 
 const initialState = {
   user: storedUser || null,
+  isSidebarOpen: false,
   error: null,
 };
 
@@ -27,10 +28,13 @@ const authSlice = createSlice({
       state.user = null;
       state.error = null;
     },
+    toggleSidebar: (state) => {
+      state.isSidebarOpen = !state.isSidebarOpen;
+    },
   },
 });
 
-export const { setUser, setError, clearError, logout } = authSlice.actions;
+export const { setUser, setError, clearError, logout, toggleSidebar } = authSlice.actions;
 export default authSlice.reducer;
 
 

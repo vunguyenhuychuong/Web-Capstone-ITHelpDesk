@@ -28,7 +28,6 @@ export async function getAllTicketTasks(
       },
       params: params,
     });
-    console.log(res);
     return res.data.result;
   } catch (error) {
     console.log(error);

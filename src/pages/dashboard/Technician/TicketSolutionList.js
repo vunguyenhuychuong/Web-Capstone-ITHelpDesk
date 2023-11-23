@@ -12,6 +12,8 @@ import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketCustomer.css";
 import PageSizeSelector from "../Pagination/Pagination";
 import {
+  ArrowDropDown,
+  ArrowDropUp,
   ContentCopy,
   DeleteForever,
   Lock,
@@ -22,7 +24,15 @@ import {
 import { formatDate } from "../../helpers/FormatDate";
 import { useNavigate } from "react-router-dom";
 import { useCallback } from "react";
-import { Box, FormControl, MenuItem, Pagination, Select } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardContent,
+  FormControl,
+  MenuItem,
+  Pagination,
+  Select,
+} from "@mui/material";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import {
   deleteTicketSolution,
@@ -30,6 +40,7 @@ import {
 } from "../../../app/api/ticketSolution";
 import { toast } from "react-toastify";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
+import CloseTicket from "../../../assets/images/NoTicketSolution.jpg";
 
 const TicketSolutionList = () => {
   const [dataListTicketsSolution, setDataListTicketsSolution] = useState([]);
@@ -170,28 +181,38 @@ const TicketSolutionList = () => {
   }, [fetchDataListTicketSolution, refreshData]);
 
   return (
-      <>
+    <>
       <MDBContainer className="py-5 custom-container">
         <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid style={{ color: "#FFFFFF" }}>
-            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px"  }}>
-            <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
-            <span style={{ color: "#FFFFFF" }}>All Solutions</span>          
+            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
+              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
+              <span style={{ color: "#FFFFFF" }}>All Solutions</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px", color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  color: "#FFFFFF",
+                }}
                 onClick={() => handleOpenCreateTicketSolution()}
               >
-                <FaPlus style={{ color: "#FFFFFF" }}/> <span style={{ color: "#FFFFFF" }}>New</span>
+                <FaPlus style={{ color: "#FFFFFF" }} />{" "}
+                <span style={{ color: "#FFFFFF" }}>New</span>
               </MDBBtn>
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px", color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  color: "#FFFFFF",
+                }}
                 onClick={() => handleDeleteSelectedSolutions()}
               >
-               <DeleteForever style={{ color: "#FFFFFF" }}/> <span style={{ color: "#FFFFFF" }}>Delete</span>
+                <DeleteForever style={{ color: "#FFFFFF" }} />{" "}
+                <span style={{ color: "#FFFFFF" }}>Delete</span>
               </MDBBtn>
 
               <FormControl
@@ -262,25 +283,49 @@ const TicketSolutionList = () => {
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("title")}
                 >
-                  Title
+                  Title{""}
+                  {sortBy === "title" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("keyword")}
                 >
                   Keyword
+                  {sortBy === "keyword" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("isApproved")}
                 >
                   Status
+                  {sortBy === "isApproved" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("isPublic")}
                 >
                   Visibility
+                  {sortBy === "isPublic" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}>
                   Review Date
@@ -368,6 +413,39 @@ const TicketSolutionList = () => {
               </MDBTableBody>
             )}
           </MDBTable>
+
+          {dataListTicketsSolution.length === 0 && !loading && (
+            <Card
+              style={{ height: "450px", width: "100%" }}
+            >
+              <CardContent style={{ marginRight: "10px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: "10px",
+                  }}
+                >
+                  <img
+                    src={CloseTicket}
+                    alt="No Solutions"
+                    style={{ maxWidth: "350px", maxHeight: "300px" }}
+                  />
+                  <p
+                    style={{
+                      marginTop: "2px",
+                      fontSize: "16px",
+                      color: "#666",
+                    }}
+                  >
+                    No Ticket Solutions Available
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </MDBContainer>
       <Box display="flex" justifyContent="center" mt={2}>

@@ -29,7 +29,7 @@ import EditTicketModel from "./EditTicketModel";
 import { UpdateTicketForTechnician } from "../../../app/api/ticket";
 import { useSelector } from "react-redux";
 
-const Details = ({ data, loading, dataCategories, dataMode }) => {
+const Details = ({ data, loading }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [openImageDialog, setOpenImageDialog] = useState(false);
   const user = useSelector((state) => state.auth);
@@ -80,7 +80,6 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
             rows={4}
             fullWidth
             variant="outlined"
-            value={data?.description || ""}
             disabled
           />
           <UploadComponent />
@@ -88,15 +87,7 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
             <Button variant="contained" className="button">
               Reply All
             </Button>
-            {data.avatarUrl && (
-              <Button
-                variant="contained"
-                className="button"
-                onClick={handleImageDialogOpen}
-              >
-                See Image
-              </Button>
-            )}
+
           </div>
           <div className="labelContainer">
             <Typography
@@ -125,27 +116,22 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
               <TableRow className="hoverCell">
                 <TableCell style={{ textAlign: "right" }}>Requester</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {data.requester
-                    ? `${data.requester.lastName} ${data.requester.firstName}`
-                    : "N/A"}
+
                 </TableCell>
                 <TableCell style={{ textAlign: "right" }}>Impact</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {getImpactById(data.impact)}
+
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell style={{ textAlign: "right" }}>Status</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {ticketStatus.find(
-                    (status) => status.id === data.ticketStatus
-                  )?.name || "Unknown Status"}
+
                 </TableCell>
                 <TableCell style={{ textAlign: "right" }}>
                   Impact Detail
                 </TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {data.impactDetail || "Not Assigned"}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -155,29 +141,22 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
                 </TableCell>
                 <TableCell style={{ textAlign: "right" }}>Urgency</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {getUrgencyById(data.urgency)}
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell style={{ textAlign: "right" }}>Service</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {/* {data.service.description} */}
                 </TableCell>
                 <TableCell style={{ textAlign: "right" }}>Priority</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {getPriorityOption(data.priority)}
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell style={{ textAlign: "right" }}>Assignment</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {/* {data.assignment || "Not Assigned"} */}
                 </TableCell>
                 <TableCell style={{ textAlign: "right" }}>Category</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {dataCategories.find(
-                    (category) => category.id === data.categoryId
-                  )?.name || "Unknown Priority"}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -185,76 +164,39 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
                   Scheduled Start Time
                 </TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {formatDate(data.scheduledStartTime)}
                 </TableCell>
                 <TableCell style={{ textAlign: "right" }}>
                   Scheduled End Time
                 </TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {formatDate(data.scheduledEndTime)}
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell style={{ textAlign: "right" }}>DueTime</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {formatDate(data.dueTime)}
                 </TableCell>
                 <TableCell style={{ textAlign: "right" }}>
                   Completed Time
                 </TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {formatDate(data.completedTime)}
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell style={{ textAlign: "right" }}>Created At</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {formatDate(data.createdAt)}
                 </TableCell>
                 <TableCell style={{ textAlign: "right" }}>
                   Modified At
                 </TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {formatDate(data.modifiedAt)}
                 </TableCell>
               </TableRow>
-              {isEditDialogOpen && (userRole === 2 || userRole === 3) && (
-                <EditTicketModel
-                  open={isEditDialogOpen}
-                  onClose={() => setIsEditDialogOpen(false)}
-                  ticketId={data.id} // Pass the ticketId to the EditTicketModel component
-                  data={data} // Pass the data to the EditTicketModel component
-                />
-              )}
+
             </TableBody>
           </Table>
         </Grid>
       </Grid>
-      <Dialog
-        open={openImageDialog}
-        onClose={handleImageDialogClose}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>Image</DialogTitle>
-        <DialogContent>
-          <div
-            style={{
-              background: `url(${data.avatarUrl})`,
-              backgroundSize: "contain",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
-              width: "100%",
-              height: "70vh", // Adjust the height as needed
-            }}
-          ></div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleImageDialogClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
+
     </div>
   );
 };

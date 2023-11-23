@@ -153,7 +153,8 @@ const ContractList = () => {
   };
 
   const handleOpenDetailContract = (contractId) => {
-    navigate(`/home/editContract/${contractId}`);
+    // navigate(`/home/editContract/${contractId}`);
+    navigate(`/home/detailContract/${contractId}`)
   };
 
   const handleChangePage = (event, value) => {

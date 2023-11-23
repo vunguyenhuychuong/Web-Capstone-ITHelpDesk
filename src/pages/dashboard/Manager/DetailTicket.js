@@ -45,9 +45,9 @@ const DetailTicket = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth);
   const userRole = user.user.role;
-  const userName = data.requester
-    ? `${data.requester.lastName} ${data.requester.firstName}`
-    : "";
+  // const userName = data.requester
+  //   ? `${data.requester.lastName || ""} ${data.requester.firstName || ""}`
+  //   : "";
   const ticketStatus = data.ticketStatus;
   const [allowEdit, setAllowEdit] = useState(false);
   const [editMessage, setEditMessage] = useState("");
@@ -95,12 +95,12 @@ const DetailTicket = () => {
   };
 
   useEffect(() => {
-    if (ticketStatus === 0) {
+    if (ticketStatus === 0 && (userRole === 2 || userRole === 3)) {
       setAllowEdit(true);
       setEditMessage("");
     } else {
       setAllowEdit(false);
-      setEditMessage("This ticket is not allowed to be edited when it assign");
+      setEditMessage(" Not allowed edited when it turn status assign");
     }
     fetchDataManager();
     setValue(0);
@@ -141,13 +141,19 @@ const DetailTicket = () => {
                   </button>
                 </div>
               </MDBCol>
-              <MDBCol md="4" className="mt-2">
+              <MDBCol md="5">
                 <div className="d-flex align-items-center">
                   <button
                     type="button"
-                    className="btn btn-link narrow-input icon-label"
+                    className="btn btn-link narrow-input icon-label mt-2"
                     onClick={() => handleOpenEditTicket(ticketId)}
-                    disabled={!allowEdit}
+                    disabled={
+                      !(
+                        userRole === 2 ||
+                        userRole === 3 ||
+                        (userRole === 1 && ticketStatus === 0)
+                      )
+                    }
                   >
                     Edit
                   </button>
@@ -164,9 +170,11 @@ const DetailTicket = () => {
                       </div>
                     </MDBCol>
                   ) : null}
-                   {editMessage && (
-              <div style={{ marginLeft: '10px', color: 'red' }}>{editMessage}</div>
-            )}
+                  {editMessage && (
+                    <div style={{ marginLeft: "20px", color: "red" }}>
+                      {editMessage}
+                    </div>
+                  )}
                 </div>
               </MDBCol>
             </MDBRow>
@@ -226,71 +234,57 @@ const DetailTicket = () => {
                 }
                 className="custom-tab-label"
               />
-              {userRole === 2 || userRole === 3 ? (
-                <>
-                  <Tab
-                    label={
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          textTransform: "none",
-                        }}
-                      >
-                        <Task sx={{ marginRight: 1 }} /> Task
-                      </div>
-                    }
-                    className="custom-tab-label"
-                  />
-                  <Tab
-                    label={
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          textTransform: "none",
-                        }}
-                      >
-                        <WorkHistory sx={{ marginRight: 1 }} /> Ticket Log
-                      </div>
-                    }
-                    className="custom-tab-label"
-                  />
-                  <Tab
-                    label={
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          textTransform: "none",
-                        }}
-                      >
-                        <WorkHistory sx={{ marginRight: 1 }} /> Checklist
-                      </div>
-                    }
-                    className="custom-tab-label"
-                  />
-                </>
-              ) : null}
+              <Tab
+                label={
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      textTransform: "none",
+                    }}
+                  >
+                    <Task sx={{ marginRight: 1 }} /> Task
+                  </div>
+                }
+                className="custom-tab-label"
+              />
+              <Tab
+                label={
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      textTransform: "none",
+                    }}
+                  >
+                    <WorkHistory sx={{ marginRight: 1 }} /> Ticket Log
+                  </div>
+                }
+                className="custom-tab-label"
+              />
+              <Tab
+                label={
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      textTransform: "none",
+                    }}
+                  >
+                    <WorkHistory sx={{ marginRight: 1 }} /> Checklist
+                  </div>
+                }
+                className="custom-tab-label"
+              />
             </Tabs>
             <Box role="tabpanel" hidden={value !== 0}>
               {value === 0 ? (
                 <Details
                   data={data}
-                  loading={loading}
+                  loading={loading || false}
                   dataCategories={dataCategories}
                   dataMode={dataMode}
                 />
-              ) : (
-                <LoadingSkeleton />
-              )}
-            </Box>
-            <Box role="tabpanel" hidden={value !== 1}>
-              {value === 1 ? <TicketTaskList /> : <LoadingSkeleton />}
-            </Box>
-            <Box role="tabpanel" hidden={value !== 2}>
-              {value === 2 ? (
-                <AccessibleTable ticketId={ticketId} />
               ) : (
                 <LoadingSkeleton />
               )}
@@ -382,7 +376,7 @@ const DetailTicket = () => {
             </MDBCol>
           </MDBRow>
           <MDBRow className="mb-4">
-            <MDBCol
+            {/* <MDBCol
               md="12"
               className="d-flex align-items-center mt-2 description-label"
             >
@@ -395,7 +389,9 @@ const DetailTicket = () => {
                 {data.requester && data.requester.username ? (
                   <>
                     <p className="fw-bold mb-1">
-                      {data.requester.username}{" "}
+                      {data.requester && data.requester.username
+                        ? `${data.requester.username} `
+                        : ""}{" "}
                       <MessageSharp style={{ color: "#3399FF" }} />{" "}
                     </p>
                     <p className="text-muted mb-0">Requests(2) | Assets</p>
@@ -404,7 +400,7 @@ const DetailTicket = () => {
                   <p className="text-muted">Username not available</p>
                 )}
               </div>
-            </MDBCol>
+            </MDBCol> */}
             <MDBTable bordered>
               <MDBTableBody>
                 <tr>
@@ -445,7 +441,8 @@ const DetailTicket = () => {
                 <tr>
                   <th>BirthDay</th>
                   <th>
-                    {formatDate(data.requester) &&
+                    {data.requester &&
+                    data.requester.dateOfBirth &&
                     formatDate(data.requester.dateOfBirth)
                       ? formatDate(data.requester.dateOfBirth)
                       : "-"}
