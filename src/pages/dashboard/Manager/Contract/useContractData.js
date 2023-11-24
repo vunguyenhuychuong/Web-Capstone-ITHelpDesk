@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getContractById } from "../../../app/api/contract";
+import { getContractById } from "../../../../app/api/contract";
 
 const useContractData = (contractId) => {
   const [error, setError] = useState(null);
@@ -54,7 +54,6 @@ const useContractData = (contractId) => {
     const fetchData = async () => {
       try {
         const contractData = await getContractById(contractId);
-        console.log(contractData);
         if (isMounted) {
           setData({
             ...contractData,

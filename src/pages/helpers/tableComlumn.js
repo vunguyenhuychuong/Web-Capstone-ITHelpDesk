@@ -303,6 +303,19 @@ export const numberOfDuration = [
   {id:11, name: "36 months"},
 ]
 
+
+export const statusContract = [
+  {id:0, name: "Pending"},
+  {id:1, name: "Active"},
+  {id:2, name: "Inactive"},
+  {id:3, name: "Expired"},
+]
+
+export const getStatusContract = (statusId) => {
+  const status = statusContract.find(option => option.id === statusId);
+  return status ? status.name : 'Unknown Status';
+}
+
 export default Process;
 
 

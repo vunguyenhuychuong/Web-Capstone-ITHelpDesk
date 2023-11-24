@@ -1,90 +1,110 @@
 import React from "react";
 import {
-  Button,
   Grid,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
+  Typography,
 } from "@mui/material";
 import "../../../../assets/css/detailTicket.css";
 import PropTypes from "prop-types";
 import "../../../../assets/css/homeManager.css";
 import { useSelector } from "react-redux";
-import { formatDate } from "../../../helpers/FormatDate";
-import { formatCurrency } from "../../../helpers/FormatCurrency";
-import { useState } from "react";
-import { getContractService } from "../../../../app/api/contract";
-import { useParams } from "react-router-dom";
-import { useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import UploadComponent from "./UploadComponent";
-import { ControlPoint, RemoveCircleOutline } from "@mui/icons-material";
+import { formatDate } from "../../../helpers/FormatDate";
+import { getPaymentTerm } from "../../../../app/api/payment";
+import { useEffect } from "react";
+import { useState } from "react";
 
-const Details = ({ data, loading, error }) => {
+const PaymentContract = ({ dataPayment, loading }) => {
   const user = useSelector((state) => state.auth);
-  const { contractId } = useParams();
-  const [dataContractService, setDataContractService] = useState([]);
-  const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
-  Details.propTypes = {
-    data: PropTypes.object,
+  const userRole = user.user.role;
+  const [dataPaymentTerm, setDataPaymentTerm] = useState([]);
+  console.log(dataPayment);
+  PaymentContract.propTypes = {
+    dataPayment: PropTypes.object,
     loading: PropTypes.bool.isRequired,
-  };
-
-  const closeImagePreview = () => {
-    setIsImagePreviewOpen(false);
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const contractData = await getContractService(contractId);
-        setDataContractService(contractData);
+        const contractData = await getPaymentTerm(dataPayment.id);
+        setDataPaymentTerm(contractData);
       } catch (error) {
         console.error("Error fetching contract data: ", error);
       }
     };
 
     fetchData();
-  }, [contractId]);
+  }, [dataPayment.id]);
 
   const columns = [
-    { field: "id", headerName: "ID", width: 200 },
+    { field: "id", headerName: "ID", width: 100 },
     {
-      field: "Name",
-      headerName: "Name",
-      width: 500,
+      field: "Description",
+      headerName: "Description",
+      width: 400,
       editable: true,
     },
     {
-      field: "Type",
-      headerName: "Type",
-      width: 250,
+      field: "termAmount",
+      headerName: "Amount",
+      width: 100,
       editable: true,
     },
     {
-      field: "amount",
-      headerName: "Value(VND)",
-      type: "number",
+      field: "termStart",
+      headerName: "Date Added",
       width: 150,
       editable: true,
+      valueFormatter: (params) => formatDate(params.value), // Customize the formatting function
     },
     {
-      field: "createdAt",
-      headerName: "Date Added",
-      width: 350,
+      field: "termEnd",
+      headerName: "Date End",
+      width: 150,
       editable: true,
+      align: "right",
+      headerAlign: "right",
+    },
+    {
+      field: "termAmount",
+      headerName: "Value(VND)",
+      width: 200,
+      editable: true,
+      align: "right",
+      headerAlign: "right",
+    },
+    {
+      field: "isPaid",
+      headerName: "Is Paid",
+      width: 100,
+      editable: true,
+      align: "right",
+      headerAlign: "right",
+    },
+    {
+      field: "termFinishTime",
+      headerName: "Term Finish Time",
+      width: 150,
+      editable: true,
+      align: "right",
+      headerAlign: "right",
     },
   ];
 
-  const formattedDataContractService = dataContractService.map((contract) => ({
-    id: contract.id,
-    Name: contract.service.description,
-    Type: contract.service.type,
-    amount: contract.service.amount,
-    createdAt: formatDate(contract.createdAt),
+  const formattedDataContractService = (dataPaymentTerm || []).map((payment) => ({
+    id: payment?.id,
+    Description: payment?.description,
+    termAmount: payment?.termAmount,
+    termStart: payment?.termStart,
+    termEnd: payment?.termEnd,
+    termAmount: payment?.termAmount,
+    isPaid: payment?.isPaid,
+    termFinishTime: payment?.termFinishTime,
   }));
 
   return (
@@ -98,115 +118,19 @@ const Details = ({ data, loading, error }) => {
               border: "1px solid #000",
             }}
           >
-           <TableBody>
-  <TableRow>
-    <TableCell
-      style={{
-        background: "#CCCCCC",
-        marginTop: "10px",
-        textAlign: "right",
-        width: "150px", // Adjust the width as needed
-      }}
-    >
-      Name
-    </TableCell>
-    <TableCell style={{ marginTop: "10px" }}>{data.name}</TableCell>
-    <TableCell
-      style={{
-        background: "#CCCCCC",
-        marginTop: "10px",
-        textAlign: "right",
-        width: "150px", // Adjust the width as needed
-      }}
-    >
-      Active Period
-    </TableCell>
-    <TableCell style={{ marginTop: "10px" }}>
-      {formatDate(data.startDate)} - {formatDate(data.endDate)}
-    </TableCell>
-  </TableRow>
-  <TableRow>
-    <TableCell
-      style={{
-        background: "#CCCCCC",
-        marginTop: "10px",
-        textAlign: "right",
-        width: "150px", // Adjust the width as needed
-      }}
-    >
-      Description
-    </TableCell>
-    <TableCell style={{ marginTop: "10px" }}>
-      {data.description}
-    </TableCell>
-    <TableCell
-      style={{
-        background: "#CCCCCC",
-        marginTop: "10px",
-        textAlign: "right",
-        width: "150px", // Adjust the width as needed
-      }}
-    >
-      Parent Contract
-    </TableCell>
-    <TableCell style={{ marginTop: "10px" }}>
-      {data.parentContractId}
-    </TableCell>
-  </TableRow>
-  <TableRow>
-    <TableCell
-      style={{
-        background: "#CCCCCC",
-        marginTop: "10px",
-        textAlign: "right",
-        width: "150px", // Adjust the width as needed
-      }}
-    >
-      Value (VND)
-    </TableCell>
-    <TableCell style={{ marginTop: "10px" }}>
-      {formatCurrency(data.value)} VND
-    </TableCell>
-    <TableCell
-      style={{
-        background: "#CCCCCC",
-        marginTop: "10px",
-        textAlign: "right",
-        width: "150px", // Adjust the width as needed
-      }}
-    >
-      Accountant
-    </TableCell>
-    <TableCell style={{ marginTop: "10px" }}>
-      {data &&
-        data.accountant &&
-        `${data.accountant.lastName} ${data.accountant.firstName}`}
-    </TableCell>
-  </TableRow>
-</TableBody>
-          </Table>
-          <UploadComponent attachmentURL={data.attachmentURL} />
-          <Table
-            style={{
-              marginTop: "20px",
-              marginBottom: "10px",
-              border: "1px solid #000",
-            }}
-          >
             <TableHead>
               <TableRow>
                 <TableCell
                   colSpan={4}
                   style={{
                     background: "#EEEEEE",
-                    textAlign: "center",
                     fontSize: "18px",
                     textAlign: "left",
                     borderBottom: "2px solid #CCCCCC",
                     fontWeight: "bold",
                   }}
                 >
-                  Company
+                  Payment Information
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -220,10 +144,10 @@ const Details = ({ data, loading, error }) => {
                     width: "150px",
                   }}
                 >
-                  Company Name
+                  Description
                 </TableCell>
                 <TableCell style={{ marginTop: "10px", width: "150px" }}>
-                  {data.company.companyName}
+                  {dataPayment.description}
                 </TableCell>
                 <TableCell
                   style={{
@@ -233,10 +157,10 @@ const Details = ({ data, loading, error }) => {
                     width: "150px",
                   }}
                 >
-                  Phone Number
+                  Duration
                 </TableCell>
                 <TableCell style={{ marginTop: "10px" }}>
-                  {data.company.phoneNumber}
+                  {dataPayment.duration}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -247,10 +171,10 @@ const Details = ({ data, loading, error }) => {
                     textAlign: "right",
                   }}
                 >
-                  Tax Code
+                  First date of payment
                 </TableCell>
                 <TableCell style={{ marginTop: "10px", width: "150px" }}>
-                  {data.company.taxCode}
+                  {formatDate(dataPayment.firstDateOfPayment)}
                 </TableCell>
                 <TableCell
                   style={{
@@ -260,38 +184,10 @@ const Details = ({ data, loading, error }) => {
                     width: "150px",
                   }}
                 >
-                  Email
+                  Number of term
                 </TableCell>
                 <TableCell style={{ marginTop: "10px", width: "150px" }}>
-                  {data.company.email}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  style={{
-                    background: "#CCCCCC",
-                    marginTop: "10px",
-                    textAlign: "right",
-                    width: "150px",
-                  }}
-                >
-                  Website
-                </TableCell>
-                <TableCell style={{ marginTop: "10px", width: "150px" }}>
-                  {data.company.website}
-                </TableCell>
-                <TableCell
-                  style={{
-                    background: "#CCCCCC",
-                    marginTop: "10px",
-                    textAlign: "right",
-                  }}
-                >
-                  Address
-                </TableCell>
-                <TableCell style={{ marginTop: "10px", width: "150px" }}>
-                  {" "}
-                  {data.company.companyAddress}
+                  {dataPayment.numberOfTerms}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -303,10 +199,10 @@ const Details = ({ data, loading, error }) => {
                     width: "150px",
                   }}
                 >
-                  Field Of Address
+                  Initial payment amount
                 </TableCell>
                 <TableCell style={{ marginTop: "10px", width: "150px" }}>
-                  {data.company.fieldOfBusiness}
+                  {dataPayment.initialPaymentAmount}
                 </TableCell>
                 <TableCell
                   style={{
@@ -315,15 +211,42 @@ const Details = ({ data, loading, error }) => {
                     textAlign: "right",
                   }}
                 >
-                  Company Admin
+                  Is Fully Paid
                 </TableCell>
                 <TableCell style={{ marginTop: "10px", width: "150px" }}>
-                  {" "}
-                  {data.company.customerAdmin}
+                  {dataPayment.isFullyPaid}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell
+                  style={{
+                    background: "#CCCCCC",
+                    marginTop: "10px",
+                    textAlign: "right",
+                    width: "150px",
+                  }}
+                >
+                  Note
+                </TableCell>
+                <TableCell style={{ marginTop: "10px", width: "150px" }}>
+                  {dataPayment.note}
+                </TableCell>
+                <TableCell
+                  style={{
+                    background: "#CCCCCC",
+                    marginTop: "10px",
+                    textAlign: "right",
+                  }}
+                >
+                  Completion date
+                </TableCell>
+                <TableCell style={{ marginTop: "10px", width: "150px" }}>
+                  {dataPayment.paymentFinishTime}
                 </TableCell>
               </TableRow>
             </TableBody>
           </Table>
+
           <Grid
             container
             spacing={2}
@@ -335,6 +258,7 @@ const Details = ({ data, loading, error }) => {
                 style={{
                   marginTop: "20px",
                   border: "1px solid #000",
+                  width: "100%",
                 }}
               >
                 <TableBody>
@@ -350,26 +274,15 @@ const Details = ({ data, loading, error }) => {
                       }}
                     >
                       Associate Service
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        style={{ marginLeft: "10px" }}
-                        // onClick={handleAddRow}
-                      >
-                        <ControlPoint /> Add
-                      </Button>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        style={{ marginLeft: "10px" }}
-                        // onClick={handleAddRow}
-                      >
-                        <RemoveCircleOutline  /> Remove
-                      </Button>
                     </TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
+              {dataPaymentTerm.length === 0 ? (
+                <Typography variant="subtitle1" style={{ margin: '20px' }}>
+                  No data available.
+                </Typography>
+              ) : (
               <DataGrid
                 rows={formattedDataContractService}
                 columns={columns}
@@ -384,6 +297,7 @@ const Details = ({ data, loading, error }) => {
                 checkboxSelection
                 disableRowSelectionOnClick
               />
+              )}
             </Grid>
           </Grid>
         </Grid>
@@ -392,4 +306,4 @@ const Details = ({ data, loading, error }) => {
   );
 };
 
-export default Details;
+export default PaymentContract;

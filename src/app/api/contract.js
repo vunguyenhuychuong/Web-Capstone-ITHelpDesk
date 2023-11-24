@@ -247,3 +247,32 @@ export async function getAllContractSelect() {
     console.log(error);
   }
 };
+
+export async function getContractService(contractId) {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/contract/services?contractId=${contractId}`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};
+
+export async function getPaymentContract(contractId) {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/payment/contract/${contractId}`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    console.log(res);
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};

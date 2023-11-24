@@ -245,6 +245,7 @@ const IndexTicket = () => {
                     name: "searchField",
                     id: "search-field",
                   }}
+                  style={{ color: "white" }}
                 >
                   <MenuItem value="requesterId">RequesterId</MenuItem>
                   <MenuItem value="title">Title</MenuItem>
