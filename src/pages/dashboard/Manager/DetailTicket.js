@@ -33,7 +33,6 @@ import Details from "./Details";
 import TicketTaskList from "../Technician/TicketTaskList";
 import { stringAvatar } from "../../../components/dashboard/Navbar";
 import { useSelector } from "react-redux";
-import AccessibleTable from "../Technician/CommentSolution.js/HistorySolution";
 
 const DetailTicket = () => {
   const { ticketId } = useParams();
@@ -71,7 +70,7 @@ const DetailTicket = () => {
   const handleOpenEditTicket = (ticketId) => {
     if (userRole === 1) {
       navigate(`/home/editTicketCustomer/${ticketId}`);
-    } else if (userRole === 3) {
+    } else if (userRole === 2) {
       navigate(`/home/editTicket/${ticketId}`);
     }
   };
@@ -147,13 +146,7 @@ const DetailTicket = () => {
                     type="button"
                     className="btn btn-link narrow-input icon-label mt-2"
                     onClick={() => handleOpenEditTicket(ticketId)}
-                    disabled={
-                      !(
-                        userRole === 2 ||
-                        userRole === 3 ||
-                        (userRole === 1 && ticketStatus === 0)
-                      )
-                    }
+                    disabled={!(userRole === 2 || (userRole === 1 && ticketStatus === 0))}
                   >
                     Edit
                   </button>
@@ -196,9 +189,9 @@ const DetailTicket = () => {
                   #{data.requesterId} {data.title}
                 </span>
                 <span style={{ fontSize: "0.8em" }}>
-                  by{" "}
+                  Created by{" "}
                   <span className="bold-text">
-                    {roleName && roleName.name ? roleName.name : "Unknown Role"}
+                    {roleName && roleName.name ? roleName.name : "-"}
                   </span>{" "}
                   <ChatOutlined color="#007bff" /> on:
                   {formatDate(data.scheduledStartTime)} |

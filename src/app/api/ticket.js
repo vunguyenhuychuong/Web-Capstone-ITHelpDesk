@@ -165,22 +165,24 @@ export async function editTicketByCustomer(ticketId, data) {
 export async function createTicketByManager(data) {
   const header = getAuthHeader();
   try {
-    const response = await axios.post(`${baseURL}/ticket/manager/new`, data, {
+    const res = await axios.post(`${baseURL}/ticket/manager/new`, data, {
       headers: {
         Authorization: header,
       },
     });
-    console.log(response);
-    return response.data;
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+    return res.data.result;
   } catch (error) {
-    if(error.response && error.response.data && error.response.data.isError){
-      const { responseException } = error.response.data;
-      toast.error(responseException.exceptionMessage);
-      throw new Error(responseException.exceptionMessage);
-    }else{
-      console.error("Unexpected error:", error);
-      throw new Error("An unexpected error occurred while processing your request.");
-    }
+    console.log(error.response.data.responseException.exceptionMessage);
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
   }
 }
 

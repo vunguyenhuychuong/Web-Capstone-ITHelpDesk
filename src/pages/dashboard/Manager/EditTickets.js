@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Grid} from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  IconButton,
+} from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
@@ -13,7 +19,7 @@ import {
 } from "../../helpers/tableComlumn";
 import { getDataCategories } from "../../../app/api/category";
 import { getDataUser } from "../../../app/api";
-import { getDataMode } from "../../../app/api/mode";
+import ModeApi from "../../../app/api/mode";
 import { getDataServices } from "../../../app/api/service";
 import {
   editTicketByManager,
@@ -42,14 +48,19 @@ const EditTickets = () => {
   const [dataMode, setDataMode] = useState([]);
   const [dataUser, setDataUser] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [fieldErrors, setFieldErrors] = useState({
+    title: "",
+    description: "",
+  });
 
   const fetchDataManager = async () => {
     try {
       const fetchCategories = await getDataCategories();
       const fetchUsers = await getDataUser();
-      const fetchModes = await getDataMode();
+      const fetchModes = await ModeApi.getMode();
       const responseService = await getDataServices();
       setDataCategories(fetchCategories);
       setDataServices(responseService);
@@ -79,7 +90,11 @@ const EditTickets = () => {
     } else {
       setData((prevData) => ({ ...prevData, [name]: value }));
     }
-    
+
+    setFieldErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
   };
 
   useEffect(() => {
@@ -101,6 +116,7 @@ const EditTickets = () => {
           scheduledEndTime: ticketData.scheduledEndTime,
           dueTime: ticketData.dueTime,
           completedTime: ticketData.completedTime,
+          attachmentUrl: ticketData.attachmentUrl
         }));
       } catch (error) {
         console.error("Error fetching ticket data: ", error);
@@ -110,19 +126,72 @@ const EditTickets = () => {
     fetchDataManager();
   }, []);
 
+  useEffect(() => {
+    setData((prevData) => ({
+      ...prevData,
+      requesterId: dataUser.length > 0 ? dataUser[0].id : 1,
+    }));
+  }, [dataUser]);
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedFile(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreviewUrl(reader.result);
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreviewUrl(null);
+    }
+  };
+
+  const closeImagePreview = () => {
+    setIsImagePreviewOpen(false);
   };
 
   const handleSubmitTicket = async (e) => {
     e.preventDefault();
+
+    const errors = {};
+    if (!data.title) {
+      errors.title = "Title Ticket is required";
+    }
+
+    if (!data.description) {
+      errors.description = "Description is required";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+
     setIsSubmitting(true);
     try {
+      let attachmentUrl = data.attachmentUrl;
+      if (selectedFile) {
+        const storage = getStorage();
+        const storageRef = ref(storage, "images/" + selectedFile.name);
+        await uploadBytes(storageRef, selectedFile);
+        attachmentUrl = await getDownloadURL(storageRef);
+      }
+
+      const updatedData = {
+        ...data,
+        attachmentUrl: attachmentUrl,
+      };
+      setData(updatedData);
       const res = await editTicketByManager(ticketId, data);
       setIsSubmitting(false);
       if (res.isError && res.responseException?.exceptionMessage) {
-        toast.info("Ticket is currently being executed and cannot be updated.");
+        toast.info("Ticket is currently being executed and cannot be updated.", {
+          autoClose: 2000,
+          hideProgressBar: false,
+          position: toast.POSITION.TOP_CENTER,
+        });
       } else {
         toast.success("Ticket updated successfully");
       }
@@ -226,6 +295,9 @@ const EditTickets = () => {
                         value={data.title}
                         onChange={handleInputChange}
                       />
+                      {fieldErrors.title && (
+                        <div style={{ color: "red" }}>{fieldErrors.title}</div>
+                      )}
                     </Grid>
                   </Grid>
                 </Grid>
@@ -245,6 +317,9 @@ const EditTickets = () => {
                   value={data.description}
                   onChange={handleInputChange}
                 />
+                {fieldErrors.description && (
+                  <div style={{ color: "red" }}>{fieldErrors.description}</div>
+                )}
               </Grid>
               <Grid item xs={3}>
                 <h2 className="align-right">Attachment</h2>
@@ -257,6 +332,21 @@ const EditTickets = () => {
                   id="attachmentUrl"
                   onChange={handleFileChange}
                 />
+                {imagePreviewUrl && (
+                  <div
+                    className="image-preview"
+                    onClick={() => setIsImagePreviewOpen(true)}
+                  >
+                    {/* <img
+                      src={imagePreviewUrl}
+                      alt="Attachment Preview"
+                      style={{ width: "100%" }}
+                    /> */}
+                    <p className="preview-text">
+                      Click here to view attachment
+                    </p>
+                  </div>
+                )}
               </Grid>
               <Grid
                 container
@@ -365,7 +455,11 @@ const EditTickets = () => {
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid container justifyContent="flex-end" style={{marginTop: "15px"}}>
+              <Grid
+                container
+                justifyContent="flex-end"
+                style={{ marginTop: "15px" }}
+              >
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
@@ -413,22 +507,25 @@ const EditTickets = () => {
                   </Grid>
                 </Grid>
 
-                <Grid container justifyContent="flex-end" style={{marginTop: "15px"}}>
-                <Grid item xs={3}>
-                  <h2 className="align-right">Impact Detail</h2>
+                <Grid
+                  container
+                  justifyContent="flex-end"
+                  style={{ marginTop: "15px" }}
+                >
+                  <Grid item xs={3}>
+                    <h2 className="align-right">Impact Detail</h2>
+                  </Grid>
+                  <Grid item xs={9}>
+                    <input
+                      id="impactDetail"
+                      type="text"
+                      name="impactDetail"
+                      className="form-control"
+                      value={data.impactDetail}
+                      onChange={handleInputChange}
+                    />
+                  </Grid>
                 </Grid>
-                <Grid item xs={9}>
-                  <input
-                    id="impactDetail"
-                    type="text"
-                    name="impactDetail"
-                    className="form-control"
-                    value={data.impactDetail}
-                    onChange={handleInputChange}
-                  />
-                </Grid>
-                </Grid>
-                
               </Grid>
             </Grid>
           </MDBCol>
@@ -457,6 +554,32 @@ const EditTickets = () => {
           </MDBRow>
         </MDBCol>
       </Grid>
+
+      <Dialog
+        open={isImagePreviewOpen}
+        onClose={closeImagePreview}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          Image Preview
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={closeImagePreview}
+            aria-label="close"
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <img
+            src={imagePreviewUrl}
+            alt="Attachment Preview"
+            style={{ width: "100%" }}
+          />
+        </DialogContent>
+      </Dialog>
     </Grid>
   );
 };

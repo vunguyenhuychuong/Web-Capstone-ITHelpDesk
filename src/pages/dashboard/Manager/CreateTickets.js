@@ -10,7 +10,6 @@ import {
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import {
   TicketStatusOptions,
@@ -26,6 +25,7 @@ import { createTicketByManager } from "../../../app/api/ticket";
 const CreateTickets = () => {
   const navigate = useNavigate();
   const { ticketId } = useParams();
+  const [dataUser, setDataUser] = useState([]);
   const [data, setData] = useState({
     requesterId: 1,
     title: "",
@@ -43,7 +43,6 @@ const CreateTickets = () => {
   const [dataCategories, setDataCategories] = useState([]);
   const [dataServices, setDataServices] = useState([]);
   const [dataMode, setDataMode] = useState([]);
-  const [dataUser, setDataUser] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
@@ -72,12 +71,11 @@ const CreateTickets = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "categoryId" || name === "modeId" || name === "serviceId") {
+    if (name === "categoryId" || name === "modeId" || name === "serviceId" || name === "requesterId") {
       const selectedValue = parseInt(value, 10);
       setData((prevData) => ({ ...prevData, [name]: selectedValue }));
     } else if (
-      name === "priority" ||
-      name === "requesterId" ||
+      name === "priority" ||  
       name === "impact" ||
       name === "ticketStatus" ||
       name === "urgency"
@@ -97,6 +95,13 @@ const CreateTickets = () => {
   useEffect(() => {
     fetchDataManager();
   }, []);
+
+  useEffect(() => {
+    setData((prevData) => ({
+      ...prevData,
+      requesterId: dataUser.length > 0 ? dataUser[0].id : 1,
+    }));
+  }, [dataUser]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -163,16 +168,8 @@ const CreateTickets = () => {
         categoryId: data.categoryId,
         attachmentUrl: attachmentUrl,
       });
-      if (
-        response.data.isError &&
-        response.data.responseException.exceptionMessage
-      ) {
-        console.log(response.data.responseException.exceptionMessage);
-      } else {
-        toast.success("Ticket created successfully");
-        fetchDataManager();
-      }
     } catch (error) {
+      console.log(error);
     } finally {
       setIsSubmitting(false);
     }
@@ -297,7 +294,7 @@ const CreateTickets = () => {
                       >
                         {dataUser.map((user) => (
                           <option key={user.id} value={user.id}>
-                            {user.username}
+                            {user.lastName} {user.firstName} - {user.username} - {user.id}
                           </option>
                         ))}
                       </select>
@@ -350,7 +347,6 @@ const CreateTickets = () => {
                   className="form-control input-field"
                   id="attachmentUrl"
                   onChange={handleFileChange}
-                  value={data.attachmentUrl}
                 />
                 {imagePreviewUrl && (
                   <div
