@@ -113,7 +113,7 @@ const CreateTicketSolution = () => {
 
   const validateDate = (reviewDate, expiredDate) => {
     if (!reviewDate || !expiredDate) {
-      return false; // If either date is missing, return false
+      return false; 
     }
     return moment(reviewDate).isBefore(expiredDate);
   };
@@ -134,17 +134,8 @@ const CreateTicketSolution = () => {
       setFieldErrors(errors);
       return;
     }
-    setIsSubmitting(true);
-    try {
-      let attachmentUrl = data.attachmentUrl;
-      if (selectedFile) {
-        const storage = getStorage();
-        const storageRef = ref(storage, "images/" + selectedFile.name);
-        await uploadBytes(storageRef, selectedFile);
-        attachmentUrl = await getDownloadURL(storageRef);
-      }
 
-      const isDataValid = validateDate(data.reviewDate, data.expiredDate);
+    const isDataValid = validateDate(data.reviewDate, data.expiredDate);
       if (!isDataValid) {
         toast.warning(
           "scheduledStartTime must be earlier than scheduledEndTime.",
@@ -163,6 +154,15 @@ const CreateTicketSolution = () => {
       const formattedExpiredDate = moment(data.expiredDate).format(
         "YYYY-MM-DDTHH:mm:ss"
       );
+    setIsSubmitting(true);
+    try {
+      let attachmentUrl = data.attachmentUrl;
+      if (selectedFile) {
+        const storage = getStorage();
+        const storageRef = ref(storage, "images/" + selectedFile.name);
+        await uploadBytes(storageRef, selectedFile);
+        attachmentUrl = await getDownloadURL(storageRef);
+      }
 
       const updatedData = {
         ...data,

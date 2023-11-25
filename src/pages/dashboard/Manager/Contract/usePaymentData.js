@@ -25,7 +25,7 @@ const usePaymentData = (contractId) => {
         const paymentData = await getPaymentContract(contractId);
         setDataPayment(paymentData);
       } catch (error) {
-        console.error("Error fetching contract data: ", error);
+        console.log("Error fetching contract data: ", error);
       }
     };
     fetchData();

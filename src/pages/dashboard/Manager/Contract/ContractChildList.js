@@ -13,7 +13,6 @@ import "../../../../assets/css/ticketCustomer.css";
 import {
   ContentCopy,
   DeleteForever,
-  ViewCompact,
 } from "@mui/icons-material";
 import { formatDate } from "../../../helpers/FormatDate";
 import { useNavigate, useParams } from "react-router-dom";
@@ -22,7 +21,7 @@ import {
   CardContent,
 } from "@mui/material";
 import { FaPlus } from "react-icons/fa";
-import CloseTicket from "../../../../assets/images/NoTicketSolution.jpg";
+import CloseTicket from "../../../../assets/images/NoContractChild.jpg";
 import { getContractChild } from "../../../../app/api/contract";
 import CustomizedProgressBars from "../../../../components/iconify/LinearProccessing";
 import { formatCurrency } from "../../../helpers/FormatCurrency";
@@ -30,8 +29,6 @@ import { formatCurrency } from "../../../helpers/FormatCurrency";
 
 const ContractChildList = () => {
   const [dataListContractChild, setDataListContractChild] = useState([]);
-  const [selectedContractChildIds, setSelectedContractChildIds] = useState([]);
-  const [refreshData, setRefreshData] = useState(false);
   const [loading, setLoading] = useState(true);
   const { contractId } = useParams();
   const navigate = useNavigate();
@@ -48,62 +45,13 @@ const ContractChildList = () => {
     }
   };
 
-  // const handleDeleteSelectedContractChilds = (id) => {
-  //   try {
-  //     console.log("Deleting selected solutions...");
-
-  //     if (selectedContractChildIds.length === 0) {
-  //       console.log("No selected solutions to delete.");
-  //       return;
-  //     }
-
-  //     let currentIndex = 0;
-
-  //     const deleteNextSolution = () => {
-  //       if (currentIndex < selectedContractChildIds.length) {
-  //         const contractId = selectedContractChildIds[currentIndex];
-
-  //         deleteTicketSolution(contractId)
-  //           .then(() => {
-  //             console.log(
-  //               `Solution with ID ${contractId} deleted successfully`
-  //             );
-  //             currentIndex++;
-  //             deleteNextSolution();
-  //           })
-  //           .catch((error) => {
-  //             console.error(
-  //               `Error deleting solution with ID ${contractId}: `,
-  //               error
-  //             );
-  //             toast.error(
-  //               `Error deleting solution with ID ${contractId}: `,
-  //               error
-  //             );
-  //           });
-  //       } else {
-  //         setSelectedContractChildIds([]);
-  //         toast.success("Selected solutions deleted successfully");
-  //         setRefreshData((prev) => !prev);
-  //       }
-  //     };
-
-  //     deleteNextSolution();
-  //   } catch (error) {
-  //     console.error("Failed to delete selected solutions: ", error);
-  //     toast.error(
-  //       "Failed to delete selected solutions, Please try again later"
-  //     );
-  //   }
-  // };
-
   const handleOpenCreateTicketSolution = () => {
     navigate("/home/createSolution");
   };
 
   useEffect(() => {
     fetchDataListContractChild();
-  }, [refreshData]);
+  }, []);
 
   return (
     <>

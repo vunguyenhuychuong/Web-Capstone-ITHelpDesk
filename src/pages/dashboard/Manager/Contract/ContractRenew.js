@@ -10,23 +10,16 @@ import {
 } from "mdb-react-ui-kit";
 import React, { useEffect, useState } from "react";
 import "../../../../assets/css/ticketCustomer.css";
-import {
-  ContentCopy,
-  DeleteForever,
-  ViewCompact,
-} from "@mui/icons-material";
+import { ContentCopy, DeleteForever, ViewCompact } from "@mui/icons-material";
 import { formatDate } from "../../../helpers/FormatDate";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-} from "@mui/material";
+import { Button, Card, CardContent } from "@mui/material";
 import { FaPlus } from "react-icons/fa";
-import CloseTicket from "../../../../assets/images/NoTicketSolution.jpg";
-import { getContractChild, getContractRenew } from "../../../../app/api/contract";
+import CloseTicket from "../../../../assets/images/NoContractChild.jpg";
+import { getContractRenew } from "../../../../app/api/contract";
 import CustomizedProgressBars from "../../../../components/iconify/LinearProccessing";
 import { formatCurrency } from "../../../helpers/FormatCurrency";
-
+import CreateRenewContract from "./CreateRenewContract";
 
 const ContractRenew = () => {
   const [dataListContractRenew, setDataListContractRenew] = useState([]);
@@ -47,57 +40,8 @@ const ContractRenew = () => {
     }
   };
 
-  // const handleDeleteSelectedContractChilds = (id) => {
-  //   try {
-  //     console.log("Deleting selected solutions...");
-
-  //     if (selectedContractChildIds.length === 0) {
-  //       console.log("No selected solutions to delete.");
-  //       return;
-  //     }
-
-  //     let currentIndex = 0;
-
-  //     const deleteNextSolution = () => {
-  //       if (currentIndex < selectedContractChildIds.length) {
-  //         const contractId = selectedContractChildIds[currentIndex];
-
-  //         deleteTicketSolution(contractId)
-  //           .then(() => {
-  //             console.log(
-  //               `Solution with ID ${contractId} deleted successfully`
-  //             );
-  //             currentIndex++;
-  //             deleteNextSolution();
-  //           })
-  //           .catch((error) => {
-  //             console.error(
-  //               `Error deleting solution with ID ${contractId}: `,
-  //               error
-  //             );
-  //             toast.error(
-  //               `Error deleting solution with ID ${contractId}: `,
-  //               error
-  //             );
-  //           });
-  //       } else {
-  //         setSelectedContractChildIds([]);
-  //         toast.success("Selected solutions deleted successfully");
-  //         setRefreshData((prev) => !prev);
-  //       }
-  //     };
-
-  //     deleteNextSolution();
-  //   } catch (error) {
-  //     console.error("Failed to delete selected solutions: ", error);
-  //     toast.error(
-  //       "Failed to delete selected solutions, Please try again later"
-  //     );
-  //   }
-  // };
-
-  const handleOpenCreateTicketSolution = () => {
-    navigate("/home/createSolution");
+  const handleOpenUpdateRenewContract = () => {
+    navigate(`/home/createRenewContract/${contractId}`);
   };
 
   useEffect(() => {
@@ -121,7 +65,7 @@ const ContractRenew = () => {
                   fontSize: "20px",
                   color: "#FFFFFF",
                 }}
-                onClick={() => handleOpenCreateTicketSolution()}
+                onClick={() => handleOpenUpdateRenewContract()}
               >
                 <FaPlus style={{ color: "#FFFFFF" }} />{" "}
                 <span style={{ color: "#FFFFFF" }}>New</span>
@@ -133,7 +77,6 @@ const ContractRenew = () => {
                   fontSize: "20px",
                   color: "#FFFFFF",
                 }}
-               
               >
                 <DeleteForever style={{ color: "#FFFFFF" }} />{" "}
                 <span style={{ color: "#FFFFFF" }}>Delete</span>
@@ -186,8 +129,10 @@ const ContractRenew = () => {
               </MDBTableBody>
             )}
           </MDBTable>
+          
 
-          {dataListContractRenew.length === 0 && !loading && (
+
+          {dataListContractRenew.length === 0 && !loading  && (
             <Card style={{ height: "450px", width: "100%" }}>
               <CardContent style={{ marginRight: "10px" }}>
                 <div
@@ -212,6 +157,16 @@ const ContractRenew = () => {
                     }}
                   >
                     No Contracts Child Available
+                    <Button
+                      style={{
+                        marginLeft: "5px",
+                        color: "blue",
+                        textDecoration: "underline",
+                      }}
+                      onClick={handleOpenUpdateRenewContract}
+                    >
+                      Change Payment
+                    </Button>
                   </p>
                 </div>
               </CardContent>

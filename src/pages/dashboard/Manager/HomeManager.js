@@ -2,6 +2,8 @@ import {
   ConfirmationNumber,
   Dashboard,
   LocalActivity,
+  Payment,
+  ReceiptLong,
   SupervisedUserCircle,
 } from "@mui/icons-material";
 import { Grid, Tab, Tabs } from "@mui/material";
@@ -14,6 +16,8 @@ import TicketSolutionList from "../Technician/TicketSolutionList";
 import IndexTicket from "./IndexTicket";
 import { useParams } from "react-router-dom";
 import TeamMemberList from "../TeamMember/TeamMemberList";
+import ContractList from "../Contract/ContractList";
+import PaymentList from "../Payment/PaymentList";
 
 const HomeManager = () => {
 
@@ -117,7 +121,41 @@ const HomeManager = () => {
                   <SupervisedUserCircle
                     sx={{ marginRight: 1, color: "#0099FF" }}
                   />{" "}
-                Problems & Change
+                  Team Member
+                </div>
+              }
+              className="custom-tab-label"
+            />
+            <Tab
+              label={
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    textTransform: "none",
+                  }}
+                >
+                  <ReceiptLong
+                    sx={{ marginRight: 1, color: "#0099FF" }}
+                  />{" "}
+                  Contract
+                </div>
+              }
+              className="custom-tab-label"
+            />
+            <Tab
+              label={
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    textTransform: "none",
+                  }}
+                >
+                  <Payment
+                    sx={{ marginRight: 1, color: "#0099FF" }}
+                  />{" "}
+                  Payment
                 </div>
               }
               className="custom-tab-label"
@@ -135,6 +173,12 @@ const HomeManager = () => {
           </Box>
           <Box role="tabpanel" hidden={value !== 3}>
             {value === 3 ? <TeamMemberList /> : <LoadingSkeleton />}
+          </Box>
+          <Box role="tabpanel" hidden={value !== 4}>
+            {value === 4 ? <ContractList /> : <LoadingSkeleton />}
+          </Box>
+          <Box role="tabpanel" hidden={value !== 5}>
+            {value === 5 ? <PaymentList /> : <LoadingSkeleton />}
           </Box>
         </Box>
       </Grid>

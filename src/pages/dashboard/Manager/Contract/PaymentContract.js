@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Button,
   Grid,
   Table,
   TableBody,
@@ -17,12 +18,13 @@ import { formatDate } from "../../../helpers/FormatDate";
 import { getPaymentTerm } from "../../../../app/api/payment";
 import { useEffect } from "react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const PaymentContract = ({ dataPayment, loading }) => {
   const user = useSelector((state) => state.auth);
   const userRole = user.user.role;
+  const navigate = useNavigate();
   const [dataPaymentTerm, setDataPaymentTerm] = useState([]);
-  console.log(dataPayment);
   PaymentContract.propTypes = {
     dataPayment: PropTypes.object,
     loading: PropTypes.bool.isRequired,
@@ -39,7 +41,11 @@ const PaymentContract = ({ dataPayment, loading }) => {
     };
 
     fetchData();
-  }, [dataPayment.id]);
+  }, []);
+
+  const handleOpenCreatePayment = () => {
+    navigate("/home/createPayment");
+  }
 
   const columns = [
     { field: "id", headerName: "ID", width: 100 },
@@ -60,7 +66,7 @@ const PaymentContract = ({ dataPayment, loading }) => {
       headerName: "Date Added",
       width: 150,
       editable: true,
-      valueFormatter: (params) => formatDate(params.value), // Customize the formatting function
+      valueFormatter: (params) => formatDate(params.value),
     },
     {
       field: "termEnd",
@@ -96,16 +102,18 @@ const PaymentContract = ({ dataPayment, loading }) => {
     },
   ];
 
-  const formattedDataContractService = (dataPaymentTerm || []).map((payment) => ({
-    id: payment?.id,
-    Description: payment?.description,
-    termAmount: payment?.termAmount,
-    termStart: payment?.termStart,
-    termEnd: payment?.termEnd,
-    termAmount: payment?.termAmount,
-    isPaid: payment?.isPaid,
-    termFinishTime: payment?.termFinishTime,
-  }));
+  const formattedDataContractService = (dataPaymentTerm || []).map(
+    (payment) => ({
+      id: payment?.id,
+      Description: payment?.description,
+      termAmount: payment?.termAmount,
+      termStart: payment?.termStart,
+      termEnd: payment?.termEnd,
+      termAmount: payment?.termAmount,
+      isPaid: payment?.isPaid,
+      termFinishTime: payment?.termFinishTime,
+    })
+  );
 
   return (
     <div>
@@ -134,117 +142,129 @@ const PaymentContract = ({ dataPayment, loading }) => {
                 </TableCell>
               </TableRow>
             </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell
-                  style={{
-                    background: "#CCCCCC",
-                    marginTop: "10px",
-                    textAlign: "right",
-                    width: "150px",
-                  }}
-                >
-                  Description
-                </TableCell>
-                <TableCell style={{ marginTop: "10px", width: "150px" }}>
-                  {dataPayment.description}
-                </TableCell>
-                <TableCell
-                  style={{
-                    background: "#CCCCCC",
-                    marginTop: "10px",
-                    textAlign: "right",
-                    width: "150px",
-                  }}
-                >
-                  Duration
-                </TableCell>
-                <TableCell style={{ marginTop: "10px" }}>
-                  {dataPayment.duration}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  style={{
-                    background: "#CCCCCC",
-                    marginTop: "10px",
-                    textAlign: "right",
-                  }}
-                >
-                  First date of payment
-                </TableCell>
-                <TableCell style={{ marginTop: "10px", width: "150px" }}>
-                  {formatDate(dataPayment.firstDateOfPayment)}
-                </TableCell>
-                <TableCell
-                  style={{
-                    background: "#CCCCCC",
-                    marginTop: "10px",
-                    textAlign: "right",
-                    width: "150px",
-                  }}
-                >
-                  Number of term
-                </TableCell>
-                <TableCell style={{ marginTop: "10px", width: "150px" }}>
-                  {dataPayment.numberOfTerms}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  style={{
-                    background: "#CCCCCC",
-                    marginTop: "10px",
-                    textAlign: "right",
-                    width: "150px",
-                  }}
-                >
-                  Initial payment amount
-                </TableCell>
-                <TableCell style={{ marginTop: "10px", width: "150px" }}>
-                  {dataPayment.initialPaymentAmount}
-                </TableCell>
-                <TableCell
-                  style={{
-                    background: "#CCCCCC",
-                    marginTop: "10px",
-                    textAlign: "right",
-                  }}
-                >
-                  Is Fully Paid
-                </TableCell>
-                <TableCell style={{ marginTop: "10px", width: "150px" }}>
-                  {dataPayment.isFullyPaid}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  style={{
-                    background: "#CCCCCC",
-                    marginTop: "10px",
-                    textAlign: "right",
-                    width: "150px",
-                  }}
-                >
-                  Note
-                </TableCell>
-                <TableCell style={{ marginTop: "10px", width: "150px" }}>
-                  {dataPayment.note}
-                </TableCell>
-                <TableCell
-                  style={{
-                    background: "#CCCCCC",
-                    marginTop: "10px",
-                    textAlign: "right",
-                  }}
-                >
-                  Completion date
-                </TableCell>
-                <TableCell style={{ marginTop: "10px", width: "150px" }}>
-                  {dataPayment.paymentFinishTime}
-                </TableCell>
-              </TableRow>
-            </TableBody>
+            {dataPaymentTerm.id ? (
+              <TableBody>
+                <TableRow>
+                  <TableCell
+                    style={{
+                      background: "#CCCCCC",
+                      marginTop: "10px",
+                      textAlign: "right",
+                      width: "150px",
+                    }}
+                  >
+                    Description
+                  </TableCell>
+                  <TableCell style={{ marginTop: "10px", width: "150px" }}>
+                    {dataPayment.description}
+                  </TableCell>
+                  <TableCell
+                    style={{
+                      background: "#CCCCCC",
+                      marginTop: "10px",
+                      textAlign: "right",
+                      width: "150px",
+                    }}
+                  >
+                    Duration
+                  </TableCell>
+                  <TableCell style={{ marginTop: "10px" }}>
+                    {dataPayment.duration}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell
+                    style={{
+                      background: "#CCCCCC",
+                      marginTop: "10px",
+                      textAlign: "right",
+                    }}
+                  >
+                    First date of payment
+                  </TableCell>
+                  <TableCell style={{ marginTop: "10px", width: "150px" }}>
+                    {formatDate(dataPayment.firstDateOfPayment)}
+                  </TableCell>
+                  <TableCell
+                    style={{
+                      background: "#CCCCCC",
+                      marginTop: "10px",
+                      textAlign: "right",
+                      width: "150px",
+                    }}
+                  >
+                    Number of term
+                  </TableCell>
+                  <TableCell style={{ marginTop: "10px", width: "150px" }}>
+                    {dataPayment.numberOfTerms}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell
+                    style={{
+                      background: "#CCCCCC",
+                      marginTop: "10px",
+                      textAlign: "right",
+                      width: "150px",
+                    }}
+                  >
+                    Initial payment amount
+                  </TableCell>
+                  <TableCell style={{ marginTop: "10px", width: "150px" }}>
+                    {dataPayment.initialPaymentAmount}
+                  </TableCell>
+                  <TableCell
+                    style={{
+                      background: "#CCCCCC",
+                      marginTop: "10px",
+                      textAlign: "right",
+                    }}
+                  >
+                    Is Fully Paid
+                  </TableCell>
+                  <TableCell style={{ marginTop: "10px", width: "150px" }}>
+                    {dataPayment.isFullyPaid}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell
+                    style={{
+                      background: "#CCCCCC",
+                      marginTop: "10px",
+                      textAlign: "right",
+                      width: "150px",
+                    }}
+                  >
+                    Note
+                  </TableCell>
+                  <TableCell style={{ marginTop: "10px", width: "150px" }}>
+                    {dataPayment.note}
+                  </TableCell>
+                  <TableCell
+                    style={{
+                      background: "#CCCCCC",
+                      marginTop: "10px",
+                      textAlign: "right",
+                    }}
+                  >
+                    Completion date
+                  </TableCell>
+                  <TableCell style={{ marginTop: "10px", width: "150px" }}>
+                    {dataPayment.paymentFinishTime}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            ) : (
+              <Typography variant="subtitle1" style={{ margin: "20px" }}>
+              No Payment Information available. 
+              <Button
+                style={{ marginLeft: '5px', color: 'blue', textDecoration: 'underline', transformStyle: 'none' }}
+                onClick={handleOpenCreatePayment}
+              >
+                Add Payment
+              </Button>
+            </Typography>
+            )}
           </Table>
 
           <Grid
@@ -279,24 +299,24 @@ const PaymentContract = ({ dataPayment, loading }) => {
                 </TableBody>
               </Table>
               {dataPaymentTerm.length === 0 ? (
-                <Typography variant="subtitle1" style={{ margin: '20px' }}>
+                <Typography variant="subtitle1" style={{ margin: "20px" }}>
                   No data available.
                 </Typography>
               ) : (
-              <DataGrid
-                rows={formattedDataContractService}
-                columns={columns}
-                initialState={{
-                  pagination: {
-                    paginationModel: {
-                      pageSize: 5,
+                <DataGrid
+                  rows={formattedDataContractService}
+                  columns={columns}
+                  initialState={{
+                    pagination: {
+                      paginationModel: {
+                        pageSize: 5,
+                      },
                     },
-                  },
-                }}
-                pageSizeOptions={[5]}
-                checkboxSelection
-                disableRowSelectionOnClick
-              />
+                  }}
+                  pageSizeOptions={[5]}
+                  checkboxSelection
+                  disableRowSelectionOnClick
+                />
               )}
             </Grid>
           </Grid>

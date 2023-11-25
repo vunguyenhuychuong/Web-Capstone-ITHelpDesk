@@ -35,11 +35,11 @@ const AssignTicketModal = ({ open, onClose, ticketId }) => {
     setSelectedTeamId(teamId);
     setTeamError('');
     setTechnicianError('');
-    setSelectedTechnicianId(""); // Reset technician selection when team changes
+    setSelectedTechnicianId(""); 
     if (teamId) {
       fetchAssignTicket(teamId);
     } else {
-      setDataTechnician([]); // Clear technician data if no team is selected
+      setDataTechnician([]);
     }
   };
 

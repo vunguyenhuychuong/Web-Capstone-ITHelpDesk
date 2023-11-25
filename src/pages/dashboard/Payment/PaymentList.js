@@ -14,9 +14,6 @@ import PageSizeSelector from "../Pagination/Pagination";
 import {
   ContentCopy,
   DeleteForever,
-  Lock,
-  LockOpen,
-  Square,
   ViewCompact,
 } from "@mui/icons-material";
 import { formatDate } from "../../helpers/FormatDate";
@@ -24,9 +21,6 @@ import { useNavigate } from "react-router-dom";
 import { useCallback } from "react";
 import { Box, FormControl, MenuItem, Pagination, Select } from "@mui/material";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import {
-  deleteTicketSolution,
-} from "../../../app/api/ticketSolution";
 import { toast } from "react-toastify";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import { deletePaymentById, getAllPayment } from "../../../app/api/payment";
@@ -137,7 +131,7 @@ const PaymentList = () => {
     }
   };
 
-  const handleOpenCreateTicketSolution = () => {
+  const handleOpenCreatePayment = () => {
     navigate("/home/createPayment");
   };
 
@@ -181,7 +175,7 @@ const PaymentList = () => {
               <MDBBtn
                 color="#eee"
                 style={{ fontWeight: "bold", fontSize: "14px" }}
-                onClick={() => handleOpenCreateTicketSolution()}
+                onClick={() => handleOpenCreatePayment()}
               >
                 <FaPlus /> New
               </MDBBtn>
@@ -261,7 +255,7 @@ const PaymentList = () => {
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("contractId")}
                 >
-                  contractId
+                  Contract Id
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
@@ -273,22 +267,22 @@ const PaymentList = () => {
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("numberOfTerms")}
                 >
-                  NumberOfTerms
+                  Number Of Terms
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("firstDateOfPayment")}
                 >
-                  firstDateOfPayment
+                  First Date Of Payment
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}>
-                  duration
+                  Duration
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}>
-                  initialPaymentAmount
+                  Initial Payment Amount
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}>
-                  isFullyPaid
+                  Fully Paid
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}>
                   Created
@@ -328,7 +322,7 @@ const PaymentList = () => {
                       <td>{Payment.contractId}</td>
                       <td>{Payment.description}</td>
                       <td>{Payment.numberOfTerms}</td>
-                      <td>{Payment.firstDateOfPayment}</td>
+                      <td>{formatDate(Payment.firstDateOfPayment)}</td>
                       <td>{Payment.duration}</td>
                       <td>{Payment.initialPaymentAmount}</td>
                       <td>{Payment.isFullyPaid}</td>

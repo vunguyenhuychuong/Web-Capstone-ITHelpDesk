@@ -1,6 +1,7 @@
 import axios from "axios";
 import { getAuthHeader } from "./auth";
 import { baseURL } from "./link";
+import { toast } from "react-toastify";
 
 export async function getAllContract(
   searchField,
@@ -186,6 +187,7 @@ export async function updateContractReNew(data, contractId) {
         },
       }
     );
+    console.log(res);
     return res.data.result;
   } catch (error) {
     console.log(error);
@@ -264,15 +266,99 @@ export async function getContractService(contractId) {
 
 export async function getPaymentContract(contractId) {
   const header = getAuthHeader();
-  try{
+  try {
     const res = await axios.get(`${baseURL}/payment/contract/${contractId}`, {
       headers: {
         Authorization: header,
       },
     });
-    console.log(res);
+
+    return res.data.result;
+  } catch (error) {
+    if (error.response && error.response.data) {
+      const { isError, responseException } = error.response.data;
+      if (isError && responseException) {
+        console.log(responseException.exceptionMessage);
+        throw new Error(responseException.exceptionMessage);
+      }
+    }
+
+    console.error(error);
+    throw new Error("An unexpected error occurred.");
+  }
+}
+
+export async function getAllAccountant () {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/user/list/accountants`, {
+      headers: {
+        Authorization: header,
+      },
+    });
     return res.data.result;
   }catch(error){
     console.log(error);
   }
 };
+
+export async function createContractService(contractId, selectedService) {
+  const header = getAuthHeader();
+  try {
+    const res = await axios.post(
+      `${baseURL}/contract/services?contractId=${contractId}`,
+      selectedService,
+      {
+        headers: {
+          Authorization: header,
+        },
+      }
+    );
+    return res.data.result;
+  } catch (error) {
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });    
+    throw error; 
+  }
+}
+
+export async function getServiceSelect(contractId) {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/contract/services/select?contractId=${contractId}`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};
+
+export async function deleteContractService(serviceId) {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.delete(`${baseURL}/contract/services/${serviceId}`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    toast.success("Contract services deleted successfully", {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error.response.data.responseException.exceptionMessage);
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+  }
+}

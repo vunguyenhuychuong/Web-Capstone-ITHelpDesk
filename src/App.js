@@ -57,6 +57,7 @@ import UserList from './pages/dashboard/User/UserList';
 import CreateUser from './pages/dashboard/User/CreateUser';
 import EditUser from './pages/dashboard/User/EditUser';
 import DetailContract from './pages/dashboard/Manager/Contract/DetailContract';
+import CreateRenewContract from './pages/dashboard/Manager/Contract/CreateRenewContract';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -114,6 +115,7 @@ function App() {
           {(hasAdminRole) &&<Route path='homeAdmin' element={<HomeAdmin />} />}
           <Route path='contractList' element={<ContractList />} />
           <Route path='createContract' element={<CreateContract />} />
+          <Route path='createRenewContract/:contractId' element={<CreateRenewContract />} />
           <Route path='detailContract/:contractId' element={<DetailContract />} />
           <Route path='editContract/:contractId' element={<EditContract />} />
           <Route path='homeAccountant' element={<HomeAccountant />} />
