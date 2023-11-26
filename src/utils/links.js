@@ -11,6 +11,7 @@ import {
   IosShare,
   Menu,
   ModeComment,
+  Payment,
   ReceiptLong,
 } from "@mui/icons-material";
 
@@ -90,7 +91,13 @@ const links = [
     id: 22,
     text: "Home Accountant",
     path: "homeAccountant",
-    icon: <ReceiptLong />
+    icon: <Home />
+  },
+  {
+    id: 23,
+    text: "Payment",
+    path: "paymentList",
+    icon: <Payment />
   },
 ];
 

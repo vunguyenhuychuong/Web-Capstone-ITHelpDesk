@@ -30,6 +30,21 @@ export async function getAllPayment(
     console.log(error);
     return [];
   }
+};
+
+export async function getAllPayments() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/payment/all`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    console.log(res);
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
 }
 
 export async function createPayment(data) {

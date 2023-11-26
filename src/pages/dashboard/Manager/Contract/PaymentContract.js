@@ -300,7 +300,7 @@ const PaymentContract = ({ dataPayment, loading }) => {
               </Table>
               {dataPaymentTerm.length === 0 ? (
                 <Typography variant="subtitle1" style={{ margin: "20px" }}>
-                  No data available.
+                  No Services available.
                 </Typography>
               ) : (
                 <DataGrid

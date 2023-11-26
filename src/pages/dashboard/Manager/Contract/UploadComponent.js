@@ -1,9 +1,19 @@
 import React from "react";
 import { Upload } from "antd";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Paper, Typography } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Paper,
+  Typography,
+} from "@mui/material";
 import "../../../../assets/css/UploadComponent.css";
 import { Attachment, Close } from "@mui/icons-material";
 import { useState } from "react";
+import { data } from "autoprefixer";
 
 const UploadComponent = ({ attachmentURL }) => {
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
@@ -41,6 +51,7 @@ const UploadComponent = ({ attachmentURL }) => {
     onDrop(e) {},
   };
 
+  console.log(attachmentURL);
   return (
     <div>
       <Paper elevation={3} className="upload-container">
@@ -51,17 +62,38 @@ const UploadComponent = ({ attachmentURL }) => {
               size: 10MB]
             </Typography>
           </div>
-        </Upload>      
+        </Upload>
+        {attachmentURL ? (
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={openImagePreview}
+            style={{ marginTop: "10px", textTransform: "none" }}
+          >
+            View Attachment Image
+          </Button>
+        ) : (
+          <div>No image currently</div>
+        )}
       </Paper>
-      <Dialog open={isImagePreviewOpen} onClose={closeImagePreview} maxWidth="md">
+
+      <Dialog
+        open={isImagePreviewOpen}
+        onClose={closeImagePreview}
+        maxWidth="md"
+      >
         <DialogContent>
-          <div style={{ position: 'relative' }}>
-            <img src={attachmentURL} alt="Attachment Preview" style={{ width: '100%', height: 'auto' }} />
+          <div style={{ position: "relative" }}>
+            <img
+              src={attachmentURL}
+              alt="Attachment Preview"
+              style={{ width: "100%", height: "auto" }}
+            />
             <IconButton
               edge="end"
               color="inherit"
               onClick={closeImagePreview}
-              style={{ position: 'absolute', top: 0, right: 0 }}
+              style={{ position: "absolute", top: 0, right: 0 }}
             >
               <Close />
             </IconButton>

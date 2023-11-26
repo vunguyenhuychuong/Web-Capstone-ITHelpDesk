@@ -66,7 +66,7 @@ function App() {
   const hasAdminRole = user?.user?.role === 0 || data?.result?.role === 0;
   const hasManagerRole = user?.user?.role === 2 || data?.result?.role === 2;
   const hasTechnicianRole = user?.user?.role === 3 || data?.result?.role === 3;
-  const hasAccountantRole = user?.role === 4 || data?.result?.role === 4;
+  const hasAccountantRole = user?.user?.role === 4 || data?.result?.role === 4;
   return (
     <BrowserRouter>
       <Routes>

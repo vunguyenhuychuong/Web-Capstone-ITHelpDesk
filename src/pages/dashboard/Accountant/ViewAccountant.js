@@ -1,15 +1,15 @@
 import {
   AddCircle,
-  AlarmOn,
   Assignment,
   BugReport,
   DoDisturb,
   EventNote,
-  HowToReg,
   More,
+  MoreHoriz,
   Notifications,
   PermDeviceInformation,
   Replay,
+  SpaceDashboard,
   SyncProblem,
 } from "@mui/icons-material";
 import { Card, CardContent, Grid } from "@mui/material";
@@ -20,7 +20,6 @@ import {
   MDBCardText,
   MDBCol,
   MDBRow,
-  MDBTable,
 } from "mdb-react-ui-kit";
 import NoPending from "../../../assets/images/NoPending.jpg";
 import MyTask from "../../../assets/images/MyTask.jpg";
@@ -28,19 +27,29 @@ import AlarmTechnician from "../../../assets/images/alarm.jpg";
 import Announcements from "../../../assets/images/announcements.jpg";
 import { formatTicketDate } from "../../helpers/FormatAMPM";
 import { useNavigate } from "react-router-dom";
-import { getChartAccountantContract, getChartAccountantContractStatus, getSummaryTechnician } from "../../../app/api/dashboard";
+import {
+  getChartAccountantContract,
+  getChartAccountantContractStatus,
+  getSummaryTechnician,
+} from "../../../app/api/dashboard";
 import LoadingImg from "../../../assets/images/loading.gif";
+import { getAllContracts } from "../../../app/api/contract";
+import { getAllPayments } from "../../../app/api/payment";
 
 const ViewAccountant = () => {
   const [dataListContract, setDataContract] = useState([]);
+  const [dataContractStatus, setDataContractStatus] = useState([]);
   const [dataSummary, setDataSummary] = useState([]);
+  const [dataPayment, setDataPayment] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const fetchDataListContract = async () => {
+  const fetchAccountSummary = async () => {
     try {
       setLoading(true);
       const response = await getChartAccountantContractStatus();
-      setDataContract(response);
+      const summaryAccountant = await getChartAccountantContract();
+      setDataSummary(summaryAccountant);
+      setDataContractStatus(response);
     } catch (error) {
       console.log(error);
     } finally {
@@ -48,15 +57,18 @@ const ViewAccountant = () => {
     }
   };
 
-  const fetchAccountSummary = async () => {
+  const fetchDataContractList = async () => {
     try {
-      const summaryAccountant = await getChartAccountantContract();
-      setDataSummary(summaryAccountant);
+      setLoading(true);
+      const response = await getAllContracts();
+      const payment = await getAllPayments();
+      console.log(payment);
+      setDataPayment(payment);
+      setDataContract(response);
     } catch (error) {
       console.log(error);
     }
   };
-
 
   const handleReloadClick = () => {
     // fetchTechnicianSummary();
@@ -75,8 +87,8 @@ const ViewAccountant = () => {
   };
 
   useEffect(() => {
-    // fetchDataListContract();
     fetchAccountSummary();
+    fetchDataContractList();
   }, []);
 
   return (
@@ -107,7 +119,7 @@ const ViewAccountant = () => {
               fontSize: "14px",
             }}
           >
-            My Summary
+            My Summary Contract
           </h4>
           <div style={{ marginLeft: "auto" }}>
             <button
@@ -141,7 +153,9 @@ const ViewAccountant = () => {
               >
                 <PermDeviceInformation
                   style={{
-                    color: dataSummary.totalContractCount ? "#3399FF" : "#AAAAAA",
+                    color: dataSummary.totalContractCount
+                      ? "#3399FF"
+                      : "#AAAAAA",
                   }}
                 />
                 Total Contract
@@ -163,14 +177,18 @@ const ViewAccountant = () => {
                   transition: "color 0.3s",
                   cursor: "pointer",
                 }}
-                className={dataSummary.contractPaymentDoneCount ? "text-hover" : ""}
+                className={
+                  dataSummary.contractPaymentDoneCount ? "text-hover" : ""
+                }
               >
                 <More
                   style={{
-                    color: dataSummary.contractPaymentDoneCount ? "#3399FF" : "#000",
+                    color: dataSummary.contractPaymentDoneCount
+                      ? "#3399FF"
+                      : "#000",
                   }}
                 />
-                Contract Payment Done 
+                Contract Payment Done
               </MDBCardText>
             </MDBCol>
             <MDBCol sm="1" style={{ marginLeft: "5px" }}>
@@ -200,7 +218,7 @@ const ViewAccountant = () => {
                       : "#000",
                   }}
                 />
-                Contract Payment Not Done 
+                Contract Payment Not Done
               </MDBCardText>
             </MDBCol>
             <MDBCol sm="1" style={{ marginLeft: "5px" }}>
@@ -219,14 +237,18 @@ const ViewAccountant = () => {
                   transition: "color 0.3s",
                   cursor: "pointer",
                 }}
-                className={dataSummary.contractTermDoneCount ? "text-hover" : ""}
+                className={
+                  dataSummary.contractTermDoneCount ? "text-hover" : ""
+                }
               >
                 <DoDisturb
                   style={{
-                    color: dataSummary.contractTermDoneCount ? "blue" : "#AAAAAA",
+                    color: dataSummary.contractTermDoneCount
+                      ? "blue"
+                      : "#AAAAAA",
                   }}
                 />
-                Contract Term Done 
+                Contract Term Done
               </MDBCardText>
             </MDBCol>
             <MDBCol sm="1" style={{ marginLeft: "5px" }}>
@@ -245,7 +267,9 @@ const ViewAccountant = () => {
                   transition: "color 0.3s",
                   cursor: "pointer",
                 }}
-                className={dataSummary.contractTermNotDoneCount ? "text-hover" : ""}
+                className={
+                  dataSummary.contractTermNotDoneCount ? "text-hover" : ""
+                }
               >
                 <BugReport
                   style={{
@@ -254,7 +278,7 @@ const ViewAccountant = () => {
                       : "#000",
                   }}
                 />
-               Contract Term Not Done 
+                Contract Term Not Done
               </MDBCardText>
             </MDBCol>
             <MDBCol sm="1" style={{ marginLeft: "5px" }}>
@@ -266,7 +290,7 @@ const ViewAccountant = () => {
           <hr />
         </MDBCardBody>
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={9}>
         <Grid item xs={12}>
           <div
             className="nav-header bordered-grid-item"
@@ -288,14 +312,13 @@ const ViewAccountant = () => {
               }}
             >
               Contract
-
             </h4>
             <div style={{ marginLeft: "auto" }}>
               <button
                 variant="contained"
                 color="primary"
                 className="custom-button"
-                onClick={() => handleOpenCreateTicketTask()}
+                // onClick={() => handleOpenCreateTicketTask()}
               >
                 <AddCircle style={{ marginRight: "6px" }} /> Add New
               </button>
@@ -324,16 +347,16 @@ const ViewAccountant = () => {
                   <img src={LoadingImg} alt="Loading" />
                 </div>
               ) : dataListContract && dataListContract.length > 0 ? (
-                dataListContract.map((ticket, index) => (
+                dataListContract.map((contract, index) => (
                   <div
                     key={index}
                     style={{ display: "flex", flexDirection: "column" }}
                   >
                     <div style={{ display: "flex" }}>
                       <p style={{ marginRight: "8px", fontSize: "12px" }}>
-                        #{ticket.id} -
+                        #{contract.id} - {contract.name || "No Description"}
                       </p>
-                      <p style={{ fontSize: "12px" }}>{ticket.title}</p>
+                      <p style={{ fontSize: "12px" }}>{contract.value} VND</p>
                     </div>
                     <div
                       style={{
@@ -343,12 +366,13 @@ const ViewAccountant = () => {
                     >
                       <div>
                         <p style={{ fontSize: "12px" }}>
-                          Description: {ticket.description || "No Description"}
+                          Description:{" "}
+                          {contract.description || "No Description"}
                         </p>
                       </div>
                       <div>
                         <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                          Create Time: {formatTicketDate(ticket.createdAt)}
+                          Create Time: {formatTicketDate(contract.createdAt)}
                         </p>
                       </div>
                     </div>
@@ -384,75 +408,195 @@ const ViewAccountant = () => {
           </Card>
         </Grid>
       </Grid>
+
       <Grid item xs={3}>
-        <Grid item xs={12}>
-          <div
-            className="nav-header bordered-grid-item"
+        <div
+          className="nav-header bordered-grid-item"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            border: "1px solid #CCCCCC",
+            padding: "8px",
+            background: "#FFFFFF",
+          }}
+        >
+          <SpaceDashboard sx={{ margin: 1, color: "#FF9999" }} />
+          <h4
             style={{
-              display: "flex",
-              alignItems: "center",
-              border: "1px solid #CCCCCC",
-              padding: "8px",
-              background: "#FFFFFF",
+              marginLeft: "6px",
+              marginTop: "2px",
+              fontWeight: "bold",
+              fontSize: "14px",
             }}
           >
-            <HowToReg sx={{ margin: 1, color: "#9966FF" }} />
-            <h4
+            Dashboard Contract status
+          </h4>
+          <div style={{ marginLeft: "auto" }}>
+            <button
+              variant="contained"
+              color="secondary"
+              className="custom-button"
+              onClick={handleReloadClick}
+            >
+              <Replay />
+            </button>
+          </div>
+        </div>
+        <MDBCardBody
+          style={{
+            background: "#FFFFFF", // Set white background
+          }}
+        >
+          <MDBRow>
+            <MDBCol
+              sm="10"
               style={{
-                marginLeft: "8px",
-                marginTop: "4px",
-                fontWeight: "bold",
-                fontSize: "14px",
+                marginLeft: "5px",
+                marginTop: "15px",
+                transition: "color 0.3s",
+                cursor: "pointer",
               }}
             >
-              My Approvals
-            </h4>
-            <div style={{ marginLeft: "auto" }}>
-              <button
-                variant="contained"
-                color="secondary"
-                className="custom-button"
+              <MDBCardText
+                style={{ fontSize: "14px", color: "#666" }}
+                className={dataContractStatus.pendingContractCount ? "text-hover" : ""}
               >
-                Show All
-              </button>
-            </div>
-          </div>
-        </Grid>
-        <Grid item xs={12}>
-          {/* Card content goes here */}
-          <Card style={{ height: "290px" }}>
-            <CardContent>
-              <div>
-                <MDBTable className="align-middle mb-0" responsive>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      marginTop: "30px",
-                    }}
-                  >
-                    <img
-                      src={NoPending}
-                      alt="No Pending"
-                      style={{ maxWidth: "150px", maxHeight: "120px" }}
-                    />
-                    <p
-                      style={{
-                        marginTop: "10px",
-                        fontSize: "16px",
-                        color: "#666",
-                      }}
-                    >
-                      No Pending Tasks
-                    </p>
-                  </div>
-                </MDBTable>
-              </div>
-            </CardContent>
-          </Card>
-        </Grid>
+                <PermDeviceInformation
+                  style={{
+                    color: dataContractStatus.pendingContractCount
+                      ? "#3399FF"
+                      : "#AAAAAA",
+                  }}
+                />
+                Pending contract count
+              </MDBCardText>
+            </MDBCol>
+            <MDBCol sm="1" style={{ marginLeft: "5px", marginTop: "10px" }}>
+              <span style={{ fontSize: "14px", fontWeight: "bold" }}>
+                {dataContractStatus.pendingContractCount}
+              </span>
+            </MDBCol>
+          </MDBRow>
+          <hr />
+          <MDBRow>
+            <MDBCol sm="10" style={{ marginLeft: "5px" }}>
+              <MDBCardText
+                style={{
+                  fontSize: "14px",
+                  color: "#666",
+                  transition: "color 0.3s",
+                  cursor: "pointer",
+                }}
+                className={
+                  dataContractStatus.activeContractCount ? "text-hover" : ""
+                }
+              >
+                <More
+                  style={{
+                    color: dataContractStatus.activeContractCount
+                      ? "#3399FF"
+                      : "#000",
+                  }}
+                />
+                Active Contract count
+              </MDBCardText>
+            </MDBCol>
+            <MDBCol sm="1" style={{ marginLeft: "5px" }}>
+              <span style={{ fontSize: "14px", fontWeight: "bold" }}>
+                {dataContractStatus.activeContractCount}
+              </span>
+            </MDBCol>
+          </MDBRow>
+          <hr />
+          <MDBRow>
+            <MDBCol sm="10" style={{ marginLeft: "5px" }}>
+              <MDBCardText
+                style={{
+                  fontSize: "14px",
+                  color: "#666",
+                  transition: "color 0.3s",
+                  cursor: "pointer",
+                }}
+                className={
+                  dataContractStatus.inActiveContractCount ? "text-hover" : ""
+                }
+              >
+                <SyncProblem
+                  style={{
+                    color: dataContractStatus.inActiveContractCount
+                      ? "#3399FF"
+                      : "#000",
+                  }}
+                />
+                Inactive Contract count
+              </MDBCardText>
+            </MDBCol>
+            <MDBCol sm="1" style={{ marginLeft: "5px" }}>
+              <span style={{ fontSize: "14px", fontWeight: "bold" }}>
+                {dataContractStatus.inActiveContractCount}
+              </span>
+            </MDBCol>
+          </MDBRow>
+          <hr />
+          <MDBRow>
+            <MDBCol sm="10" style={{ marginLeft: "5px" }}>
+              <MDBCardText
+                style={{
+                  fontSize: "14px",
+                  color: "#666",
+                  transition: "color 0.3s",
+                  cursor: "pointer",
+                }}
+                className={
+                  dataContractStatus.expiredContractCount ? "text-hover" : ""
+                }
+              >
+                <DoDisturb
+                  style={{
+                    color: dataContractStatus.expiredContractCount
+                      ? "blue"
+                      : "#AAAAAA",
+                  }}
+                />
+               Expired Contract Count
+              </MDBCardText>
+            </MDBCol>
+            <MDBCol sm="1" style={{ marginLeft: "5px" }}>
+              <span style={{ fontSize: "14px", fontWeight: "bold" }}>
+                {dataContractStatus.expiredContractCount}
+              </span>
+            </MDBCol>
+          </MDBRow>
+          <hr />
+          <MDBRow>
+            <MDBCol sm="10" style={{ marginLeft: "5px", marginBottom: "px" }}>
+              <MDBCardText
+                style={{
+                  fontSize: "14px",
+                  color: "#666",
+                  transition: "color 0.3s",
+                  cursor: "pointer",
+                }}
+                className={
+                  dataSummary.contractTermNotDoneCount ? "text-hover" : ""
+                }
+              >
+                <MoreHoriz
+                  style={{
+                    color: dataSummary.contractTermNotDoneCount
+                      ? "#3399FF"
+                      : "#000",
+                  }}  
+                />
+                
+              </MDBCardText>
+            </MDBCol>
+            <MDBCol sm="1" style={{ marginLeft: "5px" }}>
+
+            </MDBCol>
+          </MDBRow>
+          <hr />
+        </MDBCardBody>
       </Grid>
 
       <Grid item xs={9}>
@@ -476,7 +620,7 @@ const ViewAccountant = () => {
                 fontSize: "14px",
               }}
             >
-              Payment 
+              Payment
             </h4>
             <div style={{ marginLeft: "auto" }}>
               <button
@@ -491,103 +635,76 @@ const ViewAccountant = () => {
           </div>
         </Grid>
         <Grid item xs={12}>
-          <Card style={{ height: "300px", overflowY: "auto" }}>
+        <Card style={{ height: "290px", overflowY: "auto" }}>
             <CardContent>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginTop: "30px",
-                }}
-              >
-                <img
-                  src={Announcements}
-                  alt="No Pending"
-                  style={{ maxWidth: "300px", maxHeight: "200px" }}
-                />
-                <p
+              {loading ? (
+                <div
                   style={{
-                    marginTop: "2px",
-                    fontSize: "16px",
-                    color: "#666",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
-                  There are no new announcements today
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-
-      <Grid item xs={3}>
-        <Grid item xs={12}>
-          <div
-            className="nav-header bordered-grid-item"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              border: "1px solid #CCCCCC",
-              padding: "8px",
-              background: "#FFFFFF",
-            }}
-          >
-            <AlarmOn sx={{ margin: 1, color: "#FF6699" }} />
-            <h4
-              style={{
-                marginLeft: "8px",
-                marginTop: "4px",
-                fontWeight: "bold",
-                fontSize: "14px",
-              }}
-            >
-              My Reminders
-            </h4>
-            <div style={{ marginLeft: "auto" }}>
-              <button
-                variant="contained"
-                color="secondary"
-                className="custom-button"
-              >
-                Show All
-              </button>
-            </div>
-          </div>
-        </Grid>
-        <Grid item xs={12}>
-          {/* Card content goes here */}
-          <Card style={{ height: "300px" }}>
-            <CardContent>
-              <div>
-                <MDBTable className="align-middle mb-0" responsive>
+                  <img src={LoadingImg} alt="Loading" />
+                </div>
+              ) : dataPayment && dataPayment.length > 0 ? (
+                dataPayment.map((payment, index) => (
                   <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      marginTop: "50px",
-                    }}
+                    key={index}
+                    style={{ display: "flex", flexDirection: "column" }}
                   >
-                    <img
-                      src={AlarmTechnician}
-                      alt="No Pending"
-                      style={{ maxWidth: "150px", maxHeight: "120px" }}
-                    />
-                    <p
+                    <div style={{ display: "flex" }}>
+                      <p style={{ marginRight: "8px", fontSize: "12px" }}>
+                        #{payment.id} - {payment.description || "No Description"}
+                      </p>
+                      <p style={{ fontSize: "12px" }}>Duration:{payment.duration} </p>
+                    </div>
+                    <div
                       style={{
-                        marginTop: "10px",
-                        fontSize: "16px",
-                        color: "#666",
+                        display: "flex",
+                        justifyContent: "space-between",
                       }}
                     >
-                      No reminder available
-                    </p>
+                      <div>
+                        <p style={{ fontSize: "12px" }}>
+                          Number Terms:{" "}
+                          {payment.numberOfTerms || "No Description"}
+                        </p>
+                      </div>
+                      <div>
+                        <p style={{ fontWeight: "bold", fontSize: "12px" }}>
+                          Create Time: {formatTicketDate(payment.firstDateOfPayment)}
+                        </p>
+                      </div>
+                    </div>
+                    <hr />
                   </div>
-                </MDBTable>
-              </div>
+                ))
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: "100px",
+                  }}
+                >
+                  <img
+                    src={MyTask}
+                    alt="No Pending"
+                    style={{ maxWidth: "350px", maxHeight: "220px" }}
+                  />
+                  <p
+                    style={{
+                      marginTop: "10px",
+                      fontSize: "16px",
+                      color: "#666",
+                    }}
+                  >
+                    There are no tasks in this view
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </Grid>

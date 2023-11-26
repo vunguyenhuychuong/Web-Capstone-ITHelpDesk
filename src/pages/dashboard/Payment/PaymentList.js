@@ -161,7 +161,7 @@ const PaymentList = () => {
       <MDBContainer className="py-5 custom-container">
         <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
-            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "16px" }}>
+            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
               <span style={{ color: "#FFFFFF" }}>All Payments</span>
             </MDBNavbarBrand>
@@ -170,7 +170,7 @@ const PaymentList = () => {
                 color="#eee"
                 style={{
                   fontWeight: "bold",
-                  fontSize: "14px",
+                  fontSize: "16px",
                   color: "#FFFFFF",
                 }}
                 onClick={() => handleOpenCreatePayment()}
@@ -181,7 +181,7 @@ const PaymentList = () => {
                 color="#eee"
                 style={{
                   fontWeight: "bold",
-                  fontSize: "14px",
+                  fontSize: "16px",
                   color: "#FFFFFF",
                 }}
                 onClick={() => handleDeleteSelectedPayments()}
@@ -206,6 +206,7 @@ const PaymentList = () => {
                     name: "searchField",
                     id: "search-field",
                   }}
+                  style={{color: "white"}}
                 >
                   <MenuItem value="contractId">ContractId</MenuItem>
                   <MenuItem value="description">Description</MenuItem>

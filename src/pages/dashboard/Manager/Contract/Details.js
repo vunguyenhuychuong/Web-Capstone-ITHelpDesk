@@ -43,9 +43,7 @@ const Details = ({ data, loading, error }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedService, setSelectedService] = useState("");
   const [dataSelectedService, setDataSelectedService] = useState([]);
-
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   Details.propTypes = {
     data: PropTypes.object,
@@ -60,12 +58,16 @@ const Details = ({ data, loading, error }) => {
     setOpenDialog(false);
   };
 
-  const closeImagePreview = () => {
-    setIsImagePreviewOpen(false);
-  };
-
   const handleServiceChange = (event) => {
     setSelectedService(event.target.value);
+  };
+
+  const handleOpenImagePreview = () => {
+    setIsImagePreviewOpen(true);
+  };
+
+  const handleCloseImagePreview = () => {
+    setIsImagePreviewOpen(false);
   };
 
   const selectServiceAdd = async () => {
@@ -119,6 +121,8 @@ const Details = ({ data, loading, error }) => {
       console.error("Error deleting contract services:", error);
     }
   };
+
+  console.log('image detail', data.attachmentURl);
 
   useEffect(() => {
     fetchData();
@@ -270,7 +274,17 @@ const Details = ({ data, loading, error }) => {
               </TableRow>
             </TableBody>
           </Table>
-          <UploadComponent attachmentURL={data.attachmentURL} />
+          <UploadComponent attachmentURL={data.attachmentURl} />
+          {data.attachmentURL && (
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={handleOpenImagePreview}
+              style={{ marginTop: "10px" }}
+            >
+              View Attachment Image
+            </Button>
+          )}
           {dataContractService.length === 0 && (
             <Typography variant="subtitle1" style={{ margin: "20px" }}>
               This contract has no payment yet.
@@ -522,6 +536,29 @@ const Details = ({ data, loading, error }) => {
             Add
           </Button>
           <Button onClick={handleCloseDialog}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={isImagePreviewOpen}
+        onClose={handleCloseImagePreview}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Attachment Image Preview</DialogTitle>
+        <DialogContent>
+          {data.attachmentURL && (
+            <img
+              src={data.attachmentURL}
+              alt="Attachment Preview"
+              style={{ width: '100%' }}
+            />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseImagePreview} color="primary">
+            Close
+          </Button>
         </DialogActions>
       </Dialog>
     </div>
