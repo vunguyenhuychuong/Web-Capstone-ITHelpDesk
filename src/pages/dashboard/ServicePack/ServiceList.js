@@ -65,6 +65,7 @@ const ServiceList = () => {
         sortBy,
         sortDirection);
       setDataService(service);
+      setIsLoading(false);
     } catch (error) {
       console.error(error);
       setIsLoading(false);
@@ -84,6 +85,18 @@ const ServiceList = () => {
     setPageSize(newSize);
     setCurrentPage(1);
   };
+
+  const handleSortChange = useCallback(
+    (field) => {
+      if (sortBy === field) {
+        setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      } else {
+        setSortBy(field);
+        setSortDirection("asc");
+      }
+    },
+    [sortBy, sortDirection]
+  );
 
   const handleEditClick = async (serviceId) => {
     setSelectService(serviceId);
@@ -217,10 +230,22 @@ const ServiceList = () => {
               </th>
               <th style={{ fontWeight: "bold" }}>Edit</th>
               <th style={{ fontWeight: "bold" }}>Delete</th>
-              <th style={{ fontWeight: "bold" }}>Service Name</th>
-              <th style={{ fontWeight: "bold" }}>Price</th>
-              <th style={{ fontWeight: "bold" }}>Create Time</th>
-              <th style={{ fontWeight: "bold" }}>Modify Time</th>
+              <th 
+                style={{ fontWeight: "bold" }}
+                onClick={() => handleSortChange("description")}
+                >Service Name</th>
+              <th 
+                style={{ fontWeight: "bold" }}
+                onClick={() => handleSortChange("amount")}
+                >Price</th>
+              <th 
+                style={{ fontWeight: "bold" }}
+                onClick={() => handleSortChange("createdAt")}
+                >Create Time</th>
+              <th 
+                style={{ fontWeight: "bold" }}
+                onClick={() => handleSortChange("modifiedAt")}
+                >Modify Time</th>
             </tr>
           </MDBTableHead>
           <MDBTableBody className="bg-light">

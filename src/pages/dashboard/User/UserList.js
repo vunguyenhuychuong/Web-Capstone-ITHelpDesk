@@ -10,6 +10,8 @@ import {
 } from "mdb-react-ui-kit";
 import React, { useCallback, useState } from "react";
 import {
+  ArrowDropDown,
+  ArrowDropUp,
   ContentCopy,
   Delete,
   Lock,
@@ -18,7 +20,13 @@ import {
 } from "@mui/icons-material";
 import { useEffect } from "react";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import { FormControl, MenuItem, Pagination, Select } from "@mui/material";
+import {
+  CircularProgress,
+  FormControl,
+  MenuItem,
+  Pagination,
+  Select,
+} from "@mui/material";
 import { toast } from "react-toastify";
 import { formatDate } from "../../helpers/FormatDate";
 import PageSizeSelector from "../Pagination/Pagination";
@@ -45,7 +53,7 @@ const UserList = () => {
       if (searchQuery) {
         filter = `title="${encodeURIComponent(searchQuery)}"`;
       }
-      setLoading(true);
+
       const mode = await getAllUser(
         searchField,
         searchQuery,
@@ -55,8 +63,11 @@ const UserList = () => {
         sortDirection
       );
       setDataUsers(mode);
+      setLoading(false);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection]);
 
@@ -159,19 +170,28 @@ const UserList = () => {
         <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
-              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />  <span style={{ color: "#FFFFFF" }}>All User</span>
+              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
+              <span style={{ color: "#FFFFFF" }}>All User</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px", color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  color: "#FFFFFF",
+                }}
                 onClick={() => handleOpenCreateCustomer()}
               >
                 <FaPlus /> New
               </MDBBtn>
               <MDBBtn
                 color="eee"
-                style={{ fontWeight: "bold", fontSize: "20px", color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  color: "#FFFFFF",
+                }}
               >
                 <Delete onClick={handleDeleteSelectedUsers} /> Delete
               </MDBBtn>
@@ -244,23 +264,47 @@ const UserList = () => {
                 onClick={() => handleSortChange("firstName")}
               >
                 Name
+                {sortBy === "firstName" &&
+                  (sortDirection === "asc" ? (
+                    <ArrowDropDown />
+                  ) : (
+                    <ArrowDropUp />
+                  ))}
               </th>
               <th
                 style={{ fontWeight: "bold" }}
                 onClick={() => handleSortChange("username")}
               >
                 UserName
+                {sortBy === "username" &&
+                  (sortDirection === "asc" ? (
+                    <ArrowDropDown />
+                  ) : (
+                    <ArrowDropUp />
+                  ))}
               </th>
               <th
                 style={{ fontWeight: "bold" }}
                 onClick={() => handleSortChange("role")}
               >
                 Role
+                {sortBy === "role" &&
+                  (sortDirection === "asc" ? (
+                    <ArrowDropDown />
+                  ) : (
+                    <ArrowDropUp />
+                  ))}
               </th>
               <th
                 style={{ fontWeight: "bold" }}
                 onClick={() => handleSortChange("gender")}
               >
+                {sortBy === "gender" &&
+                  (sortDirection === "asc" ? (
+                    <ArrowDropDown />
+                  ) : (
+                    <ArrowDropUp />
+                  ))}
                 Gender
               </th>
               <th
@@ -268,51 +312,87 @@ const UserList = () => {
                 onClick={() => handleSortChange("isActive")}
               >
                 Status
+                {sortBy === "isActive" &&
+                  (sortDirection === "asc" ? (
+                    <ArrowDropDown />
+                  ) : (
+                    <ArrowDropUp />
+                  ))}
               </th>
-              <th style={{ fontWeight: "bold" }}>Create Time</th>
-              <th style={{ fontWeight: "bold" }}>Modify Time</th>
+              <th
+                style={{ fontWeight: "bold" }}
+                onClick={() => handleSortChange("createdAt")}
+              >
+                Create Time
+                {sortBy === "isActive" &&
+                  (sortDirection === "asc" ? (
+                    <ArrowDropDown />
+                  ) : (
+                    <ArrowDropUp />
+                  ))}
+              </th>
+              <th
+                style={{ fontWeight: "bold" }}
+                onClick={() => handleSortChange("modifiedAt")}
+              >
+                Modify Time
+                {sortBy === "isActive" &&
+                  (sortDirection === "asc" ? (
+                    <ArrowDropDown />
+                  ) : (
+                    <ArrowDropUp />
+                  ))}
+              </th>
             </tr>
           </MDBTableHead>
           <MDBTableBody className="bg-light">
-            {dataUsers.map((user, index) => (
-              <tr key={index}>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={selectedUsers.includes(user.id)}
-                    onChange={() => handleSelectUser(user.id)}
-                  />
+            {loading ? (
+              <tr>
+                <td colSpan="9" style={{ textAlign: "center" }}>
+                  <CircularProgress />
                 </td>
-                <td>
-                  <ViewCompact
-                    onClick={() => handleOpenDetailCustomer(user.id)}
-                  />
-                </td>
-                <td>
-                  {user.lastName} {user.firstName}
-                </td>
-                <td>{user.username}</td>
-                <td>{getRoleNameById(user.role)}</td>
-                <td>{getGenderById(user.gender)}</td>
-                <td>
-                  {user.isActive ? (
-                    <>
-                      <LockOpen
-                        className="square-icon"
-                        style={{ color: "green" }}
-                      />{" "}
-                      <span>Active</span>
-                    </>
-                  ) : (
-                    <>
-                      <Lock className="square-icon" /> DeActive
-                    </>
-                  )}
-                </td>
-                <td>{formatDate(user.createdAt || "-")}</td>
-                <td>{formatDate(user.modifiedAt || "-")}</td>
               </tr>
-            ))}
+            ) : (
+              dataUsers.map((user, index) => (
+                <tr key={index}>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={selectedUsers.includes(user.id)}
+                      onChange={() => handleSelectUser(user.id)}
+                    />
+                  </td>
+                  <td>
+                    <ViewCompact
+                      onClick={() => handleOpenDetailCustomer(user.id)}
+                    />
+                  </td>
+                  <td>
+                    {user.lastName} {user.firstName}
+                  </td>
+                  <td>{user.username}</td>
+                  <td>{getRoleNameById(user.role)}</td>
+                  <td>{getGenderById(user.gender)}</td>
+                  <td>
+                    {user.isActive ? (
+                      <>
+                        <LockOpen
+                          className="square-icon"
+                          style={{ color: "green" }}
+                        />{" "}
+                        <span>Active</span>
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="square-icon" /> DeActive
+                      </>
+                    )}
+                  </td>
+                  <td>{formatDate(user.createdAt || "-")}</td>
+                  <td>{formatDate(user.modifiedAt || "-")}</td>
+                </tr>
+              ))
+            )}
           </MDBTableBody>
           <MDBTableBody className="bg-light"></MDBTableBody>
         </MDBTable>
