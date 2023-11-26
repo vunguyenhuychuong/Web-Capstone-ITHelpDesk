@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
 import {
+  Button,
   Dialog,
+  DialogActions,
   DialogContent,
   DialogTitle,
   Grid,
-  IconButton,
 } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
-import { ArrowBack, Close } from "@mui/icons-material";
+import { ArrowBack } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
@@ -50,6 +51,7 @@ const EditTickets = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
+  const [openImageDialog, setOpenImageDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
     title: "",
@@ -116,7 +118,7 @@ const EditTickets = () => {
           scheduledEndTime: ticketData.scheduledEndTime,
           dueTime: ticketData.dueTime,
           completedTime: ticketData.completedTime,
-          attachmentUrl: ticketData.attachmentUrl
+          attachmentUrl: ticketData.attachmentUrl,
         }));
       } catch (error) {
         console.error("Error fetching ticket data: ", error);
@@ -148,8 +150,12 @@ const EditTickets = () => {
     }
   };
 
-  const closeImagePreview = () => {
-    setIsImagePreviewOpen(false);
+  const handleImageDialogOpen = () => {
+    setOpenImageDialog(true);
+  };
+
+  const handleImageDialogClose = () => {
+    setOpenImageDialog(false);
   };
 
   const handleSubmitTicket = async (e) => {
@@ -187,11 +193,14 @@ const EditTickets = () => {
       const res = await editTicketByManager(ticketId, data);
       setIsSubmitting(false);
       if (res.isError && res.responseException?.exceptionMessage) {
-        toast.info("Ticket is currently being executed and cannot be updated.", {
-          autoClose: 2000,
-          hideProgressBar: false,
-          position: toast.POSITION.TOP_CENTER,
-        });
+        toast.info(
+          "Ticket is currently being executed and cannot be updated.",
+          {
+            autoClose: 2000,
+            hideProgressBar: false,
+            position: toast.POSITION.TOP_CENTER,
+          }
+        );
       } else {
         toast.success("Ticket updated successfully");
       }
@@ -332,16 +341,11 @@ const EditTickets = () => {
                   id="attachmentUrl"
                   onChange={handleFileChange}
                 />
-                {imagePreviewUrl && (
+                {data.attachmentUrl && (
                   <div
                     className="image-preview"
-                    onClick={() => setIsImagePreviewOpen(true)}
+                    onClick={handleImageDialogOpen}
                   >
-                    {/* <img
-                      src={imagePreviewUrl}
-                      alt="Attachment Preview"
-                      style={{ width: "100%" }}
-                    /> */}
                     <p className="preview-text">
                       Click here to view attachment
                     </p>
@@ -556,29 +560,33 @@ const EditTickets = () => {
       </Grid>
 
       <Dialog
-        open={isImagePreviewOpen}
-        onClose={closeImagePreview}
+        open={openImageDialog}
+        onClose={handleImageDialogClose}
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>
-          Image Preview
-          <IconButton
-            edge="end"
-            color="inherit"
-            onClick={closeImagePreview}
-            aria-label="close"
-          >
-            <Close />
-          </IconButton>
-        </DialogTitle>
+        <DialogTitle>Image Preview</DialogTitle>
         <DialogContent>
-          <img
-            src={imagePreviewUrl}
-            alt="Attachment Preview"
-            style={{ width: "100%" }}
-          />
+          {data.attachmentUrl ? (
+            <div
+              style={{
+                background: `url(${data.attachmentUrl})`,
+                backgroundSize: "contain",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
+                width: "100%",
+                height: "70vh",
+              }}
+            ></div>
+          ) : (
+            <p>No image preview available</p>
+          )}
         </DialogContent>
+        <DialogActions>
+          <Button onClick={handleImageDialogClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
       </Dialog>
     </Grid>
   );

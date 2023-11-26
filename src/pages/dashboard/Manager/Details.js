@@ -247,7 +247,7 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
               backgroundRepeat: "no-repeat",
               backgroundPosition: "center",
               width: "100%",
-              height: "70vh", // Adjust the height as needed
+              height: "70vh", 
             }}
           ></div>
         </DialogContent>

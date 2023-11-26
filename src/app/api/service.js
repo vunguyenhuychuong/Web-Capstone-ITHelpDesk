@@ -4,14 +4,21 @@ import { baseURL } from "./link";
 
 
 export async function getAllServices(
+    searchField,
+    searchQuery,
     page = 1,
     pageSize = 5,
+    sortBy = "id",
+    sortDirection = "asc"
 ) {
     const header = getAuthHeader();
     try{
+        let filter = `${searchField}.contains("${searchQuery}")`;
         const params = {
+            filter: filter,
             page: page,
             pageSize: pageSize,
+            sort: `${sortBy} ${sortDirection}`,
         }
         const res = await axios.get(`${baseURL}/service`,{
             headers: {

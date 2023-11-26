@@ -20,9 +20,12 @@ import { deleteService, getAllServices } from "../../../app/api/service";
 import {
   Box,
   Dialog,
+  FormControl,
+  MenuItem,
   Pagination,
+  Select,
 } from "@mui/material";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaSearch } from "react-icons/fa";
 import CreateService from "./CreateService";
 import EditService from "./EditService";
 import { toast } from "react-toastify";
@@ -40,20 +43,33 @@ const ServiceList = () => {
   const [selectService, setSelectService] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [searchField, setSearchField] = useState("description");
+  const [searchQuery, setSearchQuery] = useState("");
   const [totalPages, setTotalPages] = useState(1);
+  const [sortDirection, setSortDirection] = useState("asc");
+  const [sortBy, setSortBy] = useState("id");
   const [isLoading, setIsLoading] = useState(true);
 
 
   const fetchAllService = useCallback(async () => {
     try {
-      const service = await getAllServices(currentPage, pageSize);
+      let filter = "";
+      if (searchQuery) {
+        filter = `title="${encodeURIComponent(searchQuery)}"`;
+      }
+      const service = await getAllServices(
+        searchField,
+        searchQuery,
+        currentPage,
+        pageSize,
+        sortBy,
+        sortDirection);
       setDataService(service);
-      setIsLoading(false);
     } catch (error) {
       console.error(error);
       setIsLoading(false);
     }
-  }, [currentPage, pageSize]);
+  }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection]);
 
   useEffect(() => {
     fetchAllService();
@@ -116,31 +132,69 @@ const ServiceList = () => {
   }, [fetchAllService]);
 
   return (
-    <section style={{ backgroundColor: "#FFF" }}>
+    <>
       <MDBContainer
         className="py-5"
         style={{ paddingLeft: 20, paddingRight: 20, maxWidth: "100%" }}
       >
-        <MDBNavbar expand="lg" light bgColor="inherit">
+        <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
-              <ContentCopy style={{ marginRight: "20px" }} /> All Service
+              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} /> <span style={{ color: "#FFFFFF" }}>All Service</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px" }}
+                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
                 onClick={handleOpenCreateService}
               >
                 <FaPlus /> New
               </MDBBtn>
               <MDBBtn
                 color="eee"
-                style={{ fontWeight: "bold", fontSize: "20px" }}
+                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
               >
                 <Delete /> Delete
               </MDBBtn>
-
+              <FormControl
+                variant="outlined"
+                style={{
+                  minWidth: 120,
+                  marginRight: 10,
+                  marginTop: 10,
+                  marginLeft: 10,
+                }}
+                size="small"
+              >
+                <Select
+                  value={searchField}
+                  onChange={(e) => setSearchField(e.target.value)}
+                  inputProps={{
+                    name: "searchField",
+                    id: "search-field",
+                  }}
+                  style={{ color: "white" }}
+                >
+                  <MenuItem value="name">Name</MenuItem>
+                  <MenuItem value="description">Description</MenuItem>
+                  <MenuItem value="id">Id</MenuItem>
+                </Select>
+              </FormControl>
+              <div className="input-wrapper">
+                <FaSearch id="search-icon" />
+                <input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      fetchAllService();
+                    }
+                  }}
+                  className="input-search"
+                  placeholder="Type to search..."
+                />
+              </div>
               <PageSizeSelector
                 pageSize={pageSize}
                 handleChangePageSize={handleChangePageSize}
@@ -209,7 +263,7 @@ const ServiceList = () => {
       <Dialog open={dialogEdit} onClose={handleCloseEdit}>
         <EditService onClose={handleCloseEdit} serviceId={selectService} />
       </Dialog>
-    </section>
+    </>
   );
 };
 

@@ -156,22 +156,22 @@ const UserList = () => {
         className="py-5"
         style={{ paddingLeft: 20, paddingRight: 20, maxWidth: "100%" }}
       >
-        <MDBNavbar expand="lg" light bgColor="inherit">
+        <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
-              <ContentCopy style={{ marginRight: "20px" }} /> All User
+              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />  <span style={{ color: "#FFFFFF" }}>All User</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px" }}
+                style={{ fontWeight: "bold", fontSize: "20px", color: "#FFFFFF" }}
                 onClick={() => handleOpenCreateCustomer()}
               >
                 <FaPlus /> New
               </MDBBtn>
               <MDBBtn
                 color="eee"
-                style={{ fontWeight: "bold", fontSize: "20px" }}
+                style={{ fontWeight: "bold", fontSize: "20px", color: "#FFFFFF" }}
               >
                 <Delete onClick={handleDeleteSelectedUsers} /> Delete
               </MDBBtn>
@@ -192,6 +192,7 @@ const UserList = () => {
                     name: "searchField",
                     id: "search-field",
                   }}
+                  style={{ color: "white" }}
                 >
                   <MenuItem value="id">ID</MenuItem>
                   <MenuItem value="firstName">FirstName</MenuItem>

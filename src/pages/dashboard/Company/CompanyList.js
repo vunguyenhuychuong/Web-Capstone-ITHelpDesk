@@ -215,6 +215,7 @@ const CompanyList = () => {
                     name: "searchField",
                     id: "search-field",
                   }}
+                  style={{ color: "white" }}
                 >
                   <MenuItem value="id">ID</MenuItem>
                   <MenuItem value="companyName">Company Name</MenuItem>

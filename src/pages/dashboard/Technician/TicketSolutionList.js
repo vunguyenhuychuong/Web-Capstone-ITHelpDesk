@@ -232,6 +232,7 @@ const TicketSolutionList = () => {
                     name: "searchField",
                     id: "search-field",
                   }}
+                  style={{ color: "white" }}
                 >
                   <MenuItem value="id">ID</MenuItem>
                   <MenuItem value="title">Title</MenuItem>

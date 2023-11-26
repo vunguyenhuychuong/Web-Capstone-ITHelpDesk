@@ -101,7 +101,7 @@ const ModeList = () => {
         if (result.status === "fulfilled") {
           successfulDeletes.push(result.value);
         } else {
-          toast.error(result.reason.message); // Handle error messages here
+          toast.error(result.reason.message);
         }
       });
       const updateModes = dataModes.filter((mode) => !successfulDeletes.includes(mode.id));
@@ -171,22 +171,22 @@ const ModeList = () => {
         className="py-5"
         style={{ paddingLeft: 20, paddingRight: 20, maxWidth: "100%" }}
       >
-        <MDBNavbar expand="lg" light bgColor="inherit">
+        <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
-              <ContentCopy style={{ marginRight: "20px" }} /> All Mode
+              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} /> <span style={{ color: "#FFFFFF" }}>All Mode</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px" }}
+                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
                 onClick={handleOpenMode}
               >
                 <FaPlus /> New
               </MDBBtn>
               <MDBBtn
                 color="eee"
-                style={{ fontWeight: "bold", fontSize: "20px" }}
+                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
               >
                 <Delete onClick={handleDeleteSelectedModes} /> Delete
               </MDBBtn>
@@ -207,6 +207,7 @@ const ModeList = () => {
                     name: "searchField",
                     id: "search-field",
                   }}
+                  style={{ color: "white" }}
                 >
                   <MenuItem value="name">name</MenuItem>
                   <MenuItem value="description">Title</MenuItem>
