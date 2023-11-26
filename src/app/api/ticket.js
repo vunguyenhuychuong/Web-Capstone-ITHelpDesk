@@ -289,5 +289,55 @@ export async function GetTicketUserAvailable() {
   }
 };
 
+export async function CancelTicketUser(ticketId) {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.patch(`${baseURL}/ticket/cancel?ticketId=${ticketId}`, {},{
+      headers: {
+        Authorization: header,
+      }
+    });
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+    console.log(error.response.data.responseException.exceptionMessage);
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+  }
+};
+
+export async function CloseTicketUser(ticketId) {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.patch(`${baseURL}/ticket/close?ticketId=${ticketId}`, {},{
+      headers: {
+        Authorization: header,
+      }
+    });
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+    console.log(error.response.data.responseException.exceptionMessage);
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+  }
+};
+
 
 

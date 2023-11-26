@@ -34,6 +34,7 @@ import LoadingSkeleton from "../../../components/iconify/LoadingSkeleton";
 import Details from "./Details";
 import { stringAvatar } from "../../../components/dashboard/Navbar";
 import { useSelector } from "react-redux";
+import { CancelTicketUser, CloseTicketUser } from "../../../app/api/ticket";
 
 const DetailTicket = () => {
   const { ticketId } = useParams();
@@ -61,6 +62,22 @@ const DetailTicket = () => {
     } catch (error) {
       console.log("Error while fetching data", error);
     } finally {
+    }
+  };
+
+  const handleCancelTicket = async (ticketId) => {
+    try {
+      await CancelTicketUser(ticketId);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCloseTicket = async (ticketId) => {
+    try {
+      await CloseTicketUser(ticketId);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -141,8 +158,26 @@ const DetailTicket = () => {
                   </button>
                 </div>
               </MDBCol>
-              <MDBCol md="5">
+              <MDBCol md="8">
                 <div className="d-flex align-items-center">
+                  {userRole === 1 && (
+                    <>
+                      <button
+                        type="button"
+                        className="btn btn-link narrow-input icon-label mt-2"
+                        onClick={() => handleCancelTicket(ticketId)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-link narrow-input icon-label mt-2"
+                        onClick={() => handleCloseTicket(ticketId)}
+                      >
+                        Close
+                      </button>
+                    </>
+                  )}
                   <button
                     type="button"
                     className="btn btn-link narrow-input icon-label mt-2"
