@@ -14,7 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import "../../../assets/css/detailTicket.css";
-import { ArrowBack, CreditScore } from "@mui/icons-material";
+import { ArrowBack, Cached, CreditScore } from "@mui/icons-material";
 import UploadComponent from "../../helpers/UploadComponent";
 import PropTypes from "prop-types";
 import "../../../assets/css/homeManager.css";
@@ -67,7 +67,7 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
             <Typography
               variant="subtitle1"
               color="textSecondary"
-              className="descriptionLabel"
+              className="descriptionLabel"             
             >
               Description
             </Typography>
@@ -77,18 +77,18 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
             id="description"
             name="description"
             multiline
-            rows={4}
+            rows={3}
             fullWidth
             variant="outlined"
             value={data?.description || ""}
             disabled
+            InputProps={{
+              style: { fontSize: '1.5em' }
+            }}
           />
           <UploadComponent />
           <div className="buttonContainer">
-            <Button variant="contained" className="button">
-              Reply All
-            </Button>
-            {data.avatarUrl && (
+            {data.attachmentUrl && (
               <Button
                 variant="contained"
                 className="button"
@@ -109,25 +109,27 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
                 style={{ cursor: "pointer", color: "blue" }}
                 onClick={reloadData}
               >
-                Properties <CreditScore /> <span>Reload</span>
+                Properties <Cached /> <span>Reload</span>
               </div>{" "}
-              <CreditScore />{" "}
-              <span
-                style={{ cursor: "pointer", color: "blue" }}
-                onClick={handleEditClick}
-              >
-                Edit
-              </span>
+              {userRole === 3 && <CreditScore />}
+              {userRole === 3 && (
+                <span
+                  style={{ cursor: "pointer", color: "blue" }}
+                  onClick={handleEditClick}
+                >
+                  Edit
+                </span>
+              )}
             </Typography>
           </div>
           <Table>
             <TableBody>
-              <TableRow className="hoverCell">
+              <TableRow>
                 <TableCell style={{ textAlign: "right" }}>Requester</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
                   {data.requester
                     ? `${data.requester.lastName} ${data.requester.firstName}`
-                    : "N/A"}
+                    : "Manager"}
                 </TableCell>
                 <TableCell style={{ textAlign: "right" }}>Impact</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
@@ -151,7 +153,7 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
               <TableRow>
                 <TableCell style={{ textAlign: "right" }}>Mode</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {/* {data.mode.description} */}
+                  {data && data.mode && data.mode.description ? data.mode.description : "Mode N/A"}
                 </TableCell>
                 <TableCell style={{ textAlign: "right" }}>Urgency</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
@@ -161,7 +163,7 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
               <TableRow>
                 <TableCell style={{ textAlign: "right" }}>Service</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {/* {data.service.description} */}
+                  {data && data.service && data.service.description ? data.service.description : "Service N/A"}
                 </TableCell>
                 <TableCell style={{ textAlign: "right" }}>Priority</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
@@ -171,7 +173,7 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
               <TableRow>
                 <TableCell style={{ textAlign: "right" }}>Assignment</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {/* {data.assignment || "Not Assigned"} */}
+                  {data && data.assignment && data.assignment.technicianFullName ? data.assignment.technicianFullName : "Assignment N/A"}
                 </TableCell>
                 <TableCell style={{ textAlign: "right" }}>Category</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
@@ -240,7 +242,7 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
         <DialogContent>
           <div
             style={{
-              background: `url(${data.avatarUrl})`,
+              background: `url(${data.attachmentUrl})`,
               backgroundSize: "contain",
               backgroundRepeat: "no-repeat",
               backgroundPosition: "center",

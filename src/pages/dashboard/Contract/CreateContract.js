@@ -59,7 +59,7 @@ const CreateContract = () => {
     }
   };
 
-  const handleReviewDateChange = (newDate) => {
+  const handleStartDateChange = (newDate) => {
     const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
     setStartDate(newDate);
     setData((prevInputs) => ({
@@ -68,7 +68,7 @@ const CreateContract = () => {
     }));
   };
 
-  const handleExpiredDateChange = (newDate) => {
+  const handleEndDateChange = (newDate) => {
     const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
     setEndDate(newDate);
     setData((prevInputs) => ({
@@ -124,10 +124,14 @@ const CreateContract = () => {
   };
 
   const validateDate = (startDate, endDate) => {
+    console.log("Start Date:", startDate);
+  console.log("End Date:", endDate);
     if (!startDate || !endDate) {
-      return false; // If either date is missing, return false
+      return false; 
     }
-    return moment(startDate).isBefore(endDate);
+    const isBefore = moment(startDate).isBefore(endDate);
+    console.log("is Before:", isBefore);
+    return isBefore;
   };
 
   const handleSubmitContract = async (e) => {
@@ -145,6 +149,24 @@ const CreateContract = () => {
       return;
     }
 
+    const isDataValid = validateDate(data.startDate, data.endDate);
+    if (!isDataValid) {
+      toast.info("Start Date must be earlier than End Date.",
+      {
+        autoClose: 2000,
+        hideProgressBar: false,
+        position: toast.POSITION.TOP_CENTER,
+      });
+      return;
+    }
+
+    const formattedReviewDate = moment(data.startDate).format(
+      "YYYY-MM-DDTHH:mm:ss"
+    );
+    const formattedExpiredDate = moment(data.endDate).format(
+      "YYYY-MM-DDTHH:mm:ss"
+    );
+
     setIsSubmitting(true);
     try {
       let attachmentUrl = data.attachmentUrl;
@@ -155,19 +177,6 @@ const CreateContract = () => {
         attachmentUrl = await getDownloadURL(storageRef);
       }
 
-      const isDataValid = validateDate(data.startDate, data.endDate);
-      if (!isDataValid) {
-        toast.info("Start Date must be earlier than End Date.");
-        return;
-      }
-
-      const formattedReviewDate = moment(data.startDate).format(
-        "YYYY-MM-DDTHH:mm:ss"
-      );
-      const formattedExpiredDate = moment(data.endDate).format(
-        "YYYY-MM-DDTHH:mm:ss"
-      );
-
       const updatedData = {
         ...data,
         attachmentUrl: attachmentUrl,
@@ -176,7 +185,7 @@ const CreateContract = () => {
       };
 
       setData(updatedData);
-      const response = await createContract({
+       await createContract({
         name: data.name,
         description: data.description,
         value: data.value,
@@ -187,15 +196,6 @@ const CreateContract = () => {
         companyId: data.companyId,
         attachmentUrl: attachmentUrl,
       });
-      if (
-        response.data.isError &&
-        response.data.responseException.exceptionMessage
-      ) {
-        console.log(response.data.responseException.exceptionMessage);
-      } else {
-        toast.success("Ticket created successfully");
-      }
-      // toast.success("Ticket created successfully");
     } catch (error) {
       console.error(error);
     } finally {
@@ -423,7 +423,7 @@ const CreateContract = () => {
                           }}
                           value={startDate}
                           onChange={(newValue) =>
-                            handleReviewDateChange(newValue)
+                            handleStartDateChange(newValue)
                           }
                           renderInput={(props) => <TextField {...props} />}
                         />
@@ -450,7 +450,7 @@ const CreateContract = () => {
                           }}
                           value={endDate}
                           onChange={(newValue) =>
-                            handleExpiredDateChange(newValue)
+                            handleEndDateChange(newValue)
                           }
                         />
                       </LocalizationProvider>

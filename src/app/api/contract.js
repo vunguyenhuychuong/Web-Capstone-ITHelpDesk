@@ -138,9 +138,19 @@ export async function createContract(data) {
         Authorization: header,
       },
     });
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     return res.data.result;
   } catch (error) {
-    console.log(error);
+    console.log(error.response.data.responseException.exceptionMessage);
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
   }
 }
 
@@ -153,9 +163,19 @@ export async function updateContract(data, contractId) {
         Authorization: header,
       },
     });
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     return res.data.result;
   } catch (error) {
-    console.log(error);
+    console.log(error.response.data.responseException.exceptionMessage);
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
   }
 }
 
@@ -170,7 +190,12 @@ export async function deleteContract(contractId) {
     });
     return res.data.result;
   } catch (error) {
-    console.log(error);
+    console.log(error.response.data.responseException.exceptionMessage);
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
   }
 }
 

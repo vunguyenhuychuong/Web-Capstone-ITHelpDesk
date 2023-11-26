@@ -6,10 +6,12 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "draft-js/dist/Draft.css";
 import CategoryApi from "../../../app/api/category";
 import ModeApi from "../../../app/api/mode";
-import { FaPlus, FaTicketAlt } from "react-icons/fa";
+import { FaTicketAlt } from "react-icons/fa";
 import {
   ArrowBack,
   ArrowRight,
+  AssignmentLate,
+  AssignmentTurnedIn,
   ChatOutlined,
   Feedback,
   MessageSharp,
@@ -30,7 +32,6 @@ import { formatDate } from "../../helpers/FormatDate";
 import { Box } from "@mui/system";
 import LoadingSkeleton from "../../../components/iconify/LoadingSkeleton";
 import Details from "./Details";
-import TicketTaskList from "../Technician/TicketTaskList";
 import { stringAvatar } from "../../../components/dashboard/Navbar";
 import { useSelector } from "react-redux";
 
@@ -44,9 +45,9 @@ const DetailTicket = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth);
   const userRole = user.user.role;
-  // const userName = data.requester
-  //   ? `${data.requester.lastName || ""} ${data.requester.firstName || ""}`
-  //   : "";
+  const userName = data.requester
+    ? `${data.requester.lastName || ""} ${data.requester.firstName || ""}`
+    : "";
   const ticketStatus = data.ticketStatus;
   const [allowEdit, setAllowEdit] = useState(false);
   const [editMessage, setEditMessage] = useState("");
@@ -146,7 +147,12 @@ const DetailTicket = () => {
                     type="button"
                     className="btn btn-link narrow-input icon-label mt-2"
                     onClick={() => handleOpenEditTicket(ticketId)}
-                    disabled={!(userRole === 2 || (userRole === 1 && ticketStatus === 0))}
+                    disabled={
+                      !(
+                        userRole === 2 ||
+                        (userRole === 1 && ticketStatus === 0)
+                      )
+                    }
                   >
                     Edit
                   </button>
@@ -329,37 +335,53 @@ const DetailTicket = () => {
                   )?.name || "Unknown Priority"}
                 </div>
               </MDBCol>
-              <MDBCol md="12" className="mt-2 text-box">
-                <div className="label-col col-md-4 ">Technician</div>
-                {/* {data.assignment.technicianId} */}
-              </MDBCol>
             </MDBRow>
           </MDBRow>
-          <MDBRow className="mb-4">
+          <MDBRow className="mb-2">
             <MDBCol md="12" className=" mt-2">
-              <label className="narrow-input description-label">
-                <FaPlus
-                  style={{ color: "#3399FF", marginLeft: 10, marginBottom: 5 }}
-                />
-                Share Request
-              </label>
+              {data.assignment ? (
+                <label className="narrow-input description-label">
+                  <AssignmentTurnedIn
+                    style={{ color: "#3399FF", marginLeft: 10, marginLeft: 5 }}
+                  />
+                  Ticket have been Assigned
+                </label>
+              ) : (
+                <label className="narrow-input description-label">
+                  <AssignmentLate
+                    style={{ color: "#FFCC33", marginLeft: 10, marginLeft: 5 }}
+                  />
+                  Ticket not Assigned yet
+                </label>
+              )}
             </MDBCol>
-          </MDBRow>
-          <MDBRow className="mb-4">
-            <MDBCol md="12" className=" mt-2">
-              <label className="narrow-input">
-                <ArrowRight /> Associate Problems
-              </label>
+            <MDBCol md="12">
+              <ArrowRight />
+              Name:{" "}
+              {data.assignment && data.assignment.technicianFullName
+                ? data.assignment.technicianFullName
+                : "N/A"}
             </MDBCol>
             <MDBCol md="12" className=" mt-2">
-              <label className="narrow-input">
-                <ArrowRight /> Associate Change
-              </label>
+              <ArrowRight />
+              Email:{" "}
+              {data.assignment && data.assignment.technicianEmail
+                ? data.assignment.technicianEmail
+                : "N/A"}
             </MDBCol>
             <MDBCol md="12" className=" mt-2">
-              <label className="narrow-input">
-                <ArrowRight /> Associate Project
-              </label>
+              <ArrowRight />
+              Phone:{" "}
+              {data.assignment && data.assignment.technicianPhoneNumber
+                ? data.assignment.technicianPhoneNumber
+                : "N/A"}
+            </MDBCol>
+            <MDBCol md="12" className=" mt-2">
+              <ArrowRight />
+              Team:{" "}
+              {data.assignment && data.assignment.teamName
+                ? data.assignment.teamName
+                : "N/A"}
             </MDBCol>
           </MDBRow>
           <MDBRow className="mb-4">
@@ -369,7 +391,7 @@ const DetailTicket = () => {
             </MDBCol>
           </MDBRow>
           <MDBRow className="mb-4">
-            {/* <MDBCol
+            <MDBCol
               md="12"
               className="d-flex align-items-center mt-2 description-label"
             >
@@ -390,10 +412,10 @@ const DetailTicket = () => {
                     <p className="text-muted mb-0">Requests(2) | Assets</p>
                   </>
                 ) : (
-                  <p className="text-muted">Username not available</p>
+                  <p className="text-muted">User Information Not have</p>
                 )}
               </div>
-            </MDBCol> */}
+            </MDBCol>
             <MDBTable bordered>
               <MDBTableBody>
                 <tr>

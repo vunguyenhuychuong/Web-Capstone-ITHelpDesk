@@ -22,11 +22,10 @@ import {
   ArrowDropUp,
   ContentCopy,
   Delete,
-  Edit,
+  ViewCompact,
 } from "@mui/icons-material";
 import {
   Box,
-  Dialog,
   FormControl,
   MenuItem,
   Pagination,
@@ -400,7 +399,7 @@ const IndexTicket = () => {
                       />
                     </td>
                     <td>
-                      <Edit onClick={() => handleOpenEditTicket(ticket.id)} />
+                      <ViewCompact onClick={() => handleOpenEditTicket(ticket.id)} />
                     </td>
                     <td>{ticket.id}</td>
                     <td>{ticket.title}</td>

@@ -24,6 +24,7 @@ import {
 } from "../../../app/api/company";
 import { toast } from "react-toastify";
 import { formatDate } from "../../helpers/FormatDate";
+import { truncateUrl } from "../../helpers/FormatText";
 
 const CompanyList = () => {
   const [dataListCompany, setDataListCompany] = useState([]);
@@ -167,30 +168,32 @@ const CompanyList = () => {
   //     }
   //   };
 
+  const maxLength = 30;
+
   useEffect(() => {
     fetchDataListTicketTask();
     setTotalPages(4);
   }, [fetchDataListTicketTask, refreshData]);
 
   return (
-    <section style={{ backgroundColor: "#eee" }}>
+    <>
       <MDBContainer className="py-5 custom-container">
-        <MDBNavbar expand="lg" style={{ backgroundColor: "#fff" }}>
+        <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
-              <ContentCopy style={{ marginRight: "20px" }} /> All Company
+              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />  <span style={{ color: "#FFFFFF" }}>All Company</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px" }}
+                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
                 onClick={() => handleOpenCreateCompany()}
               >
                 <FaPlus /> Create
               </MDBBtn>
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px" }}
+                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
                 onClick={() => handleDeleteSelectedCompany()}
               >
                 <Delete /> Delete
@@ -327,12 +330,25 @@ const CompanyList = () => {
                             href={company.website}
                             target="_blank"
                             rel="noopener noreferrer"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            title={company.website}
                           >
-                            {company.website}
+                            {truncateUrl(company.website, maxLength)}
                           </a>
                         )}
                       </td>
-                      <td>{company.isActive || "-"}</td>
+                      <td>
+                        {company.isActive ? (
+                          <span className="badge bg-success rounded-pill">
+                            Active
+                          </span>
+                        ) : (
+                          <span className="badge bg-danger rounded-pill">
+                            Not Active
+                          </span>
+                        )}
+                      </td>
                       <td>{formatDate(company.createdAt || "-")}</td>
                       <td>{formatDate(company.deletedAt || "-")}</td>
                     </tr>
@@ -351,7 +367,7 @@ const CompanyList = () => {
           />
         </Box>
       </MDBContainer>
-    </section>
+    </>
   );
 };
 

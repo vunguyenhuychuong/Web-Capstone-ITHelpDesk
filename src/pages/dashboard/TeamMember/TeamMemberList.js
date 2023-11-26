@@ -154,14 +154,14 @@ const TeamMemberList = () => {
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px" }}
+                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
                 onClick={() => handleOpenCreateTeamMember()}
               >
                 <FaPlus /> New
               </MDBBtn>
               <MDBBtn
                 color="eee"
-                style={{ fontWeight: "bold", fontSize: "20px" }}
+                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
                 onClick={handleDeleteSelectedTeamMember}
               >
                 <Delete /> Delete

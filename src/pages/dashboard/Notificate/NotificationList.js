@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect } from "react";
-import { getAllNotification } from "../../../app/api/notification";
+import { ReadNotification, getAllNotification } from "../../../app/api/notification";
 import { useState } from "react";
 import {
   IconButton,
@@ -19,7 +19,6 @@ const NotificationList = ({
   fetchDataListNotification,
   notifications,
   readNotifications,
-  onOptionSelect,
 }) => {
   const [loading, setLoading] = useState(true);
 
@@ -36,6 +35,16 @@ const NotificationList = ({
 
     fetchData();
   }, []);
+
+  const handleMarkAsRead = async (notificationId) =>{
+    try{
+      const result = await ReadNotification(notificationId);
+      console.log('Mark as read result:', result);
+    }catch(error){
+      console.log('Error marking notification as read:', error);
+    }
+  };
+
   return (
     <div className="notification-list-container">
       {loading ? (
@@ -92,11 +101,8 @@ const NotificationList = ({
                 />
                 {!readNotifications.includes(notification.id) && (
                   <IconButton
-                    onClick={() =>
-                      onOptionSelect("Mark as Read", notification.id)
-                    }
                   >
-                    <DoneAll />
+                    <DoneAll onClick={() => handleMarkAsRead(notification.id)}/>
                   </IconButton>
                 )}
               </ListItem>

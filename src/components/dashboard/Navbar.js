@@ -138,10 +138,7 @@ const Navbar = ({ notifications }) => {
     switch (option) {
       case "Mark as Read":
         try {
-          const dataNotification = {
-            id: 1,         
-          };
-          const res = await ReadNotification(notificationId, dataNotification);
+          await ReadNotification(notificationId);
           setReadNotifications((prevReadNotifications) => [
             ...prevReadNotifications,
             notificationId,

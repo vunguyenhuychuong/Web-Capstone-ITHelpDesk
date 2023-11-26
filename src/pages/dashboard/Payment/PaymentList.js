@@ -11,11 +11,7 @@ import {
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketCustomer.css";
 import PageSizeSelector from "../Pagination/Pagination";
-import {
-  ContentCopy,
-  DeleteForever,
-  ViewCompact,
-} from "@mui/icons-material";
+import { ContentCopy, DeleteForever, ViewCompact } from "@mui/icons-material";
 import { formatDate } from "../../helpers/FormatDate";
 import { useNavigate } from "react-router-dom";
 import { useCallback } from "react";
@@ -24,6 +20,9 @@ import { FaPlus, FaSearch } from "react-icons/fa";
 import { toast } from "react-toastify";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import { deletePaymentById, getAllPayment } from "../../../app/api/payment";
+import { formatCurrency } from "../../helpers/FormatCurrency";
+import Paid from "../../../assets/images/paid.svg";
+import UnPaid from "../../../assets/images/unpaid.svg";
 
 const PaymentList = () => {
   const [dataListPayment, setDataListPayment] = useState([]);
@@ -52,7 +51,7 @@ const PaymentList = () => {
         currentPage,
         pageSize,
         sortBy,
-        sortDirection,
+        sortDirection
       );
       setDataListPayment(response);
     } catch (error) {
@@ -60,7 +59,7 @@ const PaymentList = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection ]);
+  }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection]);
 
   const handleSelectPayment = (paymentId) => {
     if (selectedPaymentIds.includes(paymentId)) {
@@ -76,9 +75,7 @@ const PaymentList = () => {
     if (selectedPaymentIds.length === dataListPayment.length) {
       setSelectedPaymentIds([]);
     } else {
-      setSelectedPaymentIds(
-        dataListPayment.map((solution) => solution.id)
-      );
+      setSelectedPaymentIds(dataListPayment.map((solution) => solution.id));
     }
   };
 
@@ -99,9 +96,7 @@ const PaymentList = () => {
 
           deletePaymentById(paymentId)
             .then(() => {
-              console.log(
-                `Payment with ID ${paymentId} deleted successfully`
-              );
+              console.log(`Payment with ID ${paymentId} deleted successfully`);
               currentIndex++;
               deleteNextSolution();
             })
@@ -125,9 +120,7 @@ const PaymentList = () => {
       deleteNextSolution();
     } catch (error) {
       console.error("Failed to delete selected Payments: ", error);
-      toast.error(
-        "Failed to delete selected Payments, Please try again later"
-      );
+      toast.error("Failed to delete selected Payments, Please try again later");
     }
   };
 
@@ -164,27 +157,36 @@ const PaymentList = () => {
   }, [fetchDataListPayment, refreshData]);
 
   return (
-    <section style={{ backgroundColor: "#eee" }}>
+    <>
       <MDBContainer className="py-5 custom-container">
-        <MDBNavbar expand="lg" light bgColor="inherit">
+        <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "16px" }}>
-              <ContentCopy style={{ marginRight: "20px" }} /> All Payments
+              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
+              <span style={{ color: "#FFFFFF" }}>All Payments</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "14px" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                  color: "#FFFFFF",
+                }}
                 onClick={() => handleOpenCreatePayment()}
               >
                 <FaPlus /> New
               </MDBBtn>
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "14px" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                  color: "#FFFFFF",
+                }}
                 onClick={() => handleDeleteSelectedPayments()}
               >
-               <DeleteForever /> Delete
+                <DeleteForever /> Delete
               </MDBBtn>
 
               <FormControl
@@ -209,8 +211,12 @@ const PaymentList = () => {
                   <MenuItem value="description">Description</MenuItem>
                   <MenuItem value="numberOfTerms">NumberOfTerms</MenuItem>
                   <MenuItem value="note">Note</MenuItem>
-                  <MenuItem value="initialPaymentAmount">Initial Payment Amount</MenuItem>
-                  <MenuItem value="firstDateOfPayment">First Date Of Payment</MenuItem>
+                  <MenuItem value="initialPaymentAmount">
+                    Initial Payment Amount
+                  </MenuItem>
+                  <MenuItem value="firstDateOfPayment">
+                    First Date Of Payment
+                  </MenuItem>
                 </Select>
               </FormControl>
               <div className="input-wrapper">
@@ -244,8 +250,7 @@ const PaymentList = () => {
                   <input
                     type="checkbox"
                     checked={
-                      selectedPaymentIds.length ===
-                      dataListPayment.length
+                      selectedPaymentIds.length === dataListPayment.length
                     }
                     onChange={handleSelectAllPayments}
                   />
@@ -297,9 +302,7 @@ const PaymentList = () => {
             ) : (
               <MDBTableBody className="bg-light">
                 {dataListPayment.map((Payment, index) => {
-                  const isSelected = selectedPaymentIds.includes(
-                    Payment.id
-                  );
+                  const isSelected = selectedPaymentIds.includes(Payment.id);
                   return (
                     <tr key={index}>
                       <td>{Payment.id}</td>
@@ -307,16 +310,12 @@ const PaymentList = () => {
                         <input
                           type="checkbox"
                           checked={isSelected}
-                          onChange={() =>
-                            handleSelectPayment(Payment.id)
-                          }
+                          onChange={() => handleSelectPayment(Payment.id)}
                         />
                       </td>
                       <td>
                         <ViewCompact
-                          onClick={() =>
-                            handleOpenDetailPayment(Payment.id)
-                          }
+                          onClick={() => handleOpenDetailPayment(Payment.id)}
                         />{" "}
                       </td>
                       <td>{Payment.contractId}</td>
@@ -324,11 +323,31 @@ const PaymentList = () => {
                       <td>{Payment.numberOfTerms}</td>
                       <td>{formatDate(Payment.firstDateOfPayment)}</td>
                       <td>{Payment.duration}</td>
-                      <td>{Payment.initialPaymentAmount}</td>
-                      <td>{Payment.isFullyPaid}</td>
                       <td>
-                        {formatDate(Payment.createdAt)}
+                        {formatCurrency(Payment.initialPaymentAmount)} VND
                       </td>
+                      <td>
+                        {Payment.isFullyPaid ? (
+                          <>
+                            <img
+                              src={Paid}
+                              alt="Paid"
+                              className="payment-icon"
+                            />
+                            <span className="payment-text">Paid</span>
+                          </>
+                        ) : (
+                          <>
+                            <img
+                              src={UnPaid}
+                              alt="Not Paid"
+                              className="payment-icon"
+                            />
+                            <span className="payment-text">Not Paid</span>
+                          </>
+                        )}
+                      </td>
+                      <td>{formatDate(Payment.createdAt)}</td>
                       <td>{formatDate(Payment.modifiedAt)}</td>
                     </tr>
                   );
@@ -345,7 +364,7 @@ const PaymentList = () => {
           onChange={handleChangePage}
         />
       </Box>
-    </section>
+    </>
   );
 };
 

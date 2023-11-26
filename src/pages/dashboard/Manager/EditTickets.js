@@ -210,7 +210,7 @@ const EditTickets = () => {
   };
 
   const handleGoBack = () => {
-    navigate(`/home/listTicket`);
+    navigate(`/home/detailTicket/${ticketId}`);
   };
 
   return (

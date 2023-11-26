@@ -5,9 +5,6 @@ import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
-import {
-  editTicketSolution,
-} from "../../../app/api/ticketSolution";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import moment from "moment";
 import { toast } from "react-toastify";
@@ -19,6 +16,7 @@ import {
   getAllCompanyList,
   getContractById,
   getParentContract,
+  updateContract,
 } from "../../../app/api/contract";
 
 const EditContract = () => {
@@ -38,6 +36,7 @@ const EditContract = () => {
   });
   const [selectedFile, setSelectedFile] = useState(null);
   const [dataParentContract, setDataParentContract] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [dataAccountList, setDataAccountList] = useState([]);
   const [dataCompanyList, setDataCompanyList] = useState([]);
   const [startDate, setStartDate] = useState(moment());
@@ -147,13 +146,6 @@ const EditContract = () => {
       return;
     }
 
-    let attachmentUrl = data.attachmentUrl;
-    if (selectedFile) {
-      const storage = getStorage();
-      const storageRef = ref(storage, "images/" + selectedFile.name);
-      await uploadBytes(storageRef, selectedFile);
-      attachmentUrl = await getDownloadURL(storageRef);
-    }
     const isDataValid = validateDate(data.startDate, data.endDate);
     if (!isDataValid) {
       toast.info("Review Date must be earlier than Expired Date.");
@@ -167,20 +159,34 @@ const EditContract = () => {
       "YYYY-MM-DDTHH:mm:ss"
     );
 
-    const updatedData = {
-      ...data,
-      attachmentUrl: attachmentUrl,
-      startDate: formattedReviewDate,
-      endDate: formattedExpiredDate,
-    };
-    setData(updatedData);
+    setIsSubmitting(true);
     try {
-      const res = await editTicketSolution(contractId, data);
-      console.log(res);
-      toast.success("Ticket Solution edit successful");
+
+      let attachmentUrl = data.attachmentUrl;
+      if (selectedFile) {
+        const storage = getStorage();
+        const storageRef = ref(storage, "images/" + selectedFile.name);
+        await uploadBytes(storageRef, selectedFile);
+        attachmentUrl = await getDownloadURL(storageRef);
+      }
+    
+      const updatedData = {
+        ...data,
+        attachmentUrl: attachmentUrl,
+        startDate: formattedReviewDate,
+        endDate: formattedExpiredDate,
+      };
+      setData(updatedData);
+      await updateContract(data , contractId );
+      toast.success("Edit Contract Successful", {
+        autoClose: 2000,
+        hideProgressBar: false,
+        position: toast.POSITION.TOP_CENTER,
+      });
     } catch (error) {
       console.error(error);
-      toast.error("Error editing ticket solution");
+    }finally{
+      setIsSubmitting(false);
     }
   };
 
@@ -546,8 +552,9 @@ const EditContract = () => {
                   type="button"
                   className="btn btn-primary custom-btn-margin"
                   onClick={handleEditContract}
+                  disabled={isSubmitting}
                 >
-                  Save
+                  {isSubmitting ? 'Submitting...' : 'Save'}
                 </button>
                 <button
                   type="button"

@@ -28,7 +28,8 @@ import {
 } from "../../../app/api/ticketSolution";
 import { toast } from "react-toastify";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
-import { getAllContracts } from "../../../app/api/contract";
+import { getAllContract } from "../../../app/api/contract";
+
 
 const ContractList = () => {
   const [dataListContract, setDataListContract] = useState([]);
@@ -44,40 +45,28 @@ const ContractList = () => {
   const [sortBy, setSortBy] = useState("id");
   const navigate = useNavigate();
 
-  // const fetchDataListContract = useCallback(async () => {
-  //   try {
-  //     let filter = "";
-  //     if (searchQuery) {
-  //       filter = `title="${encodeURIComponent(searchQuery)}"`;
-  //     }
-  //     setLoading(true);
-  //     const response = await getAllContract(
-  //       searchField,
-  //       searchQuery,
-  //       currentPage,
-  //       pageSize,
-  //       sortBy,
-  //       sortDirection,
-  //     );
-  //     setDataListContract(response);
-  //   } catch (error) {
-  //     console.log(error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection ]);
-
-  const fetchDataListContract = async () => {
+  const fetchDataListContract = useCallback(async () => {
     try {
+      let filter = "";
+      if (searchQuery) {
+        filter = `title="${encodeURIComponent(searchQuery)}"`;
+      }
       setLoading(true);
-      const response = await getAllContracts();
+      const response = await getAllContract(
+        searchField,
+        searchQuery,
+        currentPage,
+        pageSize,
+        sortBy,
+        sortDirection,
+      );
       setDataListContract(response);
     } catch (error) {
       console.log(error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection ]);
 
   const handleSelectSolution = (contractId) => {
     if (selectedContractIds.includes(contractId)) {
@@ -179,27 +168,27 @@ const ContractList = () => {
   useEffect(() => {
     fetchDataListContract();
     setTotalPages(4);
-  }, []);
+  }, [fetchDataListContract, refreshData]);
 
   return (
-    <section style={{ backgroundColor: "#eee" }}>
+    <>
       <MDBContainer className="py-5 custom-container">
-        <MDBNavbar expand="lg" light bgColor="inherit">
+        <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
-            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "16px" }}>
-              <ContentCopy style={{ marginRight: "20px" }} /> All Contracts
+            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
+              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} /> <span style={{ color: "#FFFFFF" }}>All Contracts</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "14px" }}
+                style={{ fontWeight: "bold", fontSize: "14px", color: "#FFFFFF" }}
                 onClick={() => handleOpenCreateTicketSolution()}
               >
                 <FaPlus /> New
               </MDBBtn>
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "14px" }}
+                style={{ fontWeight: "bold", fontSize: "14px", color: "#FFFFFF" }}
                 onClick={() => handleDeleteSelectedSolutions()}
               >
                <DeleteForever /> Delete
@@ -257,7 +246,7 @@ const ContractList = () => {
           <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th>
+                <th style={{ fontWeight: "bold", fontSize: "18px" }}>Id</th>
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                   <input
                     type="checkbox"
@@ -294,10 +283,13 @@ const ContractList = () => {
                   Visibility
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}>
-                  Review Date
+                  Start Date
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}>
-                  Created
+                  End Date
+                </th>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                  Created At
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}>
                   Last Update
@@ -331,8 +323,8 @@ const ContractList = () => {
                           }
                         />{" "}
                       </td>
-                      <td>{Contract.title}</td>
-                      <td>{Contract.keyword}</td>
+                      <td>{Contract.name}</td>
+                      <td>{Contract.description}</td>
                       <td>
                         {Contract.isApproved ? (
                           <>
@@ -364,13 +356,10 @@ const ContractList = () => {
                           </>
                         )}
                       </td>
-                      <td>{formatDate(Contract.reviewDate)}</td>
+                      <td>{formatDate(Contract.startDate)}</td>
+                      <td>{formatDate(Contract.endDate)}</td>
                       <td>
-                        {Contract.createdAt
-                          ? new Date(
-                              Contract.createdAt
-                            ).toLocaleDateString()
-                          : ""}
+                        {formatDate(Contract.createdAt)}
                       </td>
                       <td>{formatDate(Contract.modifiedAt)}</td>
                     </tr>
@@ -388,7 +377,7 @@ const ContractList = () => {
           onChange={handleChangePage}
         />
       </Box>
-    </section>
+    </>
   );
 };
 

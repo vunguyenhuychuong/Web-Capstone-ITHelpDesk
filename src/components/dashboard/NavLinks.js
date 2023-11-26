@@ -35,7 +35,7 @@ const NavLinks = ({ toggleSidebar }) => {
   } else if (roleUser === 4) {
     filteredLink = links.filter(
       (link) => 
-      link.id === 22
+      link.id === 22 || links.id === 21
     );
   }
 

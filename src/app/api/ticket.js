@@ -201,7 +201,11 @@ export async function deleteTicketByManager(ticketIds) {
     return res.data.result;
   } catch (error) {
     console.log("Error deleting tickets:", error);
-    throw error;
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
   }
 }
 
