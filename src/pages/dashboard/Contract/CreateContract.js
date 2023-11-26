@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Dialog, DialogContent, DialogTitle, Grid, IconButton, TextField } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  IconButton,
+  TextField,
+} from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -32,7 +39,6 @@ const CreateContract = () => {
     accountantId: 1,
     companyId: 1,
     attachmentUrl: "",
-    serviceIds: [],
   });
   const [selectedFile, setSelectedFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -124,13 +130,10 @@ const CreateContract = () => {
   };
 
   const validateDate = (startDate, endDate) => {
-    console.log("Start Date:", startDate);
-  console.log("End Date:", endDate);
     if (!startDate || !endDate) {
-      return false; 
+      return false;
     }
     const isBefore = moment(startDate).isBefore(endDate);
-    console.log("is Before:", isBefore);
     return isBefore;
   };
 
@@ -151,8 +154,7 @@ const CreateContract = () => {
 
     const isDataValid = validateDate(data.startDate, data.endDate);
     if (!isDataValid) {
-      toast.info("Start Date must be earlier than End Date.",
-      {
+      toast.info("Start Date must be earlier than End Date.", {
         autoClose: 2000,
         hideProgressBar: false,
         position: toast.POSITION.TOP_CENTER,
@@ -185,7 +187,7 @@ const CreateContract = () => {
       };
 
       setData(updatedData);
-       await createContract({
+      await createContract({
         name: data.name,
         description: data.description,
         value: data.value,
@@ -269,11 +271,14 @@ const CreateContract = () => {
             <Grid container justifyContent="flex-end">
               {" "}
               <Grid item xs={3}>
-                <h2 className="align-right"  style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}>
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
                   <span style={{ color: "red" }}>*</span>Name
                 </h2>
               </Grid>
@@ -291,11 +296,14 @@ const CreateContract = () => {
                 )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right"  style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}>
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
                   <span style={{ color: "red" }}>*</span>Description
                 </h2>
               </Grid>
@@ -314,11 +322,16 @@ const CreateContract = () => {
                 )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right"  style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}>Attachment</h2>
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
+                  Attachment
+                </h2>
               </Grid>
               <Grid item xs={9}>
                 <input
@@ -328,7 +341,7 @@ const CreateContract = () => {
                   id="attachmentUrl"
                   onChange={handleFileChange}
                 />
-                 {imagePreviewUrl && (
+                {imagePreviewUrl && (
                   <div
                     className="image-preview"
                     onClick={() => setIsImagePreviewOpen(true)}
@@ -347,11 +360,14 @@ const CreateContract = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right"  style={{
+                      <h2
+                        className="align-right"
+                        style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                        }}>
+                        }}
+                      >
                         <span style={{ color: "red" }}>*</span>value(VND)
                       </h2>
                     </Grid>
@@ -374,11 +390,16 @@ const CreateContract = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right"  style={{
+                      <h2
+                        className="align-right"
+                        style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                        }}>Parent Contract</h2>
+                        }}
+                      >
+                        Parent Contract
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -388,6 +409,7 @@ const CreateContract = () => {
                         value={data.parentContractId}
                         onChange={handleInputChange}
                       >
+                        <option value="">Select Parent Contract</option>
                         {dataParentContract
                           .filter((parentContract) => parentContract.id !== "")
                           .map((parentContract) => (
@@ -407,11 +429,16 @@ const CreateContract = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right"  style={{
+                      <h2
+                        className="align-right"
+                        style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                        }}>Start Date</h2>
+                        }}
+                      >
+                        Start Date
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -434,11 +461,16 @@ const CreateContract = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right"  style={{
+                      <h2
+                        className="align-right"
+                        style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                        }}>End Date</h2>
+                        }}
+                      >
+                        End Date
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -449,9 +481,7 @@ const CreateContract = () => {
                             },
                           }}
                           value={endDate}
-                          onChange={(newValue) =>
-                            handleEndDateChange(newValue)
-                          }
+                          onChange={(newValue) => handleEndDateChange(newValue)}
                         />
                       </LocalizationProvider>
                     </Grid>
@@ -466,11 +496,14 @@ const CreateContract = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right"  style={{
+                      <h2
+                        className="align-right"
+                        style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                        }}>
+                        }}
+                      >
                         <span style={{ color: "red" }}>*</span>Accountant
                       </h2>
                     </Grid>
@@ -497,11 +530,16 @@ const CreateContract = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right"  style={{
+                      <h2
+                        className="align-right"
+                        style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                        }}>Company </h2>
+                        }}
+                      >
+                        Company{" "}
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -537,7 +575,7 @@ const CreateContract = () => {
                   onClick={handleSubmitContract}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'Submitting...' : 'Save'}
+                  {isSubmitting ? "Submitting..." : "Save"}
                 </button>
                 <button
                   type="button"
