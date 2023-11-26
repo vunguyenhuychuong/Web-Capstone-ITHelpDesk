@@ -148,7 +148,7 @@ const TeamMemberList = () => {
         <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "16px" }}>
-              <ContentCopy style={{ marginRight: "20px" }} />{" "}
+              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
               <span style={{ color: "#FFFFFF" }}> All TeamMember</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
@@ -183,6 +183,7 @@ const TeamMemberList = () => {
                     name: "searchField",
                     id: "search-field",
                   }}
+                  style={{ color: "white" }}
                 >
                   <MenuItem value="name">name</MenuItem>
                   <MenuItem value="description">Title</MenuItem>

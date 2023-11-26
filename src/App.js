@@ -66,10 +66,11 @@ function App() {
   const hasAdminRole = user?.user?.role === 0 || data?.result?.role === 0;
   const hasManagerRole = user?.user?.role === 2 || data?.result?.role === 2;
   const hasTechnicianRole = user?.user?.role === 3 || data?.result?.role === 3;
+  const hasAccountantRole = user?.role === 4 || data?.result?.role === 4;
   return (
     <BrowserRouter>
       <Routes>
-      <Route path='/' element={<Landing />} />
+      <Route path='/' element={<Login />} />
         <Route
           path='/home'
           element={
@@ -103,25 +104,25 @@ function App() {
           <Route path='createTask/:ticketId' element={<CreateTicketTask />} />
           <Route path='createTask' element={<CreateTicketTaskTc />} />
           <Route path='editTask/:ticketId' element={<EditTicketTask />} />
-          <Route path='dashBoard' element={<ChartManager />} />
-          <Route path='companyList' element={<CompanyList />} />
-          <Route path='createCompany' element={<CreateCompany />} />
-          <Route path='editCompany/:companyId' element={<EditCompany />} />
-          <Route path='stepperCustomer' element={<CustomizedSteppers />} />
-          <Route path='createRequest' element={<RequestIssue />} />
-          <Route path='requestCustomerList' element={<MyRequestList />} />
+          {(hasManagerRole) && <Route path='dashBoard' element={<ChartManager />} />}
+          {(hasManagerRole) && <Route path='companyList' element={<CompanyList />} />}
+          {(hasManagerRole) && <Route path='createCompany' element={<CreateCompany />} />}
+          {(hasManagerRole) && <Route path='editCompany/:companyId' element={<EditCompany />} />}
+          {(hasCustomerRole) && <Route path='stepperCustomer' element={<CustomizedSteppers />} />}
+          {(hasCustomerRole) && <Route path='createRequest' element={<RequestIssue />} />}
+          {(hasCustomerRole) && <Route path='requestCustomerList' element={<MyRequestList />} />}
           {(hasManagerRole || hasTechnicianRole) && <Route path='listTicket' element={<ManagersTabs />} />}
           {(hasManagerRole) &&<Route path='homeManager' element={<HomeManager />} />}
           {(hasAdminRole) &&<Route path='homeAdmin' element={<HomeAdmin />} />}
-          <Route path='contractList' element={<ContractList />} />
-          <Route path='createContract' element={<CreateContract />} />
-          <Route path='createRenewContract/:contractId' element={<CreateRenewContract />} />
-          <Route path='detailContract/:contractId' element={<DetailContract />} />
-          <Route path='editContract/:contractId' element={<EditContract />} />
-          <Route path='homeAccountant' element={<HomeAccountant />} />
-          <Route path='paymentList' element={<PaymentList />} />
-          <Route path='createPayment' element={<CreatePayment />} />
-          <Route path='editPayment/:paymentId' element={<EditPayment />} />
+          {(hasManagerRole || hasAccountantRole) && <Route path='contractList' element={<ContractList />} />}
+          {(hasManagerRole || hasAccountantRole) && <Route path='createContract' element={<CreateContract />} />}
+          {(hasManagerRole || hasAccountantRole) && <Route path='createRenewContract/:contractId' element={<CreateRenewContract />} />}
+          {(hasManagerRole || hasAccountantRole) && <Route path='detailContract/:contractId' element={<DetailContract />} />}
+          {(hasManagerRole || hasAccountantRole) && <Route path='editContract/:contractId' element={<EditContract />} />}
+          {hasAccountantRole && <Route path='homeAccountant' element={<HomeAccountant />} />}
+          {(hasManagerRole || hasAccountantRole) && <Route path='paymentList' element={<PaymentList />} />}
+          {(hasManagerRole || hasAccountantRole) && <Route path='createPayment' element={<CreatePayment />} />}
+          {(hasManagerRole || hasAccountantRole) && <Route path='editPayment/:paymentId' element={<EditPayment />} />}
           <Route path='ticketLog/:ticketId' element={<TicketLogList />} />
           <Route path='teamMember' element={<TeamMemberList />} />
           <Route path='createTeamMember' element={<CreateTeamMember />} />
