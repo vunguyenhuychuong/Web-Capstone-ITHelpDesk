@@ -39,14 +39,19 @@ const EditContract = () => {
     accountantId: 1,
     companyId: 1,
     attachmentURl: "",
+    status: 0,
   });
   const [selectedFile, setSelectedFile] = useState(null);
   const [dataParentContract, setDataParentContract] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dataAccountList, setDataAccountList] = useState([]);
   const [dataCompanyList, setDataCompanyList] = useState([]);
-  const [startDate, setStartDate] = useState(moment());
-  const [endDate, setEndDate] = useState(moment());
+  const [startDate, setStartDate] = useState(
+    moment(data.startDate ? data.startDate : undefined)
+  );
+  const [endDate, setEndDate] = useState(
+    moment(data.endDate ? data.endDate : undefined)
+  );
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
@@ -121,6 +126,9 @@ const EditContract = () => {
           attachmentURl: contractData.attachmentURl,
           companyId: contractData.companyId,
         }));
+
+        setStartDate(moment(contractData.startDate));
+        setEndDate(moment(contractData.endDate));
       } catch (error) {
         console.log("Error while fetching solution data", error);
       }
@@ -194,6 +202,7 @@ const EditContract = () => {
           accountantId: updatedData.accountantId,
           companyId: updatedData.companyId,
           attachmentURl: attachmentURl,
+          status: updatedData.status,
         },
         contractId
       );
@@ -252,35 +261,48 @@ const EditContract = () => {
       <Grid item xs={12}>
         <MDBCol md="12">
           <MDBRow className="border-box">
-            <MDBCol md="5" className="mt-2">
-              <div className="d-flex align-items-center">
-                <button type="button" className="btn btn-link icon-label">
-                  <ArrowBack
-                    onClick={handleGoBack}
-                    className="arrow-back-icon"
-                  />
-                </button>
+            <MDBCol md="12" className="mt-2">
+              <div className="d-flex align-items-center justify-content-between">
+                <div className="d-flex align-items-center">
+                  <button type="button" className="btn btn-link icon-label">
+                    <ArrowBack
+                      onClick={handleGoBack}
+                      className="arrow-back-icon"
+                    />
+                  </button>
 
-                <div
-                  style={{
-                    marginLeft: "40px",
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                >
-                  <h2
+                  <div
                     style={{
-                      fontSize: "30px",
-                      fontWeight: "bold",
-                      marginRight: "10px",
+                      marginLeft: "40px",
+                      display: "flex",
+                      alignItems: "center",
                     }}
                   >
-                    Edit Contract
-                  </h2>
-                  <span style={{ fontSize: "18px", color: "#888" }}>
-                    Edit a contract for assistance.
-                  </span>
+                    <h2
+                      style={{
+                        fontSize: "30px",
+                        fontWeight: "bold",
+                        marginRight: "10px",
+                      }}
+                    >
+                      Edit Contract
+                    </h2>
+                    <span style={{ fontSize: "18px", color: "#888" }}>
+                      Edit a contract for assistance.
+                    </span>
+                  </div>
                 </div>
+                <span
+                  className="bg-round text-white px-2 py-1 ml-auto"
+                  style={{
+                    borderRadius: "15px",
+                    backgroundColor: data.status === 1 ? "green" : "red",
+                    fontWeight: "bold",
+                    fontSize: "18px",
+                  }}
+                >
+                  {data.status === 1 ? "Active" : "Not Active"}
+                </span>
               </div>
             </MDBCol>
           </MDBRow>

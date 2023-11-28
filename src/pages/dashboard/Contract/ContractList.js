@@ -12,6 +12,8 @@ import React, { useCallback, useEffect, useState } from "react";
 import "../../../assets/css/ticketCustomer.css";
 import PageSizeSelector from "../Pagination/Pagination";
 import {
+  ArrowDropDown,
+  ArrowDropUp,
   ContentCopy,
   DeleteForever,
   Lock,
@@ -23,13 +25,10 @@ import { formatDate } from "../../helpers/FormatDate";
 import { useNavigate } from "react-router-dom";
 import { Box, FormControl, MenuItem, Pagination, Select } from "@mui/material";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import {
-  deleteTicketSolution,
-} from "../../../app/api/ticketSolution";
+import { deleteTicketSolution } from "../../../app/api/ticketSolution";
 import { toast } from "react-toastify";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import { getAllContract } from "../../../app/api/contract";
-
 
 const ContractList = () => {
   const [dataListContract, setDataListContract] = useState([]);
@@ -58,7 +57,7 @@ const ContractList = () => {
         currentPage,
         pageSize,
         sortBy,
-        sortDirection,
+        sortDirection
       );
       setDataListContract(response);
     } catch (error) {
@@ -66,7 +65,7 @@ const ContractList = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection ]);
+  }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection]);
 
   const handleSelectSolution = (contractId) => {
     if (selectedContractIds.includes(contractId)) {
@@ -82,9 +81,7 @@ const ContractList = () => {
     if (selectedContractIds.length === dataListContract.length) {
       setSelectedContractIds([]);
     } else {
-      setSelectedContractIds(
-        dataListContract.map((solution) => solution.id)
-      );
+      setSelectedContractIds(dataListContract.map((solution) => solution.id));
     }
   };
 
@@ -142,8 +139,7 @@ const ContractList = () => {
   };
 
   const handleOpenDetailContract = (contractId) => {
-    // navigate(`/home/editContract/${contractId}`);
-    navigate(`/home/detailContract/${contractId}`)
+    navigate(`/home/detailContract/${contractId}`);
   };
 
   const handleChangePage = (event, value) => {
@@ -176,22 +172,31 @@ const ContractList = () => {
         <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
-              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} /> <span style={{ color: "#FFFFFF" }}>All Contracts</span>
+              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
+              <span style={{ color: "#FFFFFF" }}>All Contracts</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "14px", color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "18px",
+                  color: "#FFFFFF",
+                }}
                 onClick={() => handleOpenCreateTicketSolution()}
               >
                 <FaPlus /> New
               </MDBBtn>
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "14px", color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "18px",
+                  color: "#FFFFFF",
+                }}
                 onClick={() => handleDeleteSelectedSolutions()}
               >
-               <DeleteForever /> Delete
+                <DeleteForever /> Delete
               </MDBBtn>
 
               <FormControl
@@ -211,6 +216,7 @@ const ContractList = () => {
                     name: "searchField",
                     id: "search-field",
                   }}
+                  style={{ color: "white" }}
                 >
                   <MenuItem value="id">ID</MenuItem>
                   <MenuItem value="name">Name</MenuItem>
@@ -246,13 +252,23 @@ const ContractList = () => {
           <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>Id</th>
+                <th 
+                  style={{ fontWeight: "bold", fontSize: "18px" }}
+                  onClick={() => handleSortChange("id")}
+                  >
+                  Id
+                  {sortBy === "id" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                  </th>
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                   <input
                     type="checkbox"
                     checked={
-                      selectedContractIds.length ===
-                      dataListContract.length
+                      selectedContractIds.length === dataListContract.length
                     }
                     onChange={handleSelectAllSolutions}
                   />
@@ -263,36 +279,96 @@ const ContractList = () => {
                   onClick={() => handleSortChange("name")}
                 >
                   Name
+                  {sortBy === "name" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("description")}
                 >
                   Description
+                  {sortBy === "description" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("value")}
                 >
                   Status
+                  {sortBy === "value" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("status")}
                 >
-                  Visibility
+                  Visible
+                  {sortBy === "status" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                <th
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
+                  onClick={() => handleSortChange("startDate")}
+                >
                   Start Date
+                  {sortBy === "startDate" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                <th
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
+                  onClick={() => handleSortChange("endDate")}
+                >
                   End Date
+                  {sortBy === "endDate" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                <th
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
+                  onClick={() => handleSortChange("createdAt")}
+                >
                   Created At
+                  {sortBy === "createdAt" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                <th
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
+                  onClick={() => handleSortChange("modifiedAt")}
+                >
                   Last Update
+                  {sortBy === "modifiedAt" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
               </tr>
             </MDBTableHead>
@@ -301,9 +377,7 @@ const ContractList = () => {
             ) : (
               <MDBTableBody className="bg-light">
                 {dataListContract.map((Contract, index) => {
-                  const isSelected = selectedContractIds.includes(
-                    Contract.id
-                  );
+                  const isSelected = selectedContractIds.includes(Contract.id);
                   return (
                     <tr key={index}>
                       <td>{Contract.id}</td>
@@ -311,16 +385,12 @@ const ContractList = () => {
                         <input
                           type="checkbox"
                           checked={isSelected}
-                          onChange={() =>
-                            handleSelectSolution(Contract.id)
-                          }
+                          onChange={() => handleSelectSolution(Contract.id)}
                         />
                       </td>
                       <td>
                         <ViewCompact
-                          onClick={() =>
-                            handleOpenDetailContract(Contract.id)
-                          }
+                          onClick={() => handleOpenDetailContract(Contract.id)}
                         />{" "}
                       </td>
                       <td>{Contract.name}</td>
@@ -358,9 +428,7 @@ const ContractList = () => {
                       </td>
                       <td>{formatDate(Contract.startDate)}</td>
                       <td>{formatDate(Contract.endDate)}</td>
-                      <td>
-                        {formatDate(Contract.createdAt)}
-                      </td>
+                      <td>{formatDate(Contract.createdAt)}</td>
                       <td>{formatDate(Contract.modifiedAt)}</td>
                     </tr>
                   );

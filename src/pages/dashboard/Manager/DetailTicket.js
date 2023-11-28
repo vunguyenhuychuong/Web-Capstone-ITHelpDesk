@@ -68,6 +68,7 @@ const DetailTicket = () => {
   const handleCancelTicket = async (ticketId) => {
     try {
       await CancelTicketUser(ticketId);
+      navigate("/home/requestCustomerList")
     } catch (error) {
       console.log(error);
     }

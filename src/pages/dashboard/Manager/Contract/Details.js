@@ -34,6 +34,7 @@ import { useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import UploadComponent from "./UploadComponent";
 import { ControlPoint, Delete, RemoveCircleOutline } from "@mui/icons-material";
+import MyTask from "../../../../assets/images/NoService.jpg";
 import { toast } from "react-toastify";
 
 const Details = ({ data, loading, error }) => {
@@ -49,7 +50,6 @@ const Details = ({ data, loading, error }) => {
     data: PropTypes.object,
     loading: PropTypes.bool.isRequired,
   };
-
   const handleOpenDialog = () => {
     setOpenDialog(true);
   };
@@ -122,8 +122,6 @@ const Details = ({ data, loading, error }) => {
     }
   };
 
-  console.log('image detail', data.attachmentURl);
-
   useEffect(() => {
     fetchData();
     selectServiceAdd();
@@ -187,6 +185,39 @@ const Details = ({ data, loading, error }) => {
               border: "1px solid #000",
             }}
           >
+            <TableHead>
+              <TableRow>
+                <TableCell
+                  colSpan={4}
+                  style={{
+                    background: "#EEEEEE",
+                    textAlign: "center",
+                    fontSize: "18px",
+                    textAlign: "left",
+                    borderBottom: "2px solid #CCCCCC",
+                    fontWeight: "bold",
+                  }}
+                >
+                  #{data ? data.id : "No data available"}-Contract Information
+                  <span
+                    className="bg-round text-white px-2 py-1 float-right"
+                    style={{
+                      borderRadius: "15px",
+                      backgroundColor:
+                        data.company && data.company.status ? "green" : "red",
+                      fontSize: "14px",
+                      marginLeft: "10px",
+                    }}
+                  >
+                    {data.company && data.company.status
+                      ? "Active"
+                      : data.company
+                      ? "Not Active"
+                      : "No status available"}
+                  </span>
+                </TableCell>
+              </TableRow>
+            </TableHead>
             <TableBody>
               <TableRow>
                 <TableCell
@@ -194,24 +225,36 @@ const Details = ({ data, loading, error }) => {
                     background: "#CCCCCC",
                     marginTop: "10px",
                     textAlign: "right",
-                    width: "150px",
+                    width: "250px",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    padding: "15px",
                   }}
                 >
                   Name
                 </TableCell>
-                <TableCell style={{ marginTop: "10px" }}>{data.name}</TableCell>
+                <TableCell style={{ marginTop: "10px" }}>
+                  {data && data.name ? data.name : "No data available"}
+                </TableCell>
                 <TableCell
                   style={{
                     background: "#CCCCCC",
                     marginTop: "10px",
                     textAlign: "right",
-                    width: "150px",
+                    width: "250px",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    padding: "15px",
                   }}
                 >
                   Active Period
                 </TableCell>
                 <TableCell style={{ marginTop: "10px" }}>
-                  {formatDate(data.startDate)} - {formatDate(data.endDate)}
+                  {data && data.startDate && data.endDate
+                    ? `${formatDate(data.startDate)} - ${formatDate(
+                        data.endDate
+                      )}`
+                    : "No data available"}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -220,26 +263,36 @@ const Details = ({ data, loading, error }) => {
                     background: "#CCCCCC",
                     marginTop: "10px",
                     textAlign: "right",
-                    width: "150px",
+                    width: "250px",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    padding: "15px",
                   }}
                 >
                   Description
                 </TableCell>
                 <TableCell style={{ marginTop: "10px" }}>
-                  {data.description}
+                  {data && data.description
+                    ? data.description
+                    : "No data available"}
                 </TableCell>
                 <TableCell
                   style={{
                     background: "#CCCCCC",
                     marginTop: "10px",
                     textAlign: "right",
-                    width: "150px",
+                    width: "250px",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    padding: "15px",
                   }}
                 >
                   Parent Contract
                 </TableCell>
                 <TableCell style={{ marginTop: "10px" }}>
-                  {data.parentContractId}
+                  {data && data.parentContractId
+                    ? data.parentContractId
+                    : "No data available"}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -248,34 +301,43 @@ const Details = ({ data, loading, error }) => {
                     background: "#CCCCCC",
                     marginTop: "10px",
                     textAlign: "right",
-                    width: "150px",
+                    width: "250px",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    padding: "15px",
                   }}
                 >
                   Value (VND)
                 </TableCell>
                 <TableCell style={{ marginTop: "10px" }}>
-                  {formatCurrency(data.value)} VND
+                  {data && formatCurrency(data.value)
+                    ? formatCurrency(data.value)
+                    : "No data available"}{" "}
+                  VND
                 </TableCell>
                 <TableCell
                   style={{
                     background: "#CCCCCC",
                     marginTop: "10px",
                     textAlign: "right",
-                    width: "150px",
+                    width: "250px",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    padding: "15px",
                   }}
                 >
                   Accountant
                 </TableCell>
                 <TableCell style={{ marginTop: "10px" }}>
-                  {data &&
-                    data.accountant &&
-                    `${data.accountant.lastName} ${data.accountant.firstName}`}
+                  {data && data.accountant
+                    ? `${data.accountant.lastName} ${data.accountant.firstName}`
+                    : "No data available"}
                 </TableCell>
               </TableRow>
             </TableBody>
           </Table>
-          <UploadComponent attachmentURL={data.attachmentURl} />
-          {data.attachmentURL && (
+          <UploadComponent attachmentURL={data.attachmentURL} />
+          {data?.attachmentURL && (
             <Button
               variant="outlined"
               color="primary"
@@ -310,7 +372,25 @@ const Details = ({ data, loading, error }) => {
                     fontWeight: "bold",
                   }}
                 >
-                  Company
+                  #
+                  {data && data.company ? data.company.id : "No data available"}
+                  -Company Information
+                  <span
+                    className="bg-round text-white px-2 py-1 float-right"
+                    style={{
+                      borderRadius: "15px",
+                      backgroundColor:
+                        data.company && data.company.isActive ? "green" : "red",
+                      fontSize: "14px",
+                      marginLeft: "10px",
+                    }}
+                  >
+                    {data.company && data.company.isActive
+                      ? "Active"
+                      : data.company
+                      ? "Not Active"
+                      : "No status available"}
+                  </span>
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -322,6 +402,8 @@ const Details = ({ data, loading, error }) => {
                     marginTop: "10px",
                     textAlign: "right",
                     width: "150px",
+                    fontSize: "18px",
+                    fontWeight: "bold",
                   }}
                 >
                   Company Name
@@ -337,6 +419,8 @@ const Details = ({ data, loading, error }) => {
                     marginTop: "10px",
                     textAlign: "right",
                     width: "150px",
+                    fontSize: "18px",
+                    fontWeight: "bold",
                   }}
                 >
                   Phone Number
@@ -353,6 +437,8 @@ const Details = ({ data, loading, error }) => {
                     background: "#CCCCCC",
                     marginTop: "10px",
                     textAlign: "right",
+                    fontSize: "18px",
+                    fontWeight: "bold",
                   }}
                 >
                   Tax Code
@@ -368,6 +454,8 @@ const Details = ({ data, loading, error }) => {
                     marginTop: "10px",
                     textAlign: "right",
                     width: "150px",
+                    fontSize: "18px",
+                    fontWeight: "bold",
                   }}
                 >
                   Email
@@ -385,20 +473,37 @@ const Details = ({ data, loading, error }) => {
                     marginTop: "10px",
                     textAlign: "right",
                     width: "150px",
+                    fontSize: "18px",
+                    fontWeight: "bold",
                   }}
                 >
                   Website
                 </TableCell>
                 <TableCell style={{ marginTop: "10px", width: "150px" }}>
-                  {data && data.company
-                    ? data.company.website
-                    : "No data available"}
+                  {data && data.company && data.company.website ? (
+                    <a
+                      href={data.company.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        color: "#007bff",
+                        textDecoration: "underline",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {data.company.website}
+                    </a>
+                  ) : (
+                    "No data available"
+                  )}
                 </TableCell>
                 <TableCell
                   style={{
                     background: "#CCCCCC",
                     marginTop: "10px",
                     textAlign: "right",
+                    fontSize: "18px",
+                    fontWeight: "bold",
                   }}
                 >
                   Address
@@ -416,6 +521,8 @@ const Details = ({ data, loading, error }) => {
                     marginTop: "10px",
                     textAlign: "right",
                     width: "150px",
+                    fontSize: "18px",
+                    fontWeight: "bold",
                   }}
                 >
                   Field Of Address
@@ -430,6 +537,8 @@ const Details = ({ data, loading, error }) => {
                     background: "#CCCCCC",
                     marginTop: "10px",
                     textAlign: "right",
+                    fontSize: "18px",
+                    fontWeight: "bold",
                   }}
                 >
                   Company Admin
@@ -487,29 +596,57 @@ const Details = ({ data, loading, error }) => {
                   </TableRow>
                 </TableBody>
               </Table>
-              <DataGrid
-                rows={formattedDataContractService}
-                columns={columns}
-                initialState={{
-                  pagination: {
-                    paginationModel: {
-                      pageSize: 5,
+
+              {formattedDataContractService.length === 0 ? (
+                <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: "100px",
+                }}
+              >
+                <img
+                  src={MyTask}
+                  alt="No Pending"
+                  style={{ maxWidth: "350px", maxHeight: "220px" }}
+                />
+                <p
+                  style={{
+                    marginTop: "10px",
+                    fontSize: "16px",
+                    color: "#666",
+                  }}
+                >
+                  There are no services add yet
+                </p>
+              </div>
+                
+              ) : (
+                <DataGrid
+                  rows={formattedDataContractService}
+                  columns={columns}
+                  initialState={{
+                    pagination: {
+                      paginationModel: {
+                        pageSize: 5,
+                      },
                     },
-                  },
-                }}
-                pageSizeOptions={[5]}
-                checkboxSelection
-                disableRowSelectionOnClick
-                onSelectionModelChange={(newSelection) => {
-                  const selectedRows = newSelection.map((selectedId) => {
-                    const selectedRow = formattedDataContractService.find(
-                      (row) => row.id === selectedId
-                    );
-                    return selectedRow;
-                  });
-                  console.log("Selected Rows:", selectedRows);
-                }}
-              />
+                  }}
+                  pageSizeOptions={[5]}
+                  checkboxSelection
+                  disableRowSelectionOnClick
+                  onSelectionModelChange={(newSelection) => {
+                    const selectedRows = newSelection.map((selectedId) => {
+                      const selectedRow = formattedDataContractService.find(
+                        (row) => row.id === selectedId
+                      );
+                      return selectedRow;
+                    });
+                    console.log("Selected Rows:", selectedRows);
+                  }}
+                />
+              )}
             </Grid>
           </Grid>
         </Grid>
@@ -551,7 +688,7 @@ const Details = ({ data, loading, error }) => {
             <img
               src={data.attachmentURL}
               alt="Attachment Preview"
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
             />
           )}
         </DialogContent>

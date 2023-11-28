@@ -35,7 +35,7 @@ const CreateContract = () => {
     value: 1000,
     startDate: "",
     endDate: "",
-    parentContractId: 1,
+    parentContractId: 0,
     accountantId: 1,
     companyId: 1,
     attachmentUrl: "",

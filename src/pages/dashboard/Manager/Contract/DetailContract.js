@@ -157,7 +157,7 @@ const DetailContract = () => {
                 <span style={{ marginBottom: "5px", fontSize: "1.5em" }}>
                   #{data.id} {data.name || "null Name"}
                 </span>
-                <span style={{ fontSize: "0.8em" }}>
+                <span style={{ fontSize: "1rem" }}>
                   Status: <span style={{ color: "red" }}>{getStatusContract(data.status)}</span>
                   <span className="bold-text"></span>{" "}
                   <ChatOutlined color="#007bff" />

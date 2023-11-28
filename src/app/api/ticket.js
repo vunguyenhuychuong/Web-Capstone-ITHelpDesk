@@ -135,14 +135,23 @@ export async function createTicketByCustomer(data, navigate) {
         Authorization: header,
       },
     });
-    if (res.data && res.data.responseException.exceptionMessage) {
-      console.log(res.data.responseException.exceptionMessage);
-      return { success: false, message: res.data.responseException.exceptionMessage}
-    }else{
-      return { success: true, result: res.data.result };
-    }
+    // if (res.data && res.data.responseException.exceptionMessage) {
+    //   console.log(res.data.responseException.exceptionMessage);
+    //   return { success: false, message: res.data.responseException.exceptionMessage}
+    // }else{
+    //   return { success: true, result: res.data.result };
+    // }
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
   } catch (error) {
-    return { success: false, message: 'An error occurred while creating the ticket.' };
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
   }
 };
 

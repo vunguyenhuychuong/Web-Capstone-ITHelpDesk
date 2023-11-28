@@ -51,7 +51,6 @@ const UploadComponent = ({ attachmentURL }) => {
     onDrop(e) {},
   };
 
-  console.log(attachmentURL);
   return (
     <div>
       <Paper elevation={3} className="upload-container">

@@ -82,28 +82,14 @@ const RequestIssue = () => {
     setData(updatedData);
     setIsSubmitting(true);
     try {
-      const result = await createTicketByCustomer({
+      await createTicketByCustomer({
         title: data.title,
         description: data.description,
         priority: data.priority,
         categoryId: data.categoryId,
         avatarUrl: avatarUrl,
       });
-      if (result.success) {
-        toast.success("Ticket created successfully", {
-          autoClose: 2000,
-          hideProgressBar: false,
-          position: toast.POSITION.TOP_CENTER,
-        });
-        // Perform navigation here
-        navigate(`/home/mains`);
-      } else {
-        toast.error(result.message, {
-          autoClose: 2000,
-          hideProgressBar: false,
-          position: toast.POSITION.TOP_CENTER,
-        });
-      }
+      navigate(`/home/mains`);
     } catch (error) {
       console.log("Please check data input", error);
     } finally {

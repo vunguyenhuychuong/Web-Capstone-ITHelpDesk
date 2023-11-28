@@ -56,12 +56,6 @@ const PaymentContract = ({ dataPayment, loading }) => {
       editable: true,
     },
     {
-      field: "termAmount",
-      headerName: "Amount",
-      width: 100,
-      editable: true,
-    },
-    {
       field: "termStart",
       headerName: "Date Added",
       width: 150,
@@ -102,18 +96,15 @@ const PaymentContract = ({ dataPayment, loading }) => {
     },
   ];
 
-  const formattedDataContractService = (dataPaymentTerm || []).map(
-    (payment) => ({
-      id: payment?.id,
-      Description: payment?.description,
-      termAmount: payment?.termAmount,
-      termStart: payment?.termStart,
-      termEnd: payment?.termEnd,
-      termAmount: payment?.termAmount,
-      isPaid: payment?.isPaid,
-      termFinishTime: payment?.termFinishTime,
-    })
-  );
+  const formattedDataContractService = (dataPaymentTerm || []).map((payment) => ({
+    id: payment?.id,
+    Description: payment?.description,
+    termAmount: payment?.termAmount,
+    termStart: payment?.termStart,
+    termEnd: payment?.termEnd,
+    isPaid: payment?.isPaid,
+    termFinishTime: payment?.termFinishTime,
+  }));
 
   return (
     <div>
