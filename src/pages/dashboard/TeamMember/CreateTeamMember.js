@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import {
-  Grid,
-} from "@mui/material";
+import { Grid } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { createTeamMemberAssign } from "../../../app/api/teamMember";
+import {
+  createTeamMemberAssign,
+  getMemberSelect,
+} from "../../../app/api/teamMember";
+import { getAllTeams } from "../../../app/api/team";
+import { useEffect } from "react";
 
 const CreateTeamMember = () => {
   const navigate = useNavigate();
@@ -17,11 +20,41 @@ const CreateTeamMember = () => {
     expertises: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [dataTeam, setDataTeam] = useState([]);
+  const [dataMember, setDataMember] = useState([]);
   const [fieldErrors, setFieldErrors] = useState({
     expertises: "",
   });
 
-  const handleInputChange = (e) => {
+  const fetchDataTeamSelect = async () => {
+    try {
+      const res = await getAllTeams();
+      setDataTeam(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchDataMemberSelect = async (teamId) => {
+    try {
+      const res = await getMemberSelect(teamId);
+      setDataMember(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDataTeamSelect();
+  }, []);
+
+  useEffect(() => {
+    if (data.teamId) {
+      fetchDataMemberSelect(data.teamId);
+    }
+  }, [data.teamId]);
+
+  const handleInputChange = async (e) => {
     const { name, value } = e.target;
 
     if (name === "memberId" || name === "teamId") {
@@ -35,6 +68,14 @@ const CreateTeamMember = () => {
       ...prevErrors,
       [name]: "",
     }));
+
+    if (name === "teamId") {
+      try {
+        await fetchDataMemberSelect(value);
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   const handleSubmitTicket = async (e) => {
@@ -52,7 +93,6 @@ const CreateTeamMember = () => {
 
     setIsSubmitting(true);
     try {
-
       const response = await createTeamMemberAssign({
         memberId: data.memberId,
         teamId: data.teamId,
@@ -132,38 +172,11 @@ const CreateTeamMember = () => {
             }}
           >
             <Grid container justifyContent="flex-end">
-              {" "}
               <Grid
                 container
                 justifyContent="flex-end"
                 style={{ marginBottom: "20px" }}
               >
-                <Grid item xs={6}>
-                  <Grid container alignItems="center">
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        <span style={{ color: "red" }}>*</span>Member ID
-                      </h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <input
-                        id="memberId"
-                        type="text"
-                        name="memberId"
-                        className="form-control"
-                        value={data.memberId}
-                        onChange={handleInputChange}
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
@@ -179,14 +192,52 @@ const CreateTeamMember = () => {
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
-                    <input
+                      <select
                         id="teamId"
-                        type="text"
                         name="teamId"
-                        className="form-control"
+                        className="form-select"
                         value={data.teamId}
                         onChange={handleInputChange}
-                      />
+                      >
+                        {dataTeam
+                          .filter((team) => team.id !== "")
+                          .map((team) => (
+                            <option key={team.id} value={team.id}>
+                              {team.name}
+                            </option>
+                          ))}
+                      </select>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid item xs={6}>
+                  <Grid container alignItems="center">
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        <span style={{ color: "red" }}>*</span>Member ID
+                      </h2>
+                    </Grid>
+                    <Grid item xs={5}>
+                      <select
+                        id="memberId"
+                        name="memberId"
+                        className="form-select"
+                        value={data.memberId}
+                        onChange={handleInputChange}
+                      >
+                        {dataMember.map((member) => (
+                          <option key={member.id} value={member.id}>
+                            {member.firstName} {member.lastName}
+                          </option>
+                        ))}
+                      </select>
                     </Grid>
                   </Grid>
                 </Grid>

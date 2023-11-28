@@ -63,6 +63,10 @@ const EditCompany = (props) => {
     let parsedValue = value;
     let error = "";
 
+    if (name === "phoneNumber") {
+      setPhoneNumberError("");
+    }
+
     if (name === "customerAdminId") {
       parsedValue = parseInt(value, 10);
       if (isNaN(parsedValue)) {
@@ -191,7 +195,26 @@ const EditCompany = (props) => {
                     className="arrow-back-icon"
                   />
                 </button>
-                <h2 style={{ marginLeft: "10px" }}>Edit Company</h2>
+                <div
+                  style={{
+                    marginLeft: "40px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontSize: "30px",
+                      fontWeight: "bold",
+                      marginRight: "10px",
+                    }}
+                  >
+                    Edit Company
+                  </h2>
+                  <span style={{ fontSize: "18px", color: "#888" }}>
+                    Edit a company for assistance.
+                  </span>
+                </div>
               </div>
             </MDBCol>
           </MDBRow>
@@ -241,7 +264,14 @@ const EditCompany = (props) => {
                 <Grid item xs={12}>
                   <Grid container>
                     <Grid item xs={3}>
-                      <h2 className="align-right">
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
                         <span style={{ color: "red" }}>*</span>Company Name
                       </h2>
                     </Grid>
@@ -262,7 +292,14 @@ const EditCompany = (props) => {
                 </Grid>
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
                   <span style={{ color: "red" }}>*</span>Company Address
                 </h2>
               </Grid>
@@ -281,7 +318,14 @@ const EditCompany = (props) => {
                 )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
                   <span style={{ color: "red" }}>*</span>Email
                 </h2>
               </Grid>
@@ -303,7 +347,14 @@ const EditCompany = (props) => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
                         <span style={{ color: "red" }}>*</span>Tax Code
                       </h2>
                     </Grid>
@@ -326,7 +377,17 @@ const EditCompany = (props) => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right">Phone Number</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                          marginBottom: "20px"
+                        }}
+                      >
+                        Phone Number
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <input
@@ -348,7 +409,16 @@ const EditCompany = (props) => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">field Business</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        field Business
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <input
@@ -365,7 +435,16 @@ const EditCompany = (props) => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Customer Admin</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Customer Admin
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <input
@@ -385,7 +464,16 @@ const EditCompany = (props) => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Website</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Website
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <input
@@ -402,7 +490,16 @@ const EditCompany = (props) => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Active</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Active
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <Switch
@@ -436,12 +533,7 @@ const EditCompany = (props) => {
               <button
                 type="button"
                 className="btn btn-secondary custom-btn-margin"
-              >
-                Save and Approve
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary custom-btn-margin"
+                onClick={handleGoBack}
               >
                 Cancel
               </button>

@@ -293,12 +293,12 @@ const IndexTicket = () => {
                     onChange={handleSelectAllTickets}
                   />
                 </th>
-                <th style={{ fontWeight: "bold" }}>Edit</th>
+                <th style={{ fontWeight: "bold" }}></th>
                 <th
                   style={{ fontWeight: "bold" }}
                   onClick={() => handleSortChange("id")}
                 >
-                  ID{" "}
+                  ID
                   {sortBy === "id" &&
                     (sortDirection === "asc" ? (
                       <ArrowDropDown />

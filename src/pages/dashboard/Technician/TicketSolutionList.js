@@ -268,7 +268,18 @@ const TicketSolutionList = () => {
           <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th>
+                <th
+                  style={{ fontWeight: "bold", fontSize: "18px" }}
+                  onClick={() => handleSortChange("id")}
+                >
+                  ID
+                  {sortBy === "id" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                   <input
                     type="checkbox"
@@ -328,14 +339,41 @@ const TicketSolutionList = () => {
                       <ArrowDropUp />
                     ))}
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                <th
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
+                  onClick={() => handleSortChange("reviewDate")}
+                >
                   Review Date
+                  {sortBy === "reviewDate" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                <th
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
+                  onClick={() => handleSortChange("createdAt")}
+                >
                   Created
+                  {sortBy === "createdAt" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                <th
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
+                  onClick={() => handleSortChange("modifiedAt")}
+                >
                   Last Update
+                  {sortBy === "modifiedAt" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
               </tr>
             </MDBTableHead>
@@ -400,13 +438,7 @@ const TicketSolutionList = () => {
                         )}
                       </td>
                       <td>{formatDate(TicketSolution.reviewDate)}</td>
-                      <td>
-                        {TicketSolution.createdAt
-                          ? new Date(
-                              TicketSolution.createdAt
-                            ).toLocaleDateString()
-                          : ""}
-                      </td>
+                      <td>{formatDate(TicketSolution.createdAt)}</td>
                       <td>{formatDate(TicketSolution.modifiedAt)}</td>
                     </tr>
                   );
@@ -416,9 +448,7 @@ const TicketSolutionList = () => {
           </MDBTable>
 
           {dataListTicketsSolution.length === 0 && !loading && (
-            <Card
-              style={{ height: "450px", width: "100%" }}
-            >
+            <Card style={{ height: "450px", width: "100%" }}>
               <CardContent style={{ marginRight: "10px" }}>
                 <div
                   style={{

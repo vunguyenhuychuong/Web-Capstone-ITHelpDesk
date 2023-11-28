@@ -5,7 +5,12 @@ import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { createTeamMemberAssign } from "../../../app/api/teamMember";
+import {
+  createTeamMemberAssign,
+  getMemberSelect,
+} from "../../../app/api/teamMember";
+import { getAllTeams } from "../../../app/api/team";
+import { useEffect } from "react";
 
 const EditTeamMember = () => {
   const navigate = useNavigate();
@@ -15,11 +20,41 @@ const EditTeamMember = () => {
     expertises: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [dataTeam, setDataTeam] = useState([]);
+  const [dataMember, setDataMember] = useState([]);
   const [fieldErrors, setFieldErrors] = useState({
     expertises: "",
   });
 
-  const handleInputChange = (e) => {
+  const fetchDataTeamSelect = async () => {
+    try {
+      const res = await getAllTeams();
+      setDataTeam(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchDataMemberSelect = async (teamId) => {
+    try {
+      const res = await getMemberSelect(teamId);
+      setDataMember(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDataTeamSelect();
+  }, []);
+
+  useEffect(() => {
+    if (data.teamId) {
+      fetchDataMemberSelect(data.teamId);
+    }
+  }, [data.teamId]);
+
+  const handleInputChange = async (e) => {
     const { name, value } = e.target;
 
     if (name === "memberId" || name === "teamId") {
@@ -33,6 +68,14 @@ const EditTeamMember = () => {
       ...prevErrors,
       [name]: "",
     }));
+
+    if (name === "teamId") {
+      try {
+        await fetchDataMemberSelect(value);
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   const handleSubmitTicket = async (e) => {
@@ -150,14 +193,21 @@ const EditTeamMember = () => {
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
-                      <input
-                        id="memberId"
-                        type="text"
-                        name="memberId"
-                        className="form-control"
-                        value={data.memberId}
+                      <select
+                        id="teamId"
+                        name="teamId"
+                        className="form-select"
+                        value={data.teamId}
                         onChange={handleInputChange}
-                      />
+                      >
+                        {dataTeam
+                          .filter((team) => team.id !== "")
+                          .map((team) => (
+                            <option key={team.id} value={team.id}>
+                              {team.name}
+                            </option>
+                          ))}
+                      </select>
                     </Grid>
                   </Grid>
                 </Grid>
@@ -176,14 +226,20 @@ const EditTeamMember = () => {
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
-                      <input
-                        id="teamId"
-                        type="text"
-                        name="teamId"
-                        className="form-control"
-                        value={data.teamId}
+                      <select
+                        id="memberId"
+                        name="memberId"
+                        className="form-select"
+                        value={data.memberId}
                         onChange={handleInputChange}
-                      />
+                        disabled={data.memberId}
+                      >
+                        {dataMember.map((member) => (
+                          <option key={member.id} value={member.id}>
+                            {member.firstName} {member.lastName}
+                          </option>
+                        ))}
+                      </select>
                     </Grid>
                   </Grid>
                 </Grid>
@@ -233,6 +289,7 @@ const EditTeamMember = () => {
                 <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
+                  onClick={() => handleGoBack()}
                 >
                   Cancel
                 </button>

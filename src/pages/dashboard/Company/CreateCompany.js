@@ -1,4 +1,4 @@
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import "../../../assets/css/createCompany.css";
 import { Button, Grid, Switch } from "@mui/material";
 import { MDBCardImage, MDBCol, MDBRow } from "mdb-react-ui-kit";
@@ -62,7 +62,8 @@ const CreateCompany = (props) => {
     if (name === "phoneNumber") {
       const phoneNumberRegex = /^[0-9]{10}$/;
       if (!phoneNumberRegex.test(value)) {
-        phoneNumberError = "Phone number must be 10 digits long and contain only numbers.";
+        phoneNumberError =
+          "Phone number must be 10 digits long and contain only numbers.";
       }
     }
     setPhoneNumberError(phoneNumberError);
@@ -162,14 +163,7 @@ const CreateCompany = (props) => {
   };
 
   return (
-    <Grid
-      container
-      style={{
-        border: "1px solid #ccc",
-        paddingRight: "10px",
-        paddingLeft: "10px",
-      }}
-    >
+    <Grid container>
       <Grid item xs={12}>
         <MDBCol md="12">
           <MDBRow className="border-box">
@@ -181,7 +175,26 @@ const CreateCompany = (props) => {
                     className="arrow-back-icon"
                   />
                 </button>
-                <h2 style={{ marginLeft: "10px" }}>New Company</h2>
+                <div
+                  style={{
+                    marginLeft: "40px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontSize: "30px",
+                      fontWeight: "bold",
+                      marginRight: "10px",
+                    }}
+                  >
+                    Create Company
+                  </h2>
+                  <span style={{ fontSize: "18px", color: "#888" }}>
+                    Create a company for assistance.
+                  </span>
+                </div>
               </div>
             </MDBCol>
           </MDBRow>
@@ -231,7 +244,14 @@ const CreateCompany = (props) => {
                 <Grid item xs={12}>
                   <Grid container>
                     <Grid item xs={3}>
-                      <h2 className="align-right">
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
                         <span style={{ color: "red" }}>*</span>Company Name
                       </h2>
                     </Grid>
@@ -252,7 +272,14 @@ const CreateCompany = (props) => {
                 </Grid>
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
                   <span style={{ color: "red" }}>*</span>Company Address
                 </h2>
               </Grid>
@@ -271,7 +298,14 @@ const CreateCompany = (props) => {
                 )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
                   <span style={{ color: "red" }}>*</span>Email
                 </h2>
               </Grid>
@@ -293,7 +327,14 @@ const CreateCompany = (props) => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
                         <span style={{ color: "red" }}>*</span>Tax Code
                       </h2>
                     </Grid>
@@ -306,7 +347,7 @@ const CreateCompany = (props) => {
                         value={data.taxCode}
                         onChange={handleInputChange}
                       />
-                       {taxCodeError && (
+                      {taxCodeError && (
                         <span style={{ color: "red" }}>{taxCodeError}</span>
                       )}
                     </Grid>
@@ -316,7 +357,16 @@ const CreateCompany = (props) => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right">Phone Number</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Phone Number
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <input
@@ -338,7 +388,16 @@ const CreateCompany = (props) => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">field Business</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        field Business
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <input
@@ -355,7 +414,16 @@ const CreateCompany = (props) => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Customer Admin</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Customer Admin
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <input
@@ -375,7 +443,16 @@ const CreateCompany = (props) => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Website</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Website
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <input
@@ -392,7 +469,16 @@ const CreateCompany = (props) => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Active</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Active
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <Switch
@@ -422,12 +508,6 @@ const CreateCompany = (props) => {
                 disabled={isSubmitting}
               >
                 Save
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary custom-btn-margin"
-              >
-                Save and Approve
               </button>
               <button
                 type="button"
