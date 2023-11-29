@@ -149,3 +149,22 @@
 .icon-container {
   padding-left: 10px; /* Adjust the padding value as needed */
 }
+
+
+.custom-select-status {
+  color: #3b71ca;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding-top: 10px;
+  float: left;
+  width: fit-content;
+  font-size: 20px;
+  margin-right: 10px;
+  border: 0.8px solid #aca5a5;
+  padding: 5px 10px;
+  height: 42px;
+  font-weight: bold;
+  background-color: whitesmoke;
+  line-height: 34px;
+  text-transform: uppercase;
+}

@@ -1,6 +1,7 @@
 import { FaAd, FaLightbulb, FaTicketAlt } from "react-icons/fa";
 import { ImProfile } from "react-icons/im";
 import {
+  Assessment,
   Business,
   Category,
   DesignServices,
@@ -98,6 +99,12 @@ const links = [
     text: "Payment",
     path: "paymentList",
     icon: <Payment />
+  },
+  {
+    id: 24,
+    text: "Ticket Assign",
+    path: "ticketAssign",
+    icon: <Assessment />
   },
 ];
 

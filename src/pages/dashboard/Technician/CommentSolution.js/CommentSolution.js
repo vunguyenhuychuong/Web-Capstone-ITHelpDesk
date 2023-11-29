@@ -113,7 +113,6 @@ const CommentSolution = () => {
       };
 
       await editFeedBack(editComment.id, payload);
-      toast.success("Edit comment successful");
       fetchDataListFeedBack();
       setEditCommentId(null);
     } catch (error) {
@@ -169,21 +168,17 @@ const CommentSolution = () => {
 
     setIsSubmitting(true);
     try {
-      const result = await createFeedBack({
+        await createFeedBack({
         solutionId: solutionId,
         comment: data.comment,
         isPublic: data.isPublic,
       });
-      if (result.data && result.data.responseException.exceptionMessage) {
-        console.log(result.data.responseException.exceptionMessage);
-      } else {
-        toast.success("Feedback created successfully");
+     
         setData((prevData) => ({
           ...prevData,
           comment: "",
         }));
-        fetchDataListFeedBack();
-      }
+      fetchDataListFeedBack();
     } catch (error) {
       console.log("Please check data input", error);
     } finally {

@@ -1,7 +1,20 @@
 import React, { useState } from "react";
 import "../../../assets/css/ticket.css";
 import "../../../assets/css/ServiceTicket.css";
-import { Box, Grid, MenuItem, Select, Tab, Tabs } from "@mui/material";
+import {
+  Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  MenuItem,
+  Select,
+  Tab,
+  Tabs,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import {
   ArrowBack,
@@ -27,6 +40,7 @@ import { toast } from "react-toastify";
 import { getRoleName } from "../../helpers/tableComlumn";
 import { Button } from "flowbite-react";
 import { useSelector } from "react-redux";
+import UploadComponent from "../../helpers/UploadComponent";
 
 const TicketSolutionDetail = () => {
   const [value, setValue] = useState(0);
@@ -40,6 +54,7 @@ const TicketSolutionDetail = () => {
   const user = useSelector((state) => state.auth);
   const userRole = user.user.role;
   const [fileName, setFileName] = useState("");
+  const [openImageDialog, setOpenImageDialog] = useState(false);
 
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
@@ -100,6 +115,14 @@ const TicketSolutionDetail = () => {
     return <div>Error: {error.message}</div>;
   }
 
+  const handleImageDialogOpen = () => {
+    setOpenImageDialog(true);
+  };
+
+  const handleImageDialogClose = () => {
+    setOpenImageDialog(false);
+  };
+
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
   };
@@ -128,78 +151,86 @@ const TicketSolutionDetail = () => {
             </MDBCol>
             <MDBCol md="2" className="mt-2">
               <div className="d-flex align-items-center">
-                <Button
-                  type="button"
-                  className="btn btn-link narrow-input"
-                  style={{
-                    backgroundColor: "#f2f2f2",
-                    borderRadius: "5px",
-                    paddingLeft: "10px",
-                    height: "45px",
-                    padding: "10px 0",
-                    marginBottom: "10px",
-                  }}
-                  onClick={() => handleOpenEditTicketSolution()}
-                >
-                  <span
-                    className="action-menu-item"
-                    style={{ fontSize: "16px", textTransform: "none" }}
+                {userRole === 2 ? (
+                  <Button
+                    type="button"
+                    className="btn btn-link narrow-input"
+                    style={{
+                      backgroundColor: "#f2f2f2",
+                      borderRadius: "5px",
+                      paddingLeft: "10px",
+                      height: "45px",
+                      padding: "10px 0",
+                      marginBottom: "10px",
+                    }}
+                    onClick={() => handleOpenEditTicketSolution()}
                   >
-                    Edit
-                  </span>
-                </Button>
-                <Select
-                  displayEmpty
-                  value={selectedValue}
-                  onChange={handleChange}
-                  inputProps={{ "aria-label": "Without label" }}
-                  style={{
-                    backgroundColor: "#f2f2f2",
-                    borderRadius: "5px",
-                    paddingLeft: "10px",
-                    height: "45px",
-                    padding: "10px 0",
-                    marginBottom: "10px",
-                    zIndex: 9999,
-                  }}
-                >
-                  {selectedValue !== "" ? null : (
-                    <MenuItem value="" disabled>
-                      <em className="action-menu-item">Action</em>
-                    </MenuItem>
-                  )}
-
-                  <MenuItem
-                    value={10}
-                    onClick={() => handleClickChangePublic(solutionId)}
-                  >
-                    {data.isPublic ? <>Private</> : <>Public</>}
-                  </MenuItem>
-
-                  {userRole === 2 && [
-                    <MenuItem
-                      key={20}
-                      value={20}
-                      onClick={() => handleApproveTicketSolution(solutionId)}
+                    <span
+                      className="action-menu-item"
+                      style={{ fontSize: "16px", textTransform: "none" }}
                     >
-                      Approve
-                    </MenuItem>,
-                    <MenuItem
-                      key={30}
-                      value={30}
-                      onClick={() => handleRejectTicketSolution(solutionId)}
+                      Edit
+                    </span>
+                  </Button>
+                ) : null}
+                {userRole === 2 ? (
+                  <>
+                    <Select
+                      displayEmpty
+                      value={selectedValue}
+                      onChange={handleChange}
+                      inputProps={{ "aria-label": "Without label" }}
+                      style={{
+                        backgroundColor: "#f2f2f2",
+                        borderRadius: "5px",
+                        paddingLeft: "10px",
+                        height: "45px",
+                        padding: "10px 0",
+                        marginBottom: "10px",
+                        zIndex: 9999,
+                      }}
                     >
-                      Reject
-                    </MenuItem>,
-                  ]}
-                </Select>
+                      {selectedValue !== "" ? null : (
+                        <MenuItem value="" disabled>
+                          <em className="action-menu-item">Action</em>
+                        </MenuItem>
+                      )}
+
+                      <MenuItem
+                        value={10}
+                        onClick={() => handleClickChangePublic(solutionId)}
+                      >
+                        {data.isPublic ? <>Private</> : <>Public</>}
+                      </MenuItem>
+
+                      {userRole === 2 && [
+                        <MenuItem
+                          key={20}
+                          value={20}
+                          onClick={() =>
+                            handleApproveTicketSolution(solutionId)
+                          }
+                        >
+                          Approve
+                        </MenuItem>,
+                        <MenuItem
+                          key={30}
+                          value={30}
+                          onClick={() => handleRejectTicketSolution(solutionId)}
+                        >
+                          Reject
+                        </MenuItem>,
+                      ]}
+                    </Select>
+                  </>
+                ) : null}
               </div>
             </MDBCol>
           </MDBRow>
         </MDBCol>
         <MDBRow className="mb-4">
           <MDBCol
-            md="6"
+            md="10"
             className="mt-2"
             style={{ display: "flex", alignItems: "center" }}
           >
@@ -222,25 +253,52 @@ const TicketSolutionDetail = () => {
           </MDBCol>
         </MDBRow>
         <Grid item xs={12}>
-          <textarea
-            type="text"
+          <div className="labelContainer">
+            <Typography
+              variant="subtitle1"
+              color="textSecondary"
+              className="descriptionLabel"
+              style={{
+                fontSize: '1.2em',       
+                fontWeight: 'bold',      
+                color: '#007bff',         
+              }}
+            >
+              Description
+            </Typography>
+            <ArrowBack className="icon" />
+          </div>
+          <TextField
             id="description"
             name="description"
-            className="form-control input-field-2"
-            rows="6"
-            defaultValue={data.content}
+            multiline
+            rows={3}
+            fullWidth
+            variant="outlined"
+            value={data?.content || ""}
+            disabled
+            InputProps={{
+              style: { fontSize: "1.5em" },
+            }}
           />
+          <UploadComponent />
         </Grid>
-        <Grid item xs={12}>
-          <div style={{ marginBottom: "10px" }}>{fileName}</div>
-          <input
-            type="file"
-            name="file"
-            className="form-control input-field"
-            id="attachmentUrl"
-            onChange={handleFileChange}
-          />
-        </Grid>
+        <div className="buttonContainer">
+          {data.attachmentUrl && (
+            <Button
+              variant="contained"
+              className="button"
+              onClick={handleImageDialogOpen}
+              style={{
+                backgroundColor: '#007bff',  
+                color: '#fff',            
+                fontWeight: 'bold',        
+              }}
+            >
+              See Image
+            </Button>
+          )}
+        </div>
 
         <Box sx={{ width: "100%" }}>
           <Tabs
@@ -303,7 +361,16 @@ const TicketSolutionDetail = () => {
         <MDBRow className="border-box" style={{ backgroundColor: "#EEEEEE" }}>
           <MDBCol md="12">
             <div className="d-flex">
-              <h2 className="heading-padding">Solution</h2>
+              <h2
+                className="heading-padding"
+                style={{
+                  fontSize: "32px",
+                  fontWeight: "bold",
+                  color: "#007bff",
+                }}
+              >
+                More
+              </h2>
             </div>
           </MDBCol>
         </MDBRow>
@@ -314,7 +381,7 @@ const TicketSolutionDetail = () => {
               <div className="data-col col-md-8">{data.id}</div>
             </MDBCol>
             <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-4 ">Status</div>
+              <div className="label-col col-md-4 ">Approve</div>
               <div className="data-col col-md-8">
                 {data.isApproved ? (
                   <>
@@ -389,7 +456,9 @@ const TicketSolutionDetail = () => {
             <MDBCol md="12" className="mt-2 text-box">
               <div className="label-col col-md-12">
                 <span style={{ color: "#3399FF" }}>
-                {data.owner && data.owner.role ? getRoleName(data.owner.role) : "Unknown Role"}
+                  {data.owner && data.owner.role
+                    ? getRoleName(data.owner.role)
+                    : "Unknown Role"}
                 </span>{" "}
                 {data.owner ? formatDate(data.owner.createdAt) : "Unknown Date"}
               </div>
@@ -405,9 +474,11 @@ const TicketSolutionDetail = () => {
             <MDBCol md="12" className="mt-2 text-box">
               <div className="label-col col-md-12">
                 <span style={{ color: "#3399FF" }}>
-                {data.owner && data.owner.role ? getRoleName(data.owner.role) : "Unknown Role"}
+                  {data.owner && data.owner.role
+                    ? getRoleName(data.owner.role)
+                    : "Unknown Role"}
                 </span>{" "}
-                {data.owner ? formatDate(data.modifiedAt): "Unknown Date"}
+                {data.owner ? formatDate(data.modifiedAt) : "Unknown Date"}
               </div>
             </MDBCol>
           </MDBRow>
@@ -435,6 +506,31 @@ const TicketSolutionDetail = () => {
           </MDBRow>
         </MDBRow>
       </Grid>
+      <Dialog
+        open={openImageDialog}
+        onClose={handleImageDialogClose}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Image</DialogTitle>
+        <DialogContent>
+          <div
+            style={{
+              background: `url(${data.attachmentUrl})`,
+              backgroundSize: "contain",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+              width: "100%",
+              height: "70vh",
+            }}
+          ></div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleImageDialogClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   );
 };

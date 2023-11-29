@@ -269,7 +269,6 @@ const CreateContract = () => {
             }}
           >
             <Grid container justifyContent="flex-end">
-              {" "}
               <Grid item xs={3}>
                 <h2
                   className="align-right"

@@ -76,3 +76,12 @@
 .custom-option:hover {
   background-color: #ccc;
 }
+
+.buttonContainer {
+  background-color: #f0f0f0;
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  width: 100%;
+  display: flex;
+}

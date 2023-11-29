@@ -243,7 +243,26 @@ const EditTickets = () => {
                   />
                 </button>
 
-                <h2 style={{ marginLeft: "10px" }}>Edit Ticket</h2>
+                <div
+                  style={{
+                    marginLeft: "40px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontSize: "30px",
+                      fontWeight: "bold",
+                      marginRight: "10px",
+                    }}
+                  >
+                    Edit Ticket
+                  </h2>
+                  <span style={{ fontSize: "18px", color: "#888" }}>
+                    Edit a ticket for assistance.
+                  </span>
+                </div>
               </div>
             </MDBCol>
           </MDBRow>
@@ -259,7 +278,6 @@ const EditTickets = () => {
             }}
           >
             <Grid container justifyContent="flex-end">
-              {" "}
               <Grid
                 container
                 justifyContent="flex-end"
@@ -268,7 +286,12 @@ const EditTickets = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">
+                      <h2 className="align-right"
+                      style={{
+                        fontSize: "20px",
+                        fontWeight: "bold",
+                        textAlign: "right",
+                      }}>
                         <span style={{ color: "red" }}>*</span>Requester
                       </h2>
                     </Grid>
@@ -293,7 +316,12 @@ const EditTickets = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right">Title</h2>
+                      <h2 className="align-right" 
+                      style={{
+                        fontSize: "20px",
+                        fontWeight: "bold",
+                        textAlign: "right",
+                      }}>Title</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <input
@@ -312,7 +340,12 @@ const EditTickets = () => {
                 </Grid>
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">
+                <h2 className="align-right" 
+                style={{
+                  fontSize: "20px",
+                  fontWeight: "bold",
+                  textAlign: "right",
+                }}>
                   <span style={{ color: "red" }}>*</span>Description
                 </h2>
               </Grid>
@@ -331,7 +364,12 @@ const EditTickets = () => {
                 )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">Attachment</h2>
+                <h2 className="align-right" 
+                style={{
+                  fontSize: "20px",
+                  fontWeight: "bold",
+                  textAlign: "right",
+                }}>Attachment</h2>
               </Grid>
               <Grid item xs={9}>
                 <input
@@ -360,7 +398,12 @@ const EditTickets = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">
+                      <h2 className="align-right" 
+                      style={{
+                        fontSize: "20px",
+                        fontWeight: "bold",
+                        textAlign: "right",
+                      }}>
                         <span style={{ color: "red" }}>*</span>Mode Id
                       </h2>
                     </Grid>
@@ -387,7 +430,12 @@ const EditTickets = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right">Service</h2>
+                      <h2 className="align-right" 
+                      style={{
+                        fontSize: "20px",
+                        fontWeight: "bold",
+                        textAlign: "right",
+                      }}>Service</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -413,7 +461,11 @@ const EditTickets = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Urgency</h2>
+                      <h2 className="align-right" style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>Urgency</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -437,7 +489,11 @@ const EditTickets = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Category</h2>
+                      <h2 className="align-right" style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>Category</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -467,7 +523,11 @@ const EditTickets = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Ticket Status</h2>
+                      <h2 className="align-right" style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>Ticket Status</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -489,7 +549,11 @@ const EditTickets = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Priority</h2>
+                      <h2 className="align-right" style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>Priority</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -517,7 +581,11 @@ const EditTickets = () => {
                   style={{ marginTop: "15px" }}
                 >
                   <Grid item xs={3}>
-                    <h2 className="align-right">Impact Detail</h2>
+                    <h2 className="align-right" style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>Impact Detail</h2>
                   </Grid>
                   <Grid item xs={9}>
                     <input
@@ -550,6 +618,7 @@ const EditTickets = () => {
                 <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
+                  onClick={()=> handleGoBack()}
                 >
                   Cancel
                 </button>

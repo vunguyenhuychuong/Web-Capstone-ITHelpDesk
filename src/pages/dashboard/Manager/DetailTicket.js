@@ -35,7 +35,11 @@ import LoadingSkeleton from "../../../components/iconify/LoadingSkeleton";
 import Details from "./Details";
 import { stringAvatar } from "../../../components/dashboard/Navbar";
 import { useSelector } from "react-redux";
-import { CancelTicketUser, CloseTicketUser } from "../../../app/api/ticket";
+import {
+  CancelTicketUser,
+  ChangeStatusTicket,
+  CloseTicketUser,
+} from "../../../app/api/ticket";
 import TicketLogList from "../Customer/TicketLogList";
 import TicketTaskList from "../Technician/TicketTaskList";
 
@@ -62,6 +66,7 @@ const DetailTicket = () => {
   const ticketPriority = data.priority;
   const priorityOption = getPriorityOptionById(ticketPriority);
   const [allowEdit, setAllowEdit] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState(0);
   const [editMessage, setEditMessage] = useState("");
 
   const fetchDataManager = async () => {
@@ -98,10 +103,18 @@ const DetailTicket = () => {
   };
 
   const handleOpenEditTicket = (ticketId) => {
-    if (userRole === 1) {
+    if (userRole === 1 && ticketStatus === 0) {
       navigate(`/home/editTicketCustomer/${ticketId}`);
-    } else if (userRole === 2) {
+    } else if (userRole === 2 || userRole === 3) {
       navigate(`/home/editTicket/${ticketId}`);
+    }
+  };
+
+  const handleTicketStatusChange = async () => {
+    try {
+      await ChangeStatusTicket(ticketId, selectedStatus);
+    } catch (error) {
+      console.log("Error changing ticket status:", error);
     }
   };
 
@@ -124,16 +137,20 @@ const DetailTicket = () => {
   };
 
   useEffect(() => {
-    if (ticketStatus === 0 && (userRole === 2 || userRole === 3)) {
+    if (
+      userRole === 2 ||
+      userRole === 3 ||
+      (userRole === 1 && ticketStatus === 0)
+    ) {
       setAllowEdit(true);
       setEditMessage("");
     } else {
       setAllowEdit(false);
-      setEditMessage(" Not allowed edited when it turn status assign");
+      setEditMessage("Not allowed to edit when the ticket status is assigned");
     }
     fetchDataManager();
     setValue(0);
-  }, [ticketStatus]);
+  }, [userRole, ticketStatus]);
 
   const roleName =
     data.requester && data.requester.role
@@ -194,16 +211,31 @@ const DetailTicket = () => {
                     type="button"
                     className="btn btn-link narrow-input icon-label mt-2"
                     onClick={() => handleOpenEditTicket(ticketId)}
-                    disabled={
-                      !(
-                        userRole === 2 ||
-                        (userRole === 1 && ticketStatus === 0)
-                      )
-                    }
+                    disabled={!allowEdit}
                   >
                     Edit
                   </button>
-                  {userRole === 2 || userRole === 3 ? (
+                  <select
+                    value={selectedStatus}
+                    onChange={(e) => setSelectedStatus(Number(e.target.value))}
+                    disabled={!allowEdit} 
+                    className="custom-select-status" 
+                  >
+                    {TicketStatusOptions.map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.name}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    className="btn btn-link narrow-input icon-label mt-2"
+                    onClick={handleTicketStatusChange}
+                    // disabled={!allowEdit || selectedStatus === ticketStatus} // Disable the button if not allowed to edit or the status is not changed
+                  >
+                    Update Status
+                  </button>
+                  {userRole === 2 ? (
                     <MDBCol md="2" className="mt-2">
                       <div className="d-flex align-items-center">
                         <button
@@ -450,7 +482,6 @@ const DetailTicket = () => {
             <MDBCol
               md="12"
               className="d-flex align-items-center mt-2 description-label"
-              style={{ border: "2px solid #999999" }}
             >
               <Avatar
                 alt="User Avatar"
@@ -474,7 +505,7 @@ const DetailTicket = () => {
               </div>
             </MDBCol>
             <MDBTable bordered>
-              <MDBTableBody style={{ border: "2px solid #999999" }}>
+              <MDBTableBody>
                 <tr>
                   <th
                     style={{
@@ -561,12 +592,15 @@ const DetailTicket = () => {
                   </th>
                 </tr>
                 <tr>
-                  <th 
-                   style={{
-                    fontWeight: "bold",
-                    fontSize: "16px",
-                    color: "#007bff",
-                  }}>Gender</th>
+                  <th
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                      color: "#007bff",
+                    }}
+                  >
+                    Gender
+                  </th>
                   <th>
                     {data.requester && data.requester.gender
                       ? getGenderById(data.requester.gender)
