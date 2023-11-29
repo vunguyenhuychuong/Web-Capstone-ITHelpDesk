@@ -150,7 +150,7 @@ const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket }) => {
           onClick={() => handleSaveChanges()}
           disabled={isSubmitting}
         >
-          Submit
+           {isSubmitting ? "Submitting..." : "Submit"}
         </Button>
         <Button
           onClick={onClose}

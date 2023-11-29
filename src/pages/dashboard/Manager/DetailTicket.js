@@ -139,7 +139,6 @@ const DetailTicket = () => {
   useEffect(() => {
     if (
       userRole === 2 ||
-      userRole === 3 ||
       (userRole === 1 && ticketStatus === 0)
     ) {
       setAllowEdit(true);
@@ -187,7 +186,7 @@ const DetailTicket = () => {
                   </button>
                 </div>
               </MDBCol>
-              <MDBCol md="8">
+              <MDBCol md="11">
                 <div className="d-flex align-items-center">
                   {userRole === 1 && (
                     <>
@@ -215,26 +214,31 @@ const DetailTicket = () => {
                   >
                     Edit
                   </button>
-                  <select
-                    value={selectedStatus}
-                    onChange={(e) => setSelectedStatus(Number(e.target.value))}
-                    disabled={!allowEdit} 
-                    className="custom-select-status" 
-                  >
-                    {TicketStatusOptions.map((option) => (
-                      <option key={option.id} value={option.id}>
-                        {option.name}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    type="button"
-                    className="btn btn-link narrow-input icon-label mt-2"
-                    onClick={handleTicketStatusChange}
-                    // disabled={!allowEdit || selectedStatus === ticketStatus} // Disable the button if not allowed to edit or the status is not changed
-                  >
-                    Update Status
-                  </button>
+                  {userRole === 2 || userRole === 3 ? (
+                    <select
+                      value={selectedStatus}
+                      onChange={(e) =>
+                        setSelectedStatus(Number(e.target.value))
+                      }
+                      disabled={!allowEdit}
+                      className="custom-select-status"
+                    >
+                      {TicketStatusOptions.map((option) => (
+                        <option key={option.id} value={option.id}>
+                          {option.name}
+                        </option>
+                      ))}
+                    </select>
+                  ) : null}
+                  {userRole === 2 || userRole === 3 ? (
+                    <button
+                      type="button"
+                      className="btn btn-link narrow-input icon-label mt-2"
+                      onClick={handleTicketStatusChange}
+                    >
+                      Status
+                    </button>
+                  ) : null}
                   {userRole === 2 ? (
                     <MDBCol md="2" className="mt-2">
                       <div className="d-flex align-items-center">
@@ -312,6 +316,20 @@ const DetailTicket = () => {
                 }
                 className="custom-tab-label"
               />
+               <Tab
+                label={
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      textTransform: "none",
+                    }}
+                  >
+                    <WorkHistory sx={{ marginRight: 1 }} /> Ticket Log
+                  </div>
+                }
+                className="custom-tab-label"
+              />
               {userRole !== 1 && (
                 <Tab
                   label={
@@ -327,22 +345,8 @@ const DetailTicket = () => {
                   }
                   className="custom-tab-label"
                 />
-              )}
-              <Tab
-                label={
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      textTransform: "none",
-                    }}
-                  >
-                    <WorkHistory sx={{ marginRight: 1 }} /> Ticket Log
-                  </div>
-                }
-                className="custom-tab-label"
-              />
-            </Tabs>
+              )} 
+            </Tabs>               
             <Box role="tabpanel" hidden={value !== 0}>
               {value === 0 ? (
                 <Details
@@ -356,10 +360,10 @@ const DetailTicket = () => {
               )}
             </Box>
             <Box role="tabpanel" hidden={value !== 1}>
-              {value === 1 ? <TicketTaskList /> : <LoadingSkeleton />}
+              {value === 1 ? <TicketLogList /> : <LoadingSkeleton />}
             </Box>
-            <Box role="tabpanel" hidden={value !== 2}>
-              {value === 2 ? <TicketLogList /> : <LoadingSkeleton />}
+            <Box role="tabpanel" hidden={value !== 2 }>
+              {value === 2 ? <TicketTaskList /> : <LoadingSkeleton />}
             </Box>
           </Box>
         </Grid>

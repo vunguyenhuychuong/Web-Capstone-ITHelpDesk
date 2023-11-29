@@ -150,8 +150,7 @@ export const ticketStatus = [
   {id:1, name: "Assigned"},
   {id:2, name: "Progress"},
   {id:3, name: "Resolved"},
-  {id:4, name: "Closed"},
-  {id:5, name: "Cancelled"},
+  {id:4, name: "Cancelled"},
 ]
 
 export const TicketStatusOptions = [
@@ -213,20 +212,6 @@ export const TicketStatusOptions = [
   },
   {
     id: 4,
-    name: "Closed",
-    iconClass: "info-icon",
-    icon: <HighlightOff style={{ color: '#888888' }} />,
-    badgeStyle: {
-      backgroundColor: 'white',
-      border: '2px solid #888888',
-      borderRadius: '16px',
-      padding: '5px',
-      display: 'flex',
-      alignItems: 'center',
-    }
-  },
-  {
-    id: 5,
     name: "Cancelled",
     iconClass: "info-icon",
     icon: <Cancel style={{ color: '#CC3333' }} />,

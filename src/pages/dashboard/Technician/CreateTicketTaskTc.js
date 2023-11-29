@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Grid, Switch, TextField } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, Grid, IconButton, Switch, TextField } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
@@ -41,6 +41,8 @@ const CreateTicketTaskTc = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [scheduledStartTime, setScheduledStartTime] = useState(moment());
   const [scheduledEndTime, setScheduledEndTime] = useState(moment());
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
     title: "",
     description: "",
@@ -110,6 +112,20 @@ const CreateTicketTaskTc = () => {
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     setSelectedFile(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreviewUrl(reader.result);
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreviewUrl(null);
+    }
+  };
+
+  const closeImagePreview = () => {
+    setIsImagePreviewOpen(false);
   };
 
   const validateDate = (reviewDate, expiredDate) => {
@@ -207,7 +223,7 @@ const CreateTicketTaskTc = () => {
       <Grid item xs={12}>
         <MDBCol md="12">
           <MDBRow className="border-box">
-            <MDBCol md="5" className="mt-2">
+            <MDBCol md="8" className="mt-2">
               <div className="d-flex align-items-center">
                 <button type="button" className="btn btn-link icon-label">
                   <ArrowBack
@@ -216,7 +232,26 @@ const CreateTicketTaskTc = () => {
                   />
                 </button>
 
-                <h2 style={{ marginLeft: "10px" }}>New Task</h2>
+                <div
+                  style={{
+                    marginLeft: "40px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontSize: "30px",
+                      fontWeight: "bold",
+                      marginRight: "10px",
+                    }}
+                  >
+                    New Create Task Technician
+                  </h2>
+                  <span style={{ fontSize: "18px", color: "#888" }}>
+                    Create a new task for assistance.
+                  </span>
+                </div>
               </div>
             </MDBCol>
           </MDBRow>
@@ -241,7 +276,12 @@ const CreateTicketTaskTc = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">
+                      <h2 className="align-right" 
+                      style={{
+                        fontSize: "20px",
+                        fontWeight: "bold",
+                        textAlign: "right",
+                      }}>
                         <span style={{ color: "red" }}>*</span>Title
                       </h2>
                     </Grid>
@@ -264,7 +304,11 @@ const CreateTicketTaskTc = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right">TicketId</h2>
+                      <h2 className="align-right" style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>TicketId</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <input
@@ -281,7 +325,11 @@ const CreateTicketTaskTc = () => {
                 </Grid>
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">
+                <h2 className="align-right" style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>
                   <span style={{ color: "red" }}>*</span>Description
                 </h2>
               </Grid>
@@ -300,7 +348,11 @@ const CreateTicketTaskTc = () => {
                 )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right">Attachment</h2>
+                <h2 className="align-right" style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>Attachment</h2>
               </Grid>
               <Grid item xs={9}>
                 <input
@@ -311,6 +363,16 @@ const CreateTicketTaskTc = () => {
                   onChange={handleFileChange}
                   value={data.attachmentUrl}
                 />
+                 {imagePreviewUrl && (
+                  <div
+                    className="image-preview"
+                    onClick={() => setIsImagePreviewOpen(true)}
+                  >
+                    <p className="preview-text">
+                      Click here to view attachment
+                    </p>
+                  </div>
+                )}
               </Grid>
               <Grid
                 container
@@ -320,7 +382,11 @@ const CreateTicketTaskTc = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">
+                      <h2 className="align-right" style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>
                         <span style={{ color: "red" }}>*</span>TechnicianId
                       </h2>
                     </Grid>
@@ -362,7 +428,11 @@ const CreateTicketTaskTc = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right">Priority</h2>
+                      <h2 className="align-right" style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>Priority</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -388,7 +458,11 @@ const CreateTicketTaskTc = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Schedule startTime</h2>
+                      <h2 className="align-right" style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>Schedule startTime</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -411,7 +485,11 @@ const CreateTicketTaskTc = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Schedule endTime</h2>
+                      <h2 className="align-right" style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>Schedule endTime</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -435,7 +513,11 @@ const CreateTicketTaskTc = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Task Status</h2>
+                      <h2 className="align-right" style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>Task Status</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -459,7 +541,11 @@ const CreateTicketTaskTc = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right">Progress</h2>
+                      <h2 className="align-right" style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}>Progress</h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -494,17 +580,12 @@ const CreateTicketTaskTc = () => {
                   onClick={handleSubmitTicket}
                   disabled={isSubmitting}
                 >
-                  Save
+                  {isSubmitting ? "Submitting..." : "Save"}
                 </button>
                 <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
-                >
-                  Save and Approve
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary custom-btn-margin"
+                  onClick={handleGoBack}
                 >
                   Cancel
                 </button>
@@ -513,6 +594,31 @@ const CreateTicketTaskTc = () => {
           </MDBRow>
         </MDBCol>
       </Grid>
+      <Dialog
+        open={isImagePreviewOpen}
+        onClose={closeImagePreview}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          Image Preview
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={closeImagePreview}
+            aria-label="close"
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <img
+            src={imagePreviewUrl}
+            alt="Attachment Preview"
+            style={{ width: "100%" }}
+          />
+        </DialogContent>
+      </Dialog>
     </Grid>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Dialog,
@@ -32,6 +32,7 @@ import { useSelector } from "react-redux";
 const Details = ({ data, loading, dataCategories, dataMode }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [openImageDialog, setOpenImageDialog] = useState(false);
+  const [reloadDataFlag, setReloadDataFlag] = useState(false);
   const user = useSelector((state) => state.auth);
   const userRole = user.user.role;
 
@@ -39,9 +40,15 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
     setIsEditDialogOpen(true);
   };
 
+  const handleReloadData = () => {
+    setReloadDataFlag(true);
+  };
+
   const reloadData = () => {
     try {
-      UpdateTicketForTechnician(data);
+      UpdateTicketForTechnician(data).then(() => {
+        setReloadDataFlag(false);
+      });
     } catch (error) {
       console.error("Error while reloading data", error);
     }
@@ -59,6 +66,12 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
     data: PropTypes.object,
     loading: PropTypes.bool.isRequired,
   };
+  useEffect(() => {
+    if (reloadDataFlag) {
+      reloadData();
+    }
+  }, [reloadDataFlag]);
+
   return (
     <div>
       <Grid container spacing={2} alignItems="center" className="gridContainer">
@@ -123,7 +136,7 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
                 }}
                 onClick={reloadData}
               >
-                Properties <Cached /> <span>Reload</span>
+                Properties <Cached /> <span>{reloadDataFlag ? 'Reloading...' : 'Reload'}</span>
                 {userRole === 3 && <CreditScore style={{
                       marginLeft: "10px",
                     }}/>}
@@ -396,12 +409,13 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
                   {formatDate(data.modifiedAt)}
                 </TableCell>
               </TableRow>
-              {isEditDialogOpen && (userRole === 2 || userRole === 3) && (
+              {isEditDialogOpen && (userRole === 3) && (
                 <EditTicketModel
                   open={isEditDialogOpen}
                   onClose={() => setIsEditDialogOpen(false)}
-                  ticketId={data.id} // Pass the ticketId to the EditTicketModel component
-                  data={data} // Pass the data to the EditTicketModel component
+                  ticketId={data.id} 
+                  data={data}
+                  reloadDetailsData={handleReloadData}
                 />
               )}
             </TableBody>

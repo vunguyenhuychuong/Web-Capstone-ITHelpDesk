@@ -49,7 +49,7 @@ const TicketAssignAvailableList = () => {
   };
 
   const handleOpenCreateTicketSolution = () => {
-    navigate("/home/createSolution");
+    navigate("/home/createTask");
   };
 
   const handleOpenDetailTicketSolution = (ticketId) => {
