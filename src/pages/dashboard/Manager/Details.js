@@ -125,25 +125,25 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
           <Table>
             <TableBody>
               <TableRow>
-                <TableCell style={{ textAlign: "right" }}>Requester</TableCell>
+                <TableCell style={{ textAlign: "right", fontWeight: "bold", color: "#007bff", paddingRight: "16px", backgroundColor: "#f2f2f2" }}>Requester</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
                   {data.requester
                     ? `${data.requester.lastName} ${data.requester.firstName}`
                     : "Manager"}
                 </TableCell>
-                <TableCell style={{ textAlign: "right" }}>Impact</TableCell>
+                <TableCell style={{ textAlign: "right", fontWeight: "bold", color: "#007bff", paddingRight: "16px", backgroundColor: "#f2f2f2" }}>Impact</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
                   {getImpactById(data.impact)}
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell style={{ textAlign: "right" }}>Status</TableCell>
+                <TableCell style={{ textAlign: "right", fontWeight: "bold", color: "#007bff", paddingRight: "16px", backgroundColor: "#f2f2f2" }}>Status</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
                   {ticketStatus.find(
                     (status) => status.id === data.ticketStatus
                   )?.name || "Unknown Status"}
                 </TableCell>
-                <TableCell style={{ textAlign: "right" }}>
+                <TableCell style={{ textAlign: "right", fontWeight: "bold", color: "#007bff", paddingRight: "16px", backgroundColor: "#f2f2f2" }}>
                   Impact Detail
                 </TableCell>
                 <TableCell style={{ textAlign: "left" }}>
@@ -151,31 +151,31 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell style={{ textAlign: "right" }}>Mode</TableCell>
+                <TableCell style={{ textAlign: "right", fontWeight: "bold", color: "#007bff", paddingRight: "16px", backgroundColor: "#f2f2f2" }}>Mode</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
                   {data && data.mode && data.mode.description ? data.mode.description : "Mode N/A"}
                 </TableCell>
-                <TableCell style={{ textAlign: "right" }}>Urgency</TableCell>
+                <TableCell style={{ textAlign: "right", fontWeight: "bold", color: "#007bff", paddingRight: "16px", backgroundColor: "#f2f2f2" }}>Urgency</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
                   {getUrgencyById(data.urgency)}
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell style={{ textAlign: "right" }}>Service</TableCell>
+                <TableCell style={{ textAlign: "right", fontWeight: "bold", color: "#007bff", paddingRight: "16px", backgroundColor: "#f2f2f2" }}>Service</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
                   {data && data.service && data.service.description ? data.service.description : "Service N/A"}
                 </TableCell>
-                <TableCell style={{ textAlign: "right" }}>Priority</TableCell>
+                <TableCell style={{ textAlign: "right", fontWeight: "bold", color: "#007bff", paddingRight: "16px", backgroundColor: "#f2f2f2" }}>Priority</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
                   {getPriorityOption(data.priority)}
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell style={{ textAlign: "right" }}>Assignment</TableCell>
+                <TableCell style={{ textAlign: "right", fontWeight: "bold", color: "#007bff", paddingRight: "16px", backgroundColor: "#f2f2f2" }}>Assignment</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
                   {data && data.assignment && data.assignment.technicianFullName ? data.assignment.technicianFullName : "Assignment N/A"}
                 </TableCell>
-                <TableCell style={{ textAlign: "right" }}>Category</TableCell>
+                <TableCell style={{ textAlign: "right", fontWeight: "bold", color: "#007bff", paddingRight: "16px", backgroundColor: "#f2f2f2" }}>Category</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
                   {dataCategories.find(
                     (category) => category.id === data.categoryId
@@ -183,13 +183,13 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell style={{ textAlign: "right" }}>
+                <TableCell style={{ textAlign: "right", fontWeight: "bold", color: "#007bff", paddingRight: "16px", backgroundColor: "#f2f2f2" }}>
                   Scheduled Start Time
                 </TableCell>
                 <TableCell style={{ textAlign: "left" }}>
                   {formatDate(data.scheduledStartTime)}
                 </TableCell>
-                <TableCell style={{ textAlign: "right" }}>
+                <TableCell style={{ textAlign: "right", fontWeight: "bold", color: "#007bff", paddingRight: "16px", backgroundColor: "#f2f2f2" }}>
                   Scheduled End Time
                 </TableCell>
                 <TableCell style={{ textAlign: "left" }}>
@@ -197,11 +197,11 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell style={{ textAlign: "right" }}>DueTime</TableCell>
+                <TableCell style={{ textAlign: "right", fontWeight: "bold", color: "#007bff", paddingRight: "16px", backgroundColor: "#f2f2f2" }}>DueTime</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
                   {formatDate(data.dueTime)}
                 </TableCell>
-                <TableCell style={{ textAlign: "right" }}>
+                <TableCell style={{ textAlign: "right", fontWeight: "bold", color: "#007bff", paddingRight: "16px", backgroundColor: "#f2f2f2" }}>
                   Completed Time
                 </TableCell>
                 <TableCell style={{ textAlign: "left" }}>
@@ -209,11 +209,11 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell style={{ textAlign: "right" }}>Created At</TableCell>
+                <TableCell style={{ textAlign: "right", fontWeight: "bold", color: "#007bff", paddingRight: "16px", backgroundColor: "#f2f2f2" }}>Created At</TableCell>
                 <TableCell style={{ textAlign: "left" }}>
                   {formatDate(data.createdAt)}
                 </TableCell>
-                <TableCell style={{ textAlign: "right" }}>
+                <TableCell style={{ textAlign: "right", fontWeight: "bold", color: "#007bff", paddingRight: "16px", backgroundColor: "#f2f2f2" }}>
                   Modified At
                 </TableCell>
                 <TableCell style={{ textAlign: "left" }}>

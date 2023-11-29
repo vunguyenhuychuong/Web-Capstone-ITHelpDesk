@@ -24,8 +24,9 @@ import useTicketData from "./useTicketData";
 import AssignTicketModal from "./AssignTicketModal";
 import { Avatar, Grid, Tab, Tabs } from "@mui/material";
 import {
+  TicketStatusOptions,
   getGenderById,
-  priorityOption,
+  getPriorityOptionById,
   roleOptions,
 } from "../../helpers/tableComlumn";
 import { formatDate } from "../../helpers/FormatDate";
@@ -35,6 +36,8 @@ import Details from "./Details";
 import { stringAvatar } from "../../../components/dashboard/Navbar";
 import { useSelector } from "react-redux";
 import { CancelTicketUser, CloseTicketUser } from "../../../app/api/ticket";
+import TicketLogList from "../Customer/TicketLogList";
+import TicketTaskList from "../Technician/TicketTaskList";
 
 const DetailTicket = () => {
   const { ticketId } = useParams();
@@ -50,6 +53,14 @@ const DetailTicket = () => {
     ? `${data.requester.lastName || ""} ${data.requester.firstName || ""}`
     : "";
   const ticketStatus = data.ticketStatus;
+  const statusOption = TicketStatusOptions.find(
+    (option) => option.id === ticketStatus
+  );
+  const badgeStyle = statusOption?.badgeStyle || {};
+  const icon = statusOption?.icon || null;
+  const name = statusOption?.name || "";
+  const ticketPriority = data.priority;
+  const priorityOption = getPriorityOptionById(ticketPriority);
   const [allowEdit, setAllowEdit] = useState(false);
   const [editMessage, setEditMessage] = useState("");
 
@@ -68,7 +79,7 @@ const DetailTicket = () => {
   const handleCancelTicket = async (ticketId) => {
     try {
       await CancelTicketUser(ticketId);
-      navigate("/home/requestCustomerList")
+      navigate("/home/requestCustomerList");
     } catch (error) {
       console.log(error);
     }
@@ -269,20 +280,22 @@ const DetailTicket = () => {
                 }
                 className="custom-tab-label"
               />
-              <Tab
-                label={
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      textTransform: "none",
-                    }}
-                  >
-                    <Task sx={{ marginRight: 1 }} /> Task
-                  </div>
-                }
-                className="custom-tab-label"
-              />
+              {userRole !== 1 && (
+                <Tab
+                  label={
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        textTransform: "none",
+                      }}
+                    >
+                      <Task sx={{ marginRight: 1 }} /> Task
+                    </div>
+                  }
+                  className="custom-tab-label"
+                />
+              )}
               <Tab
                 label={
                   <div
@@ -293,20 +306,6 @@ const DetailTicket = () => {
                     }}
                   >
                     <WorkHistory sx={{ marginRight: 1 }} /> Ticket Log
-                  </div>
-                }
-                className="custom-tab-label"
-              />
-              <Tab
-                label={
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      textTransform: "none",
-                    }}
-                  >
-                    <WorkHistory sx={{ marginRight: 1 }} /> Checklist
                   </div>
                 }
                 className="custom-tab-label"
@@ -324,6 +323,12 @@ const DetailTicket = () => {
                 <LoadingSkeleton />
               )}
             </Box>
+            <Box role="tabpanel" hidden={value !== 1}>
+              {value === 1 ? <TicketTaskList /> : <LoadingSkeleton />}
+            </Box>
+            <Box role="tabpanel" hidden={value !== 2}>
+              {value === 2 ? <TicketLogList /> : <LoadingSkeleton />}
+            </Box>
           </Box>
         </Grid>
         <Grid
@@ -338,7 +343,16 @@ const DetailTicket = () => {
           <MDBRow className="border-box">
             <MDBCol md="12">
               <div className="d-flex">
-                <h2 className="heading-padding">More</h2>
+                <h2
+                  className="heading-padding"
+                  style={{
+                    fontSize: "32px",
+                    fontWeight: "bold",
+                    color: "#007bff",
+                  }}
+                >
+                  More
+                </h2>
               </div>
             </MDBCol>
           </MDBRow>
@@ -366,9 +380,21 @@ const DetailTicket = () => {
               <MDBCol md="12" className="mt-2 text-box">
                 <div className="label-col col-md-4 ">Priority</div>
                 <div className="data-col col-md-8">
-                  {priorityOption.find(
-                    (priority) => priority.id === data.priority
-                  )?.name || "Unknown Priority"}
+                  <span
+                    className={`badge ${priorityOption.colorClass} rounded-pill`}
+                    style={{ fontSize: priorityOption.fontSize }}
+                  >
+                    {priorityOption.name}
+                  </span>
+                </div>
+              </MDBCol>
+              <MDBCol md="12" className="mt-2 text-box">
+                <div className="label-col col-md-4 ">Stage</div>
+                <div className="data-col col-md-6">
+                  <span style={badgeStyle}>
+                    {icon}
+                    {name}
+                  </span>
                 </div>
               </MDBCol>
             </MDBRow>
@@ -421,15 +447,10 @@ const DetailTicket = () => {
             </MDBCol>
           </MDBRow>
           <MDBRow className="mb-4">
-            <MDBCol md="12" className=" mt-2 description-label">
-              <label className="narrow-input">Tags</label>
-              <label className="narrow-input">No tag added</label>
-            </MDBCol>
-          </MDBRow>
-          <MDBRow className="mb-4">
             <MDBCol
               md="12"
               className="d-flex align-items-center mt-2 description-label"
+              style={{ border: "2px solid #999999" }}
             >
               <Avatar
                 alt="User Avatar"
@@ -453,9 +474,17 @@ const DetailTicket = () => {
               </div>
             </MDBCol>
             <MDBTable bordered>
-              <MDBTableBody>
+              <MDBTableBody style={{ border: "2px solid #999999" }}>
                 <tr>
-                  <th>ID</th>
+                  <th
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                      color: "#007bff",
+                    }}
+                  >
+                    ID
+                  </th>
                   <th>
                     {data.requester && data.requester.id
                       ? data.requester.id
@@ -463,7 +492,15 @@ const DetailTicket = () => {
                   </th>
                 </tr>
                 <tr>
-                  <th>Name</th>
+                  <th
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                      color: "#007bff",
+                    }}
+                  >
+                    Name
+                  </th>
                   <th>
                     {data.requester && data.requester.lastName
                       ? data.requester.lastName
@@ -474,7 +511,15 @@ const DetailTicket = () => {
                   </th>
                 </tr>
                 <tr>
-                  <th>Phone</th>
+                  <th
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                      color: "#007bff",
+                    }}
+                  >
+                    Phone
+                  </th>
                   <th>
                     {data.requester && data.requester.phoneNumber
                       ? data.requester.phoneNumber
@@ -482,7 +527,15 @@ const DetailTicket = () => {
                   </th>
                 </tr>
                 <tr>
-                  <th>Address</th>
+                  <th
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                      color: "#007bff",
+                    }}
+                  >
+                    Address
+                  </th>
                   <th>
                     {data.requester && data.requester.address
                       ? data.requester.address
@@ -490,7 +543,15 @@ const DetailTicket = () => {
                   </th>
                 </tr>
                 <tr>
-                  <th>BirthDay</th>
+                  <th
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                      color: "#007bff",
+                    }}
+                  >
+                    BirthDay
+                  </th>
                   <th>
                     {data.requester &&
                     data.requester.dateOfBirth &&
@@ -500,7 +561,12 @@ const DetailTicket = () => {
                   </th>
                 </tr>
                 <tr>
-                  <th>Gender</th>
+                  <th 
+                   style={{
+                    fontWeight: "bold",
+                    fontSize: "16px",
+                    color: "#007bff",
+                  }}>Gender</th>
                   <th>
                     {data.requester && data.requester.gender
                       ? getGenderById(data.requester.gender)
@@ -518,23 +584,6 @@ const DetailTicket = () => {
         onClose={handleCloseAssignTicket}
         ticketId={ticketId}
       />
-
-      {/* <button
-        onClick={toggleSidebar}
-        style={{
-          position: "fixed",
-          top: "50%",
-          left: isSidebarVisible ? "0" : "-50px", // Move button out of the viewport when sidebar is hidden
-          backgroundColor: "#007bff",
-          color: "#fff",
-          padding: "10px",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-        }}
-      >
-        {isSidebarVisible ? "Hide Sidebar" : "Show Sidebar"}
-      </button> */}
     </section>
   );
 };

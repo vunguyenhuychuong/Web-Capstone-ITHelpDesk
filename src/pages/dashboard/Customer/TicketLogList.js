@@ -10,10 +10,11 @@ import { useState } from "react";
 import { Input } from "@mui/material";
 import { getTicketLog } from "../../../app/api/ticketLog";
 import { useParams } from "react-router-dom";
+import { formatDate } from "../../helpers/FormatDate";
 
 export default function TicketLogList() {
   const [searchTerm, setSearchTerm] = useState("");
-  const {ticketId} = useParams();
+  const { ticketId } = useParams();
   const [dataTicketLog, setDataTicketLog] = useState([]);
 
   const fetchDataTicketLog = async () => {
@@ -57,15 +58,24 @@ export default function TicketLogList() {
             dataTicketLog.map((entry, index) => (
               <TableRow key={index}>
                 <TableCell align="right" style={{ width: "50px" }}>
-                  {entry.timestamp}
+                  {formatDate(entry.timestamp)}
                 </TableCell>
                 <TableCell align="left" style={{ width: "500px" }}>
                   <ListAlt /> {entry.entries[0].message || "none message"}
                 </TableCell>
                 <TableCell align="left">
-                  {entry.username}
-                  <br />
-                  {entry.action}
+                  <div
+                    style={{
+                      fontSize: "1.2em",
+                      fontWeight: "bold",
+                      color: "#007bff",
+                    }}
+                  >
+                    {entry.username}
+                  </div>
+                  <div style={{ color: "#555" ,paddingLeft: "8px" }}>
+                    {entry.action}
+                  </div>
                 </TableCell>
               </TableRow>
             ))

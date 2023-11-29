@@ -135,12 +135,6 @@ export async function createTicketByCustomer(data, navigate) {
         Authorization: header,
       },
     });
-    // if (res.data && res.data.responseException.exceptionMessage) {
-    //   console.log(res.data.responseException.exceptionMessage);
-    //   return { success: false, message: res.data.responseException.exceptionMessage}
-    // }else{
-    //   return { success: true, result: res.data.result };
-    // }
     toast.success(res.data.result, {
       autoClose: 2000,
       hideProgressBar: false,
@@ -345,6 +339,20 @@ export async function CloseTicketUser(ticketId) {
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
     });
+  }
+};
+
+export async function getTicketAssignAvailable() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/ticket/assign/available`, {
+      headers: {
+        Authorization: header,
+      }
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
   }
 };
 

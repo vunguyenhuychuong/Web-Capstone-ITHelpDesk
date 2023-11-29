@@ -389,9 +389,9 @@ const TicketSolutionDetail = () => {
             <MDBCol md="12" className="mt-2 text-box">
               <div className="label-col col-md-12">
                 <span style={{ color: "#3399FF" }}>
-                  {getRoleName(data.owner.role)}
+                {data.owner && data.owner.role ? getRoleName(data.owner.role) : "Unknown Role"}
                 </span>{" "}
-                {formatDate(data.createdAt)}
+                {data.owner ? formatDate(data.owner.createdAt) : "Unknown Date"}
               </div>
             </MDBCol>
             <MDBCol md="12" className="mt-2 text-box">
@@ -405,9 +405,9 @@ const TicketSolutionDetail = () => {
             <MDBCol md="12" className="mt-2 text-box">
               <div className="label-col col-md-12">
                 <span style={{ color: "#3399FF" }}>
-                  {getRoleName(data.owner.role)}
+                {data.owner && data.owner.role ? getRoleName(data.owner.role) : "Unknown Role"}
                 </span>{" "}
-                {formatDate(data.modifiedAt)}
+                {data.owner ? formatDate(data.modifiedAt): "Unknown Date"}
               </div>
             </MDBCol>
           </MDBRow>

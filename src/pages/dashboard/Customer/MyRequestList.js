@@ -19,7 +19,7 @@ import { getTicketByUserIdPagination } from "../../../app/api/ticket";
 import { useSelector } from "react-redux";
 import {
   TicketStatusOptions,
-  getPriorityOption,
+  getPriorityOptionById,
 } from "../../helpers/tableComlumn";
 import { getAllCategories } from "../../../app/api/category";
 import { useNavigate } from "react-router-dom";
@@ -257,6 +257,7 @@ const MyRequestList = () => {
                   const ticketStatusOption = TicketStatusOptions.find(
                     (option) => option.id === Ticket.ticketStatus
                   );
+                  const priorityOption = getPriorityOptionById(Ticket.priority);
                   return (
                     <tr key={index}>
                       <td>{Ticket.id}</td>
@@ -285,7 +286,12 @@ const MyRequestList = () => {
                       </td>
                       <td>{Ticket.title}</td>
                       <td>{getCategoryNameById(Ticket.categoryId)}</td>
-                      <td>{getPriorityOption(Ticket.priority)}</td>
+                      <td> <span
+                        className={`badge ${priorityOption.colorClass} rounded-pill`}
+                        style={{ fontSize: priorityOption.fontSize }}
+                      >
+                        {priorityOption.name}
+                      </span></td>
                       <td>
                         <span style={ticketStatusOption.badgeStyle}>
                           {ticketStatusOption.icon}

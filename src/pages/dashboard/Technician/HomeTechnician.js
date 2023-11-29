@@ -2,7 +2,6 @@ import {
   ConfirmationNumber,
   LocalActivity,
   PieChart,
-  SupervisedUserCircle,
 } from "@mui/icons-material";
 import { Grid, Tab, Tabs } from "@mui/material";
 import { Box } from "@mui/system";
@@ -11,7 +10,7 @@ import { useState } from "react";
 import MyView from "./MyView";
 import LoadingSkeleton from "../../../components/iconify/LoadingSkeleton";
 import TicketSolutionList from "./TicketSolutionList";
-import IndexTicket from "../Manager/IndexTicket";
+import TicketAssignAvailableList from "./TicketAssignAvailableList";
 
 const HomeTechnician = () => {
   const [value, setValue] = useState(0);
@@ -85,7 +84,7 @@ const HomeTechnician = () => {
                       <ConfirmationNumber
                         sx={{ marginRight: 1, color: "#0099FF" }}
                       />{" "}
-                      List Ticket
+                      My Assign Tickets
                     </div>
                   }
                   className="custom-tab-label"
@@ -107,30 +106,13 @@ const HomeTechnician = () => {
                   }
                   className="custom-tab-label"
                 />
-                <Tab
-                  label={
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        textTransform: "none",
-                      }}
-                    >
-                      <SupervisedUserCircle
-                        sx={{ marginRight: 1, color: "#0099FF" }}
-                      />{" "}
-                      Resource Management
-                    </div>
-                  }
-                  className="custom-tab-label"
-                />
               </Tabs>
 
               <Box role="tabpanel" hidden={value !== 0}>
                 {value === 0 ? <MyView /> : <LoadingSkeleton />}
               </Box>
               <Box role="tabpanel" hidden={value !== 1}>
-                {value === 1 ? <IndexTicket /> : <LoadingSkeleton />}
+                {value === 1 ? <TicketAssignAvailableList /> : <LoadingSkeleton />}
               </Box>
               <Box role="tabpanel" hidden={value !== 2}>
                 {value === 2 ? <TicketSolutionList /> : <LoadingSkeleton />}

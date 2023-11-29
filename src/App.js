@@ -58,6 +58,7 @@ import CreateUser from './pages/dashboard/User/CreateUser';
 import EditUser from './pages/dashboard/User/EditUser';
 import DetailContract from './pages/dashboard/Manager/Contract/DetailContract';
 import CreateRenewContract from './pages/dashboard/Manager/Contract/CreateRenewContract';
+import TicketAssignAvailableList from './pages/dashboard/Technician/TicketAssignAvailableList';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -112,6 +113,7 @@ function App() {
           {(hasCustomerRole) && <Route path='createRequest' element={<RequestIssue />} />}
           {(hasCustomerRole) && <Route path='requestCustomerList' element={<MyRequestList />} />}
           {(hasManagerRole || hasTechnicianRole) && <Route path='listTicket' element={<ManagersTabs />} />}
+          <Route path='ticketAssign' element={<TicketAssignAvailableList />} />
           {(hasManagerRole) &&<Route path='homeManager' element={<HomeManager />} />}
           {(hasAdminRole) &&<Route path='homeAdmin' element={<HomeAdmin />} />}
           {(hasManagerRole || hasAccountantRole) && <Route path='contractList' element={<ContractList />} />}
