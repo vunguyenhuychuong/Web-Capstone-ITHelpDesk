@@ -1,4 +1,5 @@
 import {
+  MDBBtn,
   MDBContainer,
   MDBNavbar,
   MDBNavbarBrand,
@@ -13,7 +14,7 @@ import PageSizeSelector from "../Pagination/Pagination";
 import { ContentCopy, ViewCompact } from "@mui/icons-material";
 import { formatDate } from "../../helpers/FormatDate";
 import { Box, FormControl, MenuItem, Pagination, Select } from "@mui/material";
-import { FaSearch } from "react-icons/fa";
+import { FaPlus, FaSearch } from "react-icons/fa";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import { getTicketByUserIdPagination } from "../../../app/api/ticket";
 import { useSelector } from "react-redux";
@@ -134,6 +135,10 @@ const MyRequestList = () => {
     navigate(`/home/detailTicket/${ticketId}`);
   };
 
+  const handleOpenRequestTicket = () => {
+    navigate(`/home/createRequest`);
+  };
+
   useEffect(() => {
     fetchDataListTicketCustomer();
     fetchAllCategories();
@@ -150,6 +155,13 @@ const MyRequestList = () => {
               <span style={{ color: "#FFFFFF" }}>All My Requests</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            <MDBBtn
+                color="#eee"
+                style={{ fontWeight: "bold", fontSize: "20px", color: "#FFFFFF" }}
+                onClick={handleOpenRequestTicket}
+              >
+                <FaPlus /> New
+              </MDBBtn>
               <FormControl
                 variant="outlined"
                 style={{
