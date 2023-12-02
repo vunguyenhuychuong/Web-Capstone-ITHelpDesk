@@ -49,10 +49,10 @@ const IndexTicket = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
-  const [searchField, setSearchField] = useState("title");
+  // const [searchField, setSearchField] = useState("title");
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortDirection, setSortDirection] = useState("asc");
-  const [sortBy, setSortBy] = useState("id");
+  const [sortDirection, setSortDirection] = useState("desc");
+  const [sortBy, setSortBy] = useState("createdAt");
   const [selectedTickets, setSelectedTickets] = useState([]);
   const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [selectedTicketData, setSelectedTicketData] = useState(null);
@@ -63,12 +63,11 @@ const IndexTicket = () => {
 
   const fetchAllTicket = useCallback(async () => {
     try {
-      let filter = "";
-      if (searchQuery) {
-        filter = `title="${encodeURIComponent(searchQuery)}"`;
-      }
+      // let filter = "";
+      // if (searchQuery) {
+      //   filter = `title="${encodeURIComponent(searchQuery)}"`;
+      // }
       const res = await getAllTicket(
-        searchField,
         searchQuery,
         currentPage,
         pageSize,
@@ -81,7 +80,7 @@ const IndexTicket = () => {
       console.log("Error while fetching data", error);
       setIsLoading(false);
     }
-  }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection]);
+  }, [currentPage, pageSize, searchQuery, sortBy, sortDirection]);
 
   const fetchAllCategories = async () => {
     try {
@@ -237,7 +236,7 @@ const IndexTicket = () => {
                 }}
                 size="small"
               >
-                <Select
+                {/* <Select
                   value={searchField}
                   onChange={(e) => setSearchField(e.target.value)}
                   inputProps={{
@@ -252,7 +251,7 @@ const IndexTicket = () => {
                   <MenuItem value="priority">Priority</MenuItem>
                   <MenuItem value="impact">Impact</MenuItem>
                   <MenuItem value="ticketStatus">ticketStatus</MenuItem>
-                </Select>
+                </Select> */}
               </FormControl>
               <div className="input-wrapper">
                 <FaSearch id="search-icon" />

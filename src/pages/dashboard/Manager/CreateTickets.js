@@ -21,6 +21,8 @@ import { getDataUser } from "../../../app/api";
 import ModeApi from "../../../app/api/mode";
 import { getDataServices } from "../../../app/api/service";
 import { createTicketByManager } from "../../../app/api/ticket";
+import { Editor } from "primereact/editor";
+
 
 const CreateTickets = () => {
   const navigate = useNavigate();

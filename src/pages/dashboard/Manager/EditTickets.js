@@ -7,9 +7,10 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
+  IconButton,
 } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
@@ -27,8 +28,6 @@ import {
   getTicketByTicketId,
 } from "../../../app/api/ticket";
 import "primereact/resources/primereact.min.css";
-import { FileUpload } from 'primereact/fileupload';
-import { Editor } from "primereact/editor";
 import "primereact/resources/themes/saga-blue/theme.css";
 
 const EditTickets = () => {
@@ -55,7 +54,6 @@ const EditTickets = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
-  const [openImageDialog, setOpenImageDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
     title: "",
@@ -154,14 +152,6 @@ const EditTickets = () => {
     }
   };
 
-  const handleImageDialogOpen = () => {
-    setOpenImageDialog(true);
-  };
-
-  const handleImageDialogClose = () => {
-    setOpenImageDialog(false);
-  };
-
   const handleSubmitTicket = async (e) => {
     e.preventDefault();
 
@@ -188,13 +178,11 @@ const EditTickets = () => {
         await uploadBytes(storageRef, selectedFile);
         attachmentUrl = await getDownloadURL(storageRef);
       }
-
       const updatedData = {
         ...data,
         attachmentUrl: attachmentUrl,
       };
-      setData(updatedData);
-      const res = await editTicketByManager(ticketId, data);
+      const res = await editTicketByManager(ticketId, updatedData);
       setIsSubmitting(false);
       if (res.isError && res.responseException?.exceptionMessage) {
         toast.info(
@@ -217,13 +205,15 @@ const EditTickets = () => {
       } else {
         toast.info("Error updating ticket. Please try again later");
       }
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   const handleGoBack = () => {
     navigate(`/home/detailTicket/${ticketId}`);
+  };
+
+  const closeImagePreview = () => {
+    setIsImagePreviewOpen(false);
   };
 
   return (
@@ -362,7 +352,7 @@ const EditTickets = () => {
                 </h2>
               </Grid>
               <Grid item xs={9}>
-                {/* <textarea
+                <textarea
                   type="text"
                   id="description"
                   name="description"
@@ -370,16 +360,6 @@ const EditTickets = () => {
                   rows="6"
                   value={data.description}
                   onChange={handleInputChange}
-                /> */}
-                <Editor
-                  id="description"
-                  value={data.description}
-                  onTextChange={(e) =>
-                    handleInputChange({
-                      target: { name: "description", value: e.htmlValue },
-                    })
-                  }
-                  style={{ height: "320px", marginBottom: "20px" }}
                 />
                 {fieldErrors.description && (
                   <div style={{ color: "red" }}>{fieldErrors.description}</div>
@@ -398,38 +378,23 @@ const EditTickets = () => {
                 </h2>
               </Grid>
               <Grid item xs={9}>
-                {/* <input
+                <input
                   type="file"
                   name="file"
                   className="form-control input-field"
                   id="attachmentUrl"
                   onChange={handleFileChange}
-                /> */}
-                <div className="card">
-                  <FileUpload
-                    name="file"
-                    url="/api/upload" // Update the URL for your file upload endpoint
-                    multiple
-                    accept="image/*"
-                    maxFileSize={1000000}
-                    onUpload={(e) => handleFileChange(e.files[0])}
-                    emptyTemplate={
-                      <p className="m-0">
-                        Drag and drop files to here to upload.
-                      </p>
-                    }
-                  />
-                  {data.attachmentUrl && (
-                    <div
-                      className="image-preview"
-                      onClick={handleImageDialogOpen}
-                    >
-                      <p className="preview-text">
-                        Click here to view attachment
-                      </p>
-                    </div>
-                  )}
-                </div>
+                />
+                {data.attachmentUrl && (
+    <div
+      className="image-preview"
+      onClick={() => setIsImagePreviewOpen(true)}
+    >
+      <p className="preview-text">
+        Click here to view attachment
+      </p>
+    </div>
+  )}
               </Grid>
               <Grid
                 container
@@ -701,33 +666,29 @@ const EditTickets = () => {
       </Grid>
 
       <Dialog
-        open={openImageDialog}
-        onClose={handleImageDialogClose}
+        open={isImagePreviewOpen}
+        onClose={closeImagePreview}
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>Image Preview</DialogTitle>
+        <DialogTitle>
+          Image Preview
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={closeImagePreview}
+            aria-label="close"
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
         <DialogContent>
-          {data.attachmentUrl ? (
-            <div
-              style={{
-                background: `url(${data.attachmentUrl})`,
-                backgroundSize: "contain",
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "center",
-                width: "100%",
-                height: "70vh",
-              }}
-            ></div>
-          ) : (
-            <p>No image preview available</p>
-          )}
+          <img
+            src={data.attachmentUrl}
+            alt="Attachment Preview"
+            style={{ width: "100%" }}
+          />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleImageDialogClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
       </Dialog>
     </Grid>
   );

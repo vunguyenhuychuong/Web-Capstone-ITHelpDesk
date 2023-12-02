@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 // Get All List ticket
 export async function getAllTicket(
-  searchField,
+  // searchField,
   searchQuery,
   page = 1,
   pageSize = 5,
@@ -15,9 +15,9 @@ export async function getAllTicket(
 ) {
   const header = getAuthHeader();
   try {
-    let filter = `${searchField}.contains("${searchQuery}")`;
+    // let filter = `${searchField}.contains("${searchQuery}")`;
     const params = {
-      filter: filter,
+      // filter: filter,
       page: page,
       pageSize: pageSize,
       sort: `${sortBy} ${sortDirection}`,
