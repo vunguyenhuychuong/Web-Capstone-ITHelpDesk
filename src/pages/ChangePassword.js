@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { MDBContainer } from "mdb-react-ui-kit";
 import { toast } from "react-toastify";
-import { Box, TextField } from "@mui/material";
-import { Navigate, useNavigate } from "react-router-dom";
-import { Button, Checkbox, Form, Input } from "antd";
+import { Box, CircularProgress } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { Button } from "antd";
 
 import { ChangePasswordUser } from "../app/api/profile";
 import CustomTextField from "./CustomizeField";
@@ -16,12 +16,7 @@ const ChangePassword = ({ onCancel }) => {
     confirmNewPassword: "",
   });
 
-  const onFinish = (values) => {
-    console.log("Success:", values);
-  };
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,17 +34,20 @@ const ChangePassword = ({ onCancel }) => {
   };
 
   const onHandleChangePassword = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     const { currentPassword, newPassword, confirmNewPassword } = data;
 
     if (newPassword !== currentPassword && newPassword === confirmNewPassword) {
       try {
         const res = await ChangePasswordUser(data);
-        console.log(res);
         toast.success("Change password successful");
         logout();
       } catch (error) {
         toast.error("Change password not successful, please check your input");
         console.log(error);
+      }finally{
+        setIsSubmitting(false);
       }
     } else {
       toast.error(
@@ -99,8 +97,9 @@ const ChangePassword = ({ onCancel }) => {
           onClick={onHandleChangePassword}
           size="large"
           style={{ flex: 1 }}
+          disabled={isSubmitting}
         >
-          Submit
+          {isSubmitting ? <CircularProgress size={24} /> : "Submit"}
         </Button>
         <Button
           variant="contained"

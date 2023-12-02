@@ -357,6 +357,7 @@ const CreateTickets = () => {
                       Click here to view attachment
                     </p>
                   </div>
+                  
                 )}
               </Grid>
               <Grid

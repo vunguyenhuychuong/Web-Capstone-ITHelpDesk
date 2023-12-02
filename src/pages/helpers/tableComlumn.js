@@ -1,4 +1,4 @@
-import { Cancel, CheckCircle, Create, Email, HighlightOff, Info, Pending } from "@mui/icons-material";
+import { Cancel, CheckCircle, Close, Create, Email, HighlightOff, Info, Pending } from "@mui/icons-material";
 import {
   FaImages,
   FaUser,
@@ -150,8 +150,14 @@ export const ticketStatus = [
   {id:1, name: "Assigned"},
   {id:2, name: "Progress"},
   {id:3, name: "Resolved"},
-  {id:4, name: "Cancelled"},
+  {id:4, name: "Closed"},
+  {id:5, name: "Cancelled"},
 ]
+
+export const getStatusNameById = (statusId) => {
+  const statusObject = ticketStatus.find((status) => status.id === statusId);
+  return statusObject ? statusObject.name : "Unknown";
+};
 
 export const TicketStatusOptions = [
   {
@@ -212,6 +218,20 @@ export const TicketStatusOptions = [
   },
   {
     id: 4,
+    name: "Close",
+    iconClass: "info-icon",
+    icon: <Close style={{ color: '#555555' }} />,
+    badgeStyle: {
+      backgroundColor: 'white',
+      border: '2px solid #555555',
+      borderRadius: '16px',
+      padding: '5px',
+      display: 'flex',
+      alignItems: 'center',
+    }
+  },
+  {
+    id: 5,
     name: "Cancelled",
     iconClass: "info-icon",
     icon: <Cancel style={{ color: '#CC3333' }} />,

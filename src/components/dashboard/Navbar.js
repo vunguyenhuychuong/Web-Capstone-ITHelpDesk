@@ -365,7 +365,7 @@ const Navbar = ({ notifications }) => {
                         src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
                       />
                     )}
-                    <div className="online-dot" /> {/* Green dot */}
+                    <div className="online-dot" />
                   </IconButton>
                 </Tooltip>
                 <div style={{ marginLeft: "8px" }}>

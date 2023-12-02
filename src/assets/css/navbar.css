@@ -22,7 +22,6 @@
   position: absolute;
   bottom: -1px; /* Adjust the position of the dot from the bottom */
   right: 1px; /* Adjust the position of the dot from the right */
-  animation: ripple 1.2s infinite ease-in-out; /* Apply the ripple animation */
   border: 1px solid currentColor;
   content: "";
 }

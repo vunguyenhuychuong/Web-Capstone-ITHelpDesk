@@ -25,6 +25,7 @@ import {
   FormControl,
   InputLabel,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
@@ -51,6 +52,7 @@ import {
   Portrait,
 } from "@mui/icons-material";
 import CustomTextField from "../CustomTextField";
+import { Image } from "primereact/image";
 
 export const VisuallyHidden = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -79,6 +81,8 @@ const Profile = (props) => {
     role: "",
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [errors, setErrors] = useState({
     firstName: "",
     lastName: "",
@@ -88,16 +92,6 @@ const Profile = (props) => {
     dateOfBirth: "",
     address: "",
   });
-
-  // const [formData, setFormData] = useState({
-  //   firstName: data.firstName || "",
-  //   lastName: data.lastName || "",
-  //   email: data.email || "",
-  //   phoneNumber: data.phoneNumber || "",
-  //   gender: data.gender || "",
-  //   dateOfBirth: data.dateOfBirth || "",
-  //   address: data.address || "",
-  // });
 
   const [open, setOpen] = React.useState(false);
   const [openAdd, setOpenAdd] = React.useState(false);
@@ -123,8 +117,21 @@ const Profile = (props) => {
   };
 
   const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
+    const file = e.target.files[0];
+    setSelectedFile(file);
     console.log(selectedFile);
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setData((prevInputs) => ({
+        ...prevInputs,
+        avatarUrl: reader.result,
+      }));
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleClose = () => {
@@ -156,7 +163,6 @@ const Profile = (props) => {
 
   useEffect(() => {
     fetchDataProfile();
-    
   }, []);
 
   const onHandleEditProfile = async () => {
@@ -181,34 +187,35 @@ const Profile = (props) => {
     }
 
     setErrors({});
-
+    setIsSubmitting(true);
     try {
-      let avatarUrl = data.avatarUrl; // Use the current avatarUrl by default
+      let avatarUrl = data.avatarUrl;
 
       if (selectedFile) {
-        // If a new file is selected, upload it and get the download URL
         const storage = getStorage();
         const storageRef = ref(storage, "images/" + selectedFile.name);
         await uploadBytes(storageRef, selectedFile);
-        avatarUrl = await getDownloadURL(storageRef); // Update avatarUrl with the new URL
+        avatarUrl = await getDownloadURL(storageRef);
       }
 
       const formattedDateOfBirth = moment(date).format("YYYY-MM-DD");
 
       const updatedData = {
         ...data,
-        avatarUrl: avatarUrl, // Update the avatarUrl property with the new URL
+        avatarUrl: avatarUrl,
         dateOfBirth: formattedDateOfBirth,
       };
 
-      setData(updatedData); // Update the local state with the new data (including the updated avatarUrl)
-      await UpdateProfile(updatedData); // Send the updated data to the API
+      setData(updatedData);
+      await UpdateProfile(updatedData);
       toast.success("Edit Successful");
       setOpenAdd(false);
       fetchDataProfile();
     } catch (error) {
       console.error(error);
       toast.error("Error editing ticket solution");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -220,28 +227,18 @@ const Profile = (props) => {
             <MDBCol lg="4">
               <MDBCard className="mb-4">
                 <MDBCardBody className="text-center">
-                  {data && data.avatarUrl ? (
-                    <MDBCardImage
-                      src={data.avatarUrl}
-                      alt="avatar"
-                      className="rounded-circle border-hover"
-                      style={{
-                        width: "140px",
-                        borderColor: "grey",
-                        borderWidth: "2px",
-                        borderStyle: "solid",
-                      }}
-                      fluid
+                  <div className="card flex justify-content-center">
+                    <Image
+                      src={
+                        data && data.avatarUrl
+                          ? data.avatarUrl
+                          : "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
+                      }
+                      alt="Avatar"
+                      width="250"
+                      preview
                     />
-                  ) : (
-                    <MDBCardImage
-                      src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
-                      alt="avatar"
-                      className="rounded-circle border-hover"
-                      style={{ width: "150px" }}
-                      fluid
-                    />
-                  )}
+                  </div>
                   <p
                     className="text-muted mb-1"
                     style={{ fontSize: "24px", fontWeight: "bold" }}
@@ -532,7 +529,7 @@ const Profile = (props) => {
           Loading data...
         </div>
       )}
-      <Dialog open={openAdd} maxWidth="md" fullWidth>
+      <Dialog open={openAdd} maxWidth="lg" fullWidth>
         <DialogTitle className="text-center" style={{ background: "#66CCFF" }}>
           <h2 style={{ fontWeight: "bold", color: "white", marginTop: "20px" }}>
             Information about user
@@ -548,7 +545,7 @@ const Profile = (props) => {
                       src={data.avatarUrl}
                       alt="avatar"
                       className="rounded-circle"
-                      style={{ width: "150px" }}
+                      style={{ width: "250px" }}
                       fluid
                     />
                   ) : (
@@ -556,7 +553,7 @@ const Profile = (props) => {
                       src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
                       alt="avatar"
                       className="rounded-circle"
-                      style={{ width: "150px" }}
+                      style={{ width: "250px" }}
                       fluid
                     />
                   )}
@@ -678,8 +675,9 @@ const Profile = (props) => {
                 onClick={onHandleEditProfile}
                 variant="outlined"
                 color="primary"
+                disabled={isSubmitting}
               >
-                <EditIcon />
+                {isSubmitting ? <CircularProgress size={24} /> : <EditIcon />}
               </Button>
               <Button
                 onClick={handleClose}

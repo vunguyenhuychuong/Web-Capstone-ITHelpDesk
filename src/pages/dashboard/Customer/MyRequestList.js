@@ -20,6 +20,7 @@ import { useSelector } from "react-redux";
 import {
   TicketStatusOptions,
   getPriorityOptionById,
+  getStatusNameById,
 } from "../../helpers/tableComlumn";
 import { getAllCategories } from "../../../app/api/category";
 import { useNavigate } from "react-router-dom";
@@ -166,6 +167,7 @@ const MyRequestList = () => {
                     name: "searchField",
                     id: "search-field",
                   }}
+                  style={{color: 'white'}}
                 >
                   <MenuItem value="id">ID</MenuItem>
                   <MenuItem value="title">Title</MenuItem>
@@ -297,6 +299,7 @@ const MyRequestList = () => {
                           {ticketStatusOption.icon}
                           {ticketStatusOption.name}
                         </span>
+                         {/* <td>{getStatusNameById(Ticket.ticketStatus)}</td> */}
                       </td>
                       <td>{formatDate(Ticket.createdAt)}</td>
                       <td>{formatDate(Ticket.modifiedAt)}</td>

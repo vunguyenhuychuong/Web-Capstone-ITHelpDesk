@@ -138,7 +138,7 @@ const DetailTicket = () => {
 
   useEffect(() => {
     if (
-      userRole === 2 ||
+      userRole === 2 || userRole === 3 ||
       (userRole === 1 && ticketStatus === 0)
     ) {
       setAllowEdit(true);
@@ -236,7 +236,7 @@ const DetailTicket = () => {
                       className="btn btn-link narrow-input icon-label mt-2"
                       onClick={handleTicketStatusChange}
                     >
-                      Status
+                      Submit Status
                     </button>
                   ) : null}
                   {userRole === 2 ? (

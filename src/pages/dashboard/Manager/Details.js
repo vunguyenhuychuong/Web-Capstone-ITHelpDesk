@@ -28,6 +28,7 @@ import { formatDate } from "../../helpers/FormatDate";
 import EditTicketModel from "./EditTicketModel";
 import { UpdateTicketForTechnician } from "../../../app/api/ticket";
 import { useSelector } from "react-redux";
+import { Editor } from "primereact/editor";
 
 const Details = ({ data, loading, dataCategories, dataMode }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -91,7 +92,7 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
             </Typography>
             <ArrowBack className="icon" />
           </div>
-          <TextField
+          {/* <TextField
             id="description"
             name="description"
             multiline
@@ -103,6 +104,18 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
             InputProps={{
               style: { fontSize: "1.5em" },
             }}
+          /> */}
+          <Editor
+            id="description"
+            name="description"
+            value={data?.description || ""}
+            disabled
+            // onTextChange={(e) =>
+            //   handleInputChange({
+            //     target: { name: "description", value: e.htmlValue },
+            //   })
+            // }
+            style={{ height: "220px" }}
           />
           <UploadComponent />
           <div className="buttonContainer">
@@ -132,14 +145,18 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
                   marginBottom: "10px",
                   display: "flex",
                   alignItems: "center",
-                  
                 }}
                 onClick={reloadData}
               >
-                Properties <Cached /> <span>{reloadDataFlag ? 'Reloading...' : 'Reload'}</span>
-                {userRole === 3 && <CreditScore style={{
+                Properties <Cached />{" "}
+                <span>{reloadDataFlag ? "Reloading..." : "Reload"}</span>
+                {userRole === 3 && (
+                  <CreditScore
+                    style={{
                       marginLeft: "10px",
-                    }}/>}
+                    }}
+                  />
+                )}
                 {userRole === 3 && (
                   <span
                     style={{
@@ -409,11 +426,11 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
                   {formatDate(data.modifiedAt)}
                 </TableCell>
               </TableRow>
-              {isEditDialogOpen && (userRole === 3) && (
+              {isEditDialogOpen && userRole === 3 && (
                 <EditTicketModel
                   open={isEditDialogOpen}
                   onClose={() => setIsEditDialogOpen(false)}
-                  ticketId={data.id} 
+                  ticketId={data.id}
                   data={data}
                   reloadDetailsData={handleReloadData}
                 />

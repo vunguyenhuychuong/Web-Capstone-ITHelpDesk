@@ -20,6 +20,7 @@ import {
   getChartCategory,
   getChartLastMonth,
   getChartLastWeek,
+  getChartManagerContract,
   getChartMode,
   getChartPriority,
   getChartService,
@@ -51,6 +52,7 @@ const ChartManager = () => {
   const [loading, setLoading] = useState(true);
   const [selectedChart, setSelectedChart] = useState("Request By Category");
   const [selectedTime, setSelectedTime] = useState("1");
+  const [dataContractMn, setDataContractMn] = useState([]);
 
   const fetchDataListTicketTask = async () => {
     try {
@@ -59,6 +61,9 @@ const ChartManager = () => {
       const priorityChart = await getChartPriority();
       const modeChart = await getChartMode();
       const serviceChart = await getChartService();
+      const contractChart = await getChartManagerContract();
+     
+      setDataContractMn(contractChart);
       setDataCategory(categoryChart);
       setDataPriority(priorityChart);
       setDataMode(modeChart);
@@ -116,7 +121,7 @@ const ChartManager = () => {
     fetchDataTotalChart();
     fetchDataListTicketTask();
     fetchDataBarChart();
-  }, []); 
+  }, []);
 
   const data = [
     { id: 0, value: dataTotal.totalOpenTicket, label: "Total Open Ticket" },
@@ -180,6 +185,15 @@ const ChartManager = () => {
   const handleTimeChange = (event) => {
     setSelectedTime(event.target.value);
   };
+
+  const contractChartData = Object.entries(dataContractMn).map(([key, value]) => ({
+    name: key,
+    value, // Use the actual numeric value here
+  }));
+
+  console.log(dataContractMn);
+
+  const hasContractChartData = contractChartData.length > 0;
 
   return (
     <Grid
@@ -297,7 +311,7 @@ const ChartManager = () => {
             </div>
           </div>
         </Grid>
-        <Grid item xs={12} >
+        <Grid item xs={12}>
           <Card style={{ height: "290px" }}>
             <CardContent style={{ marginLeft: "auto", marginRight: "20px" }}>
               {loading ? (
@@ -411,20 +425,23 @@ const ChartManager = () => {
           </div>
         </Grid>
         <Grid item xs={12}>
-          {/* Card content goes here */}
           <Card style={{ height: "290px" }}>
             <CardContent>
+              {hasContractChartData ? (
               <LineChart
-                xAxis={[{ data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }]}
-                series={[
-                  {
-                    data: [2, 3, 5.5, 8.5, 1.5, 5, 1, 4, 3, 8],
-                    showMark: ({ index }) => index % 2 === 0,
-                  },
-                ]}
-                width={500}
-                height={300}
-              />
+              xAxis={[{ data: contractChartData.map((item) => item.name) }]}
+              series={[
+                {
+                  data: contractChartData.map((item) => item.value),
+                  showMark: ({ index }) => index % 2 === 0,
+                },
+              ]}
+              width={500}
+              height={300}
+            />
+              ) : (
+                <div>No data available</div>
+              )}
             </CardContent>
           </Card>
         </Grid>

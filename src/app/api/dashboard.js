@@ -311,4 +311,20 @@ export async function getChartAccountantContractStatus() {
   }
 };
 
+export async function getChartManagerContract() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/dashboard/manager/contract`, {
+      headers: {
+        Authorization: header,
+      }
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};
+
+
+
 

@@ -10,8 +10,8 @@ import React from "react";
 import { useState } from "react";
 import LoadingSkeleton from "../../../components/iconify/LoadingSkeleton";
 import ViewAccountant from "./ViewAccountant";
-import ContractList from "../Contract/ContractList";
 import PaymentList from "../Payment/PaymentList";
+import ContractListAcountant from "./ContractListAcountant";
 
 const HomeAccountant = () => {
   const [value, setValue] = useState(0);
@@ -126,7 +126,7 @@ const HomeAccountant = () => {
               {value === 0 ? <ViewAccountant /> : <LoadingSkeleton />}
             </Box>
             <Box role="tabpanel" hidden={value !== 1}>
-              {value === 1 ? <ContractList /> : <LoadingSkeleton />}
+              {value === 1 ? <ContractListAcountant /> : <LoadingSkeleton />}
             </Box>
             <Box role="tabpanel" hidden={value !== 2}>
               {value === 2 ? <PaymentList /> : <LoadingSkeleton />}

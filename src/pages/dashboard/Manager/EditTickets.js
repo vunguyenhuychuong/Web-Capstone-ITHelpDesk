@@ -26,6 +26,10 @@ import {
   editTicketByManager,
   getTicketByTicketId,
 } from "../../../app/api/ticket";
+import "primereact/resources/primereact.min.css";
+import { FileUpload } from 'primereact/fileupload';
+import { Editor } from "primereact/editor";
+import "primereact/resources/themes/saga-blue/theme.css";
 
 const EditTickets = () => {
   const navigate = useNavigate();
@@ -286,12 +290,14 @@ const EditTickets = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right"
-                      style={{
-                        fontSize: "20px",
-                        fontWeight: "bold",
-                        textAlign: "right",
-                      }}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
                         <span style={{ color: "red" }}>*</span>Requester
                       </h2>
                     </Grid>
@@ -316,12 +322,16 @@ const EditTickets = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right" 
-                      style={{
-                        fontSize: "20px",
-                        fontWeight: "bold",
-                        textAlign: "right",
-                      }}>Title</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Title
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <input
@@ -340,17 +350,19 @@ const EditTickets = () => {
                 </Grid>
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right" 
-                style={{
-                  fontSize: "20px",
-                  fontWeight: "bold",
-                  textAlign: "right",
-                }}>
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
                   <span style={{ color: "red" }}>*</span>Description
                 </h2>
               </Grid>
               <Grid item xs={9}>
-                <textarea
+                {/* <textarea
                   type="text"
                   id="description"
                   name="description"
@@ -358,37 +370,66 @@ const EditTickets = () => {
                   rows="6"
                   value={data.description}
                   onChange={handleInputChange}
+                /> */}
+                <Editor
+                  id="description"
+                  value={data.description}
+                  onTextChange={(e) =>
+                    handleInputChange({
+                      target: { name: "description", value: e.htmlValue },
+                    })
+                  }
+                  style={{ height: "320px", marginBottom: "20px" }}
                 />
                 {fieldErrors.description && (
                   <div style={{ color: "red" }}>{fieldErrors.description}</div>
                 )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right" 
-                style={{
-                  fontSize: "20px",
-                  fontWeight: "bold",
-                  textAlign: "right",
-                }}>Attachment</h2>
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
+                  Attachment
+                </h2>
               </Grid>
               <Grid item xs={9}>
-                <input
+                {/* <input
                   type="file"
                   name="file"
                   className="form-control input-field"
                   id="attachmentUrl"
                   onChange={handleFileChange}
-                />
-                {data.attachmentUrl && (
-                  <div
-                    className="image-preview"
-                    onClick={handleImageDialogOpen}
-                  >
-                    <p className="preview-text">
-                      Click here to view attachment
-                    </p>
-                  </div>
-                )}
+                /> */}
+                <div className="card">
+                  <FileUpload
+                    name="file"
+                    url="/api/upload" // Update the URL for your file upload endpoint
+                    multiple
+                    accept="image/*"
+                    maxFileSize={1000000}
+                    onUpload={(e) => handleFileChange(e.files[0])}
+                    emptyTemplate={
+                      <p className="m-0">
+                        Drag and drop files to here to upload.
+                      </p>
+                    }
+                  />
+                  {data.attachmentUrl && (
+                    <div
+                      className="image-preview"
+                      onClick={handleImageDialogOpen}
+                    >
+                      <p className="preview-text">
+                        Click here to view attachment
+                      </p>
+                    </div>
+                  )}
+                </div>
               </Grid>
               <Grid
                 container
@@ -398,12 +439,14 @@ const EditTickets = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" 
-                      style={{
-                        fontSize: "20px",
-                        fontWeight: "bold",
-                        textAlign: "right",
-                      }}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
                         <span style={{ color: "red" }}>*</span>Mode Id
                       </h2>
                     </Grid>
@@ -430,12 +473,16 @@ const EditTickets = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right" 
-                      style={{
-                        fontSize: "20px",
-                        fontWeight: "bold",
-                        textAlign: "right",
-                      }}>Service</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Service
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -461,11 +508,16 @@ const EditTickets = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    textAlign: "right",
-                  }}>Urgency</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Urgency
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -489,11 +541,16 @@ const EditTickets = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    textAlign: "right",
-                  }}>Category</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Category
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -523,11 +580,16 @@ const EditTickets = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    textAlign: "right",
-                  }}>Ticket Status</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Ticket Status
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -549,11 +611,16 @@ const EditTickets = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    textAlign: "right",
-                  }}>Priority</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Priority
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -581,11 +648,16 @@ const EditTickets = () => {
                   style={{ marginTop: "15px" }}
                 >
                   <Grid item xs={3}>
-                    <h2 className="align-right" style={{
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    textAlign: "right",
-                  }}>Impact Detail</h2>
+                    <h2
+                      className="align-right"
+                      style={{
+                        fontSize: "20px",
+                        fontWeight: "bold",
+                        textAlign: "right",
+                      }}
+                    >
+                      Impact Detail
+                    </h2>
                   </Grid>
                   <Grid item xs={9}>
                     <input
@@ -618,7 +690,7 @@ const EditTickets = () => {
                 <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
-                  onClick={()=> handleGoBack()}
+                  onClick={() => handleGoBack()}
                 >
                   Cancel
                 </button>

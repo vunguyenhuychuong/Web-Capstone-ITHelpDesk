@@ -204,14 +204,14 @@ const Details = ({ data, loading, error }) => {
                     style={{
                       borderRadius: "15px",
                       backgroundColor:
-                        data.company && data.company.status ? "green" : "red",
+                        data && data.status ? "green" : "red",
                       fontSize: "14px",
                       marginLeft: "10px",
                     }}
                   >
-                    {data.company && data.company.status
+                    {data && data.status
                       ? "Active"
-                      : data.company
+                      : data.status
                       ? "Not Active"
                       : "No status available"}
                   </span>
