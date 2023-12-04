@@ -26,20 +26,10 @@ function Login() {
   const navigate = useNavigate();
   const [data, setData] = useState({ username: "", password: "" });
 
-  // const usernameRegex = /^[a-zA-Z0-9_]+$/;
-  // const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    // if(!usernameRegex.test(data.username)){
-    //   toast.error("UserName phải in hoa chữ đầu ít nhất 6 ký tự");
-    //   return;
-    // }
-    // if(!passwordRegex.test(data.password)) {
-    //   toast.error("Password phải In Hoa chữ đầu ít nhất 8 ký tự");
-    //   return;
-    // }
     setLoading(true);
     try {
       dispatch(clearError());
@@ -194,7 +184,17 @@ function Login() {
                   autoFocus
                   value={data.username}
                   onChange={handleChange}
+                  InputProps={{
+                    style: {
+                      borderRadius: 10,
+                      height: "50px", // Set the desired height
+                    },
+                  }}
+                  InputLabelProps={{
+                    style: { fontWeight: "bold" },
+                  }}
                 />
+
                 <TextField
                   margin="normal"
                   required
@@ -206,6 +206,15 @@ function Login() {
                   autoComplete="current-password"
                   value={data.password}
                   onChange={handleChange}
+                  InputProps={{
+                    style: {
+                      borderRadius: 10,
+                      height: "50px", // Set the same height as the username field
+                    },
+                  }}
+                  InputLabelProps={{
+                    style: { fontWeight: "bold" },
+                  }}
                 />
                 <FormControlLabel
                   control={<Checkbox value="remember" color="primary" />}

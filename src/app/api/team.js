@@ -157,4 +157,18 @@ export async function getCityList() {
   }catch(error){
     console.log(error);
   }
+};
+
+export async function getTechnicianList() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/user/list/technicians`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
 }

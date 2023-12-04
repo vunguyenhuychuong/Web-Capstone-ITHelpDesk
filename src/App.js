@@ -59,6 +59,7 @@ import EditUser from './pages/dashboard/User/EditUser';
 import DetailContract from './pages/dashboard/Manager/Contract/DetailContract';
 import CreateRenewContract from './pages/dashboard/Manager/Contract/CreateRenewContract';
 import TicketAssignAvailableList from './pages/dashboard/Technician/TicketAssignAvailableList';
+import ChatMessage from './components/chat/ChatMessage';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -127,6 +128,7 @@ function App() {
           {(hasManagerRole || hasAccountantRole) && <Route path='editPayment/:paymentId' element={<EditPayment />} />}
           <Route path='ticketLog/:ticketId' element={<TicketLogList />} />
           <Route path='teamMember' element={<TeamMemberList />} />
+          <Route path='chatMessager' element={<ChatMessage />} />
           <Route path='createTeamMember' element={<CreateTeamMember />} />
           <Route path='editTeamMember/:teamMemberId' element={<EditTeamMember />} />
           </Route>
