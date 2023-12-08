@@ -21,7 +21,6 @@ import { useSelector } from "react-redux";
 import {
   TicketStatusOptions,
   getPriorityOptionById,
-  getStatusNameById,
 } from "../../helpers/tableComlumn";
 import { getAllCategories } from "../../../app/api/category";
 import { useNavigate } from "react-router-dom";

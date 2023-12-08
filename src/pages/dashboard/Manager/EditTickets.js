@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
 import {
-  Button,
   Dialog,
-  DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   Grid,
   IconButton,
+  Switch,
 } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack, Close } from "@mui/icons-material";
@@ -15,20 +15,29 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import {
+  ImpactOptions,
   TicketStatusOptions,
+  TypeOptions,
   UrgencyOptions,
   priorityOption,
 } from "../../helpers/tableComlumn";
 import { getDataCategories } from "../../../app/api/category";
 import { getDataUser } from "../../../app/api";
 import ModeApi from "../../../app/api/mode";
-import { getDataServices } from "../../../app/api/service";
+import {
+  getAllServiceByCategory,
+} from "../../../app/api/service";
 import {
   editTicketByManager,
   getTicketByTicketId,
 } from "../../../app/api/ticket";
 import "primereact/resources/primereact.min.css";
 import "primereact/resources/themes/saga-blue/theme.css";
+import {
+  fetchCity,
+  fetchDistricts,
+  fetchWards,
+} from "../Customer/StepForm/fetchDataSelect";
 
 const EditTickets = () => {
   const navigate = useNavigate();
@@ -44,15 +53,21 @@ const EditTickets = () => {
     priority: 0,
     impact: 0,
     urgency: 0,
+    type: "Offline",
+    location: "",
     categoryId: 1,
     attachmentUrl: "",
   });
   const [dataCategories, setDataCategories] = useState([]);
-  const [dataServices, setDataServices] = useState([]);
   const [dataMode, setDataMode] = useState([]);
   const [dataUser, setDataUser] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [dataLocation, setDataLocation] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+  const [isPeriodic, setIsPeriodic] = useState(false);
+  const [categoryServices, setCategoryServices] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
@@ -65,9 +80,7 @@ const EditTickets = () => {
       const fetchCategories = await getDataCategories();
       const fetchUsers = await getDataUser();
       const fetchModes = await ModeApi.getMode();
-      const responseService = await getDataServices();
       setDataCategories(fetchCategories);
-      setDataServices(responseService);
       setDataUser(fetchUsers);
       setDataMode(fetchModes);
     } catch (error) {
@@ -76,7 +89,37 @@ const EditTickets = () => {
     }
   };
 
-  const handleInputChange = (e) => {
+  const handleToggle = () => {
+    setIsPeriodic((prevIsPeriodic) => !prevIsPeriodic);
+  };
+
+  const handleCityChange = async (e) => {
+    const { name, value } = e.target;
+    handleInputChange(e);
+
+    if (value) {
+      const districtResponse = await fetchDistricts(value);
+      setDistricts(districtResponse);
+      setWards([]); 
+    } else {
+      setDistricts([]);
+      setWards([]);
+    }
+  };
+
+  const handleDistrictChange = async (e) => {
+    const { name, value } = e.target;
+    handleInputChange(e);
+
+    if (value) {
+      const wardResponse = await fetchWards(value);
+      setWards(wardResponse);
+    } else {
+      setWards([]);
+    }
+  };
+
+  const handleInputChange = async (e) => {
     const { name, value } = e.target;
 
     if (name === "categoryId" || name === "modeId" || name === "serviceId") {
@@ -91,8 +134,22 @@ const EditTickets = () => {
     ) {
       const numericValue = parseInt(value, 10);
       setData((prevData) => ({ ...prevData, [name]: numericValue }));
+    } else if (["city", "district", "ward"].includes(name)) {
+      const numericValue = parseInt(value, 10);
+      setData((prevData) => ({ ...prevData, [name]: numericValue }));
     } else {
       setData((prevData) => ({ ...prevData, [name]: value }));
+    }
+
+    if (name === "categoryId") {
+      const selectedCategory = dataCategories.find(
+        (category) => category.id === parseInt(value, 10)
+      );
+      const categoryIdValue = selectedCategory ? selectedCategory.id : null;
+      setData((prevData) => ({ ...prevData, [name]: categoryIdValue }));
+    
+      const services = await getAllServiceByCategory(parseInt(value, 10));
+      setCategoryServices(services);
     }
 
     setFieldErrors((prevErrors) => ({
@@ -112,20 +169,40 @@ const EditTickets = () => {
           title: ticketData.title,
           description: ticketData.description,
           modeId: ticketData.modeId,
-          categoryId: ticketData.categoryId,
+          serviceId: ticketData.serviceId,
           priority: ticketData.priority,
+          impact: ticketData.impact,
+          urgency: ticketData.urgency,
+          type: ticketData.type,
+          street: ticketData.street,
+          ward: ticketData.ward,
+          district: ticketData.district,
+          city: ticketData.city,
+          isPeriodic: ticketData.isPeriodic,
           impactDetail: ticketData.impactDetail,
           ticketStatus: ticketData.ticketStatus,
           scheduledStartTime: ticketData.scheduledStartTime,
           scheduledEndTime: ticketData.scheduledEndTime,
           dueTime: ticketData.dueTime,
           completedTime: ticketData.completedTime,
+          categoryId: ticketData.categoryId,
           attachmentUrl: ticketData.attachmentUrl,
         }));
       } catch (error) {
         console.error("Error fetching ticket data: ", error);
       }
     };
+
+    const fetchData = async () => {
+      try {
+        const cityResponse = await fetchCity();
+        setDataLocation(cityResponse);
+      } catch (error) {
+        console.log("Error while fetching data", error);
+      }
+    };
+    fetchCity();
+    fetchData();
     fetchTicketData();
     fetchDataManager();
   }, []);
@@ -229,7 +306,7 @@ const EditTickets = () => {
         <MDBCol md="12">
           <MDBRow className="border-box">
             <MDBCol md="5" className="mt-2">
-              <div className="d-flex align-items-center">
+            <div className="d-flex align-items-center">
                 <button type="button" className="btn btn-link icon-label">
                   <ArrowBack
                     onClick={() => handleGoBack(ticketId)}
@@ -242,6 +319,7 @@ const EditTickets = () => {
                     marginLeft: "40px",
                     display: "flex",
                     alignItems: "center",
+                    
                   }}
                 >
                   <h2
@@ -251,12 +329,23 @@ const EditTickets = () => {
                       marginRight: "10px",
                     }}
                   >
-                    Edit Ticket
+                    New Ticket
                   </h2>
                   <span style={{ fontSize: "18px", color: "#888" }}>
-                    Edit a ticket for assistance.
+                    Create a new ticket for assistance.
                   </span>
                 </div>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={isPeriodic}
+                      onChange={handleToggle}
+                      inputProps={{ "aria-label": "Periodic switch" }}
+                    />
+                  }
+                  label="Periodic"
+                  labelPlacement="start"
+                />
               </div>
             </MDBCol>
           </MDBRow>
@@ -386,15 +475,15 @@ const EditTickets = () => {
                   onChange={handleFileChange}
                 />
                 {data.attachmentUrl && (
-    <div
-      className="image-preview"
-      onClick={() => setIsImagePreviewOpen(true)}
-    >
-      <p className="preview-text">
-        Click here to view attachment
-      </p>
-    </div>
-  )}
+                  <div
+                    className="image-preview"
+                    onClick={() => setIsImagePreviewOpen(true)}
+                  >
+                    <p className="preview-text">
+                      Click here to view attachment
+                    </p>
+                  </div>
+                )}
               </Grid>
               <Grid
                 container
@@ -446,22 +535,22 @@ const EditTickets = () => {
                           textAlign: "right",
                         }}
                       >
-                        Service
+                        Category
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
-                        id="serviceId"
-                        name="serviceId"
+                        id="categoryId"
+                        name="categoryId"
                         className="form-select"
-                        value={data.serviceId}
+                        value={data.categoryId}
                         onChange={handleInputChange}
                       >
-                        {dataServices
-                          .filter((service) => service.id !== "")
-                          .map((service) => (
-                            <option key={service.id} value={service.id}>
-                              {service.description}
+                        {dataCategories
+                          .filter((category) => category.id !== "")
+                          .map((category) => (
+                            <option key={category.id} value={category.id}>
+                              {category.name}
                             </option>
                           ))}
                       </select>
@@ -486,8 +575,8 @@ const EditTickets = () => {
                     </Grid>
                     <Grid item xs={5}>
                       <select
-                        id="serviceId"
-                        name="serviceId"
+                        id="urgency"
+                        name="urgency"
                         className="form-select"
                         value={data.urgency}
                         onChange={handleInputChange}
@@ -514,24 +603,22 @@ const EditTickets = () => {
                           textAlign: "right",
                         }}
                       >
-                        Category
+                        Service
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
-                        id="categoryId"
-                        name="categoryId"
+                        id="serviceId"
+                        name="serviceId"
                         className="form-select"
-                        value={data.categoryId}
+                        value={data.serviceId}
                         onChange={handleInputChange}
                       >
-                        {dataCategories
-                          .filter((category) => category.id !== "")
-                          .map((category) => (
-                            <option key={category.id} value={category.id}>
-                              {category.name}
-                            </option>
-                          ))}
+                        {categoryServices.map((service) => (
+                          <option key={service.id} value={service.id}>
+                            {service.description}
+                          </option>
+                        ))}
                       </select>
                     </Grid>
                   </Grid>
@@ -612,6 +699,206 @@ const EditTickets = () => {
                   justifyContent="flex-end"
                   style={{ marginTop: "15px" }}
                 >
+                  <Grid item xs={6}>
+                    <Grid container>
+                      <Grid item xs={6}>
+                        <h2
+                          className="align-right"
+                          style={{
+                            fontSize: "20px",
+                            fontWeight: "bold",
+                            textAlign: "right",
+                          }}
+                        >
+                          Impact
+                        </h2>
+                      </Grid>
+                      <Grid item xs={5}>
+                        <select
+                          id="impact"
+                          name="impact"
+                          className="form-select"
+                          value={data.impact}
+                          onChange={handleInputChange}
+                        >
+                          {ImpactOptions.map((impact) => (
+                            <option key={impact.id} value={impact.id}>
+                              {impact.name}
+                            </option>
+                          ))}
+                        </select>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Grid container>
+                      <Grid item xs={6}>
+                        <h2
+                          className="align-right"
+                          style={{
+                            fontSize: "20px",
+                            fontWeight: "bold",
+                            textAlign: "right",
+                          }}
+                        >
+                          Type
+                        </h2>
+                      </Grid>
+                      <Grid item xs={5}>
+                        <select
+                          id="type"
+                          name="type"
+                          className="form-select"
+                          onChange={handleInputChange}
+                        >
+                          {TypeOptions.map((type) => (
+                            <option key={type.id} value={parseInt(type.id, 10)}>
+                              {type.name}
+                            </option>
+                          ))}
+                        </select>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+
+                <Grid
+                  container
+                  justifyContent="flex-end"
+                  style={{ marginTop: "15px" }}
+                >
+                  <Grid item xs={6}>
+                    <Grid container>
+                      <Grid item xs={6}>
+                        <h2
+                          className="align-right"
+                          style={{
+                            fontSize: "20px",
+                            fontWeight: "bold",
+                            textAlign: "right",
+                          }}
+                        >
+                          City
+                        </h2>
+                      </Grid>
+                      <Grid item xs={5}>
+                        <select
+                          id="city"
+                          name="city"
+                          className="form-select"
+                          value={data.city}
+                          onChange={handleCityChange}
+                        >
+                          {dataLocation.map((city) => (
+                            <option key={city.code} value={city.code}>
+                              {city.name}
+                            </option>
+                          ))}
+                        </select>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Grid container>
+                      <Grid item xs={6}>
+                        <h2
+                          className="align-right"
+                          style={{
+                            fontSize: "20px",
+                            fontWeight: "bold",
+                            textAlign: "right",
+                          }}
+                        >
+                          District
+                        </h2>
+                      </Grid>
+                      <Grid item xs={5}>
+                        <select
+                          id="district"
+                          name="district"
+                          className="form-select"
+                          value={data.district}
+                          onChange={handleDistrictChange}
+                        >
+                          {districts.map((district) => (
+                            <option key={district.code} value={district.code}>
+                              {district.name}
+                            </option>
+                          ))}
+                        </select>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+
+                <Grid
+                  container
+                  justifyContent="flex-end"
+                  style={{ marginTop: "15px" }}
+                >
+                  <Grid item xs={6}>
+                    <Grid container>
+                      <Grid item xs={6}>
+                        <h2
+                          className="align-right"
+                          style={{
+                            fontSize: "20px",
+                            fontWeight: "bold",
+                            textAlign: "right",
+                          }}
+                        >
+                          Ward
+                        </h2>
+                      </Grid>
+                      <Grid item xs={5}>
+                        <select
+                          id="ward"
+                          name="ward"
+                          className="form-select"
+                          value={data.ward}
+                          onChange={handleInputChange}
+                        >
+                          {wards.map((ward) => (
+                            <option key={ward.code} value={ward.code}>
+                              {ward.name}
+                            </option>
+                          ))}
+                        </select>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Grid container>
+                      <Grid item xs={6}>
+                        <h2
+                          className="align-right"
+                          style={{
+                            fontSize: "20px",
+                            fontWeight: "bold",
+                            textAlign: "right",
+                          }}
+                        >
+                          Street
+                        </h2>
+                      </Grid>
+                      <Grid item xs={5}>
+                        <input
+                          id="street"
+                          type="text"
+                          name="street"
+                          className="form-control"
+                          value={data.street}
+                          onChange={handleInputChange}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid
+                  container
+                  justifyContent="flex-end"
+                  style={{ marginTop: "15px" }}
+                >
                   <Grid item xs={3}>
                     <h2
                       className="align-right"
@@ -621,14 +908,15 @@ const EditTickets = () => {
                         textAlign: "right",
                       }}
                     >
-                      Impact Detail
+                      <span style={{ color: "red" }}>*</span>ImpactDetail
                     </h2>
                   </Grid>
                   <Grid item xs={9}>
-                    <input
+                    <textarea
                       id="impactDetail"
                       type="text"
                       name="impactDetail"
+                      row="2"
                       className="form-control"
                       value={data.impactDetail}
                       onChange={handleInputChange}

@@ -29,16 +29,45 @@ import EditTicketModel from "./EditTicketModel";
 import { UpdateTicketForTechnician } from "../../../app/api/ticket";
 import { useSelector } from "react-redux";
 import { Editor } from "primereact/editor";
+import { fetchCity, fetchDistricts, fetchWards } from "../Customer/StepForm/fetchDataSelect";
 
-const Details = ({ data, loading, dataCategories, dataMode }) => {
+const Details = ({ data, loading, dataCategories }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [openImageDialog, setOpenImageDialog] = useState(false);
   const [reloadDataFlag, setReloadDataFlag] = useState(false);
   const user = useSelector((state) => state.auth);
   const userRole = user.user.role;
+  const [cityName, setCityName] = useState("");
+  const [districtName, setDistrictName] = useState("");
+  const [wardName, setWardName] = useState("");
+
+  console.log(data);
 
   const handleEditClick = () => {
     setIsEditDialogOpen(true);
+  };
+
+  const fetchLocationNames = async () => {
+    try {
+      const cityResponse = await fetchCity();
+      const districtResponse = await fetchDistricts(data.city);
+      const wardResponse = await fetchWards(data.district);
+
+      setCityName(
+        cityResponse.find((city) => city.code === data.city)?.name ||
+          "Not Provided"
+      );
+      setDistrictName(
+        districtResponse.find((district) => district.code === data.district)
+          ?.name || "Not Provided"
+      );
+      setWardName(
+        wardResponse.find((ward) => ward.code === data.ward)?.name ||
+          "Not Provided"
+      );
+    } catch (error) {
+      console.log("Error while fetching location names", error);
+    }
   };
 
   const handleReloadData = () => {
@@ -71,7 +100,8 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
     if (reloadDataFlag) {
       reloadData();
     }
-  }, [reloadDataFlag]);
+    fetchLocationNames();
+  }, [reloadDataFlag,data.city, data.district, data.ward]);
 
   return (
     <div>
@@ -216,12 +246,10 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
                     backgroundColor: "#f2f2f2",
                   }}
                 >
-                  Status
+                  Type
                 </TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {ticketStatus.find(
-                    (status) => status.id === data.ticketStatus
-                  )?.name || "Unknown Status"}
+                  {data && data.type ? data.type : "N/A"}
                 </TableCell>
                 <TableCell
                   style={{
@@ -235,7 +263,7 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
                   Impact Detail
                 </TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {data.impactDetail || "Not Assigned"}
+                  {data && data.impactDetail ? data.impactDetail : "N/A"}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -312,12 +340,10 @@ const Details = ({ data, loading, dataCategories, dataMode }) => {
                     backgroundColor: "#f2f2f2",
                   }}
                 >
-                  Assignment
+                  Location
                 </TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {data && data.assignment && data.assignment.technicianFullName
-                    ? data.assignment.technicianFullName
-                    : "Assignment N/A"}
+                {cityName},{districtName},{wardName},{data && data.street}
                 </TableCell>
                 <TableCell
                   style={{

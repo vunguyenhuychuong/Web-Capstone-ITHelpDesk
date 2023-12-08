@@ -365,5 +365,13 @@ export async function getTicketAssignAvailable() {
   }
 };
 
+export async function getDataLocation () {
+  try{
+    const city = await axios.get(`https://provinces.open-api.vn/api/`);
+  }catch(error){
+
+  }
+}
+
 
 

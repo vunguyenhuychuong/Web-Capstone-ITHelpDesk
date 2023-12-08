@@ -98,6 +98,11 @@ export const getPriorityOptionById = (priorityId) => {
   };
 };
 
+export const TypeOptions = [
+  { id: 0 , name: "Offline"},
+  { id: 1 , name: "Online"}
+]
+
 export const getRoleNameById = (roleId) => {
   const role= roleOptions.find(option => option.id === roleId);
   return role ? role.name : 'Unknown Role';
@@ -320,6 +325,11 @@ export const getStatusContract = (statusId) => {
   const status = statusContract.find(option => option.id === statusId);
   return status ? status.name : 'Unknown Status';
 }
+
+export const getNameFromCode = (code, array) => {
+  const item = array.find((item) => item.code === code);
+  return item ? item.name : '';
+};
 
 export default Process;
 

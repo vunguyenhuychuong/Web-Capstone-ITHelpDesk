@@ -1,19 +1,28 @@
 import {
   Assessment,
+  Badge,
   DonutSmall,
+  PlayArrow,
   QueryStats,
   Replay,
+  SkipNext,
+  SkipPrevious,
   TableChart,
 } from "@mui/icons-material";
 import {
+  Avatar,
+  Box,
   Card,
   CardContent,
   FormControl,
   Grid,
+  IconButton,
   MenuItem,
   Select,
   Tooltip,
+  Typography,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import "../../../assets/css/homeManager.css";
 import React, { useEffect, useState } from "react";
 import {
@@ -53,6 +62,7 @@ const ChartManager = () => {
   const [selectedChart, setSelectedChart] = useState("Request By Category");
   const [selectedTime, setSelectedTime] = useState("1");
   const [dataContractMn, setDataContractMn] = useState([]);
+  const theme = useTheme();
 
   const fetchDataListTicketTask = async () => {
     try {
@@ -62,7 +72,7 @@ const ChartManager = () => {
       const modeChart = await getChartMode();
       const serviceChart = await getChartService();
       const contractChart = await getChartManagerContract();
-     
+
       setDataContractMn(contractChart);
       setDataCategory(categoryChart);
       setDataPriority(priorityChart);
@@ -186,10 +196,12 @@ const ChartManager = () => {
     setSelectedTime(event.target.value);
   };
 
-  const contractChartData = Object.entries(dataContractMn).map(([key, value]) => ({
-    name: key,
-    value, // Use the actual numeric value here
-  }));
+  const contractChartData = Object.entries(dataContractMn).map(
+    ([key, value]) => ({
+      name: key,
+      value, // Use the actual numeric value here
+    })
+  );
 
   console.log(dataContractMn);
 
@@ -203,6 +215,79 @@ const ChartManager = () => {
       spacing={2}
       style={{ marginTop: "10px", background: "#eee", marginLeft: "-9px" }}
     >
+      <Grid item xs={3}>
+        <Card style={{ display: "flex", height: "200px" }}>
+          <Avatar
+            sx={{
+              backgroundColor: "#ccccc",
+              width: 140,
+              height: 140,
+              margin: "20px",
+            }}
+          >
+            <Badge />
+          </Avatar>
+          <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
+            <CardContent sx={{ flex: "1 0 auto" }}>
+              <Typography
+                component="div"
+                variant="h5"
+                sx={{ textAlign: "right" }}
+              >
+                Live From Space
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                color="text.secondary"
+                component="div"
+                sx={{ textAlign: "right" }}
+              >
+                Mac Miller
+              </Typography>
+              <Typography
+                variant="h3"
+                sx={{ textAlign: "right", marginBottom: 10, fontWeight: "bold" }}
+              >
+                123
+              </Typography>
+            </CardContent>
+          </Box>
+        </Card>
+      </Grid>
+
+      {/* Card 2 */}
+      <Grid item xs={3}>
+        <Card style={{ height: "200px" }}>
+          <CardContent>
+            {/* Fetch and display data for the second card from your API */}
+            {/* Replace the placeholder content with your API data */}
+            <h3>Data Analysis 2</h3>
+          </CardContent>
+        </Card>
+      </Grid>
+
+      {/* Card 3 */}
+      <Grid item xs={3}>
+        <Card style={{ height: "200px" }}>
+          <CardContent>
+            {/* Fetch and display data for the third card from your API */}
+            {/* Replace the placeholder content with your API data */}
+            <h3>Data Analysis 3</h3>
+          </CardContent>
+        </Card>
+      </Grid>
+
+      {/* Card 4 */}
+      <Grid item xs={3}>
+        <Card style={{ height: "200px" }}>
+          <CardContent>
+            {/* Fetch and display data for the fourth card from your API */}
+            {/* Replace the placeholder content with your API data */}
+            <h3>Data Analysis 4</h3>
+            {/* <p>Data: {apiData4}</p> */}
+          </CardContent>
+        </Card>
+      </Grid>
       <Grid item xs={6}>
         <Grid item xs={12}>
           <div
@@ -428,17 +513,17 @@ const ChartManager = () => {
           <Card style={{ height: "290px" }}>
             <CardContent>
               {hasContractChartData ? (
-              <LineChart
-              xAxis={[{ data: contractChartData.map((item) => item.name) }]}
-              series={[
-                {
-                  data: contractChartData.map((item) => item.value),
-                  showMark: ({ index }) => index % 2 === 0,
-                },
-              ]}
-              width={500}
-              height={300}
-            />
+                <LineChart
+                  xAxis={[{ data: contractChartData.map((item) => item.name) }]}
+                  series={[
+                    {
+                      data: contractChartData.map((item) => item.value),
+                      showMark: ({ index }) => index % 2 === 0,
+                    },
+                  ]}
+                  width={500}
+                  height={300}
+                />
               ) : (
                 <div>No data available</div>
               )}

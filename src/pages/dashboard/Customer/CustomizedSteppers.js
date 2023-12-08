@@ -4,13 +4,13 @@ import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import { Box, Button, StepButton, StepLabel } from "@mui/material";
 import { ColorlibConnector, ColorlibStepIcon } from "./StepperDecorate";
-import { useState } from "react";
 import Step1 from "./StepForm/Step1";
 import Step2 from "./StepForm/Step2";
 import Step3 from "./StepForm/Step3";
 import { CheckCircle, FastForward, FastRewind } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useState } from "react";
 
 const steps = ["Select Category", "Fill Request", "Complete And Send"];
 
@@ -21,8 +21,9 @@ export default function CustomizedSteppers({
   handleSubmitTicket,
 }) {
   const [activeStep, setActiveStep] = React.useState(0);
-  const [dataCategories, setDataCategories] = useState([]);
   const navigate = useNavigate();
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
 
   const totalSteps = steps.length;
   const handleNext = () => {
@@ -51,10 +52,6 @@ export default function CustomizedSteppers({
 
   const handleComplete = () => {
     handleNext();
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
   };
 
   const handleGoBack = () => {
@@ -93,7 +90,7 @@ export default function CustomizedSteppers({
         <Step1
           data={data}
           handleInputChange={handleInputChange}
-          dataCategories={dataCategories}
+          location={data.location}
         />
       )}
 
@@ -102,11 +99,12 @@ export default function CustomizedSteppers({
           data={data}
           handleInputChange={handleInputChange}
           handleFileChange={handleFileChange}
+          
         />
       )}
 
       {activeStep === 2 && (
-        <Step3 data={data} handleSubmit={handleSubmitTicket} />
+        <Step3 data={data} districts={districts} wards={wards} handleSubmit={handleSubmitTicket} />
       )}
 
       <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>

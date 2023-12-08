@@ -3,32 +3,36 @@ import "../../../assets/css/ticketSolution.css";
 import { Grid } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack } from "@mui/icons-material";
-import { getAllCategories } from "../../../app/api/category";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { createTicketByCustomer } from "../../../app/api/ticket";
 import CustomizedSteppers from "./CustomizedSteppers";
 import { useNavigate } from "react-router-dom";
+import { getAllService } from "../../../app/api/service";
 
 const RequestIssue = () => {
   const [data, setData] = useState({
     title: "",
     description: "",
+    serviceId: 1,
+    type: "",
+    city: "",
+    street: "",
+    ward: "",
+    district: "",
     priority: 0,
-    categoryId: 1,
-    avatarUrl: "",
+    attachmentUrl: "",
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
-  const [dataCategories, setDataCategories] = useState([]);
+  const [dataService, setDataServices] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const fetchCategory = async () => {
+  const fetchService = async () => {
     try {
-      const response = await getAllCategories();
-      const categoriesArray = Object.values(response);
-      setDataCategories(categoriesArray);
+      const response = await getAllService();
+      setDataServices(response);
     } catch (error) {
       console.log("Error while fetching data", error);
     } finally {
@@ -36,11 +40,11 @@ const RequestIssue = () => {
   };
 
   useEffect(() => {
-    fetchCategory();
+    fetchService();
   }, []);
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target || e;
     if (name === "priority") {
       const priorityValue = parseInt(value, 10);
 
@@ -68,16 +72,16 @@ const RequestIssue = () => {
       toast.warning("Title is required");
       return;
     }
-    let avatarUrl = data.avatarUrl;
+    let attachmentUrl = data.attachmentUrl;
     if (selectedFile) {
       const storage = getStorage();
       const storageRef = ref(storage, "images/" + selectedFile.name);
       await uploadBytes(storageRef, selectedFile);
-      avatarUrl = await getDownloadURL(storageRef);
+      attachmentUrl = await getDownloadURL(storageRef);
     }
     const updatedData = {
       ...data,
-      avatarUrl: avatarUrl,
+      attachmentUrl: attachmentUrl,
     };
     setData(updatedData);
     setIsSubmitting(true);
@@ -85,9 +89,14 @@ const RequestIssue = () => {
       await createTicketByCustomer({
         title: data.title,
         description: data.description,
+        serviceId: data.serviceId,
+        type: data.type,
+        city:  data.city,
+        street: data.street,
+        ward: data.ward,
+        district: data.district,
         priority: data.priority,
-        categoryId: data.categoryId,
-        avatarUrl: avatarUrl,
+        attachmentUrl: attachmentUrl,
       });
       navigate(`/home/mains`);
     } catch (error) {
@@ -122,7 +131,26 @@ const RequestIssue = () => {
                   />
                 </button>
 
-                <h2 style={{ marginLeft: "10px" }}>New Ticket</h2>
+                <div
+                  style={{
+                    marginLeft: "40px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontSize: "30px",
+                      fontWeight: "bold",
+                      marginRight: "10px",
+                    }}
+                  >
+                    New Ticket
+                  </h2>
+                  <span style={{ fontSize: "18px", color: "#888" }}>
+                    Create a new ticket for assistance.
+                  </span>
+                </div>
               </div>
             </MDBCol>
           </MDBRow>

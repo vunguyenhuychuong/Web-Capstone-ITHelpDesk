@@ -8,31 +8,10 @@ const Step2 = ({ data, handleInputChange, handleFileChange }) => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [selectedFileName, setSelectedFileName] = useState("");
 
-
   return (
-    <>
-      <Tooltip
-        title="Writing you Reason you have problems"
-        arrow
-      >
-        <FormControl fullWidth variant="outlined" style={{ marginBottom: 16 }}>
-          <TextField
-            id="title"
-            type="text"
-            name="title"
-            value={data.title}
-            onChange={handleInputChange}
-            label="Title"
-            variant="outlined"
-            error={data.title === ""}
-            helperText={data.title === "" ? "Title is required" : ""}
-          />
-        </FormControl>
-      </Tooltip>
-
      <>
      <Tooltip title="Writing you Reason you have problems" arrow>
-        <FormControl fullWidth variant="outlined" style={{ marginBottom: 16 }}>
+        <FormControl fullWidth variant="outlined" style={{ marginBottom: 10 }}>
           <TextField
             id="title"
             type="text"
@@ -43,6 +22,9 @@ const Step2 = ({ data, handleInputChange, handleFileChange }) => {
             variant="outlined"
             error={data.title === ""}
             helperText={data.title === "" ? "Title is required" : ""}
+            InputProps={{
+              style: { height: '50px' }, // Adjust the height value as needed
+            }}
           />
         </FormControl>
       </Tooltip>
@@ -72,7 +54,6 @@ const Step2 = ({ data, handleInputChange, handleFileChange }) => {
             name="file"
             onChange={(e) => {
               handleFileChange(e);
-              // Simulate progress update
               const file = e.target.files[0];
 
               setSelectedFileName(file ? file.name : ""); // Set the selected file name
@@ -118,7 +99,6 @@ const Step2 = ({ data, handleInputChange, handleFileChange }) => {
         </FormControl>
       </Tooltip>
      </>
-    </>
   );
 };
 
