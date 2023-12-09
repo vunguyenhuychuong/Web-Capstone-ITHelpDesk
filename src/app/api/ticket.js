@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 // Get All List ticket
 export async function getAllTicket(
-  // searchField,
+  searchField,
   searchQuery,
   page = 1,
   pageSize = 5,
@@ -15,9 +15,9 @@ export async function getAllTicket(
 ) {
   const header = getAuthHeader();
   try {
-    // let filter = `${searchField}.contains("${searchQuery}")`;
+    let filter = `${searchField}.contains("${searchQuery}")`;
     const params = {
-      // filter: filter,
+      filter: filter,
       page: page,
       pageSize: pageSize,
       sort: `${sortBy} ${sortDirection}`,
@@ -140,6 +140,7 @@ export async function createTicketByCustomer(data, navigate) {
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
     });
+    return res.data.result;
   } catch (error) {
     toast.error(error.response.data.responseException.exceptionMessage, {
       autoClose: 2000,

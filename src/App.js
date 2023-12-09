@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route} from 'react-router-dom';
-import { Landing, Error, Login} from './pages';
+import {  Error, Login} from './pages';
 import 'react-toastify/dist/ReactToastify.css';
 import './assets/css/toast.css'
 import {

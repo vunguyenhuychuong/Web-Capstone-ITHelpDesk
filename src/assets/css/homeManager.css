@@ -16,3 +16,50 @@
 .pie-chart-container {
   margin-right: 20px; /* Adjust the margin as needed */
 }
+
+.paymentCell {
+  background: #EEEEEE;
+  font-size: 18px;
+  text-align: left;
+  border-bottom: 2px solid #CCCCCC;
+  font-weight: bold;
+}
+
+.paymentContent {
+  display: flex;
+  align-items: center;
+}
+
+.buttonsContainer {
+  display: flex;
+  margin-left: 10px;
+}
+
+.button-payment {
+  margin-left: 10px; /* Adjust margin as needed */
+  margin-right: 10px;
+}
+
+.button-payment:last-child {
+  margin-right: 0;
+}
+
+.paymentContent {
+  display: flex;
+  align-items: center;
+}
+
+.paymentText {
+  font-size: 24px; 
+  font-weight: bold;
+  color: #333; 
+  margin-right: 20px; 
+}
+
+.buttonsContainer {
+  display: flex;
+}
+
+.button-payment {
+  margin-right: 10px;
+}

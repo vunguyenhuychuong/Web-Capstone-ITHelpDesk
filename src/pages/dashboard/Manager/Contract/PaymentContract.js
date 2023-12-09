@@ -12,17 +12,16 @@ import {
 import "../../../../assets/css/detailTicket.css";
 import PropTypes from "prop-types";
 import "../../../../assets/css/homeManager.css";
-import { useSelector } from "react-redux";
 import { DataGrid } from "@mui/x-data-grid";
 import { formatDate } from "../../../helpers/FormatDate";
 import { getPaymentTerm } from "../../../../app/api/payment";
 import { useEffect } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { DeleteSweep, EditCalendar } from "@mui/icons-material";
 
 const PaymentContract = ({ dataPayment, loading }) => {
-  const user = useSelector((state) => state.auth);
-  const userRole = user.user.role;
+  
   const navigate = useNavigate();
   const [dataPaymentTerm, setDataPaymentTerm] = useState([]);
   PaymentContract.propTypes = {
@@ -45,7 +44,7 @@ const PaymentContract = ({ dataPayment, loading }) => {
 
   const handleOpenCreatePayment = () => {
     navigate("/home/createPayment");
-  }
+  };
 
   const columns = [
     { field: "id", headerName: "ID", width: 100 },
@@ -96,15 +95,17 @@ const PaymentContract = ({ dataPayment, loading }) => {
     },
   ];
 
-  const formattedDataContractService = (dataPaymentTerm || []).map((payment) => ({
-    id: payment?.id,
-    Description: payment?.description,
-    termAmount: payment?.termAmount,
-    termStart: payment?.termStart,
-    termEnd: payment?.termEnd,
-    isPaid: payment?.isPaid,
-    termFinishTime: payment?.termFinishTime,
-  }));
+  const formattedDataContractService = (dataPaymentTerm || []).map(
+    (payment) => ({
+      id: payment?.id,
+      Description: payment?.description,
+      termAmount: payment?.termAmount,
+      termStart: payment?.termStart,
+      termEnd: payment?.termEnd,
+      isPaid: payment?.isPaid,
+      termFinishTime: payment?.termFinishTime,
+    })
+  );
 
   return (
     <div>
@@ -119,17 +120,28 @@ const PaymentContract = ({ dataPayment, loading }) => {
           >
             <TableHead>
               <TableRow>
-                <TableCell
-                  colSpan={4}
-                  style={{
-                    background: "#EEEEEE",
-                    fontSize: "18px",
-                    textAlign: "left",
-                    borderBottom: "2px solid #CCCCCC",
-                    fontWeight: "bold",
-                  }}
-                >
-                  Payment Information
+                <TableCell colSpan={4} className="paymentCell">
+                  <div className="paymentContent">
+                    <div className="paymentText">Payment Information</div>
+                    <div className="buttonsContainer">
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        className="button-payment"
+                        style={{ backgroundColor: '#2196F3', color: '#fff', marginRight: 10 }}
+                      >
+                       <EditCalendar  style={{marginRight: 10}}/> Edit
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        className="button-payment"
+                        style={{ backgroundColor: '#f44336', color: '#fff' }}
+                      >
+                        <DeleteSweep style={{marginRight: 10}}/> Remove
+                      </Button>
+                    </div>
+                  </div>
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -247,14 +259,19 @@ const PaymentContract = ({ dataPayment, loading }) => {
               </TableBody>
             ) : (
               <Typography variant="subtitle1" style={{ margin: "20px" }}>
-              No Payment Information available. 
-              <Button
-                style={{ marginLeft: '5px', color: 'blue', textDecoration: 'underline', transformStyle: 'none' }}
-                onClick={handleOpenCreatePayment}
-              >
-                Add Payment
-              </Button>
-            </Typography>
+                No Payment Information available.
+                <Button
+                  style={{
+                    marginLeft: "5px",
+                    color: "blue",
+                    textDecoration: "underline",
+                    transformStyle: "none",
+                  }}
+                  onClick={handleOpenCreatePayment}
+                >
+                  Add Payment
+                </Button>
+              </Typography>
             )}
           </Table>
 
@@ -284,7 +301,7 @@ const PaymentContract = ({ dataPayment, loading }) => {
                         fontWeight: "bold",
                       }}
                     >
-                      Associate Service
+                      Payment Term
                     </TableCell>
                   </TableRow>
                 </TableBody>

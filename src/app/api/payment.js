@@ -1,6 +1,7 @@
 import axios from "axios";
 import { getAuthHeader } from "./auth";
 import { baseURL } from "./link";
+import { toast } from "react-toastify";
 
 export async function getAllPayment(
   searchField,
@@ -55,8 +56,18 @@ export async function createPayment(data) {
         Authorization: header,
       },
     });
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     return res.data.result;
   } catch (error) {
+    toast.error(error.response.data.responseException.exceptionMessage.error, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     console.log(error);
   }
 }

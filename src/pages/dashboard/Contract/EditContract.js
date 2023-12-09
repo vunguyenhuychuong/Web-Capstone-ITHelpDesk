@@ -336,7 +336,7 @@ const EditContract = () => {
                   id="name"
                   type="text"
                   name="name"
-                  className="form-control input-field"
+                  className="form-control-text input-field"
                   value={data.name}
                   onChange={handleInputChange}
                 />
@@ -361,7 +361,7 @@ const EditContract = () => {
                   type="content"
                   id="description"
                   name="description"
-                  className="form-control input-field-2"
+                  className="form-control-text input-field-2"
                   rows="6"
                   value={data.description}
                   onChange={handleInputChange}
@@ -421,7 +421,7 @@ const EditContract = () => {
                         id="value"
                         type="number"
                         name="value"
-                        className="form-control input-field"
+                        className="form-control-text input-field"
                         value={data.value}
                         onChange={handleInputChange}
                       />
@@ -450,7 +450,7 @@ const EditContract = () => {
                       <select
                         id="parentContractId"
                         name="parentContractId"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.parentContractId}
                         onChange={handleInputChange}
                       >
@@ -562,7 +562,7 @@ const EditContract = () => {
                       <select
                         id="accountantId"
                         name="accountantId"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.accountantId}
                         onChange={handleInputChange}
                       >
@@ -596,7 +596,7 @@ const EditContract = () => {
                       <select
                         id="companyId"
                         name="companyId"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.companyId}
                         onChange={handleInputChange}
                       >

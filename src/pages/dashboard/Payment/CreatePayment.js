@@ -77,6 +77,14 @@ const CreatePayment = () => {
           [name]: "Initial PaymentAmount must be between 10000 and 99999999",
         }));
       }
+    } else if (name === "firstDateOfPayment" && !value) {
+      const formattedCurrentDate = moment().format("YYYY-MM-DDTHH:mm:ss");
+      const dayOfCurrentDate = moment().day();
+      setData((prevData) => ({
+        ...prevData,
+        firstDateOfPayment: formattedCurrentDate,
+        initialPaymentAmount: dayOfCurrentDate,
+      }));
     } else {
       setData((prevData) => ({ ...prevData, [name]: value }));
       setFieldErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
@@ -208,7 +216,7 @@ const CreatePayment = () => {
                 <select
                   id="contractId"
                   name="contractId"
-                  className="form-select"
+                  className="form-select-custom"
                   value={data.contractId}
                   onChange={handleInputChange}
                 >
@@ -238,7 +246,7 @@ const CreatePayment = () => {
                   type="text"
                   id="description"
                   name="description"
-                  className="form-control input-field-2"
+                  className="form-control-text input-field-2"
                   rows="6"
                   value={data.description}
                   onChange={handleInputChange}
@@ -263,7 +271,7 @@ const CreatePayment = () => {
                 <select
                   id="numberOfTerms"
                   name="numberOfTerms"
-                  className="form-select"
+                  className="form-select-custom"
                   value={data.numberOfTerms}
                   onChange={handleInputChange}
                 >
@@ -299,7 +307,7 @@ const CreatePayment = () => {
                       <select
                         id="duration"
                         name="duration"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.duration}
                         onChange={handleInputChange}
                       >
@@ -334,7 +342,7 @@ const CreatePayment = () => {
                         id="initialPaymentAmount"
                         type="number"
                         name="initialPaymentAmount"
-                        className="form-control input-field"
+                        className="form-control-text input-field"
                         value={data.initialPaymentAmount}
                         onChange={handleInputChange}
                       />
@@ -367,7 +375,7 @@ const CreatePayment = () => {
                         type="text"
                         id="note"
                         name="note"
-                        className="form-control input-field-2"
+                        className="form-control-text input-field-2"
                         rows="3"
                         value={data.note}
                         onChange={handleInputChange}
