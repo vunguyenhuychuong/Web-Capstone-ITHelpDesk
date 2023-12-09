@@ -268,36 +268,6 @@ const Profile = (props) => {
                 </MDBCardBody>
               </MDBCard>
 
-              <MDBCard className="mb-4 mb-lg-0">
-                <MDBCardBody className="p-0">
-                  <MDBListGroup className="rounded-3">
-                    <MDBListGroupItem className="d-flex justify-content-between align-items-center p-3">
-                      <MDBIcon fas icon="globe fa-lg text-warning" />
-                      <MDBCardText>
-                        {data && data.company ? data.company : "N/A"}
-                      </MDBCardText>
-                    </MDBListGroupItem>
-                    <MDBListGroupItem className="d-flex justify-content-between align-items-center p-3">
-                      <MDBIcon fab style={{ color: "#333333" }} />
-                      <MDBCardText>
-                        {data && data.team ? data.team : "N/A"}
-                      </MDBCardText>
-                    </MDBListGroupItem>
-                    <MDBListGroupItem className="d-flex justify-content-between align-items-center p-3">
-                      <MDBIcon fab style={{ color: "#55acee" }} />
-                      <MDBCardText>@mdbootstrap</MDBCardText>
-                    </MDBListGroupItem>
-                    <MDBListGroupItem className="d-flex justify-content-between align-items-center p-3">
-                      <MDBIcon fab style={{ color: "#ac2bac" }} />
-                      <MDBCardText>mdbootstrap</MDBCardText>
-                    </MDBListGroupItem>
-                    <MDBListGroupItem className="d-flex justify-content-between align-items-center p-3">
-                      <MDBIcon fab style={{ color: "#3b5998" }} />
-                      <MDBCardText>mdbootstrap</MDBCardText>
-                    </MDBListGroupItem>
-                  </MDBListGroup>
-                </MDBCardBody>
-              </MDBCard>
             </MDBCol>
             <MDBCol lg="8">
               <div className="blue-summary">
@@ -419,7 +389,7 @@ const Profile = (props) => {
                     </MDBCol>
                   </MDBRow>
                   <hr />
-                  <MDBRow>
+                  {/* <MDBRow>
                     <MDBCol sm="3">
                       <MDBCardText
                         style={{ fontWeight: "bold", color: "#000000" }}
@@ -461,7 +431,7 @@ const Profile = (props) => {
                         onClick={handleOpenEditUser}
                       />
                     </MDBCol>
-                  </MDBRow>
+                  </MDBRow> */}
                 </MDBCardBody>
               </MDBCard>
               <MDBRow>

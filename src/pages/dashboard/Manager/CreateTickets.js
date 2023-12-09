@@ -354,7 +354,7 @@ const CreateTickets = () => {
                         id="title"
                         type="text"
                         name="title"
-                        className="form-control"
+                        className="form-control-text"
                         value={data.title}
                         onChange={handleInputChange}
                       />
@@ -382,7 +382,7 @@ const CreateTickets = () => {
                       <select
                         id="requesterId"
                         name="requesterId"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.requesterId}
                         onChange={handleInputChange}
                       >
@@ -414,7 +414,7 @@ const CreateTickets = () => {
                   type="text"
                   id="description"
                   name="description"
-                  className="form-control input-field-2"
+                  className="form-control-text input-field-2"
                   rows="6"
                   value={data.description}
                   onChange={handleInputChange}
@@ -477,7 +477,7 @@ const CreateTickets = () => {
                       <select
                         id="modeId"
                         name="modeId"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.modeId}
                         onChange={handleInputChange}
                       >
@@ -511,7 +511,7 @@ const CreateTickets = () => {
                       <select
                         id="categoryId"
                         name="categoryId"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.categoryId}
                         onChange={handleInputChange}
                       >
@@ -546,7 +546,7 @@ const CreateTickets = () => {
                       <select
                         id="urgency"
                         name="urgency"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.urgency}
                         onChange={handleInputChange}
                       >
@@ -579,7 +579,7 @@ const CreateTickets = () => {
                       <select
                         id="serviceId"
                         name="serviceId"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.serviceId}
                         onChange={handleInputChange}
                       >
@@ -616,7 +616,7 @@ const CreateTickets = () => {
                       <select
                         id="ticketStatus"
                         name="ticketStatus"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.ticketStatus}
                         onChange={handleInputChange}
                       >
@@ -647,7 +647,7 @@ const CreateTickets = () => {
                       <select
                         id="priority"
                         name="priority"
-                        className="form-select"
+                        className="form-select-custom"
                         onChange={handleInputChange}
                       >
                         {priorityOption.map((priorityItem) => (
@@ -686,7 +686,7 @@ const CreateTickets = () => {
                       <select
                         id="impact"
                         name="impact"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.impact}
                         onChange={handleInputChange}
                       >
@@ -717,7 +717,7 @@ const CreateTickets = () => {
                       <select
                         id="type"
                         name="type"
-                        className="form-select"
+                        className="form-select-custom"
                         onChange={handleInputChange}
                       >
                         {TypeOptions.map((type) => (
@@ -753,7 +753,7 @@ const CreateTickets = () => {
                       <select
                         id="city"
                         name="city"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.city}
                         onChange={handleCityChange}
                       >
@@ -784,7 +784,7 @@ const CreateTickets = () => {
                       <select
                         id="district"
                         name="district"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.district}
                         onChange={handleDistrictChange}
                       >
@@ -821,7 +821,7 @@ const CreateTickets = () => {
                       <select
                         id="ward"
                         name="ward"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.ward}
                         onChange={handleInputChange}
                       >
@@ -853,7 +853,7 @@ const CreateTickets = () => {
                         id="street"
                         type="text"
                         name="street"
-                        className="form-control"
+                        className="form-control-text"
                         value={data.street}
                         onChange={handleInputChange}
                       />
@@ -884,7 +884,7 @@ const CreateTickets = () => {
                     type="text"
                     name="impactDetail"
                     row="2"
-                    className="form-control"
+                    className="form-control-text"
                     value={data.impactDetail}
                     onChange={handleInputChange}
                   />

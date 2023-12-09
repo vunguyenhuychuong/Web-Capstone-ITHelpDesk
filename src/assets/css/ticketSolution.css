@@ -49,9 +49,107 @@
 
 .image-preview {
   cursor: pointer;
+  border: 2px solid #3498db;
+  border-radius: 5px;
+  padding: 10px;
+  transition: border 0.3s ease;
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background-color: #ecf0f1;
+  margin-bottom: 20px;
+}
+
+.image-preview:hover {
+  border-color: #2980b9;
 }
 
 .preview-text:hover {
   text-decoration: underline;
-  color: blue; /* Change the color as per your preference */
+  color: blue; 
+}
+
+.preview-text {
+  margin: 0;
+  color: #2c3e50; 
+  font-weight: bold;
+}
+
+
+.ticket-file-upload {
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.ticket-file-upload input[type="file"] {
+  display: none;
+}
+
+.image-preview {
+  cursor: pointer;
+  /* Add any additional styles for your image preview */
+}
+
+.preview-text {
+  margin: 0;
+  /* Add any additional styles for your preview text */
+}
+
+.form-select-custom {
+  border-radius: 10px; /* Set border-radius for rounded corners */
+  padding: 10px; 
+  width: 100%; 
+  box-sizing: border-box; 
+  background-color: #ecf0f1; 
+  border: 1px solid #bdc3c7; 
+  color: #2c3e50; 
+  font-size: 14px;
+}
+
+.form-select-custom::after {
+  content: '\25BC'; 
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  pointer-events: none; 
+}
+
+.form-select-custom option {
+  background-color: #ffffff; 
+  color: #2c3e50; 
+}
+
+
+.form-select-custom:focus {
+  outline: none; 
+  border-color: #3498db; 
+}
+
+.form-control-text {
+  border-radius: 10px;
+  padding: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #ecf0f1;
+  border: 1px solid #bdc3c7;
+  color: #2c3e50;
+  font-size: 14px;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #3498db;
 }

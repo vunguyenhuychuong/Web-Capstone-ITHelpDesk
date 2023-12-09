@@ -285,7 +285,7 @@ const CreateTicketSolution = () => {
                   id="title"
                   type="text"
                   name="title"
-                  className="form-control input-field"
+                  className="form-control-text input-field"
                   value={data.title}
                   onChange={handleInputChange}
                 />
@@ -310,7 +310,7 @@ const CreateTicketSolution = () => {
                   type="text"
                   id="content"
                   name="content"
-                  className="form-control input-field-2"
+                  className="form-control-text input-field-2"
                   rows="6"
                   value={data.content}
                   onChange={handleInputChange}
@@ -373,7 +373,7 @@ const CreateTicketSolution = () => {
                       <select
                         id="categoryId"
                         name="categoryId"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.categoryId}
                         onChange={handleInputChange}
                       >
@@ -407,7 +407,7 @@ const CreateTicketSolution = () => {
                       <select
                         id="ownerId"
                         name="ownerId"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.ownerId}
                         onChange={handleInputChange}
                       >
@@ -506,7 +506,7 @@ const CreateTicketSolution = () => {
                     id="keyword"
                     type="text"
                     name="keyword"
-                    className="form-control input-field"
+                    className="form-control-text input-field"
                     value={data.keyword}
                     onChange={handleInputChange}
                   />
@@ -545,7 +545,7 @@ const CreateTicketSolution = () => {
                     id="internalComments"
                     type="text"
                     name="internalComments"
-                    className="form-control input-field"
+                    className="form-control-text input-field"
                     value={data.internalComments}
                     onChange={handleInputChange}
                     row={4}

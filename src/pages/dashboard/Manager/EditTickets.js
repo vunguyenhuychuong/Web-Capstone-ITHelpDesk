@@ -24,9 +24,7 @@ import {
 import { getDataCategories } from "../../../app/api/category";
 import { getDataUser } from "../../../app/api";
 import ModeApi from "../../../app/api/mode";
-import {
-  getAllServiceByCategory,
-} from "../../../app/api/service";
+import { getAllServiceByCategory } from "../../../app/api/service";
 import {
   editTicketByManager,
   getTicketByTicketId,
@@ -100,7 +98,7 @@ const EditTickets = () => {
     if (value) {
       const districtResponse = await fetchDistricts(value);
       setDistricts(districtResponse);
-      setWards([]); 
+      setWards([]);
     } else {
       setDistricts([]);
       setWards([]);
@@ -147,7 +145,7 @@ const EditTickets = () => {
       );
       const categoryIdValue = selectedCategory ? selectedCategory.id : null;
       setData((prevData) => ({ ...prevData, [name]: categoryIdValue }));
-    
+
       const services = await getAllServiceByCategory(parseInt(value, 10));
       setCategoryServices(services);
     }
@@ -306,7 +304,7 @@ const EditTickets = () => {
         <MDBCol md="12">
           <MDBRow className="border-box">
             <MDBCol md="5" className="mt-2">
-            <div className="d-flex align-items-center">
+              <div className="d-flex align-items-center">
                 <button type="button" className="btn btn-link icon-label">
                   <ArrowBack
                     onClick={() => handleGoBack(ticketId)}
@@ -319,7 +317,6 @@ const EditTickets = () => {
                     marginLeft: "40px",
                     display: "flex",
                     alignItems: "center",
-                    
                   }}
                 >
                   <h2
@@ -329,10 +326,10 @@ const EditTickets = () => {
                       marginRight: "10px",
                     }}
                   >
-                    New Ticket
+                    Edit Ticket
                   </h2>
                   <span style={{ fontSize: "18px", color: "#888" }}>
-                    Create a new ticket for assistance.
+                    Edit a new ticket for assistance.
                   </span>
                 </div>
                 <FormControlLabel
@@ -384,7 +381,7 @@ const EditTickets = () => {
                       <select
                         id="requesterId"
                         name="requesterId"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.requesterId}
                         onChange={handleInputChange}
                       >
@@ -417,7 +414,7 @@ const EditTickets = () => {
                         id="title"
                         type="text"
                         name="title"
-                        className="form-control"
+                        className="form-control-text"
                         value={data.title}
                         onChange={handleInputChange}
                       />
@@ -445,7 +442,7 @@ const EditTickets = () => {
                   type="text"
                   id="description"
                   name="description"
-                  className="form-control input-field-2"
+                  className="form-control-text input-field-2"
                   rows="6"
                   value={data.description}
                   onChange={handleInputChange}
@@ -474,6 +471,7 @@ const EditTickets = () => {
                   id="attachmentUrl"
                   onChange={handleFileChange}
                 />
+
                 {data.attachmentUrl && (
                   <div
                     className="image-preview"
@@ -508,7 +506,7 @@ const EditTickets = () => {
                       <select
                         id="modeId"
                         name="modeId"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.modeId}
                         onChange={handleInputChange}
                       >
@@ -542,7 +540,7 @@ const EditTickets = () => {
                       <select
                         id="categoryId"
                         name="categoryId"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.categoryId}
                         onChange={handleInputChange}
                       >
@@ -577,7 +575,7 @@ const EditTickets = () => {
                       <select
                         id="urgency"
                         name="urgency"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.urgency}
                         onChange={handleInputChange}
                       >
@@ -610,7 +608,7 @@ const EditTickets = () => {
                       <select
                         id="serviceId"
                         name="serviceId"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.serviceId}
                         onChange={handleInputChange}
                       >
@@ -647,7 +645,7 @@ const EditTickets = () => {
                       <select
                         id="ticketStatus"
                         name="ticketStatus"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.ticketStatus}
                         onChange={handleInputChange}
                       >
@@ -678,7 +676,7 @@ const EditTickets = () => {
                       <select
                         id="priority"
                         name="priority"
-                        className="form-select"
+                        className="form-select-custom"
                         onChange={handleInputChange}
                       >
                         {priorityOption.map((priorityItem) => (
@@ -717,7 +715,7 @@ const EditTickets = () => {
                         <select
                           id="impact"
                           name="impact"
-                          className="form-select"
+                          className="form-select-custom"
                           value={data.impact}
                           onChange={handleInputChange}
                         >
@@ -748,7 +746,7 @@ const EditTickets = () => {
                         <select
                           id="type"
                           name="type"
-                          className="form-select"
+                          className="form-select-custom"
                           onChange={handleInputChange}
                         >
                           {TypeOptions.map((type) => (
@@ -785,7 +783,7 @@ const EditTickets = () => {
                         <select
                           id="city"
                           name="city"
-                          className="form-select"
+                          className="form-select-custom"
                           value={data.city}
                           onChange={handleCityChange}
                         >
@@ -816,7 +814,7 @@ const EditTickets = () => {
                         <select
                           id="district"
                           name="district"
-                          className="form-select"
+                          className="form-select-custom"
                           value={data.district}
                           onChange={handleDistrictChange}
                         >
@@ -854,7 +852,7 @@ const EditTickets = () => {
                         <select
                           id="ward"
                           name="ward"
-                          className="form-select"
+                          className="form-select-custom"
                           value={data.ward}
                           onChange={handleInputChange}
                         >
@@ -886,7 +884,7 @@ const EditTickets = () => {
                           id="street"
                           type="text"
                           name="street"
-                          className="form-control"
+                          className="form-control-text"
                           value={data.street}
                           onChange={handleInputChange}
                         />
@@ -917,7 +915,7 @@ const EditTickets = () => {
                       type="text"
                       name="impactDetail"
                       row="2"
-                      className="form-control"
+                      className="form-control-text"
                       value={data.impactDetail}
                       onChange={handleInputChange}
                     />
