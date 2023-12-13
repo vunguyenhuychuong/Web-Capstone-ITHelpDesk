@@ -47,7 +47,7 @@ const IndexTicket = () => {
   const [searchField, setSearchField] = useState("title");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("desc");
-  const [sortBy, setSortBy] = useState("createdAt");
+  const [sortBy, setSortBy] = useState("id");
   const [selectedTickets, setSelectedTickets] = useState([]);
   const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [selectedTicketData, setSelectedTicketData] = useState(null);
@@ -63,6 +63,7 @@ const IndexTicket = () => {
         filter = `title="${encodeURIComponent(searchQuery)}"`;
       }
       const res = await getAllTicket(
+        searchField,
         searchQuery,
         currentPage,
         pageSize,

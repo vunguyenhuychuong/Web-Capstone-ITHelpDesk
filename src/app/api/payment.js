@@ -94,6 +94,7 @@ export async function getPaymentById(paymentId) {
         Authorization: header,
       },
     });
+    console.log(res);
     return res.data.result;
   } catch (error) {
     console.log(error);
@@ -143,7 +144,7 @@ export async function getPaymentTerm(paymentId) {
   } catch (error) {
     console.log(error);
   }
-}
+};
 
 export async function createPaymentTerm(paymentId, data) {
   const header = getAuthHeader();
@@ -167,8 +168,18 @@ export async function deletePaymentTerm(paymentId) {
         Authorization: header,
       },
     });
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     return res.data.result;
   } catch (error) {
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     console.log(error);
   }
 }

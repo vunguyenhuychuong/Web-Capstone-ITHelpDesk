@@ -121,7 +121,7 @@ export const getRoleName = (role) => {
     case 4:
       return 'accountant';
     default:
-      return ''; // Default class or empty string for unknown roles
+      return ''; 
   }
 };
 

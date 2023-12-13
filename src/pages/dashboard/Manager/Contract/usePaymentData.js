@@ -23,6 +23,7 @@ const usePaymentData = (contractId) => {
     const fetchData = async () => {
       try {
         const paymentData = await getPaymentContract(contractId);
+        console.log(paymentData);
         setDataPayment(paymentData);
       } catch (error) {
         console.log("Error fetching contract data: ", error);

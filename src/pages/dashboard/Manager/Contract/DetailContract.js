@@ -72,7 +72,7 @@ const DetailContract = () => {
   };
 
   return (
-    <section style={{ backgroundColor: "#fff" }}>
+    <>
       <Grid
         container
         style={{
@@ -88,59 +88,61 @@ const DetailContract = () => {
             paddingLeft: "10px",
           }}
         >
-          <MDBCol md="12">
-            <MDBRow className="border-box-detail">
-              <MDBCol md="1" className="mt-2">
-                <div className="d-flex align-items-center">
-                  <button type="button" className="btn btn-link icon-label">
-                    <ArrowBack onClick={handleGoBack} />
-                  </button>
-                </div>
-              </MDBCol>
-              <MDBCol md="2">
-                <div className="d-flex align-items-center">
-                  <button
-                    type="button"
-                    className="btn btn-link narrow-input icon-label mt-2"
-                    onClick={() => handleOpenEditTicket(contractId)}
-                  >
-                    Edit
-                  </button>
-                  <Select
-                    displayEmpty
-                    value={selectedValue}
-                    onChange={handleChange}
-                    inputProps={{ "aria-label": "Without label" }}
-                    style={{
-                      backgroundColor: "#f2f2f2",
-                      borderRadius: "5px",
-                      paddingLeft: "10px",
-                      height: "45px",
-                      padding: "10px 0",
-                      zIndex: 9999,
-                    }}
-                  >
-                    {selectedValue !== "" ? null : (
-                      <MenuItem value="" disabled>
-                        <em className="action-menu-item">Action</em>
-                      </MenuItem>
-                    )}
+          <Grid container spacing={2} className="border-box-detail">
+            <Grid item md={1} className="mt-2">
+              <div className="d-flex align-items-center">
+                <button
+                  type="button"
+                  className="btn btn-link icon-label"
+                  onClick={handleGoBack}
+                >
+                  <ArrowBack />
+                </button>
+              </div>
+            </Grid>
+            <Grid item md={2}>
+              <div className="d-flex align-items-center">
+                <button
+                  type="button"
+                  className="btn btn-link narrow-input icon-label mt-2"
+                  onClick={() => handleOpenEditTicket(contractId)}
+                >
+                  Edit
+                </button>
+                <Select
+                  displayEmpty
+                  value={selectedValue}
+                  onChange={handleChange}
+                  inputProps={{ "aria-label": "Without label" }}
+                  style={{
+                    backgroundColor: "#f2f2f2",
+                    borderRadius: "5px",
+                    paddingLeft: "10px",
+                    height: "45px",
+                    padding: "10px 0",
+                    zIndex: 9999,
+                  }}
+                >
+                  {selectedValue !== "" ? null : (
+                    <MenuItem value="" disabled>
+                      <em className="action-menu-item">Action</em>
+                    </MenuItem>
+                  )}
 
-                    <MenuItem value={10}>Renew Contract</MenuItem>
+                  <MenuItem value={10}>Renew Contract</MenuItem>
 
-                    {userRole === 2 && [
-                      <MenuItem key={20} value={20}>
-                        Add Child Contract
-                      </MenuItem>,
-                      <MenuItem key={30} value={30}>
-                        Add Payment Information
-                      </MenuItem>,
-                    ]}
-                  </Select>
-                </div>
-              </MDBCol>
-            </MDBRow>
-          </MDBCol>
+                  {userRole === 2 && [
+                    <MenuItem key={20} value={20}>
+                      Add Child Contract
+                    </MenuItem>,
+                    <MenuItem key={30} value={30}>
+                      Add Payment Information
+                    </MenuItem>,
+                  ]}
+                </Select>
+              </div>
+            </Grid>
+          </Grid>
           <MDBRow className="mb-4">
             <MDBCol
               md="12"
@@ -158,7 +160,10 @@ const DetailContract = () => {
                   #{data.id} {data.name || "null Name"}
                 </span>
                 <span style={{ fontSize: "1rem" }}>
-                  Status: <span style={{ color: "red" }}>{getStatusContract(data.status)}</span>
+                  Status:{" "}
+                  <span style={{ color: "red" }}>
+                    {getStatusContract(data.status)}
+                  </span>
                   <span className="bold-text"></span>{" "}
                   <ChatOutlined color="#007bff" />
                   <span className="bold-text"> Valid till:</span>{" "}
@@ -268,7 +273,7 @@ const DetailContract = () => {
         onClose={handleCloseAssignTicket}
         ticketId={contractId}
       />
-    </section>
+    </>
   );
 };
 

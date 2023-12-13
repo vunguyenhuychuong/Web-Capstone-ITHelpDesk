@@ -19,6 +19,7 @@ const EditPayment = () => {
   const navigate = useNavigate();
   const { paymentId } = useParams();
   const [data, setData] = useState({
+    id: 1,
     description: "",
     numberOfTerms: 0,
     firstDateOfPayment: "",
@@ -123,7 +124,7 @@ const EditPayment = () => {
   };
 
   const handleGoBack = () => {
-    navigate(`/home/paymentList`);
+    navigate(`/home/detailContract/${paymentId}`);
   };
 
   return (
@@ -252,6 +253,7 @@ const EditPayment = () => {
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
+                          marginTop: "20px"
                         }}
                       >
                         <span style={{ color: "red" }}>*</span>duration

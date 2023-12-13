@@ -1,28 +1,26 @@
 import {
   Assessment,
-  Badge,
-  DonutSmall,
-  PlayArrow,
+  Assignment,
+  Cancel,
+  ConfirmationNumber,
+  FileDownload,
+  Pending,
   QueryStats,
   Replay,
-  SkipNext,
-  SkipPrevious,
   TableChart,
+  Verified,
 } from "@mui/icons-material";
 import {
-  Avatar,
-  Box,
+  Button,
   Card,
   CardContent,
   FormControl,
   Grid,
-  IconButton,
   MenuItem,
   Select,
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 import "../../../assets/css/homeManager.css";
 import React, { useEffect, useState } from "react";
 import {
@@ -38,7 +36,6 @@ import {
   getSummaryManager,
 } from "../../../app/api/dashboard";
 import LoadingImg from "../../../assets/images/loading.gif";
-import { LineChart, PieChart } from "@mui/x-charts";
 import CustomizeChart from "./charts/CustomizeChart";
 import PriorityChart from "./charts/PriorityChart";
 import ModeChart from "./charts/ModeChart";
@@ -47,13 +44,15 @@ import WeekChart from "./charts/WeekChart";
 import LastWeekChart from "./charts/LastWeekChart";
 import LastMonthChart from "./charts/LastMonthChart";
 import MonthChart from "./charts/MonthChart";
+import { Chart } from "primereact/chart";
+import { FaTicketAlt } from "react-icons/fa";
 
 const ChartManager = () => {
   const [dataCategory, setDataCategory] = useState([]);
   const [dataPriority, setDataPriority] = useState([]);
   const [dataMode, setDataMode] = useState([]);
   const [dataService, setDataService] = useState([]);
-  const [dataTotal, setDataTotal] = useState([]);
+  const [dataTotal, setDataTotal] = useState("");
   const [dataWeek, setDataWeek] = useState("");
   const [dataLastWeek, setDataLastWeek] = useState("");
   const [dataMonth, setDataMonth] = useState("");
@@ -61,8 +60,6 @@ const ChartManager = () => {
   const [loading, setLoading] = useState(true);
   const [selectedChart, setSelectedChart] = useState("Request By Category");
   const [selectedTime, setSelectedTime] = useState("1");
-  const [dataContractMn, setDataContractMn] = useState([]);
-  const theme = useTheme();
 
   const fetchDataListTicketTask = async () => {
     try {
@@ -71,25 +68,10 @@ const ChartManager = () => {
       const priorityChart = await getChartPriority();
       const modeChart = await getChartMode();
       const serviceChart = await getChartService();
-      const contractChart = await getChartManagerContract();
-
-      setDataContractMn(contractChart);
       setDataCategory(categoryChart);
       setDataPriority(priorityChart);
       setDataMode(modeChart);
       setDataService(serviceChart);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchDataTotalChart = async () => {
-    try {
-      setLoading(true);
-      const totalChart = await getSummaryManager();
-      setDataTotal(totalChart);
     } catch (error) {
       console.log(error);
     } finally {
@@ -119,16 +101,11 @@ const ChartManager = () => {
     fetchDataListTicketTask();
   };
 
-  const handleReloadPieChart = () => {
-    fetchDataTotalChart();
-  };
-
   const handleReloadBarChart = () => {
     fetchDataBarChart();
   };
 
   useEffect(() => {
-    fetchDataTotalChart();
     fetchDataListTicketTask();
     fetchDataBarChart();
   }, []);
@@ -196,16 +173,79 @@ const ChartManager = () => {
     setSelectedTime(event.target.value);
   };
 
-  const contractChartData = Object.entries(dataContractMn).map(
-    ([key, value]) => ({
-      name: key,
-      value, // Use the actual numeric value here
-    })
-  );
+  const [chartData, setChartData] = useState({});
+  const [chartOptions, setChartOptions] = useState({});
 
-  console.log(dataContractMn);
+  useEffect(() => {
+    const documentStyle = getComputedStyle(document.documentElement);
 
-  const hasContractChartData = contractChartData.length > 0;
+    const fetchDataTotalChart = async () => {
+      try {
+        const totalChart = await getSummaryManager();
+        setDataTotal(totalChart);
+
+        const updatedData = {
+          labels: [
+            "Open",
+            "Assign",
+            "InProgress",
+            "Resolve",
+            "Closed",
+            "Cancel",
+          ],
+          datasets: [
+            {
+              data: [
+                dataTotal?.totalOpenTicket || 0,
+                dataTotal?.totalAssignedTicket || 0,
+                dataTotal?.totalInProgressTicket || 0,
+                dataTotal?.totalResolvedTicket || 0,
+                dataTotal?.totalClosedTicket || 0,
+                dataTotal?.totalCancelledTicket || 0,
+              ],
+              backgroundColor: [
+                documentStyle.getPropertyValue("--blue-500"),
+                documentStyle.getPropertyValue("--yellow-500"),
+                documentStyle.getPropertyValue("--orange-500"),
+                documentStyle.getPropertyValue("--green-500"),
+                documentStyle.getPropertyValue("--pink-500"),
+                documentStyle.getPropertyValue("--grey-500"),
+              ],
+              hoverBackgroundColor: [
+                documentStyle.getPropertyValue("--blue-400"),
+                documentStyle.getPropertyValue("--yellow-400"),
+                documentStyle.getPropertyValue("--orange-400"),
+                documentStyle.getPropertyValue("--green-500"),
+                documentStyle.getPropertyValue("--pink-500"),
+                documentStyle.getPropertyValue("--grey-500"),
+              ],
+            },
+          ],
+        };
+
+        setChartData(updatedData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchDataTotalChart();
+    const options = {
+      plugins: {
+        legend: {
+          labels: {
+            usePointStyle: true,
+            font: {
+              size: 12,
+            },
+          },
+        },
+      },
+    };
+
+    setChartData(data);
+    setChartOptions(options);
+  }, []);
 
   return (
     <Grid
@@ -215,78 +255,362 @@ const ChartManager = () => {
       spacing={2}
       style={{ marginTop: "10px", background: "#eee", marginLeft: "-9px" }}
     >
+      <Grid item xs={9}>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Card style={{ display: "flex" }}>
+              <Card style={{ flex: 1, height: "350px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <Typography variant="h6" style={{ margin: "10px" }}>
+                    Today Ticket
+                  </Typography>
+                  <div style={{ marginLeft: "auto", marginTop: "10px", marginRight: "10px" }}>
+                    <button
+                      variant="contained"
+                      color="secondary"
+                      className="custom-button"
+                    >
+                     <FileDownload /> Export
+                    </button>
+                  </div>
+                </div>
+                <Typography
+                  variant="body2"
+                  style={{ color: "rgba(0, 0, 0, 0.5)", marginLeft: "10px" }}
+                >
+                  Ticket Summary
+                </Typography>
+                <div style={{ display: "flex", marginTop: "40px" }}>
+                  <Card
+                    style={{
+                      flex: 1,
+                      height: "150px",
+                      margin: "0px 20px 10px 20px",
+                      backgroundColor: "#FF99CC",
+                      borderRadius: "20px",
+                      boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        margin: "20px 20px 10px 20px",
+                        top: "50%",
+                        left: "50%",
+                        width: "50px",
+                        height: "50px",
+                        background: "#FF3399",
+                        borderRadius: "50%",
+                        border: "2px solid #333",
+                      }}
+                    >
+                      <ConfirmationNumber
+                        style={{ fontSize: 40, color: "#FFFFFF" }}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        marginBottom: "5px",
+                        marginLeft: "20px",
+                      }}
+                    >
+                      <Typography
+                        variant="h5"
+                        style={{ fontWeight: "bold", color: "#222222" }}
+                      >
+                        123
+                      </Typography>
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        marginLeft: "20px",
+                      }}
+                    >
+                      <Typography
+                        variant="body1"
+                        style={{
+                          textAlign: "left",
+                          color: "#333",
+                          fontSize: "16px",
+                          fontWeight: "bold",
+                          letterSpacing: "0.5px",
+                        }}
+                      >
+                        Total Ticket
+                      </Typography>
+                    </div>
+                  </Card>
+                  <Card
+                    style={{
+                      flex: 1,
+                      height: "150px",
+                      margin: "0px 20px 10px 20px",
+                      backgroundColor: "#99CCFF",
+                      borderRadius: "20px",
+                      boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        margin: "20px 20px 10px 20px",
+                        top: "50%",
+                        left: "50%",
+                        width: "50px",
+                        height: "50px",
+                        background: "#3399FF",
+                        borderRadius: "50%",
+                        border: "2px solid #333",
+                      }}
+                    >
+                      <Assignment style={{ fontSize: 40, color: "#FFFFFF" }} />
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        marginBottom: "5px",
+                        marginLeft: "20px",
+                      }}
+                    >
+                      <Typography
+                        variant="h5"
+                        style={{ fontWeight: "bold", color: "#222222" }}
+                      >
+                        123
+                      </Typography>
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        marginLeft: "20px",
+                      }}
+                    >
+                      <Typography
+                        variant="body1"
+                        style={{
+                          textAlign: "left",
+                          color: "#333",
+                          fontSize: "16px",
+                          fontWeight: "bold",
+                          letterSpacing: "0.5px",
+                        }}
+                      >
+                        Assign Ticket
+                      </Typography>
+                    </div>
+                  </Card>
+                  <Card
+                    style={{
+                      flex: 1,
+                      height: "150px",
+                      margin: "0px 20px 10px 20px",
+                      backgroundColor: "#99FFCC",
+                      borderRadius: "20px",
+                      boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        margin: "20px 20px 10px 20px",
+                        top: "50%",
+                        left: "50%",
+                        width: "50px",
+                        height: "50px",
+                        background: "#99FF99",
+                        borderRadius: "50%",
+                        border: "2px solid #333",
+                      }}
+                    >
+                      <Verified style={{ fontSize: 40, color: "#FFFFFF" }} />
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        marginBottom: "5px",
+                        marginLeft: "20px",
+                      }}
+                    >
+                      <Typography
+                        variant="h5"
+                        style={{ fontWeight: "bold", color: "#222222" }}
+                      >
+                        123
+                      </Typography>
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        marginLeft: "20px",
+                      }}
+                    >
+                      <Typography
+                        variant="body1"
+                        style={{
+                          textAlign: "left",
+                          color: "#333",
+                          fontSize: "16px",
+                          fontWeight: "bold",
+                          letterSpacing: "0.5px",
+                        }}
+                      >
+                        Resolved Ticket
+                      </Typography>
+                    </div>
+                  </Card>
+                  <Card
+                    style={{
+                      flex: 1,
+                      height: "150px",
+                      margin: "0px 20px 10px 20px",
+                      backgroundColor: "#FFCC99",
+                      borderRadius: "20px",
+                      boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        margin: "20px 20px 10px 20px",
+                        top: "50%",
+                        left: "50%",
+                        width: "50px",
+                        height: "50px",
+                        background: "#FFCC66",
+                        borderRadius: "50%",
+                        border: "2px solid #333",
+                      }}
+                    >
+                      <Cancel style={{ fontSize: 40, color: "#FFFFFF" }} />
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        marginBottom: "5px",
+                        marginLeft: "20px",
+                      }}
+                    >
+                      <Typography
+                        variant="h5"
+                        style={{ fontWeight: "bold", color: "#222222" }}
+                      >
+                        123
+                      </Typography>
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        marginLeft: "20px",
+                      }}
+                    >
+                      <Typography
+                        variant="body1"
+                        style={{
+                          textAlign: "left",
+                          color: "#333",
+                          fontSize: "16px",
+                          fontWeight: "bold",
+                          letterSpacing: "0.5px",
+                        }}
+                      >
+                        Close Ticket
+                      </Typography>
+                    </div>
+                  </Card>
+                </div>
+              </Card>
+            </Card>
+          </Grid>
+        </Grid>
+      </Grid>
       <Grid item xs={3}>
-        <Card style={{ display: "flex", height: "200px" }}>
-          <Avatar
-            sx={{
-              backgroundColor: "#ccccc",
-              width: 140,
-              height: 140,
-              margin: "20px",
+        <Grid item xs={12}>
+          <div
+            className="nav-header bordered-grid-item"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              border: "1px solid #CCCCCC",
+              padding: "8px",
+              background: "#FFFFFF",
             }}
           >
-            <Badge />
-          </Avatar>
-          <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
-            <CardContent sx={{ flex: "1 0 auto" }}>
-              <Typography
-                component="div"
-                variant="h5"
-                sx={{ textAlign: "right" }}
+            <QueryStats sx={{ margin: 1, color: "#FF66CC" }} />
+            <h4
+              style={{
+                marginLeft: "8px",
+                marginTop: "4px",
+                fontWeight: "bold",
+                fontSize: "14px",
+              }}
+            >
+              Total Ticket : {dataTotal.totalTicket}
+            </h4>
+            <div style={{ marginLeft: "auto" }}>
+              <button
+                variant="contained"
+                color="secondary"
+                className="custom-button"
               >
-                Live From Space
-              </Typography>
-              <Typography
-                variant="subtitle1"
-                color="text.secondary"
-                component="div"
-                sx={{ textAlign: "right" }}
-              >
-                Mac Miller
-              </Typography>
-              <Typography
-                variant="h3"
-                sx={{ textAlign: "right", marginBottom: 10, fontWeight: "bold" }}
-              >
-                123
-              </Typography>
+                This Week
+              </button>
+            </div>
+          </div>
+        </Grid>
+        <Grid item xs={12}>
+          <Card style={{ height: "290px" }}>
+            <CardContent
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Chart
+                type="pie"
+                data={chartData}
+                options={chartOptions}
+                style={{ width: "250px", height: "250px" }}
+              />
             </CardContent>
-          </Box>
-        </Card>
-      </Grid>
-
-      {/* Card 2 */}
-      <Grid item xs={3}>
-        <Card style={{ height: "200px" }}>
-          <CardContent>
-            {/* Fetch and display data for the second card from your API */}
-            {/* Replace the placeholder content with your API data */}
-            <h3>Data Analysis 2</h3>
-          </CardContent>
-        </Card>
-      </Grid>
-
-      {/* Card 3 */}
-      <Grid item xs={3}>
-        <Card style={{ height: "200px" }}>
-          <CardContent>
-            {/* Fetch and display data for the third card from your API */}
-            {/* Replace the placeholder content with your API data */}
-            <h3>Data Analysis 3</h3>
-          </CardContent>
-        </Card>
-      </Grid>
-
-      {/* Card 4 */}
-      <Grid item xs={3}>
-        <Card style={{ height: "200px" }}>
-          <CardContent>
-            {/* Fetch and display data for the fourth card from your API */}
-            {/* Replace the placeholder content with your API data */}
-            <h3>Data Analysis 4</h3>
-            {/* <p>Data: {apiData4}</p> */}
-          </CardContent>
-        </Card>
+          </Card>
+        </Grid>
       </Grid>
       <Grid item xs={6}>
         <Grid item xs={12}>
@@ -411,121 +735,6 @@ const ChartManager = () => {
                 </div>
               ) : (
                 renderSelectedTime()
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-
-      <Grid item xs={6}>
-        <Grid item xs={12}>
-          <div
-            className="nav-header bordered-grid-item"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              border: "1px solid #CCCCCC",
-              padding: "8px",
-              background: "#FFFFFF",
-            }}
-          >
-            <DonutSmall sx={{ margin: 1, color: "#6699FF" }} />
-            <h4
-              style={{
-                marginLeft: "8px",
-                marginTop: "4px",
-                fontWeight: "bold",
-                fontSize: "14px",
-              }}
-            >
-              Request Summary Total
-            </h4>
-            <div style={{ marginLeft: "auto" }}>
-              <Tooltip title="Refresh" arrow>
-                <button
-                  variant="contained"
-                  color="secondary"
-                  className="custom-button"
-                  onClick={handleReloadPieChart}
-                >
-                  <Replay />
-                </button>
-              </Tooltip>
-            </div>
-          </div>
-        </Grid>
-        <Grid item xs={12}>
-          <Card style={{ height: "290px", overflowY: "auto" }}>
-            <CardContent>
-              <PieChart
-                series={[
-                  {
-                    data,
-                    highlightScope: { faded: "global", highlighted: "item" },
-                    faded: {
-                      innerRadius: 30,
-                      additionalRadius: -30,
-                      color: "gray",
-                    },
-                  },
-                ]}
-                height={200}
-              />
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-      <Grid item xs={6}>
-        <Grid item xs={12}>
-          <div
-            className="nav-header bordered-grid-item"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              border: "1px solid #CCCCCC",
-              padding: "8px",
-              background: "#FFFFFF",
-            }}
-          >
-            <QueryStats sx={{ margin: 1, color: "#FF66CC" }} />
-            <h4
-              style={{
-                marginLeft: "8px",
-                marginTop: "4px",
-                fontWeight: "bold",
-                fontSize: "14px",
-              }}
-            >
-              Request Summary
-            </h4>
-            <div style={{ marginLeft: "auto" }}>
-              <button
-                variant="contained"
-                color="secondary"
-                className="custom-button"
-              >
-                This Week
-              </button>
-            </div>
-          </div>
-        </Grid>
-        <Grid item xs={12}>
-          <Card style={{ height: "290px" }}>
-            <CardContent>
-              {hasContractChartData ? (
-                <LineChart
-                  xAxis={[{ data: contractChartData.map((item) => item.name) }]}
-                  series={[
-                    {
-                      data: contractChartData.map((item) => item.value),
-                      showMark: ({ index }) => index % 2 === 0,
-                    },
-                  ]}
-                  width={500}
-                  height={300}
-                />
-              ) : (
-                <div>No data available</div>
               )}
             </CardContent>
           </Card>
