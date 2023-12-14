@@ -5,8 +5,9 @@ import { CloudUpload } from "@mui/icons-material";
 import { useState } from "react";
 
 const Step2 = ({ data, handleInputChange, handleFileChange }) => {
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [selectedFileName, setSelectedFileName] = useState("");
+  const [selectedFileName, setSelectedFileNames] = useState([]);
+  const [uploadProgress, setUploadProgress] = useState(Array(selectedFileName.length).fill(0));
+  
 
   return (
      <>
@@ -53,25 +54,38 @@ const Step2 = ({ data, handleInputChange, handleFileChange }) => {
             type="file"
             name="file"
             onChange={(e) => {
+              const files =  Array.from(e.target.files);
               handleFileChange(e);
-              const file = e.target.files[0];
-
-              setSelectedFileName(file ? file.name : ""); // Set the selected file name
-
-              const totalSize = 1000000;
-              let uploadedSize = 0;
-
-              const updateProgress = () => {
-                if (uploadedSize < totalSize) {
-                  uploadedSize += 1000000; // Simulating progress update
-                  const progress = (uploadedSize / totalSize) * 100;
-                  setUploadProgress(progress);
-                  setTimeout(updateProgress, 1); // Update progress every 1 second
-                }
-              };
-
-              updateProgress();
+          
+              // Handle multiple files
+              files.forEach((file, index) => {
+                const totalSize = file.size; // Use the actual size of the file
+                let uploadedSize = 0;
+          
+                const updateProgress = () => {
+                  if (uploadedSize < totalSize) {
+                    uploadedSize += 1000000; // Simulating progress update
+                    const progress = (uploadedSize / totalSize) * 100;
+                    
+                    // Set progress for each file
+                    setUploadProgress((prevProgress) => {
+                      const newProgress = [...prevProgress];
+                      newProgress[index] = progress;
+                      return newProgress;
+                    });
+          
+                    setTimeout(updateProgress, 1); // Update progress every 1 second
+                  }
+                };
+          
+                updateProgress();
+              });
+          
+              // Set the selected file names
+              const fileNames = Array.from(files).map((file) => file.name);
+              setSelectedFileNames(fileNames);
             }}
+            multiple
             style={{ display: "none" }}
           />
           <label htmlFor="attachmentUrl">

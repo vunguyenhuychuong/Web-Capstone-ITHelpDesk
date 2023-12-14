@@ -21,10 +21,11 @@ const RequestIssue = () => {
     ward: "",
     district: "",
     priority: 0,
-    attachmentUrl: "",
+    attachmentUrls: [],
   });
 
-  const [selectedFile, setSelectedFile] = useState(null);
+  // const [selectedFile, setSelectedFile] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [dataService, setDataServices] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
@@ -61,8 +62,8 @@ const RequestIssue = () => {
   };
 
   const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-    console.log(selectedFile);
+    const files = e.target.files;
+    setSelectedFiles([...files]);  // Use [...files] instead of [...prevFiles, ...files]
   };
 
   const handleSubmitTicket = async (e) => {
@@ -72,16 +73,29 @@ const RequestIssue = () => {
       toast.warning("Title is required");
       return;
     }
-    let attachmentUrl = data.attachmentUrl;
-    if (selectedFile) {
+    let attachmentUrls = data.attachmentUrls;
+
+    if(selectedFiles.length > 0) {
       const storage = getStorage();
-      const storageRef = ref(storage, "images/" + selectedFile.name);
-      await uploadBytes(storageRef, selectedFile);
-      attachmentUrl = await getDownloadURL(storageRef);
+
+      const uploadPromises = selectedFiles.map(async (file) => {
+        const storageRef = ref(storage, "images/" + file.name);
+        await uploadBytes(storageRef, file);
+        return getDownloadURL(storageRef);
+      });
+      
+      attachmentUrls = await Promise.all(uploadPromises);
     }
+
+    // if (selectedFile) {
+    //   const storage = getStorage();
+    //   const storageRef = ref(storage, "images/" + selectedFile.name);
+    //   await uploadBytes(storageRef, selectedFile);
+    //   attachmentUrls = await getDownloadURL(storageRef);
+    // }
     const updatedData = {
       ...data,
-      attachmentUrl: attachmentUrl,
+      attachmentUrls: attachmentUrls,
     };
     setData(updatedData);
     setIsSubmitting(true);
@@ -96,7 +110,7 @@ const RequestIssue = () => {
         ward: data.ward,
         district: data.district,
         priority: data.priority,
-        attachmentUrl: attachmentUrl,
+        attachmentUrls: attachmentUrls,
       });
       navigate(`/home/mains`);
     } catch (error) {

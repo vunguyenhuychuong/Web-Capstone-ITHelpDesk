@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticket.css";
 import "../../../assets/css/ServiceTicket.css";
 import {
@@ -8,8 +8,6 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
-  MenuItem,
-  Select,
   Tab,
   Tabs,
   TextField,
@@ -41,10 +39,10 @@ import { getRoleName } from "../../helpers/tableComlumn";
 import { Button } from "flowbite-react";
 import { useSelector } from "react-redux";
 import UploadComponent from "../../helpers/UploadComponent";
+import { FaEye } from "react-icons/fa";
 
 const TicketSolutionDetail = () => {
   const [value, setValue] = useState(0);
-  const [selectedValue, setSelectedValue] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const { solutionId } = useParams();
   const navigate = useNavigate();
@@ -55,6 +53,7 @@ const TicketSolutionDetail = () => {
   const userRole = user.user.role;
   const [fileName, setFileName] = useState("");
   const [openImageDialog, setOpenImageDialog] = useState(false);
+  const [views, setViews] = useState(0);
 
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
@@ -71,6 +70,10 @@ const TicketSolutionDetail = () => {
       setFileName(file.name);
     }
   };
+  
+  useEffect(() => {
+    setViews((prevViews) => prevViews + 1);
+  }, []);
 
   const handleBackTicketSolution = () => {
     navigate("/home/ticketSolution");
@@ -123,10 +126,6 @@ const TicketSolutionDetail = () => {
     setOpenImageDialog(false);
   };
 
-  const handleChange = (event) => {
-    setSelectedValue(event.target.value);
-  };
-
   return (
     <Grid
       container
@@ -156,7 +155,7 @@ const TicketSolutionDetail = () => {
                     type="button"
                     className="btn btn-link narrow-input"
                     style={{
-                      backgroundColor: "#f2f2f2",
+                      backgroundColor: "#FFFFFF",
                       borderRadius: "5px",
                       paddingLeft: "10px",
                       height: "45px",
@@ -175,53 +174,77 @@ const TicketSolutionDetail = () => {
                 ) : null}
                 {userRole === 2 ? (
                   <>
-                    <Select
-                      displayEmpty
-                      value={selectedValue}
-                      onChange={handleChange}
-                      inputProps={{ "aria-label": "Without label" }}
+                    <Button
+                      type="button"
+                      className="btn btn-link narrow-input"
                       style={{
-                        backgroundColor: "#f2f2f2",
+                        backgroundColor: "#FFFFFF",
                         borderRadius: "5px",
                         paddingLeft: "10px",
                         height: "45px",
                         padding: "10px 0",
                         marginBottom: "10px",
-                        zIndex: 9999,
+                        color: "#0099FF", 
                       }}
+                      onClick={() => handleClickChangePublic(solutionId)}
                     >
-                      {selectedValue !== "" ? null : (
-                        <MenuItem value="" disabled>
-                          <em className="action-menu-item">Action</em>
-                        </MenuItem>
-                      )}
-
-                      <MenuItem
-                        value={10}
-                        onClick={() => handleClickChangePublic(solutionId)}
+                      <span
+                        className="action-menu-item"
+                        style={{ fontSize: "16px", textTransform: "none" }}
                       >
-                        {data.isPublic ? <>Private</> : <>Public</>}
-                      </MenuItem>
+                        {data.isPublic ? "Private" : "Public"}
+                      </span>
+                    </Button>
 
-                      {userRole === 2 && [
-                        <MenuItem
-                          key={20}
-                          value={20}
+                    {userRole === 2 && (
+                      <>
+                        <Button
+                          type="button"
+                          className="btn btn-link narrow-input"
+                          style={{
+                            backgroundColor: "#FFFFFF",
+                            borderRadius: "5px",
+                            paddingLeft: "10px",
+                            height: "45px",
+                            padding: "10px 0",
+                            marginBottom: "10px",
+                            color: "#28a745", 
+                          }}
                           onClick={() =>
                             handleApproveTicketSolution(solutionId)
                           }
                         >
-                          Approve
-                        </MenuItem>,
-                        <MenuItem
-                          key={30}
-                          value={30}
+                          <span
+                            className="action-menu-item"
+                            style={{ fontSize: "16px", textTransform: "none" }}
+                          >
+                            Approve
+                          </span>
+                        </Button>
+
+                        <Button
+                          type="button"
+                          className="btn btn-link narrow-input"
+                          style={{
+                            backgroundColor: "#FFFFFF",
+                            borderRadius: "5px",
+                            paddingLeft: "10px",
+                            height: "45px",
+                            padding: "10px 0",
+                            marginBottom: "10px",
+                            color: "#dc3545", 
+                          }}
                           onClick={() => handleRejectTicketSolution(solutionId)}
                         >
-                          Reject
-                        </MenuItem>,
-                      ]}
-                    </Select>
+                          <span
+                            className="action-menu-item"
+                            style={{ fontSize: "16px", textTransform: "none" }}
+                          >
+                            Reject
+                          </span>
+                        </Button>
+                      </>
+                    )}
                   </>
                 ) : null}
               </div>
@@ -259,9 +282,9 @@ const TicketSolutionDetail = () => {
               color="textSecondary"
               className="descriptionLabel"
               style={{
-                fontSize: '1.2em',       
-                fontWeight: 'bold',      
-                color: '#007bff',         
+                fontSize: "1.2em",
+                fontWeight: "bold",
+                color: "#007bff",
               }}
             >
               Description
@@ -290,9 +313,9 @@ const TicketSolutionDetail = () => {
               className="button"
               onClick={handleImageDialogOpen}
               style={{
-                backgroundColor: '#007bff',  
-                color: '#fff',            
-                fontWeight: 'bold',        
+                backgroundColor: "#007bff",
+                color: "#fff",
+                fontWeight: "bold",
               }}
             >
               See Image
@@ -342,7 +365,11 @@ const TicketSolutionDetail = () => {
             />
           </Tabs>
           <Box role="tabpanel" hidden={value !== 0}>
-            {value === 0 ? <CommentSolution /> : <LoadingSkeleton />}
+            {value === 0 ? (
+              <CommentSolution data={data} />
+            ) : (
+              <LoadingSkeleton />
+            )}
           </Box>
           {/* <Box role="tabpanel" hidden={value !== 1}>
             {value === 1 ? <HistorySolution /> : <LoadingSkeleton />}
@@ -377,11 +404,15 @@ const TicketSolutionDetail = () => {
         <MDBRow className="mb-4 mt-4">
           <MDBRow className="mb-4">
             <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-4 ">Solution ID</div>
+              <div className="label-col col-md-4 font-weight-bold">
+                Solution ID:
+              </div>
               <div className="data-col col-md-8">{data.id}</div>
             </MDBCol>
             <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-4 ">Approve</div>
+              <div className="label-col col-md-4 font-weight-bold">
+                Approval Status:
+              </div>
               <div className="data-col col-md-8">
                 {data.isApproved ? (
                   <>
@@ -389,53 +420,60 @@ const TicketSolutionDetail = () => {
                       className="square-icon"
                       style={{ color: "green" }}
                     />
-                    <span>Approved</span>
+                    <span className="text-success">Approved</span>
                   </>
                 ) : (
                   <>
                     <Square className="square-icon" />
-                    <span>Not Approved</span>
+                    <span className="text-danger">Not Approved</span>
                   </>
                 )}
               </div>
             </MDBCol>
             <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-4 ">Type</div>
-              <div className="data-col col-md-8">Solution</div>
+              <div className="label-col col-md-4 font-weight-bold">Type:</div>
+              <div className="data-col col-md-8">{data.type}</div>
             </MDBCol>
             <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-4 "> Visibility</div>
+              <div className="label-col col-md-4 font-weight-bold">
+                Visibility:
+              </div>
               <div className="data-col col-md-8">
                 {data.isPublic ? (
                   <>
                     <LockOpen
                       className="square-icon"
                       style={{ color: "green" }}
-                    />{" "}
-                    <span>Public</span>
+                    />
+                    <span className="text-success">Public</span>
                   </>
                 ) : (
                   <>
-                    <Lock className="square-icon" /> Private
+                    <Lock className="square-icon" />{" "}
+                    <span className="text-danger">Private</span>
                   </>
                 )}
               </div>
             </MDBCol>
             <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-4 ">Review Date</div>
+              <div className="label-col col-md-4 font-weight-bold">
+                Review Date:
+              </div>
               <div className="data-col col-md-8">
                 {formatDate(data.reviewDate)}
               </div>
             </MDBCol>
             <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-4">Expiry Date</div>
+              <div className="label-col col-md-4 font-weight-bold">
+                Expiry Date:
+              </div>
               <div className="data-col col-md-8">
                 {formatDate(data.expiredDate)}
               </div>
             </MDBCol>
             <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-4">Views</div>
-              <div className="data-col col-md-8">1</div>
+              <div className="label-col col-md-4 font-weight-bold">Views:</div>
+              <div className="data-col col-md-8">{views} <FaEye /> </div>
             </MDBCol>
           </MDBRow>
         </MDBRow>

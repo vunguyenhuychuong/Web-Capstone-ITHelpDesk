@@ -286,7 +286,7 @@ const ContractList = () => {
                       <ArrowDropUp />
                     ))}
                 </th>
-                <th
+                {/* <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("description")}
                 >
@@ -297,7 +297,7 @@ const ContractList = () => {
                     ) : (
                       <ArrowDropUp />
                     ))}
-                </th>
+                </th> */}
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("value")}
@@ -394,7 +394,7 @@ const ContractList = () => {
                         />{" "}
                       </td>
                       <td>{Contract.name}</td>
-                      <td>{Contract.description}</td>
+                      {/* <td>{Contract.description}</td> */}
                       <td>
                         {Contract.isApproved ? (
                           <>

@@ -1,17 +1,14 @@
 import {
   Assessment,
   Assignment,
-  Cancel,
-  ConfirmationNumber,
   FileDownload,
-  Pending,
+  MonetizationOn,
   QueryStats,
   Replay,
   TableChart,
   Verified,
 } from "@mui/icons-material";
 import {
-  Button,
   Card,
   CardContent,
   FormControl,
@@ -173,17 +170,40 @@ const ChartManager = () => {
     setSelectedTime(event.target.value);
   };
 
-  const [chartData, setChartData] = useState({});
+  const documentStyle = getComputedStyle(document.documentElement);
+
+  const [chartData, setChartData] = useState({
+    labels: ["Open", "Assign", "InProgress", "Resolve", "Closed", "Cancel"],
+    datasets: [
+      {
+        data: [0, 0, 0, 0, 0, 0],
+        backgroundColor: [
+          documentStyle.getPropertyValue("--blue-500"),
+          documentStyle.getPropertyValue("--yellow-500"),
+          documentStyle.getPropertyValue("--orange-500"),
+          documentStyle.getPropertyValue("--green-500"),
+          documentStyle.getPropertyValue("--pink-500"),
+          documentStyle.getPropertyValue("--grey-500"),
+        ],
+        hoverBackgroundColor: [
+          documentStyle.getPropertyValue("--blue-400"),
+          documentStyle.getPropertyValue("--yellow-400"),
+          documentStyle.getPropertyValue("--orange-400"),
+          documentStyle.getPropertyValue("--green-500"),
+          documentStyle.getPropertyValue("--pink-500"),
+          documentStyle.getPropertyValue("--grey-500"),
+        ],
+      },
+    ],
+  });
   const [chartOptions, setChartOptions] = useState({});
 
   useEffect(() => {
-    const documentStyle = getComputedStyle(document.documentElement);
-
     const fetchDataTotalChart = async () => {
       try {
         const totalChart = await getSummaryManager();
         setDataTotal(totalChart);
-
+  
         const updatedData = {
           labels: [
             "Open",
@@ -196,12 +216,12 @@ const ChartManager = () => {
           datasets: [
             {
               data: [
-                dataTotal?.totalOpenTicket || 0,
-                dataTotal?.totalAssignedTicket || 0,
-                dataTotal?.totalInProgressTicket || 0,
-                dataTotal?.totalResolvedTicket || 0,
-                dataTotal?.totalClosedTicket || 0,
-                dataTotal?.totalCancelledTicket || 0,
+                totalChart?.totalOpenTicket || 0,
+                totalChart?.totalAssignedTicket || 0,
+                totalChart?.totalInProgressTicket || 0,
+                totalChart?.totalResolvedTicket || 0,
+                totalChart?.totalClosedTicket || 0,
+                totalChart?.totalCancelledTicket || 0,
               ],
               backgroundColor: [
                 documentStyle.getPropertyValue("--blue-500"),
@@ -222,14 +242,15 @@ const ChartManager = () => {
             },
           ],
         };
-
+  
         setChartData(updatedData);
       } catch (error) {
         console.log(error);
       }
     };
-
+  
     fetchDataTotalChart();
+  
     const options = {
       plugins: {
         legend: {
@@ -242,8 +263,7 @@ const ChartManager = () => {
         },
       },
     };
-
-    setChartData(data);
+  
     setChartOptions(options);
   }, []);
 
@@ -259,7 +279,7 @@ const ChartManager = () => {
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <Card style={{ display: "flex" }}>
-              <Card style={{ flex: 1, height: "350px" }}>
+              <Card style={{ flex: 1, height: "300px" }}>
                 <div
                   style={{
                     display: "flex",
@@ -267,7 +287,7 @@ const ChartManager = () => {
                     width: "100%",
                   }}
                 >
-                  <Typography variant="h6" style={{ margin: "10px" }}>
+                  <Typography variant="h6" style={{ margin: "10px",fontWeight: "bold",color: "#333",fontSize: "30px" }}>
                     Today Ticket
                   </Typography>
                   <div style={{ marginLeft: "auto", marginTop: "10px", marginRight: "10px" }}>
@@ -282,7 +302,7 @@ const ChartManager = () => {
                 </div>
                 <Typography
                   variant="body2"
-                  style={{ color: "rgba(0, 0, 0, 0.5)", marginLeft: "10px" }}
+                  style={{ color: "rgba(0, 0, 0, 0.5)", marginLeft: "10px",fontWeight: "bold",color: "#3399FF" }}
                 >
                   Ticket Summary
                 </Typography>
@@ -295,6 +315,10 @@ const ChartManager = () => {
                       backgroundColor: "#FF99CC",
                       borderRadius: "20px",
                       boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+                      transition: "transform 0.2s",
+                      "&:hover": {
+                        transform: "scale(1.05)",
+                      },
                     }}
                   >
                     <div
@@ -313,7 +337,7 @@ const ChartManager = () => {
                         border: "2px solid #333",
                       }}
                     >
-                      <ConfirmationNumber
+                      <FaTicketAlt
                         style={{ fontSize: 40, color: "#FFFFFF" }}
                       />
                     </div>
@@ -345,7 +369,7 @@ const ChartManager = () => {
                         variant="body1"
                         style={{
                           textAlign: "left",
-                          color: "#333",
+                          color: "#EEEEEE",
                           fontSize: "16px",
                           fontWeight: "bold",
                           letterSpacing: "0.5px",
@@ -411,13 +435,13 @@ const ChartManager = () => {
                         variant="body1"
                         style={{
                           textAlign: "left",
-                          color: "#333",
+                          color: "#EEEEEE",
                           fontSize: "16px",
                           fontWeight: "bold",
                           letterSpacing: "0.5px",
                         }}
                       >
-                        Assign Ticket
+                        Total Contract
                       </Typography>
                     </div>
                   </Card>
@@ -477,13 +501,13 @@ const ChartManager = () => {
                         variant="body1"
                         style={{
                           textAlign: "left",
-                          color: "#333",
+                          color: "#EEEEEE",
                           fontSize: "16px",
                           fontWeight: "bold",
                           letterSpacing: "0.5px",
                         }}
                       >
-                        Resolved Ticket
+                        Total Solution
                       </Typography>
                     </div>
                   </Card>
@@ -513,7 +537,7 @@ const ChartManager = () => {
                         border: "2px solid #333",
                       }}
                     >
-                      <Cancel style={{ fontSize: 40, color: "#FFFFFF" }} />
+                      <MonetizationOn style={{ fontSize: 40, color: "#FFFFFF" }} />
                     </div>
                     <div
                       style={{
@@ -543,13 +567,13 @@ const ChartManager = () => {
                         variant="body1"
                         style={{
                           textAlign: "left",
-                          color: "#333",
+                          color: "#EEEEEE",
                           fontSize: "16px",
                           fontWeight: "bold",
                           letterSpacing: "0.5px",
                         }}
                       >
-                        Close Ticket
+                        Total Payment
                       </Typography>
                     </div>
                   </Card>
@@ -561,40 +585,7 @@ const ChartManager = () => {
       </Grid>
       <Grid item xs={3}>
         <Grid item xs={12}>
-          <div
-            className="nav-header bordered-grid-item"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              border: "1px solid #CCCCCC",
-              padding: "8px",
-              background: "#FFFFFF",
-            }}
-          >
-            <QueryStats sx={{ margin: 1, color: "#FF66CC" }} />
-            <h4
-              style={{
-                marginLeft: "8px",
-                marginTop: "4px",
-                fontWeight: "bold",
-                fontSize: "14px",
-              }}
-            >
-              Total Ticket : {dataTotal.totalTicket}
-            </h4>
-            <div style={{ marginLeft: "auto" }}>
-              <button
-                variant="contained"
-                color="secondary"
-                className="custom-button"
-              >
-                This Week
-              </button>
-            </div>
-          </div>
-        </Grid>
-        <Grid item xs={12}>
-          <Card style={{ height: "290px" }}>
+          <Card style={{ height: "300px" }}>
             <CardContent
               style={{
                 display: "flex",

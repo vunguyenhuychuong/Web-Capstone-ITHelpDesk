@@ -13,6 +13,7 @@ const useSolutionTicketData = (solutionId) => {
     try {
       setLoading(true);
       const solutionTicketData = await getTicketSolutionById(solutionId);
+      console.log(solutionTicketData);
       const categoryData = await getDataCategories();
       setData(solutionTicketData);
       setDataCategories(categoryData);

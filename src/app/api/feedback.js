@@ -118,4 +118,32 @@ export async function getDetailFeedBack(feedbackId) {
   } catch (error) {
     console.log(error);
   }
-}
+};
+
+export async function createLike(solutionId) {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.post(`${baseURL}/solution/${solutionId}/like`,{
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};
+
+export async function createDisLike(solutionId) {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.post(`${baseURL}/solution/${solutionId}/dislike`,{
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};

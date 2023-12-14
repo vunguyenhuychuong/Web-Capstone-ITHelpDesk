@@ -26,7 +26,9 @@ import {
 } from "@mui/icons-material";
 import "../../../../assets/css/ticketSolution.css";
 import {
+  createDisLike,
   createFeedBack,
+  createLike,
   deleteFeedBack,
   editFeedBack,
   getAllFeedBack,
@@ -37,16 +39,15 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { formatDate } from "../../../helpers/FormatDate";
 import { toast } from "react-toastify";
+import useSolutionTicketData from "../SolutionTicketData";
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const CommentSolution = () => {
+const CommentSolution = (data) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [thumbsUpCount, setThumbsUpCount] = useState(0);
-  const [thumbsDownCount, setThumbsDownCount] = useState(0);
   const [dataFeedBack, setDataFeedBack] = useState([]);
   const { solutionId } = useParams();
   const [deleteSolutionId, setDeleteSolutionId] = useState(null);
@@ -55,12 +56,20 @@ const CommentSolution = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [editCommentId, setEditCommentId] = useState(null);
 
-  const [data, setData] = useState({
+  const [dataLike, setData] = useState({
+    countDislike: data.countDislike || 0,
+    countLike: data.countLike || 0,
+  })
+
+
+  const [dataCmt, setDataCmt] = useState({
     id: 1,
     userId: 1,
     solutionId: 1,
     comment: "",
     isPublic: true,
+    countDislike: 0,
+    countLike: 0,
   });
 
   const [editComment, setEditComment] = useState({
@@ -75,7 +84,7 @@ const CommentSolution = () => {
     try {
       const feedback = await getDetailFeedBack(commentId);
       if (feedback) {
-        setData({
+        setDataCmt({
           id: feedback.id || "",
           userId: feedback.userId || "",
           solutionId: feedback.solutionId || "",
@@ -84,7 +93,7 @@ const CommentSolution = () => {
           createdAt: feedback.createdAt || "",
           modifiedAt: feedback.modifiedAt || "",
         });
-        setData({
+        setDataCmt({
           id: 1,
           userId: 1,
           solutionId: 1,
@@ -101,9 +110,31 @@ const CommentSolution = () => {
     }
   };
 
-  // const handleEditCommentClick = (commentId) => {
-  //   setEditCommentId(commentId);
-  // };
+  const handleLike = async () => {
+    try {
+      const updatedData = await createLike(solutionId);
+      setData(updatedData);
+      setDataCmt((prevDataCmt) => ({
+        ...prevDataCmt,
+        countLike: updatedData.countLike,
+      }));
+    } catch (error) {
+      console.error("Error liking solution:", error);
+    }
+  };
+
+  const handleDislike = async () => {
+    try {
+      const updatedData = await createDisLike(solutionId);
+      setData(updatedData);
+      setDataCmt((prevDataCmt) => ({
+        ...prevDataCmt,
+        countDislike: updatedData.countDislike,
+      }));
+    } catch (error) {
+      console.error("Error disliking solution:", error);
+    }
+  };
 
   const handleEditComment = async () => {
     try {
@@ -130,7 +161,7 @@ const CommentSolution = () => {
       comment: "",
       isPublic: true,
     });
-    setData({
+    setDataCmt({
       id: 1,
       userId: 1,
       solutionId: 1,
@@ -154,7 +185,7 @@ const CommentSolution = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setData((prevData) => ({
+    setDataCmt((prevData) => ({
       ...prevData,
       [name]: value,
     }));
@@ -170,11 +201,11 @@ const CommentSolution = () => {
     try {
         await createFeedBack({
         solutionId: solutionId,
-        comment: data.comment,
-        isPublic: data.isPublic,
+        comment: dataCmt.comment,
+        isPublic: dataCmt.isPublic,
       });
      
-        setData((prevData) => ({
+        setDataCmt((prevData) => ({
           ...prevData,
           comment: "",
         }));
@@ -198,8 +229,8 @@ const CommentSolution = () => {
     setIsDeleting(true);
     try {
       const result = await deleteFeedBack(deleteSolutionId);
-      if (result.data && result.data.responseException.exceptionMessage) {
-        console.log(result.data.responseException.exceptionMessage);
+      if (result.dataCmt && result.dataCmt.responseException.exceptionMessage) {
+        console.log(result.dataCmt.responseException.exceptionMessage);
       } else {
         toast.success("Feedback created successfully");
         fetchDataListFeedBack();
@@ -214,14 +245,6 @@ const CommentSolution = () => {
 
   const handleClose = () => {
     setOpen(false);
-  };
-
-  const handleThumbsUp = () => {
-    setThumbsUpCount(thumbsUpCount + 1);
-  };
-
-  const handleThumbsDown = () => {
-    setThumbsDownCount(thumbsDownCount + 1);
   };
 
   useEffect(() => {
@@ -243,19 +266,19 @@ const CommentSolution = () => {
         <IconButton
           aria-label="Thumbs Up"
           style={{ marginLeft: "10px" }}
-          onClick={handleThumbsUp}
+          onClick={handleLike}
         >
           <ThumbUp />
         </IconButton>
-        <span style={{ marginLeft: "5px" }}>{thumbsUpCount}</span>
+        <span style={{ marginLeft: "5px" }}>{dataLike.countLike}</span>
         <IconButton
           aria-label="Thumbs Down"
           style={{ marginLeft: "10px" }}
-          onClick={handleThumbsDown}
+          onClick={handleDislike}
         >
           <ThumbDown />
         </IconButton>
-        <span style={{ marginLeft: "5px" }}>{thumbsDownCount}</span>
+        <span style={{ marginLeft: "5px" }}>{dataLike.countDislike}</span>
       </div>
       <Button
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -407,7 +430,7 @@ const CommentSolution = () => {
           id="comment"
           name="comment"
           placeholder="Write a comment..."
-          value={data.comment}
+          value={dataCmt.comment}
           onChange={handleInputChange}
           style={{ marginBottom: "10px" }}
         />
