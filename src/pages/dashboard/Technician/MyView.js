@@ -81,7 +81,7 @@ const MyView = () => {
       container
       xs={12}
       spacing={2}
-      style={{ marginTop: "10px", background: "#eee", marginLeft: "-9px" }}
+      style={{  background: "#eee", marginLeft: "-9px", marginRight: "10px" }}
     >
       <Grid item xs={3}>
         <div
@@ -414,7 +414,6 @@ const MyView = () => {
           </div>
         </Grid>
         <Grid item xs={12}>
-          {/* Card content goes here */}
           <Card style={{ height: "290px" }}>
             <CardContent>
               <div>

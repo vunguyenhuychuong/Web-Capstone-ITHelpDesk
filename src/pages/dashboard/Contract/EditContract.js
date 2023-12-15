@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import DateValidation from "../../helpers/DateValidation";
+import Slider from "react-slick";
 import {
   getAllAccountList,
   getAllCompanyList,
@@ -38,7 +39,7 @@ const EditContract = () => {
     parentContractId: 1,
     accountantId: 1,
     companyId: 1,
-    attachmentURl: "",
+    attachmentURl: [],
     status: 0,
   });
   const [selectedFile, setSelectedFile] = useState(null);
@@ -60,6 +61,13 @@ const EditContract = () => {
     value: "",
   });
 
+  const settings = {
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
+
   const handleStartDateChange = (newDate) => {
     const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
     setStartDate(newDate);
@@ -79,18 +87,32 @@ const EditContract = () => {
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
+    const file = e.target.files;
+    setSelectedFile([...file]);
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreviewUrl(reader.result);
-    };
-    if (file) {
-      reader.readAsDataURL(file);
-    } else {
-      setImagePreviewUrl(null);
+    const promises = [];
+    const previewUrls = [];
+
+    for (let i = 0; i < file.length; i++) {
+      const currentFile = file[i];
+      const reader = new FileReader();
+
+      promises.push(
+        new Promise((resolve) => {
+          reader.onloadend = () => {
+            previewUrls.push(reader.result);
+            resolve();
+          };
+          reader.readAsDataURL(currentFile);
+        })
+      );
     }
+
+    Promise.all(promises).then(() => {
+      setImagePreviewUrl(previewUrls);
+    });
+
+    setIsImagePreviewOpen(true);
   };
 
   const closeImagePreview = () => {
@@ -176,12 +198,19 @@ const EditContract = () => {
 
     setIsSubmitting(true);
     try {
-      let attachmentURl = data.attachmentURl;
-      if (selectedFile) {
+      let attachmentURl = data.attachmentURl || [];
+      if (selectedFile.length > 0) {
         const storage = getStorage();
-        const storageRef = ref(storage, "images/" + selectedFile.name);
-        await uploadBytes(storageRef, selectedFile);
-        attachmentURl = await getDownloadURL(storageRef);
+        const promises = [];
+
+        for (let i = 0; i < selectedFile.length; i++) {
+          const file = selectedFile[i];
+          const storageRef = ref(storage, `images/${file.name}`);
+          await uploadBytes(storageRef, file);
+
+          const downloadURL = await getDownloadURL(storageRef);
+          attachmentURl.push(downloadURL);
+        }
       }
 
       const updatedData = {
@@ -318,7 +347,6 @@ const EditContract = () => {
             }}
           >
             <Grid container justifyContent="flex-end">
-              {" "}
               <Grid item xs={3}>
                 <h2
                   className="align-right"
@@ -388,6 +416,7 @@ const EditContract = () => {
                   name="attachmentURl"
                   className="form-control input-field"
                   id="attachmentURl"
+                  multiple
                   onChange={handleFileChange}
                 />
                 {imagePreviewUrl && (
@@ -641,7 +670,7 @@ const EditContract = () => {
       </Grid>
       <Dialog
         open={isImagePreviewOpen}
-        onClose={closeImagePreview}
+        onClose={() => setIsImagePreviewOpen(false)}
         maxWidth="md"
         fullWidth
       >
@@ -650,18 +679,30 @@ const EditContract = () => {
           <IconButton
             edge="end"
             color="inherit"
-            onClick={closeImagePreview}
+            onClick={() => setIsImagePreviewOpen(false)}
             aria-label="close"
           >
             <Close />
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <img
-            src={imagePreviewUrl}
-            alt="Attachment Preview"
-            style={{ width: "100%" }}
-          />
+          <Slider {...settings}>
+            {data.attachmentURl ? (
+              <Slider {...settings}>
+                {data.attachmentURl.map((url, index) => (
+                  <div key={index}>
+                    <img
+                      src={url}
+                      alt={`Attachment Preview ${index + 1}`}
+                      style={{ width: "100%" }}
+                    />
+                  </div>
+                ))}
+              </Slider>
+            ) : (
+              <p>Loading...</p>
+            )}
+          </Slider>
         </DialogContent>
       </Dialog>
     </Grid>

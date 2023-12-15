@@ -204,7 +204,6 @@ const TicketSolutionDetail = () => {
                           style={{
                             backgroundColor: "#FFFFFF",
                             borderRadius: "5px",
-                            paddingLeft: "10px",
                             height: "45px",
                             padding: "10px 0",
                             marginBottom: "10px",
@@ -216,7 +215,8 @@ const TicketSolutionDetail = () => {
                         >
                           <span
                             className="action-menu-item"
-                            style={{ fontSize: "16px", textTransform: "none" }}
+                            style={{ fontSize: "16px", textTransform: "none", marginLeft: "5px",marginLeft: "auto",
+                            marginRight: "auto",}}
                           >
                             Approve
                           </span>

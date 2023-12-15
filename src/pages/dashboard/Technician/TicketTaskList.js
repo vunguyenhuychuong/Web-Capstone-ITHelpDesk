@@ -1,9 +1,11 @@
 import {
   MDBBtn,
+  MDBCol,
   MDBContainer,
   MDBNavbar,
   MDBNavbarBrand,
   MDBNavbarNav,
+  MDBRow,
   MDBTable,
   MDBTableBody,
   MDBTableHead,
@@ -12,11 +14,10 @@ import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketCustomer.css";
 import PageSizeSelector from "../Pagination/Pagination";
 import {
+  ArrowBack,
   ContentCopy,
   Delete,
   Info,
-  Search,
-  Settings,
   Square,
   ViewCompact,
 } from "@mui/icons-material";
@@ -46,7 +47,6 @@ const TicketTaskList = () => {
   const [sortBy, setSortBy] = useState("id");
   const { ticketId } = useParams();
   const navigate = useNavigate();
-  
 
   const fetchDataListTicketTask = useCallback(async () => {
     try {
@@ -70,7 +70,15 @@ const TicketTaskList = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection, ticketId]);
+  }, [
+    currentPage,
+    pageSize,
+    searchField,
+    searchQuery,
+    sortBy,
+    sortDirection,
+    ticketId,
+  ]);
 
   const handleSelectSolution = (solutionId) => {
     if (selectedSolutionIds.includes(solutionId)) {
@@ -168,6 +176,11 @@ const TicketTaskList = () => {
     }
   };
 
+  
+  const handleGoBack = () => {
+    navigate(`/home/homeTechnician`);
+  };
+
   useEffect(() => {
     fetchDataListTicketTask();
     setTotalPages(4);
@@ -175,6 +188,45 @@ const TicketTaskList = () => {
 
   return (
     <section style={{ backgroundColor: "#eee" }}>
+      <MDBNavbar expand="lg" style={{ backgroundColor: "#fff" }}>
+        <MDBContainer fluid>
+        <MDBCol md="12">
+          <MDBRow className="border-box">
+            <MDBCol md="8" className="mt-2">
+              <div className="d-flex align-items-center">
+                <button type="button" className="btn btn-link icon-label">
+                  <ArrowBack
+                    onClick={() => handleGoBack()}
+                    className="arrow-back-icon"
+                  />
+                </button>
+
+                <div
+                  style={{
+                    marginLeft: "40px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontSize: "30px",
+                      fontWeight: "bold",
+                      marginRight: "10px",
+                    }}
+                  >
+                    All Task List
+                  </h2>
+                  <span style={{ fontSize: "18px", color: "#888" }}>
+                    The list task available for assistance.
+                  </span>
+                </div>
+              </div>
+            </MDBCol>
+          </MDBRow>
+        </MDBCol>
+        </MDBContainer>
+      </MDBNavbar>
       <MDBContainer className="py-5 custom-container">
         {dataListTicketsTask.length === 0 ? (
           <div style={{ textAlign: "center", padding: "20px" }}>
@@ -333,9 +385,9 @@ const TicketTaskList = () => {
                           </td>
                           <td>
                             <ViewCompact
-                            onClick={() =>
-                              handleOpenDetailTicketTask(TicketTask.id)
-                            }
+                              onClick={() =>
+                                handleOpenDetailTicketTask(TicketTask.id)
+                              }
                             />{" "}
                           </td>
                           <td>{TicketTask.title}</td>
@@ -366,9 +418,7 @@ const TicketTaskList = () => {
                             )}
                           </td>
                           <td>{getPriorityOption(TicketTask.priority)}</td>
-                          <td>
-                            {formatDate(TicketTask.scheduledStartTime)}
-                          </td>
+                          <td>{formatDate(TicketTask.scheduledStartTime)}</td>
                           <td>{formatDate(TicketTask.scheduledEndTime)}</td>
                           <td>
                             <div

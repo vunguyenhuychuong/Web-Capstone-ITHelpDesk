@@ -74,8 +74,8 @@ const HomeCustomer = () => {
               Hi! How can we help you?
             </div>
           </div>
-          <MDBRow>
-            <MDBCol md="6">
+          <MDBRow className="justify-content-center">
+            <MDBCol md="4">
               <MDBCard className="mb-4 mb-md-0">
                 <div className="d-flex align-items-center custom-red-bg">
                   <MDBCol md="3" className="red-bg text-center">
@@ -96,7 +96,7 @@ const HomeCustomer = () => {
                 </div>
               </MDBCard>
             </MDBCol>
-            <MDBCol md="6">
+            <MDBCol md="4">
               <MDBCard className="mb-4 mb-md-0">
                 <div className="d-flex align-items-center custom-blue-bg">
                   <MDBCol md="3" className="red-bg custom-grey-bg text-center">

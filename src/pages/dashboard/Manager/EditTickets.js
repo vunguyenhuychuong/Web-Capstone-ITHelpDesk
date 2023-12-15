@@ -31,6 +31,7 @@ import {
 } from "../../../app/api/ticket";
 import "primereact/resources/primereact.min.css";
 import "primereact/resources/themes/saga-blue/theme.css";
+import Slider from "react-slick";
 import {
   fetchCity,
   fetchDistricts,
@@ -54,13 +55,13 @@ const EditTickets = () => {
     type: "Offline",
     location: "",
     categoryId: 1,
-    attachmentUrl: "",
+    attachmentUrls: [],
   });
   const [dataCategories, setDataCategories] = useState([]);
   const [dataMode, setDataMode] = useState([]);
   const [dataUser, setDataUser] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
   const [dataLocation, setDataLocation] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -72,6 +73,13 @@ const EditTickets = () => {
     title: "",
     description: "",
   });
+
+  const settings = {
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
 
   const fetchDataManager = async () => {
     try {
@@ -160,7 +168,6 @@ const EditTickets = () => {
     const fetchTicketData = async () => {
       try {
         const ticketData = await getTicketByTicketId(ticketId);
-        console.log(ticketData);
         setData((prevData) => ({
           ...prevData,
           requesterId: ticketData.requesterId,
@@ -184,7 +191,7 @@ const EditTickets = () => {
           dueTime: ticketData.dueTime,
           completedTime: ticketData.completedTime,
           categoryId: ticketData.categoryId,
-          attachmentUrl: ticketData.attachmentUrl,
+          attachmentUrls: ticketData.attachmentUrls,
         }));
       } catch (error) {
         console.error("Error fetching ticket data: ", error);
@@ -213,18 +220,33 @@ const EditTickets = () => {
   }, [dataUser]);
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
+    const files = e.target.files;
+    setSelectedFile([...files]);
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreviewUrl(reader.result);
-    };
-    if (file) {
-      reader.readAsDataURL(file);
-    } else {
-      setImagePreviewUrl(null);
+    const promises = [];
+    const previewUrls = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const currentFile = files[i];
+      const reader = new FileReader();
+
+      promises.push(
+        new Promise((resolve) => {
+          reader.onloadend = () => {
+            console.log("Reader result:", reader.result);
+            previewUrls.push(reader.result);
+            resolve();
+          };
+          reader.readAsDataURL(currentFile);
+        })
+      );
     }
+
+    Promise.all(promises).then(() => {
+      setImagePreviewUrl(previewUrls);
+      setIsImagePreviewOpen(true);
+      console.log("Image Preview URLs:", previewUrls);
+    });
   };
 
   const handleSubmitTicket = async (e) => {
@@ -246,16 +268,22 @@ const EditTickets = () => {
 
     setIsSubmitting(true);
     try {
-      let attachmentUrl = data.attachmentUrl;
-      if (selectedFile) {
+      let attachmentUrls = data.attachmentUrls || [];
+      if (selectedFile.length > 0) {
         const storage = getStorage();
-        const storageRef = ref(storage, "images/" + selectedFile.name);
-        await uploadBytes(storageRef, selectedFile);
-        attachmentUrl = await getDownloadURL(storageRef);
+        const promise = [];
+        for (let i = 0; i < selectedFile.length; i++) {
+          const file = selectedFile[i];
+          const storageRef = ref(storage, `images/${file.name}`);
+          await uploadBytes(storageRef, file);
+
+          const downloadURL = await getDownloadURL(storageRef);
+          attachmentUrls.push(downloadURL);
+        }
       }
       const updatedData = {
         ...data,
-        attachmentUrl: attachmentUrl,
+        attachmentUrls: attachmentUrls,
       };
       const res = await editTicketByManager(ticketId, updatedData);
       setIsSubmitting(false);
@@ -287,10 +315,6 @@ const EditTickets = () => {
     navigate(`/home/detailTicket/${ticketId}`);
   };
 
-  const closeImagePreview = () => {
-    setIsImagePreviewOpen(false);
-  };
-
   return (
     <Grid
       container
@@ -303,7 +327,7 @@ const EditTickets = () => {
       <Grid item xs={12}>
         <MDBCol md="12">
           <MDBRow className="border-box">
-            <MDBCol md="5" className="mt-2">
+            <MDBCol md="7" className="mt-2">
               <div className="d-flex align-items-center">
                 <button type="button" className="btn btn-link icon-label">
                   <ArrowBack
@@ -469,10 +493,10 @@ const EditTickets = () => {
                   name="file"
                   className="form-control input-field"
                   id="attachmentUrl"
+                  multiple
                   onChange={handleFileChange}
                 />
-
-                {data.attachmentUrl && (
+                {data.attachmentUrls && data.attachmentUrls.length > 0 && (
                   <div
                     className="image-preview"
                     onClick={() => setIsImagePreviewOpen(true)}
@@ -953,7 +977,7 @@ const EditTickets = () => {
 
       <Dialog
         open={isImagePreviewOpen}
-        onClose={closeImagePreview}
+        onClose={() => setIsImagePreviewOpen(false)}
         maxWidth="md"
         fullWidth
       >
@@ -962,18 +986,24 @@ const EditTickets = () => {
           <IconButton
             edge="end"
             color="inherit"
-            onClick={closeImagePreview}
+            onClick={() => setIsImagePreviewOpen(false)}
             aria-label="close"
           >
             <Close />
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <img
-            src={data.attachmentUrl}
-            alt="Attachment Preview"
-            style={{ width: "100%" }}
-          />
+          <Slider {...settings}>
+            {data.attachmentUrls.map((url, index) => (
+              <div key={index}>
+                <img
+                  src={url}
+                  alt={`Attachment Preview ${index + 1}`}
+                  style={{ width: "100%" }}
+                />
+              </div>
+            ))}
+          </Slider>
         </DialogContent>
       </Dialog>
     </Grid>

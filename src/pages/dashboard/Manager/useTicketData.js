@@ -15,7 +15,7 @@ const useTicketData = (ticketId) => {
     impact: 0,
     urgency: 0,
     categoryId: 1,
-    attachmentUrl: "",
+    attachmentUrl: [],
     scheduledStartTime: "",
     scheduledEndTime: "",
     dueTime: "",

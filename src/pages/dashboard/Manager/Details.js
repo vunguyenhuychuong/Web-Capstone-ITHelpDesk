@@ -10,7 +10,6 @@ import {
   TableBody,
   TableCell,
   TableRow,
-  TextField,
   Typography,
 } from "@mui/material";
 import "../../../assets/css/detailTicket.css";
@@ -40,8 +39,6 @@ const Details = ({ data, loading, dataCategories }) => {
   const [cityName, setCityName] = useState("");
   const [districtName, setDistrictName] = useState("");
   const [wardName, setWardName] = useState("");
-
-  console.log(data);
 
   const handleEditClick = () => {
     setIsEditDialogOpen(true);
@@ -483,6 +480,7 @@ const Details = ({ data, loading, dataCategories }) => {
               height: "70vh",
             }}
           ></div>
+          
         </DialogContent>
         <DialogActions>
           <Button onClick={handleImageDialogClose} color="primary">

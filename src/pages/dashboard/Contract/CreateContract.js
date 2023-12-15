@@ -23,6 +23,7 @@ import {
   getAllCompanyList,
   getParentContract,
 } from "../../../app/api/contract";
+import Slider from "react-slick";
 
 const CreateContract = () => {
   const navigate = useNavigate();
@@ -33,24 +34,31 @@ const CreateContract = () => {
     name: "",
     description: "",
     value: 1000,
-    startDate: "",
+    startDate: "",  
     endDate: "",
     parentContractId: null,
     accountantId: 1,
     companyId: 1,
-    attachmentUrl: "",
+    attachmentUrl: [],
   });
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [startDate, setStartDate] = useState(moment());
   const [endDate, setEndDate] = useState(moment());
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
     name: "",
     description: "",
     value: "",
   });
+
+  const settings = {
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
 
   const fetchDataCreateContract = async () => {
     try {
@@ -111,22 +119,32 @@ const CreateContract = () => {
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
+    const file = e.target.files;
+    setSelectedFile([...file]);
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreviewUrl(reader.result);
-    };
-    if (file) {
-      reader.readAsDataURL(file);
-    } else {
-      setImagePreviewUrl(null);
+    const promises = [];
+    const previewUrls = [];
+
+    for (let i = 0; i < file.length; i++) {
+      const currentFile = file[i];
+      const reader = new FileReader();
+
+      promises.push(
+        new Promise((resolve) => {
+          reader.onloadend = () => {
+            previewUrls.push(reader.result);
+            resolve();
+          };
+          reader.readAsDataURL(currentFile);
+        })
+      );
     }
-  };
 
-  const closeImagePreview = () => {
-    setIsImagePreviewOpen(false);
+    Promise.all(promises).then(() => {
+      setImagePreviewUrl(previewUrls);
+    });
+
+    setIsImagePreviewOpen(true);
   };
 
   const validateDate = (startDate, endDate) => {
@@ -171,12 +189,19 @@ const CreateContract = () => {
 
     setIsSubmitting(true);
     try {
-      let attachmentUrl = data.attachmentUrl;
-      if (selectedFile) {
+      let attachmentUrl = data.attachmentUrl || []; 
+      if (selectedFile.length > 0) {
         const storage = getStorage();
-        const storageRef = ref(storage, "images/" + selectedFile.name);
-        await uploadBytes(storageRef, selectedFile);
-        attachmentUrl = await getDownloadURL(storageRef);
+        const promises = [];
+
+        for(let i = 0; i < selectedFile.length; i++) {
+          const file = selectedFile[i];
+          const storageRef = ref(storage, `images/${file.name}`);
+          await uploadBytes(storageRef, file);
+
+          const downloadURL = await getDownloadURL(storageRef);
+          attachmentUrl.push(downloadURL);
+        }
       }
 
       const updatedData = {
@@ -338,6 +363,7 @@ const CreateContract = () => {
                   name="file"
                   className="form-control input-field"
                   id="attachmentUrl"
+                  multiple
                   onChange={handleFileChange}
                 />
                 {imagePreviewUrl && (
@@ -590,27 +616,33 @@ const CreateContract = () => {
       </Grid>
       <Dialog
         open={isImagePreviewOpen}
-        onClose={closeImagePreview}
+        onClose={() => setIsImagePreviewOpen(false)}
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>
+        <DialogTitle >
           Image Preview
           <IconButton
             edge="end"
             color="inherit"
-            onClick={closeImagePreview}
+            onClick={() => setIsImagePreviewOpen(false)}
             aria-label="close"
           >
             <Close />
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <img
-            src={imagePreviewUrl}
-            alt="Attachment Preview"
-            style={{ width: "100%" }}
-          />
+          <Slider {...settings}>
+            {imagePreviewUrl.map((url, index) => (
+              <div key={index}>
+                <img
+                  src={url}
+                  alt={`Attachment Preview ${index + 1}`}
+                  style={{ width: "100%" }}
+                />
+              </div>
+            ))}
+          </Slider>
         </DialogContent>
       </Dialog>
     </Grid>
