@@ -46,7 +46,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const CommentSolution = (data) => {
+const CommentSolution = (props) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [dataFeedBack, setDataFeedBack] = useState([]);
   const { solutionId } = useParams();
@@ -55,12 +55,13 @@ const CommentSolution = (data) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [editCommentId, setEditCommentId] = useState(null);
+  const { loading, data, dataCategories, error, refetch } =
+    useSolutionTicketData(solutionId);
 
-  const [dataLike, setData] = useState({
-    countDislike: data.countDislike || 0,
-    countLike: data.countLike || 0,
-  })
-
+  const [dataLike, setDataLike] = useState({
+    countDislike: props.data && props.data.countDislike !== undefined ? props.data.countDislike : 0,
+    countLike: props.data && props.data.countLike !== undefined ? props.data.countLike : 0,
+  });
 
   const [dataCmt, setDataCmt] = useState({
     id: 1,
@@ -113,30 +114,43 @@ const CommentSolution = (data) => {
   const handleLike = async () => {
     try {
       const updatedData = await createLike(solutionId);
-      setData(updatedData);
-      setDataCmt((prevDataCmt) => ({
-        ...prevDataCmt,
+      setDataLike((prevDataLike) => ({
+        ...prevDataLike,
         countLike: updatedData.countLike,
+        countDislike: updatedData.countDislike,
       }));
+      if (typeof refetch === 'function') {
+        refetch();
+      } else {
+        console.error('refetch is not a function');
+      }
     } catch (error) {
-      console.error("Error liking solution:", error);
+      console.error("Error liking solution:", error.message || error);
     }
   };
 
   const handleDislike = async () => {
     try {
       const updatedData = await createDisLike(solutionId);
-      setData(updatedData);
-      setDataCmt((prevDataCmt) => ({
-        ...prevDataCmt,
+      setDataLike((prevDataLike) => ({
+        ...prevDataLike,
+        countLike: updatedData.countLike,
         countDislike: updatedData.countDislike,
       }));
+      refetch();
     } catch (error) {
-      console.error("Error disliking solution:", error);
+      console.error("Error disliking solution:", error.message || error);
     }
   };
 
-  const handleEditComment = async () => {
+  useEffect(() => {
+    setDataLike({
+      countDislike: props.data && props.data.countDislike !== undefined ? props.data.countDislike : 0,
+      countLike: props.data && props.data.countLike !== undefined ? props.data.countLike : 0,
+    });
+  }, [props.data]);
+
+  const handleEditComment = async (solutionId) => {
     try {
       const payload = {
         comment: editComment.comment,
@@ -267,6 +281,7 @@ const CommentSolution = (data) => {
           aria-label="Thumbs Up"
           style={{ marginLeft: "10px" }}
           onClick={handleLike}
+           type="button"
         >
           <ThumbUp />
         </IconButton>
@@ -275,6 +290,7 @@ const CommentSolution = (data) => {
           aria-label="Thumbs Down"
           style={{ marginLeft: "10px" }}
           onClick={handleDislike}
+           type="button"
         >
           <ThumbDown />
         </IconButton>

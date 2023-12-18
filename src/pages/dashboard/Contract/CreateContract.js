@@ -39,7 +39,7 @@ const CreateContract = () => {
     parentContractId: null,
     accountantId: 1,
     companyId: 1,
-    attachmentUrl: [],
+    attachmentUrls: [],
   });
   const [selectedFile, setSelectedFile] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -189,7 +189,7 @@ const CreateContract = () => {
 
     setIsSubmitting(true);
     try {
-      let attachmentUrl = data.attachmentUrl || []; 
+      let attachmentUrls = data.attachmentUrls || []; 
       if (selectedFile.length > 0) {
         const storage = getStorage();
         const promises = [];
@@ -200,13 +200,13 @@ const CreateContract = () => {
           await uploadBytes(storageRef, file);
 
           const downloadURL = await getDownloadURL(storageRef);
-          attachmentUrl.push(downloadURL);
+          attachmentUrls.push(downloadURL);
         }
       }
 
       const updatedData = {
         ...data,
-        attachmentUrl: attachmentUrl,
+        attachmentUrls: attachmentUrls,
         startDate: formattedReviewDate,
         endDate: formattedExpiredDate,
       };
@@ -221,7 +221,7 @@ const CreateContract = () => {
         parentContractId: data.parentContractId,
         accountantId: data.accountantId,
         companyId: data.companyId,
-        attachmentUrl: attachmentUrl,
+        attachmentUrls: attachmentUrls,
       });
     } catch (error) {
       console.error(error);
@@ -362,7 +362,7 @@ const CreateContract = () => {
                   type="file"
                   name="file"
                   className="form-control input-field"
-                  id="attachmentUrl"
+                  id="attachmentUrls"
                   multiple
                   onChange={handleFileChange}
                 />

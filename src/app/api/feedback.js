@@ -123,7 +123,7 @@ export async function getDetailFeedBack(feedbackId) {
 export async function createLike(solutionId) {
   const header = getAuthHeader();
   try{
-    const res = await axios.post(`${baseURL}/solution/${solutionId}/like`,{
+    const res = await axios.post(`${baseURL}/solution/${solutionId}/like`,{},{
       headers: {
         Authorization: header,
       },
@@ -131,19 +131,30 @@ export async function createLike(solutionId) {
     return res.data.result;
   }catch(error){
     console.log(error);
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
   }
 };
 
 export async function createDisLike(solutionId) {
   const header = getAuthHeader();
   try{
-    const res = await axios.post(`${baseURL}/solution/${solutionId}/dislike`,{
+    const res = await axios.post(`${baseURL}/solution/${solutionId}/dislike`,{},{
       headers: {
         Authorization: header,
       },
     });
+    console.log('Response from createDisLike:', res.data);
     return res.data.result;
   }catch(error){
     console.log(error);
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
   }
 };

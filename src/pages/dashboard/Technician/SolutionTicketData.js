@@ -13,7 +13,6 @@ const useSolutionTicketData = (solutionId) => {
     try {
       setLoading(true);
       const solutionTicketData = await getTicketSolutionById(solutionId);
-      console.log(solutionTicketData);
       const categoryData = await getDataCategories();
       setData(solutionTicketData);
       setDataCategories(categoryData);
@@ -33,7 +32,7 @@ const useSolutionTicketData = (solutionId) => {
     fetchData();
   };
 
-  return { loading, data, dataCategories, error, refetch }; // Return data separately
+  return { loading, data, dataCategories, error, refetch }; 
 };
 
 export default useSolutionTicketData;

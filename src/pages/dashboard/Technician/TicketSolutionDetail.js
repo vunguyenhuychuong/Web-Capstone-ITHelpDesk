@@ -48,6 +48,7 @@ const TicketSolutionDetail = () => {
   const navigate = useNavigate();
   const { loading, data, dataCategories, error, refetch } =
     useSolutionTicketData(solutionId);
+
   const associationsRequesterCount = 42;
   const user = useSelector((state) => state.auth);
   const userRole = user.user.role;
@@ -366,7 +367,7 @@ const TicketSolutionDetail = () => {
           </Tabs>
           <Box role="tabpanel" hidden={value !== 0}>
             {value === 0 ? (
-              <CommentSolution data={data} />
+              <CommentSolution data={data} refetch={refetch} />
             ) : (
               <LoadingSkeleton />
             )}

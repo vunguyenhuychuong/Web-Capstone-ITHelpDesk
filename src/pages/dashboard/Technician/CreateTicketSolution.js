@@ -13,6 +13,8 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment from "moment";
 import { getDataUser } from "../../../app/api";
+import Slider from "react-slick";
+import { settings } from "../../helpers/useInView";
 
 const CreateTicketSolution = () => {
   const navigate = useNavigate();
@@ -27,16 +29,15 @@ const CreateTicketSolution = () => {
     keyword: "",
     internalComments: "",
     isPublic: true,
-    attachmentUrl: "",
+    attachmentUrls: [],
   });
-
   const [dataCategories, setDataCategories] = useState([]);
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reviewDate, setReviewDate] = useState(moment());
   const [expiredDate, setExpiredDate] = useState(moment());
   const [dataUsers, setDataUsers] = useState([]);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
     title: "",
@@ -93,22 +94,33 @@ const CreateTicketSolution = () => {
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
+    const files = e.target.files;
+    setSelectedFile((prevFiles) => [...prevFiles, ...files]);
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreviewUrl(reader.result);
-    };
-    if (file) {
-      reader.readAsDataURL(file);
-    } else {
-      setImagePreviewUrl(null);
+    
+    const promises = [];
+    const previewUrls = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const currentFile = files[i];
+      const reader = new FileReader();
+
+      promises.push(
+        new Promise((resolve) => {
+          reader.onloadend = () => {
+            previewUrls.push(reader.result);
+            resolve();
+          };
+          reader.readAsDataURL(currentFile);
+        })
+      );
     }
-  };
 
-  const closeImagePreview = () => {
-    setIsImagePreviewOpen(false);
+    Promise.all(promises).then(() => {
+      setImagePreviewUrl(previewUrls);
+    });
+
+    setIsImagePreviewOpen(true);
   };
 
   const validateDate = (reviewDate, expiredDate) => {
@@ -156,17 +168,23 @@ const CreateTicketSolution = () => {
       );
     setIsSubmitting(true);
     try {
-      let attachmentUrl = data.attachmentUrl;
-      if (selectedFile) {
+      let attachmentUrls = data.attachmentUrls || [];
+      if (selectedFile.length > 0) {
         const storage = getStorage();
-        const storageRef = ref(storage, "images/" + selectedFile.name);
-        await uploadBytes(storageRef, selectedFile);
-        attachmentUrl = await getDownloadURL(storageRef);
+        
+        for (let i = 0; i < selectedFile.length; i++) {
+          const file = selectedFile[i];
+          const storageRef = ref(storage, `images/${file.name}`);
+          await uploadBytes(storageRef, file);
+
+          const downloadURL = await getDownloadURL(storageRef);
+          attachmentUrls.push(downloadURL);
+        }
       }
 
       const updatedData = {
         ...data,
-        attachmentUrl: attachmentUrl,
+        attachmentUrls: attachmentUrls,
         reviewDate: formattedReviewDate,
         expiredDate: formattedExpiredDate,
       };
@@ -182,7 +200,7 @@ const CreateTicketSolution = () => {
         keyword: data.keyword,
         internalComments: data.internalComments,
         isPublic: data.isPublic,
-        attachmentUrl: attachmentUrl,
+        attachmentUrls: attachmentUrls,
       });
       if (
         response.data.isError &&
@@ -231,7 +249,6 @@ const CreateTicketSolution = () => {
                     className="arrow-back-icon"
                   />
                 </button>
-
                 <div
                   style={{
                     marginLeft: "40px",
@@ -267,7 +284,6 @@ const CreateTicketSolution = () => {
             }}
           >
             <Grid container justifyContent="flex-end">
-              {" "}
               <Grid item xs={3}>
                 <h2
                   className="align-right"
@@ -338,8 +354,9 @@ const CreateTicketSolution = () => {
                   className="form-control input-field"
                   id="attachmentUrl"
                   onChange={handleFileChange}
+                  multiple  
                 />
-                {imagePreviewUrl && (
+                {imagePreviewUrl.length > 0 && (
                   <div
                     className="image-preview"
                     onClick={() => setIsImagePreviewOpen(true)}
@@ -581,7 +598,7 @@ const CreateTicketSolution = () => {
       </Grid>
       <Dialog
         open={isImagePreviewOpen}
-        onClose={closeImagePreview}
+        onClose={() => setIsImagePreviewOpen(false)}
         maxWidth="md"
         fullWidth
       >
@@ -590,18 +607,24 @@ const CreateTicketSolution = () => {
           <IconButton
             edge="end"
             color="inherit"
-            onClick={closeImagePreview}
+            onClick={() => setIsImagePreviewOpen(false)}
             aria-label="close"
           >
             <Close />
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <img
-            src={imagePreviewUrl}
-            alt="Attachment Preview"
-            style={{ width: "100%" }}
-          />
+          <Slider {...settings}>
+            {imagePreviewUrl.map((url, index) => (
+              <div key={index}>
+                <img
+                  src={url}
+                  alt={`Attachment Preview ${index + 1}`}
+                  style={{ width: "100%" }}
+                />
+              </div>
+            ))}
+          </Slider>
         </DialogContent>
       </Dialog>
     </Grid>

@@ -39,7 +39,7 @@ const EditContract = () => {
     parentContractId: 1,
     accountantId: 1,
     companyId: 1,
-    attachmentURl: [],
+    attachmentUrls: [],
     status: 0,
   });
   const [selectedFile, setSelectedFile] = useState(null);
@@ -145,7 +145,7 @@ const EditContract = () => {
           endDate: contractData.endDate,
           parentContractId: contractData.parentContractId,
           accountantId: contractData.accountantId,
-          attachmentURl: contractData.attachmentURl,
+          attachmentUrls: contractData.attachmentUrls,
           companyId: contractData.companyId,
         }));
 
@@ -157,8 +157,8 @@ const EditContract = () => {
     };
     fetchContractData();
     fetchDataCreateContract();
-    setImagePreviewUrl(data.attachmentURl);
-  }, [contractId, data.attachmentURl]);
+    setImagePreviewUrl(data.attachmentUrls);
+  }, [contractId, data.attachmentUrls]);
 
   const validateDate = (startDate, endDate) => {
     if (!startDate || !endDate) {
@@ -198,7 +198,7 @@ const EditContract = () => {
 
     setIsSubmitting(true);
     try {
-      let attachmentURl = data.attachmentURl || [];
+      let attachmentUrls = data.attachmentUrls || [];
       if (selectedFile.length > 0) {
         const storage = getStorage();
         const promises = [];
@@ -209,13 +209,13 @@ const EditContract = () => {
           await uploadBytes(storageRef, file);
 
           const downloadURL = await getDownloadURL(storageRef);
-          attachmentURl.push(downloadURL);
+          attachmentUrls.push(downloadURL);
         }
       }
 
       const updatedData = {
         ...data,
-        attachmentURl: attachmentURl,
+        attachmentUrls: attachmentUrls,
         startDate: formattedReviewDate,
         endDate: formattedExpiredDate,
       };
@@ -230,7 +230,7 @@ const EditContract = () => {
           parentContractId: updatedData.parentContractId,
           accountantId: updatedData.accountantId,
           companyId: updatedData.companyId,
-          attachmentURl: attachmentURl,
+          attachmentUrls: attachmentUrls,
           status: updatedData.status,
         },
         contractId
@@ -413,9 +413,9 @@ const EditContract = () => {
               <Grid item xs={9}>
                 <input
                   type="file"
-                  name="attachmentURl"
+                  name="attachmentUrls"
                   className="form-control input-field"
-                  id="attachmentURl"
+                  id="attachmentUrls"
                   multiple
                   onChange={handleFileChange}
                 />
@@ -687,9 +687,9 @@ const EditContract = () => {
         </DialogTitle>
         <DialogContent>
           <Slider {...settings}>
-            {data.attachmentURl ? (
+            {data.attachmentUrls ? (
               <Slider {...settings}>
-                {data.attachmentURl.map((url, index) => (
+                {data.attachmentUrls.map((url, index) => (
                   <div key={index}>
                     <img
                       src={url}

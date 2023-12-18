@@ -31,8 +31,7 @@ import {
   fetchWards,
 } from "../Customer/StepForm/fetchDataSelect";
 import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import { settings } from "../../helpers/useInView";
 
 const CreateTickets = () => {
   const navigate = useNavigate();
@@ -73,13 +72,6 @@ const CreateTickets = () => {
     title: "",
     description: "",
   });
-
-  const settings = {
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-  };
 
   const fetchDataManager = async () => {
     try {
@@ -154,7 +146,6 @@ const CreateTickets = () => {
         (category) => category.id === parseInt(value, 10)
       );
       const categoryIdValue = selectedCategory ? selectedCategory.id : null;
-      console.log(categoryIdValue);
       setData((prevData) => ({ ...prevData, [name]: categoryIdValue }));
 
       const services = await getAllServiceByCategory(parseInt(value, 10));
@@ -239,8 +230,6 @@ const CreateTickets = () => {
       let attachmentUrls = data.attachmentUrls || [];
       if (selectedFile.length > 0) {
         const storage = getStorage();
-        const promises = [];
-
         for (let i = 0; i < selectedFile.length; i++) {
           const file = selectedFile[i];
           const storageRef = ref(storage, `images/${file.name}`);
@@ -249,9 +238,6 @@ const CreateTickets = () => {
           const downloadURL = await getDownloadURL(storageRef);
           attachmentUrls.push(downloadURL);
         }
-
-        // await uploadBytes(storageRef, selectedFile);
-        // attachmentUrl = await getDownloadURL(storageRef);
       }
 
       const updatedData = {
@@ -279,7 +265,6 @@ const CreateTickets = () => {
         categoryId: data.categoryId,
         attachmentUrls: attachmentUrls,
       });
-      // navigate("home/listTicket");
       handleGoBack();
     } catch (error) {
       console.log(error);

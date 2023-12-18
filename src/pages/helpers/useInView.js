@@ -9,3 +9,10 @@ export default function useInView({ once = true, margin = "-30px 0px 0px 0px"} =
 
   return [ref, isInView]
 }
+
+export const settings = {
+  infinite: true,
+  speed: 500,
+  slidesToShow: 1,
+  slidesToScroll: 1,
+};

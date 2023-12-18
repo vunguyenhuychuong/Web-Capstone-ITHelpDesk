@@ -25,6 +25,8 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import DateValidation from "../../helpers/DateValidation";
 import { getDataUser } from "../../../app/api";
+import Slider from "react-slick";
+import { settings } from "../../helpers/useInView";
 
 const EditTicketSolution = () => {
   const navigate = useNavigate();
@@ -40,13 +42,13 @@ const EditTicketSolution = () => {
     expiredDate: "",
     keyword: "",
     internalComments: "",
-    attachmentUrl: "",
+    attachmentUrls: [],
     isApproved: false,
     isPublic: true,
     createdAt: "",
     modifiedAt: "",
   });
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState([]);
   const [reviewDate, setReviewDate] = useState(moment());
   const [dataUsers, setDataUsers] = useState([]);
   const [expiredDate, setExpiredDate] = useState(moment());
@@ -84,22 +86,32 @@ const EditTicketSolution = () => {
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
+    const file = e.target.files;
+    setSelectedFile([...file]);
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreviewUrl(reader.result);
-    };
-    if (file) {
-      reader.readAsDataURL(file);
-    } else {
-      setImagePreviewUrl(null);
+    const promises = [];
+    const previewUrls = [];
+
+    for (let i = 0; i < file.length; i++) {
+      const currentFile = file[i];
+      const reader = new FileReader();
+
+      promises.push(
+        new Promise((resolve) => {
+          reader.onloadend = () => {
+            previewUrls.push(reader.result);
+            resolve();
+          };
+          reader.readAsDataURL(currentFile);
+        })
+      );
     }
-  };
 
-  const closeImagePreview = () => {
-    setIsImagePreviewOpen(false);
+    Promise.all(promises).then(() => {
+      setImagePreviewUrl(previewUrls);
+    });
+
+    setIsImagePreviewOpen(true);
   };
 
   const fetchDataSolution = async () => {
@@ -129,7 +141,7 @@ const EditTicketSolution = () => {
           expiredDate: solutionData.expiredDate,
           keyword: solutionData.keyword,
           internalComments: solutionData.internalComments,
-          attachmentUrl: solutionData.attachmentUrl,
+          attachmentUrls: solutionData.attachmentUrls,
           isApproved: solutionData.isApproved,
           isPublic: solutionData.isPublic,
           createdAt: solutionData.createdAt,
@@ -165,12 +177,12 @@ const EditTicketSolution = () => {
     }
     setIsSubmitting(true);
     try {
-      let attachmentUrl = data.attachmentUrl;
+      let attachmentUrls = data.attachmentUrls;
       if (selectedFile) {
         const storage = getStorage();
         const storageRef = ref(storage, "images/" + selectedFile.name);
         await uploadBytes(storageRef, selectedFile);
-        attachmentUrl = await getDownloadURL(storageRef);
+        attachmentUrls = await getDownloadURL(storageRef);
       }
 
       const isDataValid = validateDate(
@@ -190,7 +202,7 @@ const EditTicketSolution = () => {
 
       const updatedData = {
         ...data,
-        attachmentUrl: attachmentUrl,
+        attachmentUrls: attachmentUrls,
         reviewDate: formattedReviewDate,
         expiredDate: formattedExpiredDate,
       };
@@ -347,14 +359,15 @@ const EditTicketSolution = () => {
               <Grid item xs={9}>
                 <input
                   type="file"
-                  name="attachmentUrl"
+                  name="attachmentUrls"
                   className="form-control input-field"
-                  id="attachmentUrl"
+                  id="attachmentUrls"
+                  multiple
                   onChange={handleFileChange}
                 />
                 <div style={{ marginBottom: "10px" }}>
-                  {data.attachmentUrl
-                    ? data.attachmentUrl.name
+                  {data.attachmentUrls
+                    ? data.attachmentUrls.name
                     : "No file selected"}
                 </div>
                 {imagePreviewUrl && (
@@ -603,27 +616,33 @@ const EditTicketSolution = () => {
       </Grid>
       <Dialog
         open={isImagePreviewOpen}
-        onClose={closeImagePreview}
+        onClose={() => setIsImagePreviewOpen(false)}
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>
+        <DialogTitle >
           Image Preview
           <IconButton
             edge="end"
             color="inherit"
-            onClick={closeImagePreview}
+            onClick={() => setIsImagePreviewOpen(false)}
             aria-label="close"
           >
             <Close />
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <img
-            src={imagePreviewUrl}
-            alt="Attachment Preview"
-            style={{ width: "100%" }}
-          />
+          <Slider {...settings}>
+            {imagePreviewUrl.map((url, index) => (
+              <div key={index}>
+                <img
+                  src={url}
+                  alt={`Attachment Preview ${index + 1}`}
+                  style={{ width: "100%" }}
+                />
+              </div>
+            ))}
+          </Slider>
         </DialogContent>
       </Dialog>
     </Grid>
