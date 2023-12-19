@@ -41,6 +41,7 @@ import {
 import { toast } from "react-toastify";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import CloseTicket from "../../../assets/images/NoTicketSolution.jpg";
+import { getDataCategories } from "../../../app/api/category";
 
 const TicketSolutionList = () => {
   const [dataListTicketsSolution, setDataListTicketsSolution] = useState([]);
@@ -52,8 +53,8 @@ const TicketSolutionList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [searchField, setSearchField] = useState("title");
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortDirection, setSortDirection] = useState("asc");
-  const [sortBy, setSortBy] = useState("id");
+  const [sortDirection, setSortDirection] = useState("desc");
+  const [sortBy, setSortBy] = useState("createdAt");
   const navigate = useNavigate();
 
   const fetchDataListTicketSolution = useCallback(async () => {
@@ -404,8 +405,24 @@ const TicketSolutionList = () => {
                           }
                         />{" "}
                       </td>
-                      <td>{TicketSolution.title}</td>
-                      <td>{TicketSolution.keyword}</td>
+                      <td
+                        className="tooltip-cell"
+                        title={`Id:${TicketSolution.id} \n💡:${TicketSolution.title}\nContent:${TicketSolution.content}`}
+                      >
+                        {TicketSolution.title.length > 10
+                          ? `${TicketSolution.title.slice(0, 10)}...`
+                          : TicketSolution.title}
+                      </td>
+                      <td
+                        className="tooltip-cell"
+                        title={`Keyword:${TicketSolution.keyword}`}
+                      >
+                        {TicketSolution.keyword
+                          ? TicketSolution.keyword.length > 10
+                            ? `${TicketSolution.keyword.slice(0, 10)}...`
+                            : TicketSolution.keyword
+                          : "-"}
+                      </td>
                       <td>
                         {TicketSolution.isApproved ? (
                           <>

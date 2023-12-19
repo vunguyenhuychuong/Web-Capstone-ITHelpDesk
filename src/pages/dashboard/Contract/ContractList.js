@@ -87,19 +87,14 @@ const ContractList = () => {
 
   const handleDeleteSelectedSolutions = (id) => {
     try {
-      console.log("Deleting selected solutions...");
-
       if (selectedContractIds.length === 0) {
         console.log("No selected solutions to delete.");
         return;
       }
-
       let currentIndex = 0;
-
       const deleteNextSolution = () => {
         if (currentIndex < selectedContractIds.length) {
           const contractId = selectedContractIds[currentIndex];
-
           deleteTicketSolution(contractId)
             .then(() => {
               console.log(
@@ -255,6 +250,7 @@ const ContractList = () => {
                 <th 
                   style={{ fontWeight: "bold", fontSize: "18px" }}
                   onClick={() => handleSortChange("id")}
+                  className="sortable-header"
                   >
                   Id
                   {sortBy === "id" &&
@@ -277,6 +273,7 @@ const ContractList = () => {
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("name")}
+                  className="sortable-header"
                 >
                   Name
                   {sortBy === "name" &&
@@ -301,6 +298,7 @@ const ContractList = () => {
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("value")}
+                  className="sortable-header"
                 >
                   Status
                   {sortBy === "value" &&
@@ -313,6 +311,7 @@ const ContractList = () => {
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("status")}
+                  className="sortable-header"
                 >
                   Visible
                   {sortBy === "status" &&
@@ -325,6 +324,7 @@ const ContractList = () => {
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("startDate")}
+                  className="sortable-header"
                 >
                   Start Date
                   {sortBy === "startDate" &&
@@ -337,6 +337,7 @@ const ContractList = () => {
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("endDate")}
+                  className="sortable-header"
                 >
                   End Date
                   {sortBy === "endDate" &&
@@ -349,6 +350,7 @@ const ContractList = () => {
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("createdAt")}
+                  className="sortable-header"
                 >
                   Created At
                   {sortBy === "createdAt" &&
@@ -361,6 +363,7 @@ const ContractList = () => {
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("modifiedAt")}
+                  className="sortable-header"
                 >
                   Last Update
                   {sortBy === "modifiedAt" &&
@@ -393,8 +396,10 @@ const ContractList = () => {
                           onClick={() => handleOpenDetailContract(Contract.id)}
                         />{" "}
                       </td>
-                      <td>{Contract.name}</td>
-                      {/* <td>{Contract.description}</td> */}
+                      <td
+                         className="tooltip-cell"
+                         title={`Name Contract: ${Contract.name}\nDescription: ${Contract.description}`}
+                      >{Contract.name}</td>
                       <td>
                         {Contract.isApproved ? (
                           <>

@@ -8,8 +8,8 @@ export async function getAllTicketSolutions(
     searchQuery,
     page = 1,
     pageSize = 5,
-    sortBy = "id",
-    sortDirection = "asc"
+    sortBy = "createdAt",
+    sortDirection = "desc"
 ) {
     const header = getAuthHeader();
     try{

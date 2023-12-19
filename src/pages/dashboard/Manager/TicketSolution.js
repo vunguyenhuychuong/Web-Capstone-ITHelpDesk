@@ -21,7 +21,6 @@ const TicketSolution = () => {
     setIsLoading(true);
     try {
       const res = await getAllTicketSolutions();
-      console.log(res.result);
       setDataTicketSolution(res.result);
     } catch (error) {
       console.error(error);

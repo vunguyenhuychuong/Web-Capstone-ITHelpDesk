@@ -25,17 +25,17 @@ import {
   ViewCompact,
 } from "@mui/icons-material";
 import { Box, FormControl, MenuItem, Pagination, Select } from "@mui/material";
-import Skeleton from "react-loading-skeleton";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { formatTicketDate } from "../../helpers/FormatAMPM";
 import PageSizeSelector from "../Pagination/Pagination";
+import Chip from '@mui/material/Chip';
 import {
   TicketStatusOptions,
   getPriorityOptionById,
 } from "../../helpers/tableComlumn";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import { useSelector } from "react-redux";
+import { formatDate } from "../../helpers/FormatDate";
 
 const IndexTicket = () => {
   const [dataTickets, setDataTickets] = useState([]);
@@ -281,187 +281,224 @@ const IndexTicket = () => {
         {isLoading ? (
           <CustomizedProgressBars />
         ) : (
-        <MDBTable
-          className="align-middle mb-0"
-          responsive
-          style={{ border: "0.05px solid #50545c" }}
-        >
-          <MDBTableHead className="bg-light">
-            <tr style={{ fontSize: "1.2rem" }}>
-              <th style={{ fontWeight: "bold" }}>
-                <input
-                  type="checkbox"
-                  checked={selectedTickets.length === dataTickets.length}
-                  onChange={handleSelectAllTickets}
-                />
-              </th>
-              <th style={{ fontWeight: "bold" }}></th>
-              <th
-                style={{ fontWeight: "bold" }}
-                onClick={() => handleSortChange("id")}
-              >
-                ID
-                {sortBy === "id" &&
-                  (sortDirection === "asc" ? (
-                    <ArrowDropDown />
-                  ) : (
-                    <ArrowDropUp />
-                  ))}
-              </th>
-              <th
-                style={{ fontWeight: "bold" }}
-                onClick={() => handleSortChange("title")}
-              >
-                Title{" "}
-                {sortBy === "title" &&
-                  (sortDirection === "asc" ? (
-                    <ArrowDropDown />
-                  ) : (
-                    <ArrowDropUp />
-                  ))}
-              </th>
-              <th
-                style={{ fontWeight: "bold" }}
-                onClick={() => handleSortChange("description")}
-              >
-                Description{" "}
-                {sortBy === "description" &&
-                  (sortDirection === "asc" ? (
-                    <ArrowDropDown />
-                  ) : (
-                    <ArrowDropUp />
-                  ))}
-              </th>
-              <th
-                style={{ fontWeight: "bold" }}
-                onClick={() => handleSortChange("categoryId")}
-              >
-                Category{" "}
-                {sortBy === "categoryId" &&
-                  (sortDirection === "asc" ? (
-                    <ArrowDropDown />
-                  ) : (
-                    <ArrowDropUp />
-                  ))}
-              </th>
-              <th
-                style={{ fontWeight: "bold" }}
-                onClick={() => handleSortChange("priority")}
-              >
-                Priority{" "}
-                {sortBy === "priority" &&
-                  (sortDirection === "asc" ? (
-                    <ArrowDropDown />
-                  ) : (
-                    <ArrowDropUp />
-                  ))}
-              </th>
-              <th
-                style={{ fontWeight: "bold" }}
-                onClick={() => handleSortChange("ticketStatus")}
-              >
-                Status{" "}
-                {sortBy === "ticketStatus" &&
-                  (sortDirection === "asc" ? (
-                    <ArrowDropDown />
-                  ) : (
-                    <ArrowDropUp />
-                  ))}
-              </th>
-              <th
-                style={{ fontWeight: "bold" }}
-                onClick={() => handleSortChange("createdAt")}
-              >
-                Date{" "}
-                {sortBy === "createdAt" &&
-                  (sortDirection === "asc" ? (
-                    <ArrowDropDown />
-                  ) : (
-                    <ArrowDropUp />
-                  ))}
-              </th>
-            </tr>
-          </MDBTableHead>
-          <MDBTableBody className="bg-light">
-            {dataTickets.map((ticket, index) => {
-              const formattedDate = formatTicketDate(ticket.createdAt);
-              const isSelected = selectedTickets.includes(ticket.id);
-              const ticketStatusOption = TicketStatusOptions.find(
-                (option) => option.id === ticket.ticketStatus
-              );
-              const priorityOption = getPriorityOptionById(ticket.priority);
-
-              return (
-                <tr key={index}>
-                  <td>
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => handleSelectTicket(ticket.id)}
-                    />
-                  </td>
-                  <td>
-                    <ViewCompact
-                      onClick={() => handleOpenEditTicket(ticket.id)}
-                    />
-                  </td>
-                  <td> {ticket.id}</td>
-                  <td>{ticket.title}</td>
-                  <td>{ticket.description}</td>
-                  <td>{getCategoryNameById(ticket.categoryId)}</td>
-                  <td>
-                    {
-                      <span
-                        className={`badge ${priorityOption.colorClass} rounded-pill`}
-                        style={{ fontSize: priorityOption.fontSize }}
-                      >
-                        {priorityOption.name}
-                      </span>
-                    }
-                  </td>
-                  <td>
-                    {
-                      <span
-                        onMouseDown={(e) => e.stopPropagation()}
-                        onClick={handleDropdownClick}
-                        style={ticketStatusOption.badgeStyle}
-                      >
-                        {isDropdownVisible ? (
-                          <select
-                            value={ticket.ticketStatus}
-                            onChange={(e) =>
-                              handleTicketStatusChange(
-                                ticket.id,
-                                parseInt(e.target.value)
-                              )
-                            }
-                            onBlur={() => setDropdownVisible(false)}
-                          >
-                            {TicketStatusOptions.map((option) => (
-                              <option
-                                key={option.id}
-                                value={option.id}
-                                className={option.iconClass}
-                              >
-                                {option.icon} {option.name}
-                              </option>
-                            ))}
-                          </select>
-                        ) : (
-                          <>
-                            {ticketStatusOption.icon}
-                            {ticketStatusOption.name}
-                          </>
-                        )}
-                      </span>
-                    }
-                  </td>
-                  <td>{formattedDate}</td>
-                </tr>
-              );
-            })}
-          </MDBTableBody>
-        </MDBTable>
+          <MDBTable
+            className="align-middle mb-0"
+            responsive
+            style={{ border: "0.05px solid #50545c" }}
+          >
+            <MDBTableHead className="bg-light">
+              <tr style={{ fontSize: "1.2rem" }}>
+                <th style={{ fontWeight: "bold" }}>
+                  <input
+                    type="checkbox"
+                    checked={selectedTickets.length === dataTickets.length}
+                    onChange={handleSelectAllTickets}
+                  />
+                </th>
+                <th style={{ fontWeight: "bold" }}></th>
+                <th
+                  style={{ fontWeight: "bold" }}
+                  className="sortable-header"
+                  onClick={() => handleSortChange("id")}
+                  title="Click to Sort by ID"
+                >
+                  Id{" "}
+                  {sortBy === "id" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th
+                  style={{ fontWeight: "bold" }}
+                  className="sortable-header"
+                  onClick={() => handleSortChange("title")}
+                  title="Subject"
+                >
+                  Subject{" "}
+                  {sortBy === "title" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th
+                  style={{ fontWeight: "bold" }}
+                  className="sortable-header"
+                  onClick={() => handleSortChange("lastName")}
+                  title="Requester"
+                >
+                  Requester
+                  {sortBy === "title" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th
+                  style={{ fontWeight: "bold" }}
+                  className="sortable-header"
+                  onClick={() => handleSortChange("createdAt")}
+                >
+                  Create Date
+                  {sortBy === "createdAt" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th
+                  style={{ fontWeight: "bold" }}
+                  className="sortable-header"
+                  onClick={() => handleSortChange("type")}
+                >
+                  Type{" "}
+                  {sortBy === "type" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th
+                  style={{ fontWeight: "bold" }}
+                  className="sortable-header"
+                  onClick={() => handleSortChange("priority")}
+                >
+                  Priority{" "}
+                  {sortBy === "priority" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th
+                  style={{ fontWeight: "bold" }}
+                  className="sortable-header"
+                  onClick={() => handleSortChange("ticketStatus")}
+                >
+                  Status{" "}
+                  {sortBy === "ticketStatus" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th
+                  style={{ fontWeight: "bold" }}
+                  className="sortable-header"
+                  onClick={() => handleSortChange("dueTime")}
+                >
+                  Due Date{" "}
+                  {sortBy === "dueTime" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+              </tr>
+            </MDBTableHead>
+            <MDBTableBody className="bg-light">
+              {dataTickets.map((ticket, index) => {
+                const isSelected = selectedTickets.includes(ticket.id);
+                const ticketStatusOption = TicketStatusOptions.find(
+                  (option) => option.id === ticket.ticketStatus
+                );
+                const priorityOption = getPriorityOptionById(ticket.priority);
+                return (
+                  <tr key={index}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => handleSelectTicket(ticket.id)}
+                      />
+                    </td>
+                    <td>
+                      <ViewCompact
+                        onClick={() => handleOpenEditTicket(ticket.id)}
+                      />
+                    </td>
+                    <td> {ticket.id}</td>
+                    <td
+                      className="tooltip-cell"
+                      title={`Id:${ticket.id} \nDescription:${
+                        ticket.description
+                      }\nCategory:${getCategoryNameById(ticket.categoryId)}`}
+                    >
+                      {ticket.title.length > 20 ? `${ticket.title.slice(0, 20)}...` : ticket.title}
+                    </td>
+                    <td>
+                      {ticket.requester.lastName} {ticket.requester.firstName}
+                    </td>
+                    <td>{formatDate(ticket.createdAt)}</td>
+                    <td>
+                      {ticket.type === "offline" ? (
+                        <Chip label="Offline" size="small" />
+                      ) : (
+                        <Chip label="Online" size="small" variant="outlined" />
+                      )}
+                    </td>
+                    <td>
+                      {
+                        <span
+                          className={`badge ${priorityOption.colorClass} rounded-pill`}
+                          style={{ fontSize: priorityOption.fontSize }}
+                        >
+                          {priorityOption.name}
+                        </span>
+                      }
+                    </td>
+                    <td>
+                      {
+                        <span
+                          onMouseDown={(e) => e.stopPropagation()}
+                          onClick={handleDropdownClick}
+                          style={ticketStatusOption.badgeStyle}
+                        >
+                          {isDropdownVisible ? (
+                            <select
+                              value={ticket.ticketStatus}
+                              onChange={(e) =>
+                                handleTicketStatusChange(
+                                  ticket.id,
+                                  parseInt(e.target.value)
+                                )
+                              }
+                              onBlur={() => setDropdownVisible(false)}
+                            >
+                              {TicketStatusOptions.map((option) => (
+                                <option
+                                  key={option.id}
+                                  value={option.id}
+                                  className={option.iconClass}
+                                >
+                                  {option.icon} {option.name}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <>
+                              {ticketStatusOption.icon}
+                              {ticketStatusOption.name}
+                            </>
+                          )}
+                        </span>
+                      }
+                    </td>
+                    <td>{formatDate(ticket.dueTime)}</td>
+                  </tr>
+                );
+              })}
+            </MDBTableBody>
+          </MDBTable>
         )}
       </MDBContainer>
       <Box display="flex" justifyContent="center" mt={2}>

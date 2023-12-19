@@ -11,7 +11,7 @@ import {
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketCustomer.css";
 import PageSizeSelector from "../Pagination/Pagination";
-import { ContentCopy, DeleteForever, ViewCompact } from "@mui/icons-material";
+import { ArrowDropDown, ArrowDropUp, ContentCopy, DeleteForever, ViewCompact } from "@mui/icons-material";
 import { formatDate } from "../../helpers/FormatDate";
 import { useNavigate } from "react-router-dom";
 import { useCallback } from "react";
@@ -260,41 +260,120 @@ const PaymentList = () => {
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("contractId")}
+                  title="Contract ID"
+                  className="sortable-header"
                 >
-                  Contract Id
+                  Id
+                  {sortBy === "contractId" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("description")}
+                  className="sortable-header"
                 >
                   Description
+                  {sortBy === "description" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("numberOfTerms")}
+                  className="sortable-header"
                 >
-                  Number Of Terms
+                  Terms
+                  {sortBy === "numberOfTerms" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("firstDateOfPayment")}
+                  className="sortable-header"
                 >
-                  First Date Of Payment
+                  First Date
+                  {sortBy === "numberOfTerms" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                <th 
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
+                  onClick={() => handleSortChange("duration")}
+                  className="sortable-header"
+                  >
                   Duration
+                  {sortBy === "numberOfTerms" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
-                  Initial Payment Amount
+                <th 
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
+                  className="sortable-header"
+                  >
+                  Amount
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                <th 
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
+                  onClick={() => handleSortChange("note")}
+                  className="sortable-header"
+                  >
+                  Note
+                </th>
+                <th 
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
+                  onClick={() => handleSortChange("isFullyPaid")}
+                  className="sortable-header"
+                  >
                   Fully Paid
+                  {sortBy === "isFullyPaid" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                <th 
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
+                  onClick={() => handleSortChange("createdAt")}
+                  className="sortable-header"
+                  >
                   Created
+                  {sortBy === "createdAt" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                <th 
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
+                  onClick={() => handleSortChange("modifiedAt")}
+                  className="sortable-header"
+                >
                   Last Update
+                  {sortBy === "modifiedAt" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
                 </th>
               </tr>
             </MDBTableHead>
@@ -320,13 +399,19 @@ const PaymentList = () => {
                         />{" "}
                       </td>
                       <td>{Payment.contractId}</td>
-                      <td>{Payment.description}</td>
+                      <td 
+                        className="tooltip-cell"
+                        title={`${Payment.description} `}
+                      >{Payment.description}</td>
                       <td>{Payment.numberOfTerms}</td>
                       <td>{formatDate(Payment.firstDateOfPayment)}</td>
                       <td>{Payment.duration}</td>
                       <td>
                         {formatCurrency(Payment.initialPaymentAmount)} VND
                       </td>
+                      <td
+                        title={`${Payment.note}`}
+                      >{Payment.note.length > 15 ? `${Payment.note.slice(0, 15)}...` : Payment.note}</td>
                       <td>
                         {Payment.isFullyPaid ? (
                           <>
