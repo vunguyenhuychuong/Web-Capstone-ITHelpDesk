@@ -108,11 +108,6 @@ const TicketAssignAvailableList = () => {
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                 >
-                  Description
-                </th>
-                <th
-                  style={{ fontWeight: "bold", fontSize: "14px" }}
-                >
                   Priority
                 </th>
                 <th
@@ -158,8 +153,14 @@ const TicketAssignAvailableList = () => {
                           }
                         />{" "}
                       </td>
-                      <td>{TicketSolution.title}</td>
-                      <td>{TicketSolution.description}</td>
+                      <td
+                       className="tooltip-cell"
+                       title={`Id:${TicketSolution.id} \nDescription:${
+                        TicketSolution.description
+                       }`}
+                      >
+                        {TicketSolution.title.length > 20 ? `${TicketSolution.title.slice(0, 20)}...` : TicketSolution.title}
+                      </td>
                       <td>{getPriorityOption(TicketSolution.priority)}</td>
                       <td>{getImpactById(TicketSolution.impact)}</td>
                       <td>{getUrgencyById(TicketSolution.urgency)}</td>

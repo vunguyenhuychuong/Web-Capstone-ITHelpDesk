@@ -103,8 +103,16 @@ export const TypeOptions = [
   { id: 1 , name: "Online"}
 ]
 
+export const roleColors = {
+  0: '#FF6699',        
+  1: '#6699FF',      
+  2: '#33CC99',     
+  3: '#FFCC33',    
+  4: '#FF33FF',     
+};
+
 export const getRoleNameById = (roleId) => {
-  const role= roleOptions.find(option => option.id === roleId);
+  const role = roleOptions.find(option => option.id === roleId);
   return role ? role.name : 'Unknown Role';
 }
 
@@ -124,8 +132,6 @@ export const getRoleName = (role) => {
       return ''; 
   }
 };
-
-
 
 export const UrgencyOptions = [
   {id: 0, name: "Low"},

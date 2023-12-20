@@ -20,8 +20,13 @@ const Logo = () => {
     }
   };
   return (
-    <div >
-      <img src={logoAvatar} onClick={() => handleEnterLogo()}  className='logo shine-effect' alt='' />
+    <div className="logo-container">
+      <img
+        src={logoAvatar}
+        onClick={handleEnterLogo}
+        className='logo shine-effect'
+        alt=''
+      />
     </div>
   )
 };

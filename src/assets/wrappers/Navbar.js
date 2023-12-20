@@ -9,7 +9,6 @@ const Wrapper = styled.nav`
   .logo {
     display: flex;
     align-items: center;
-    width: 100px;
   }
   .nav-center {
     display: flex;
@@ -20,8 +19,8 @@ const Wrapper = styled.nav`
    .avatar {
     width: 45px;
     height: 45px;
-    margin-right: 10px; /* Adjust the margin-right property to control the spacing */
-    margin-left: -10px; /* Add a negative margin-left to compensate for the margin-right */
+    margin-right: 10px; 
+    margin-left: -10px; 
   }
   .toggle-btn {
     background: transparent;
@@ -80,7 +79,7 @@ const Wrapper = styled.nav`
   }
   .icons-wrapper {
     display: flex;
-    gap: 0.5rem; /* Adjust the gap between the icons if needed */
+    gap: 0.5rem; 
   }
   @media (min-width: 992px) {
     position: sticky;

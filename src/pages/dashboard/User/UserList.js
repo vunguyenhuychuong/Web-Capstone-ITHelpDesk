@@ -14,25 +14,34 @@ import {
   ArrowDropUp,
   ContentCopy,
   Delete,
+  Female,
   Lock,
   LockOpen,
+  Male,
+  Phone,
   ViewCompact,
 } from "@mui/icons-material";
 import { useEffect } from "react";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import {
+  Avatar,
   CircularProgress,
   FormControl,
   MenuItem,
   Pagination,
   Select,
+  Tooltip,
 } from "@mui/material";
 import { toast } from "react-toastify";
 import { formatDate } from "../../helpers/FormatDate";
 import PageSizeSelector from "../Pagination/Pagination";
 import { Box } from "@mui/system";
 import { DeleteDataUser, getAllUser } from "../../../app/api";
-import { getGenderById, getRoleNameById } from "../../helpers/tableComlumn";
+import {
+  getGenderById,
+  getRoleNameById,
+  roleColors,
+} from "../../helpers/tableComlumn";
 import { useNavigate } from "react-router-dom";
 
 const UserList = () => {
@@ -128,7 +137,7 @@ const UserList = () => {
         if (result.status === "fulfilled") {
           successfulDeletes.push(result.value);
         } else {
-          toast.error(result.reason.message); // Handle error messages here
+          toast.error(result.reason.message);
         }
       });
       const updateUsers = dataUsers.filter(
@@ -181,6 +190,8 @@ const UserList = () => {
                   fontSize: "20px",
                   color: "#FFFFFF",
                 }}
+                title="Create New Customer"
+                data-mdb-toggle="tooltip"
                 onClick={() => handleOpenCreateCustomer()}
               >
                 <FaPlus /> New
@@ -192,6 +203,8 @@ const UserList = () => {
                   fontSize: "20px",
                   color: "#FFFFFF",
                 }}
+                data-mdb-toggle="tooltip"
+                title="Delete Selected Users"
               >
                 <Delete onClick={handleDeleteSelectedUsers} /> Delete
               </MDBBtn>
@@ -220,6 +233,8 @@ const UserList = () => {
                   <MenuItem value="username">UserName</MenuItem>
                   <MenuItem value="address">Address</MenuItem>
                   <MenuItem value="email">Email</MenuItem>
+                  <MenuItem value="gender">Gender</MenuItem>
+                  <MenuItem value="phoneNumber">Phone</MenuItem>
                 </Select>
               </FormControl>
               <div className="input-wrapper">
@@ -244,11 +259,7 @@ const UserList = () => {
             </MDBNavbarNav>
           </MDBContainer>
         </MDBNavbar>
-        <MDBTable
-          className="align-middle mb-0"
-          responsive
-          style={{ border: "0.05px solid #50545c" }}
-        >
+        <MDBTable className="align-middle mb-0" responsive>
           <MDBTableHead className="bg-light">
             <tr style={{ fontSize: "1.2rem" }}>
               <th style={{ fontWeight: "bold" }}>
@@ -258,90 +269,111 @@ const UserList = () => {
                   onChange={handleSelectAllUsers}
                 />
               </th>
-              <th style={{ fontWeight: "bold" }}>Edit</th>
+              <th></th>
               <th
                 style={{ fontWeight: "bold" }}
-                onClick={() => handleSortChange("firstName")}
-              >
-                Name
-                {sortBy === "firstName" &&
-                  (sortDirection === "asc" ? (
-                    <ArrowDropDown />
-                  ) : (
-                    <ArrowDropUp />
-                  ))}
-              </th>
-              <th
-                style={{ fontWeight: "bold" }}
+                className="sortable-header"
                 onClick={() => handleSortChange("username")}
               >
-                UserName
-                {sortBy === "username" &&
-                  (sortDirection === "asc" ? (
-                    <ArrowDropDown />
-                  ) : (
-                    <ArrowDropUp />
-                  ))}
+                <Tooltip title="Click here to sort by UserName" arrow>
+                  UserName
+                  {sortBy === "username" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </Tooltip>
               </th>
               <th
                 style={{ fontWeight: "bold" }}
-                onClick={() => handleSortChange("role")}
+                className="sortable-header"
+                onClick={() => handleSortChange("firstName")}
               >
-                Role
-                {sortBy === "role" &&
-                  (sortDirection === "asc" ? (
-                    <ArrowDropDown />
-                  ) : (
-                    <ArrowDropUp />
-                  ))}
+                <Tooltip title="Click here to sort by Name" arrow>
+                  Name
+                  {sortBy === "firstName" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </Tooltip>
               </th>
               <th
                 style={{ fontWeight: "bold" }}
-                onClick={() => handleSortChange("gender")}
+                className="sortable-header"
+                onClick={() => handleSortChange("address")}
               >
-                {sortBy === "gender" &&
-                  (sortDirection === "asc" ? (
-                    <ArrowDropDown />
-                  ) : (
-                    <ArrowDropUp />
-                  ))}
-                Gender
+                <Tooltip title="Click here to sort by Address" arrow>
+                  Address
+                  {sortBy === "address" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </Tooltip>
               </th>
               <th
                 style={{ fontWeight: "bold" }}
+                className="sortable-header"
+                onClick={() => handleSortChange("phoneNumber")}
+              >
+                <Tooltip title="Click here to sort by Phone" arrow>
+                  Phone
+                  {sortBy === "phoneNumber" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </Tooltip>
+              </th>
+              <th
+                style={{ fontWeight: "bold" }}
+                className="sortable-header"
                 onClick={() => handleSortChange("isActive")}
               >
-                Status
-                {sortBy === "isActive" &&
-                  (sortDirection === "asc" ? (
-                    <ArrowDropDown />
-                  ) : (
-                    <ArrowDropUp />
-                  ))}
+                <Tooltip title="Sort by Status" arrow>
+                  Status
+                  {sortBy === "isActive" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </Tooltip>
               </th>
               <th
                 style={{ fontWeight: "bold" }}
+                className="sortable-header"
                 onClick={() => handleSortChange("createdAt")}
               >
-                Create Time
-                {sortBy === "isActive" &&
-                  (sortDirection === "asc" ? (
-                    <ArrowDropDown />
-                  ) : (
-                    <ArrowDropUp />
-                  ))}
+                <Tooltip title="Click here to sort by Create Time" arrow>
+                  Create Time
+                  {sortBy === "createdAt" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </Tooltip>
               </th>
               <th
                 style={{ fontWeight: "bold" }}
+                className="sortable-header"
                 onClick={() => handleSortChange("modifiedAt")}
               >
-                Modify Time
-                {sortBy === "isActive" &&
-                  (sortDirection === "asc" ? (
-                    <ArrowDropDown />
-                  ) : (
-                    <ArrowDropUp />
-                  ))}
+                <Tooltip title="Click here to sort by Modify Time" arrow>
+                  Modify Time
+                  {sortBy === "modifiedAt" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </Tooltip>
               </th>
             </tr>
           </MDBTableHead>
@@ -368,24 +400,78 @@ const UserList = () => {
                     />
                   </td>
                   <td>
-                    {user.lastName} {user.firstName}
+                    <div className="d-flex">
+                      <div style={{ flex: "3" }}>
+                        <Avatar alt={user.username} src={user.avatarUrl} />
+                      </div>
+                      <div
+                        style={{
+                          flex: "9",
+                          marginLeft: "8px",
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
+                      >
+                        <span style={{ color: "#000000" }}>
+                          {user.username}
+                        </span>
+                        <div
+                          className="badge rounded-pill mt-1 px-2"
+                          style={{
+                            backgroundColor: roleColors[user.role] || "black",
+                            width: "fit-content",
+                          }}
+                        >
+                          {getRoleNameById(user.role)}
+                        </div>
+                      </div>
+                    </div>
                   </td>
-                  <td>{user.username}</td>
-                  <td>{getRoleNameById(user.role)}</td>
-                  <td>{getGenderById(user.gender)}</td>
+                  <td>
+                    <div>
+                      <span>
+                        {user.lastName} {user.firstName}
+                        {user.gender === 0 && (
+                          <Male style={{ color: "#3399FF" }} />
+                        )}
+                        {user.gender === 1 && (
+                          <Female style={{ color: "#FF6699" }} />
+                        )}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="tooltip-cell">
+                    {user.address ? (
+                      <Tooltip title={user.address} arrow>
+                        {user.address.length > 20
+                          ? `${user.address.slice(0, 20)}...`
+                          : user.address}
+                      </Tooltip>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+                  <td>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <Phone style={{ marginRight: "4px" }} />
+                      {user.phoneNumber}
+                    </div>
+                  </td>
                   <td>
                     {user.isActive ? (
-                      <>
+                      <Tooltip title="Active" arrow>
                         <LockOpen
                           className="square-icon"
-                          style={{ color: "green" }}
-                        />{" "}
-                        <span>Active</span>
-                      </>
+                          style={{ color: "#009900" }}
+                        />
+                      </Tooltip>
                     ) : (
-                      <>
-                        <Lock className="square-icon" /> DeActive
-                      </>
+                      <Tooltip title="DeActive" arrow>
+                        <Lock
+                          className="square-icon"
+                          style={{ color: "#FF9900" }}
+                        />
+                      </Tooltip>
                     )}
                   </td>
                   <td>{formatDate(user.createdAt || "-")}</td>

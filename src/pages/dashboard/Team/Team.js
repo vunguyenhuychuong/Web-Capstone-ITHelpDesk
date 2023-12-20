@@ -9,13 +9,8 @@ import {
   Typography,
   Dialog,
   IconButton,
-  InputLabel,
   Box,
   Pagination,
-  TextField,
-  MenuItem,
-  FormControl,
-  Select,
   Checkbox,
 } from "@mui/material";
 import { toast } from "react-toastify";
@@ -194,56 +189,29 @@ const Team = () => {
         className="py-5"
         style={{ paddingLeft: 20, paddingRight: 20, maxWidth: "100%" }}
       >
-        <MDBNavbar expand="lg" light bgColor="inherit">
+        <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
-              <ContentCopy style={{ marginRight: "20px" }} /> All Team
+              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} /> <span style={{ color: "#FFFFFF" }}>All Team</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  color: "#FFFFFF",
+                }}
                 onClick={handleOpenAdd}
               >
                 <FaPlus /> New
               </MDBBtn>
               <MDBBtn
                 color="eee"
-                style={{ fontWeight: "bold", fontSize: "20px" }}
+                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
               >
                 <Delete /> Delete
               </MDBBtn>
-              <FormControl
-                variant="outlined"
-                style={{ minWidth: 120, marginRight: 10 }}
-              >
-                <InputLabel htmlFor="search-field">Search Field</InputLabel>
-                <Select
-                  value={searchField}
-                  onChange={(e) => setSearchField(e.target.value)}
-                  label="Search Field"
-                  inputProps={{
-                    name: "searchField",
-                    id: "search-field",
-                  }}
-                >
-                  <MenuItem value="name">Name</MenuItem>
-                  <MenuItem value="location">location</MenuItem>
-                  <MenuItem value="description">description</MenuItem>
-                </Select>
-              </FormControl>
-              <TextField
-                variant="outlined"
-                label="Search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    fetchDataTeam();
-                  }
-                }}
-              />
               <PageSizeSelector
                 pageSize={pageSize}
                 handleChangePageSize={handleChangePageSize}
