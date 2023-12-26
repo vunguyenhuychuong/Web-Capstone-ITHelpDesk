@@ -12,13 +12,13 @@ import {
   Box,
   Pagination,
   Checkbox,
+  MenuItem,
+  Select,
+  FormControl,
 } from "@mui/material";
 import { toast } from "react-toastify";
 import React, { useEffect, useState } from "react";
-import {
-  DeleteDataTeam,
-  getAllTeam,
-} from "../../../app/api/team";
+import { DeleteDataTeam, getAllTeam } from "../../../app/api/team";
 import {
   ArrowDropDown,
   ArrowDropUp,
@@ -33,7 +33,7 @@ import {
   MDBNavbarBrand,
   MDBNavbarNav,
 } from "mdb-react-ui-kit";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaSearch } from "react-icons/fa";
 import { useCallback } from "react";
 import PageSizeSelector from "../Pagination/Pagination";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
@@ -133,7 +133,6 @@ const Team = () => {
       }
     }
   };
-  
 
   const handleSelectTeam = (teamId) => {
     if (selectedTeams.includes(teamId)) {
@@ -177,7 +176,7 @@ const Team = () => {
   };
 
   const handleCloseEdit = (e) => {
-    if(e){
+    if (e) {
       e.preventDefault();
     }
     setOpen(false);
@@ -192,7 +191,8 @@ const Team = () => {
         <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
-              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} /> <span style={{ color: "#FFFFFF" }}>All Team</span>
+              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
+              <span style={{ color: "#FFFFFF" }}>All Team</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
@@ -208,10 +208,56 @@ const Team = () => {
               </MDBBtn>
               <MDBBtn
                 color="eee"
-                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  color: "#FFFFFF",
+                }}
               >
                 <Delete /> Delete
               </MDBBtn>
+              <FormControl
+                variant="outlined"
+                style={{
+                  minWidth: 120,
+                  marginRight: 10,
+                  marginTop: 10,
+                  marginLeft: 10,
+                }}
+                size="small"
+              >
+                <Select
+                  value={searchField}
+                  onChange={(e) => setSearchField(e.target.value)}
+                  inputProps={{
+                    name: "searchField",
+                    id: "search-field",
+                  }}
+                  style={{ color: "white" }}
+                >
+                  <MenuItem value="id">ID</MenuItem>
+                  <MenuItem value="name">Name Team</MenuItem>
+                  <MenuItem value="location">Location</MenuItem>
+                  <MenuItem value="description">Description</MenuItem>
+                  <MenuItem value="isActive">Status</MenuItem>
+                  <MenuItem value="managerId">Manager</MenuItem>
+                </Select>
+              </FormControl>
+              <div className="input-wrapper">
+                <FaSearch id="search-icon" />
+                <input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      fetchDataTeam();
+                    }
+                  }}
+                  className="input-search"
+                  placeholder="Type to search..."
+                />
+              </div>
               <PageSizeSelector
                 pageSize={pageSize}
                 handleChangePageSize={handleChangePageSize}
@@ -232,6 +278,56 @@ const Team = () => {
                       onChange={handleSelectAllTeams}
                     />
                   </TableCell>
+                  <TableCell onClick={() => handleSortChange("name")}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{
+                        fontWeight: "bold",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Name Team
+                      {sortBy === "name" &&
+                        (sortDirection === "asc" ? (
+                          <ArrowDropDown />
+                        ) : (
+                          <ArrowDropUp />
+                        ))}
+                    </Typography>
+                  </TableCell>
+                  <TableCell onClick={() => handleSortChange("description")}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{
+                        fontWeight: "bold",
+                        cursor: "pointer",
+                      }}
+                      align="left"
+                    >
+                      Description
+                      {sortBy === "description" &&
+                        (sortDirection === "asc" ? (
+                          <ArrowDropDown />
+                        ) : (
+                          <ArrowDropUp />
+                        ))}
+                    </Typography>
+                  </TableCell>
+                  <TableCell onClick={() => handleSortChange("description")}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{ fontWeight: "bold" }}
+                      align="left"
+                    >
+                      Location
+                      {sortBy === "description" &&
+                        (sortDirection === "asc" ? (
+                          <ArrowDropDown />
+                        ) : (
+                          <ArrowDropUp />
+                        ))}
+                    </Typography>
+                  </TableCell>
                   <TableCell
                     style={{
                       fontWeight: "bold",
@@ -248,56 +344,6 @@ const Team = () => {
                   >
                     Delete
                   </TableCell>
-                  <TableCell onClick={() => handleSortChange("name")}>
-                    <Typography
-                      variant="subtitle1"
-                      style={{
-                        fontWeight: "bold",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Name
-                      {sortBy === "name" &&
-                        (sortDirection === "asc" ? (
-                          <ArrowDropDown />
-                        ) : (
-                          <ArrowDropUp />
-                        ))}
-                    </Typography>
-                  </TableCell>
-                  <TableCell onClick={() => handleSortChange("location")}>
-                    <Typography
-                      variant="subtitle1"
-                      style={{
-                        fontWeight: "bold",
-                        cursor: "pointer",
-                      }}
-                      align="left"
-                    >
-                      District
-                      {sortBy === "location" &&
-                        (sortDirection === "asc" ? (
-                          <ArrowDropDown />
-                        ) : (
-                          <ArrowDropUp />
-                        ))}
-                    </Typography>
-                  </TableCell>
-                  <TableCell onClick={() => handleSortChange("description")}>
-                    <Typography
-                      variant="subtitle1"
-                      style={{ fontWeight: "bold" }}
-                      align="left"
-                    >
-                      City
-                      {sortBy === "description" &&
-                        (sortDirection === "asc" ? (
-                          <ArrowDropDown />
-                        ) : (
-                          <ArrowDropUp />
-                        ))}
-                    </Typography>
-                  </TableCell>
                   <TableCell>
                     <Typography
                       variant="subtitle1"
@@ -309,16 +355,21 @@ const Team = () => {
               </TableHead>
               <TableBody>
                 {teams.map((team) => {
-                   const isSelected = selectedTeams.includes(team.id);
+                  const isSelected = selectedTeams.includes(team.id);
                   return (
                     <TableRow key={team.id}>
                       <TableCell align="left">
-                        <Checkbox 
-                          inputProps={{ "aria-label": "controlled" }} 
+                        <Checkbox
+                          inputProps={{ "aria-label": "controlled" }}
                           checked={isSelected}
                           onChange={() => handleSelectTeam(team.id)}
-                          />
+                        />
+                      </TableCell>                     
+                      <TableCell component="th" scope="row">
+                       {team.name}
                       </TableCell>
+                      <TableCell align="left"> {team.description}</TableCell>
+                      <TableCell align="left">{team.location}</TableCell>
                       <TableCell component="th" scope="row">
                         <IconButton onClick={() => handleEditClick(team.id)}>
                           <Edit />
@@ -328,14 +379,6 @@ const Team = () => {
                         <IconButton onClick={() => onDeleteTeam(team.id)}>
                           <Delete />
                         </IconButton>
-                      </TableCell>
-                      <TableCell component="th" scope="row">
-                        {team.description}
-                      </TableCell>
-                      <TableCell align="left">{team.name}</TableCell>
-                      <TableCell align="left">{team.location}</TableCell>
-                      <TableCell align="left">
-                        <div style={{ display: "flex", gap: "10px" }}></div>
                       </TableCell>
                     </TableRow>
                   );
@@ -358,7 +401,11 @@ const Team = () => {
       </Dialog>
 
       <Dialog open={open} fullWidth maxWidth="lg">
-        <EditTeam teamId={selectTeam} onClose={handleCloseEdit} onFetchDataTeam={fetchDataTeam}/>
+        <EditTeam
+          teamId={selectTeam}
+          onClose={handleCloseEdit}
+          onFetchDataTeam={fetchDataTeam}
+        />
       </Dialog>
     </section>
   );

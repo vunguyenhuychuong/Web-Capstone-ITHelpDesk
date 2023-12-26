@@ -89,7 +89,7 @@ function App() {
           <Route path='main' element={<AccessibleTabs1 />} />
           <Route path='menu' element={<Menu />} />
           {(hasCustomerRole || hasManagerRole) && <Route path='service' element={<ServiceList />} />}
-          <Route path='mode' element={<ModeList />} />
+          {(hasAdminRole ) && <Route path='mode' element={<ModeList />} />} 
           <Route path='customerTicket' element={<IssueList />} />
           <Route path='ticketService/:ticketId' element={<TicketService />} />
           <Route path='createTicket' element={<CreateTickets />} />

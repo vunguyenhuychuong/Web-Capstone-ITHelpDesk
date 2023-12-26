@@ -20,6 +20,8 @@ import {
   updateTicketTask,
 } from "../../../app/api/ticketTask";
 import { getAllTeams } from "../../../app/api/team";
+import Gallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
 
 const EditTicketTask = () => {
   const navigate = useNavigate();
@@ -35,7 +37,7 @@ const EditTicketTask = () => {
     scheduledStartTime: "",
     scheduledEndTime: "",
     progress: 0,
-    attachmentUrl: "",
+    attachmentUrls: [],
     note: "",
   });
   const [dataTeam, setDataTeam] = useState([]);
@@ -44,7 +46,7 @@ const EditTicketTask = () => {
   const [selectedTechnicianId, setSelectedTechnicianId] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [scheduledStartTime, setScheduledStartTime] = useState(moment());
   const [scheduledEndTime, setScheduledEndTime] = useState(moment());
@@ -93,6 +95,12 @@ const EditTicketTask = () => {
       console.error("Error while fetching technicians", error);
     }
   };
+
+  const images = data.attachmentUrls.map((url, index) => ({
+    original: url,
+    thumbnail: url,
+    description: `Attachment Preview ${index + 1}`,
+  }));
 
   useEffect(() => {
     const fetchTaskData = async () => {
@@ -189,12 +197,12 @@ const EditTicketTask = () => {
     }
     setIsSubmitting(true);
     try {
-      let attachmentUrl = data.attachmentUrl;
+      let attachmentUrls = data.attachmentUrls;
       if (selectedFile) {
         const storage = getStorage();
         const storageRef = ref(storage, "images/" + selectedFile.name);
         await uploadBytes(storageRef, selectedFile);
-        attachmentUrl = await getDownloadURL(storageRef);
+        attachmentUrls = await getDownloadURL(storageRef);
       }
 
       const isDataValid = validateDate(
@@ -215,7 +223,7 @@ const EditTicketTask = () => {
 
       const updatedData = {
         ...data,
-        attachmentUrl: attachmentUrl,
+        attachmentUrls: attachmentUrls,
         scheduledStartTime: formattedScheduledStartTime,
         scheduledEndTime: formattedScheduledEndTime,
         technicianId: selectedTechnicianId,
@@ -232,7 +240,7 @@ const EditTicketTask = () => {
         scheduledStartTime: data.scheduledStartTime,
         scheduledEndTime: data.scheduledEndTime,
         progress: data.progress,
-        attachmentUrl: data.attachmentUrl,
+        attachmentUrls: data.attachmentUrls,
         note: data.note,
       });
     } catch (error) {
@@ -347,11 +355,11 @@ const EditTicketTask = () => {
                   type="file"
                   name="file"
                   className="form-control input-field"
-                  id="attachmentUrl"
+                  id="attachmentUrls"
                   onChange={handleFileChange}
-                  value={data.attachmentUrl}
+                  value={data.attachmentUrls}
                 />
-                {imagePreviewUrl && (
+                 {imagePreviewUrl.length > 0 && (
                   <div
                     className="image-preview"
                     onClick={() => setIsImagePreviewOpen(true)}
@@ -609,7 +617,7 @@ const EditTicketTask = () => {
 
       <Dialog
         open={isImagePreviewOpen}
-        onClose={closeImagePreview}
+        onClose={() => setIsImagePreviewOpen(false)}
         maxWidth="md"
         fullWidth
       >
@@ -618,18 +626,14 @@ const EditTicketTask = () => {
           <IconButton
             edge="end"
             color="inherit"
-            onClick={closeImagePreview}
+            onClick={() => setIsImagePreviewOpen(false)}
             aria-label="close"
           >
             <Close />
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <img
-            src={imagePreviewUrl}
-            alt="Attachment Preview"
-            style={{ width: "100%" }}
-          />
+          <Gallery items={images} />
         </DialogContent>
       </Dialog>
     </Grid>

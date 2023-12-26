@@ -30,8 +30,8 @@ import {
   fetchDistricts,
   fetchWards,
 } from "../Customer/StepForm/fetchDataSelect";
-import Slider from "react-slick";
-import { settings } from "../../helpers/useInView";
+import Gallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
 
 const CreateTickets = () => {
   const navigate = useNavigate();
@@ -90,6 +90,12 @@ const CreateTickets = () => {
   const handleToggle = () => {
     setIsPeriodic((prevIsPeriodic) => !prevIsPeriodic);
   };
+
+  const images = imagePreviewUrl.map((url, index) => ({
+    original: url,
+    thumbnail: url,
+    description: `Attachment Preview ${index + 1}`,
+  }));
 
   const handleCityChange = async (e) => {
     const { name, value } = e.target;
@@ -952,17 +958,7 @@ const CreateTickets = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <Slider {...settings}>
-            {imagePreviewUrl.map((url, index) => (
-              <div key={index}>
-                <img
-                  src={url}
-                  alt={`Attachment Preview ${index + 1}`}
-                  style={{ width: "100%" }}
-                />
-              </div>
-            ))}
-          </Slider>
+          <Gallery items={images} />
         </DialogContent>
       </Dialog>
     </Grid>

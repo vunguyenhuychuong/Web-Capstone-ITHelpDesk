@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Dialog, DialogContent, DialogTitle, Grid, IconButton, TextField } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  IconButton,
+  TextField,
+} from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
@@ -17,6 +24,8 @@ import Process, {
 } from "../../helpers/tableComlumn";
 import { createTicketTask } from "../../../app/api/ticketTask";
 import { getAllTeams } from "../../../app/api/team";
+import Gallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
 
 const CreateTicketTask = () => {
   const navigate = useNavigate();
@@ -31,16 +40,16 @@ const CreateTicketTask = () => {
     scheduledStartTime: "",
     scheduledEndTime: "",
     progress: 1,
-    attachmentUrl: "",
+    attachmentUrls: [],
   });
   const [dataTeam, setDataTeam] = useState([]);
   const [dataTechnician, setDataTechnician] = useState([]);
   const [selectedTeamId, setSelectedTeamId] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [scheduledStartTime, setScheduledStartTime] = useState(moment());
   const [scheduledEndTime, setScheduledEndTime] = useState(moment());
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
     title: "",
@@ -64,6 +73,12 @@ const CreateTicketTask = () => {
       scheduledEndTime: formattedDate,
     }));
   };
+
+  const images = imagePreviewUrl.map((url, index) => ({
+    original: url,
+    thumbnail: url,
+    description: `Attachment Preview ${index + 1}`,
+  }));
 
   const fetchDataTeam = async () => {
     try {
@@ -116,22 +131,32 @@ const CreateTicketTask = () => {
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    setSelectedFile(file);
+    const files = e.target.files;
+    setSelectedFile((prevFiles) => [...prevFiles, ...files]);
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreviewUrl(reader.result);
-    };
-    if (file) {
-      reader.readAsDataURL(file);
-    } else {
-      setImagePreviewUrl(null);
+    const promises = [];
+    const previewUrls = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const currentFile = files[i];
+      const reader = new FileReader();
+
+      promises.push(
+        new Promise((resolve) => {
+          reader.onloadend = () => {
+            previewUrls.push(reader.result);
+            resolve();
+          };
+          reader.readAsDataURL(currentFile);
+        })
+      );
     }
-  };
 
-  const closeImagePreview = () => {
-    setIsImagePreviewOpen(false);
+    Promise.all(promises).then(() => {
+      setImagePreviewUrl(previewUrls);
+    });
+
+    setIsImagePreviewOpen(true);
   };
 
   const validateDate = (scheduledStartTime, scheduledEndTime) => {
@@ -160,12 +185,18 @@ const CreateTicketTask = () => {
 
     setIsSubmitting(true);
     try {
-      let attachmentUrl = data.attachmentUrl;
-      if (selectedFile) {
+      let attachmentUrls = data.attachmentUrls;
+      if (selectedFile.length > 0) {
         const storage = getStorage();
-        const storageRef = ref(storage, "images/" + selectedFile.name);
-        await uploadBytes(storageRef, selectedFile);
-        attachmentUrl = await getDownloadURL(storageRef);
+
+        for (let i = 0; i < selectedFile.length; i++) {
+          const file = selectedFile[i];
+          const storageRef = ref(storage, `images/${file.name}`);
+          await uploadBytes(storageRef, file);
+
+          const downloadURL = await getDownloadURL(storageRef);
+          attachmentUrls.push(downloadURL);
+        }
       }
 
       const isDataValid = validateDate(
@@ -194,23 +225,23 @@ const CreateTicketTask = () => {
 
       const updatedData = {
         ...data,
-        attachmentUrl: attachmentUrl,
+        attachmentUrls: attachmentUrls,
         scheduledStartTime: formattedScheduledStartTime,
         scheduledEndTime: formattedScheduledEndTime,
       };
       setData(updatedData);
-        await createTicketTask({
-          ticketId: data.ticketId,
-          title: data.title,
-          description: data.description,
-          taskStatus: parseInt(data.taskStatus),
-          technicianId: parseInt(data.technicianId),
-          priority: parseInt(data.priority, 10),
-          scheduledStartTime: data.scheduledStartTime,
-          scheduledEndTime: data.scheduledEndTime,
-          progress: parseInt(data.progress),
-          attachmentUrl: data.attachmentUrl,
-        });    
+      await createTicketTask({
+        ticketId: data.ticketId,
+        title: data.title,
+        description: data.description,
+        taskStatus: parseInt(data.taskStatus),
+        technicianId: parseInt(data.technicianId),
+        priority: parseInt(data.priority, 10),
+        scheduledStartTime: data.scheduledStartTime,
+        scheduledEndTime: data.scheduledEndTime,
+        progress: parseInt(data.progress),
+        attachmentUrls: data.attachmentUrls,
+      });
     } catch (error) {
       console.error(error);
     } finally {
@@ -391,9 +422,9 @@ const CreateTicketTask = () => {
                   className="form-control input-field"
                   id="attachmentUrl"
                   onChange={handleFileChange}
-                  value={data.attachmentUrl}
+                  // value={data.attachmentUrl}
                 />
-                 {imagePreviewUrl && (
+                {imagePreviewUrl.length > 0 && (
                   <div
                     className="image-preview"
                     onClick={() => setIsImagePreviewOpen(true)}
@@ -638,7 +669,7 @@ const CreateTicketTask = () => {
                   onClick={handleSubmitTicket}
                   disabled={isSubmitting}
                 >
-                   {isSubmitting ? 'Submitting...' : 'Save'}
+                  {isSubmitting ? "Submitting..." : "Save"}
                 </button>
                 <button
                   type="button"
@@ -653,7 +684,7 @@ const CreateTicketTask = () => {
       </Grid>
       <Dialog
         open={isImagePreviewOpen}
-        onClose={closeImagePreview}
+        onClose={() => setIsImagePreviewOpen(false)}
         maxWidth="md"
         fullWidth
       >
@@ -662,18 +693,14 @@ const CreateTicketTask = () => {
           <IconButton
             edge="end"
             color="inherit"
-            onClick={closeImagePreview}
+            onClick={() => setIsImagePreviewOpen(false)}
             aria-label="close"
           >
             <Close />
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <img
-            src={imagePreviewUrl}
-            alt="Attachment Preview"
-            style={{ width: "100%" }}
-          />
+          <Gallery items={images} />
         </DialogContent>
       </Dialog>
     </Grid>

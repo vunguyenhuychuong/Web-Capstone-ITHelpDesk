@@ -108,4 +108,10 @@ const links = [
   },
 ];
 
-export default links;
+const additionalLinks = [
+  { id: 25, text: "Create Page", path: "createPage", icon: <Payment /> },
+  { id: 26, text: "Update Page", path: "paymentList", icon: <Assessment /> },
+  { id: 27, text: "Custom Company", path: "ticketAssign", icon: <Business /> },
+];
+
+export { links, additionalLinks };

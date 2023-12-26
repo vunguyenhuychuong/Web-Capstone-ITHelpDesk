@@ -43,6 +43,7 @@ import {
 import TicketLogList from "../Customer/TicketLogList";
 import TicketTaskList from "../Technician/TicketTaskList";
 
+
 const DetailTicket = () => {
   const { ticketId } = useParams();
   const { data, loading, setData } = useTicketData(ticketId);

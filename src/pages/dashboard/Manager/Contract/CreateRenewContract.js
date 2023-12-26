@@ -20,6 +20,8 @@ import {
 import moment from "moment";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import Gallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
 
 const CreateRenewContract = () => {
   const navigate = useNavigate();
@@ -31,10 +33,10 @@ const CreateRenewContract = () => {
     startDate: "",
     endDate: "",
     accountantId: 1,
-    attachmentURl: "",
+    attachmentUrls: [],
   });
   const [dataAccountant, setDataAccountant] = useState([]);
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [startDate, setStartDate] = useState(moment());
   const [endDate, setEndDate] = useState(moment());
@@ -71,6 +73,12 @@ const CreateRenewContract = () => {
       endDate: formattedDate,
     }));
   };
+
+  const images = imagePreviewUrl.map((url, index) => ({
+    original: url,
+    thumbnail: url,
+    description: `Attachment Preview ${index + 1}`,
+  }));
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -155,17 +163,17 @@ const CreateRenewContract = () => {
 
     setIsSubmitting(true);
     try {
-      let attachmentURl = data.attachmentURl;
+      let attachmentUrls = data.attachmentUrls;
       if (selectedFile) {
         const storage = getStorage();
         const storageRef = ref(storage, "images/" + selectedFile.name);
         await uploadBytes(storageRef, selectedFile);
-        attachmentURl = await getDownloadURL(storageRef);
+        attachmentUrls = await getDownloadURL(storageRef);
       }
 
       const updatedData = {
         ...data,
-        attachmentURl: attachmentURl,
+        attachmentUrls: attachmentUrls,
         startDate: formattedStartDate,
         endDate: formattedEndDate,
       };
@@ -179,7 +187,7 @@ const CreateRenewContract = () => {
           startDate: formattedStartDate,
           endDate: formattedEndDate,
           accountantId: data.accountantId,
-          attachmentURl: attachmentURl,
+          attachmentUrls: attachmentUrls,
         },
         contractId
       );
@@ -367,11 +375,11 @@ const CreateRenewContract = () => {
                   type="file"
                   name="file"
                   className="form-control input-field"
-                  id="attachmentURl"
+                  id="attachmentUrls"
                   onChange={handleFileChange}
-                  value={data.attachmentURl}
+                  value={data.attachmentUrls}
                 />
-                {imagePreviewUrl && (
+                {imagePreviewUrl.length > 0 && (
                   <div
                     className="image-preview"
                     onClick={() => setIsImagePreviewOpen(true)}
@@ -530,7 +538,7 @@ const CreateRenewContract = () => {
 
       <Dialog
         open={isImagePreviewOpen}
-        onClose={closeImagePreview}
+        onClose={() => setIsImagePreviewOpen(false)}
         maxWidth="md"
         fullWidth
       >
@@ -539,18 +547,14 @@ const CreateRenewContract = () => {
           <IconButton
             edge="end"
             color="inherit"
-            onClick={closeImagePreview}
+            onClick={() => setIsImagePreviewOpen(false)}
             aria-label="close"
           >
             <Close />
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <img
-            src={imagePreviewUrl}
-            alt="Attachment Preview"
-            style={{ width: "100%" }}
-          />
+          <Gallery items={images} />
         </DialogContent>
       </Dialog>
     </Grid>

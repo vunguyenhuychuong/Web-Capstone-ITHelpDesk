@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import links from "../../utils/links";
+import {links, additionalLinks} from "../../utils/links";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 
@@ -56,9 +56,9 @@ const NavLinks = ({ toggleSidebar }) => {
             ) : (
               <NavLink
                 to={path}
-                className={({ isActive }) => {
-                  return isActive ? "nav-link active" : "nav-link";
-                }}
+                className={({ isActive }) =>
+                  isActive ? 'nav-link active' : 'nav-link'
+                }
                 key={id}
                 onClick={toggleSidebar}
                 end
@@ -86,6 +86,7 @@ const NavLinks = ({ toggleSidebar }) => {
         );
       })}
     </div>
+
   );
 };
 export default NavLinks;

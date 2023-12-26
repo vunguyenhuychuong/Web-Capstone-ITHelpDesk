@@ -11,7 +11,8 @@ export async function getAllTicket(
   page = 1,
   pageSize = 5,
   sortBy = "id",
-  sortDirection = "asc"
+  sortDirection = "asc",
+  ticketStatus
 ) {
   const header = getAuthHeader();
   try {
@@ -21,6 +22,7 @@ export async function getAllTicket(
       page: page,
       pageSize: pageSize,
       sort: `${sortBy} ${sortDirection}`,
+      ticketStatus: ticketStatus
     };
     const res = await axios.get(`${baseURL}/ticket`, {
       headers: {

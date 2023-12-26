@@ -31,12 +31,13 @@ import {
 } from "../../../app/api/ticket";
 import "primereact/resources/primereact.min.css";
 import "primereact/resources/themes/saga-blue/theme.css";
-import Slider from "react-slick";
 import {
   fetchCity,
   fetchDistricts,
   fetchWards,
 } from "../Customer/StepForm/fetchDataSelect";
+import Gallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
 
 const EditTickets = () => {
   const navigate = useNavigate();
@@ -112,6 +113,12 @@ const EditTickets = () => {
       setWards([]);
     }
   };
+
+  const images = data.attachmentUrls.map((url, index) => ({
+    original: url,
+    thumbnail: url,
+    description: `Attachment Preview ${index + 1}`,
+  }));
 
   const handleDistrictChange = async (e) => {
     const { name, value } = e.target;
@@ -993,17 +1000,7 @@ const EditTickets = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <Slider {...settings}>
-            {data.attachmentUrls.map((url, index) => (
-              <div key={index}>
-                <img
-                  src={url}
-                  alt={`Attachment Preview ${index + 1}`}
-                  style={{ width: "100%" }}
-                />
-              </div>
-            ))}
-          </Slider>
+          <Gallery items={images} />
         </DialogContent>
       </Dialog>
     </Grid>

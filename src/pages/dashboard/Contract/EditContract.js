@@ -26,6 +26,8 @@ import {
   getParentContract,
   updateContract,
 } from "../../../app/api/contract";
+import Gallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
 
 const EditContract = () => {
   const navigate = useNavigate();
@@ -61,12 +63,11 @@ const EditContract = () => {
     value: "",
   });
 
-  const settings = {
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-  };
+  const images = data.attachmentUrls.map((url, index) => ({
+    original: url,
+    thumbnail: url,
+    description: `Attachment Preview ${index + 1}`,
+  }));
 
   const handleStartDateChange = (newDate) => {
     const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
@@ -668,7 +669,7 @@ const EditContract = () => {
           </MDBRow>
         </MDBCol>
       </Grid>
-      <Dialog
+     <Dialog
         open={isImagePreviewOpen}
         onClose={() => setIsImagePreviewOpen(false)}
         maxWidth="md"
@@ -686,23 +687,7 @@ const EditContract = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <Slider {...settings}>
-            {data.attachmentUrls ? (
-              <Slider {...settings}>
-                {data.attachmentUrls.map((url, index) => (
-                  <div key={index}>
-                    <img
-                      src={url}
-                      alt={`Attachment Preview ${index + 1}`}
-                      style={{ width: "100%" }}
-                    />
-                  </div>
-                ))}
-              </Slider>
-            ) : (
-              <p>Loading...</p>
-            )}
-          </Slider>
+          <Gallery items={images} />
         </DialogContent>
       </Dialog>
     </Grid>

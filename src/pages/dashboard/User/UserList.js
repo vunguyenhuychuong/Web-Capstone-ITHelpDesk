@@ -1,7 +1,5 @@
 import {
-  MDBBtn,
-  MDBContainer,
-  MDBNavbar,
+  MDBBtn,MDBContainer, MDBNavbar,
   MDBNavbarBrand,
   MDBNavbarNav,
   MDBTable,
@@ -10,38 +8,17 @@ import {
 } from "mdb-react-ui-kit";
 import React, { useCallback, useState } from "react";
 import {
-  ArrowDropDown,
-  ArrowDropUp,
-  ContentCopy,
-  Delete,
-  Female,
-  Lock,
-  LockOpen,
-  Male,
-  Phone,
-  ViewCompact,
+  ArrowDropDown,ArrowDropUp,ContentCopy,Delete,Female,Lock,LockOpen,Male,Phone,ViewCompact,
 } from "@mui/icons-material";
 import { useEffect } from "react";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import {
-  Avatar,
-  CircularProgress,
-  FormControl,
-  MenuItem,
-  Pagination,
-  Select,
-  Tooltip,
-} from "@mui/material";
+import { Avatar,CircularProgress,FormControl,MenuItem,Pagination,Select,Tooltip } from "@mui/material";
 import { toast } from "react-toastify";
 import { formatDate } from "../../helpers/FormatDate";
 import PageSizeSelector from "../Pagination/Pagination";
 import { Box } from "@mui/system";
 import { DeleteDataUser, getAllUser } from "../../../app/api";
-import {
-  getGenderById,
-  getRoleNameById,
-  roleColors,
-} from "../../helpers/tableComlumn";
+import { getRoleNameById, roleColors } from "../../helpers/tableComlumn";
 import { useNavigate } from "react-router-dom";
 
 const UserList = () => {

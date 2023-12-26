@@ -23,7 +23,8 @@ import {
   getAllCompanyList,
   getParentContract,
 } from "../../../app/api/contract";
-import Slider from "react-slick";
+import Gallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
 
 const CreateContract = () => {
   const navigate = useNavigate();
@@ -53,12 +54,11 @@ const CreateContract = () => {
     value: "",
   });
 
-  const settings = {
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-  };
+  const images = imagePreviewUrl.map((url, index) => ({
+    original: url,
+    thumbnail: url,
+    description: `Attachment Preview ${index + 1}`,
+  }));
 
   const fetchDataCreateContract = async () => {
     try {
@@ -620,7 +620,7 @@ const CreateContract = () => {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle >
+        <DialogTitle>
           Image Preview
           <IconButton
             edge="end"
@@ -632,17 +632,7 @@ const CreateContract = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <Slider {...settings}>
-            {imagePreviewUrl.map((url, index) => (
-              <div key={index}>
-                <img
-                  src={url}
-                  alt={`Attachment Preview ${index + 1}`}
-                  style={{ width: "100%" }}
-                />
-              </div>
-            ))}
-          </Slider>
+          <Gallery items={images} />
         </DialogContent>
       </Dialog>
     </Grid>

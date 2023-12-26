@@ -1,5 +1,6 @@
 import { useRef } from "react"
-import { useInView as useInViewFromFramer } from 'framer-motion'
+import { useInView as useInViewFromFramer } from 'framer-motion';
+import "react-image-gallery/styles/css/image-gallery.css";
 
 export default function useInView({ once = true, margin = "-30px 0px 0px 0px"} = {}) {
   const ref = useRef(null)
@@ -16,3 +17,4 @@ export const settings = {
   slidesToShow: 1,
   slidesToScroll: 1,
 };
+

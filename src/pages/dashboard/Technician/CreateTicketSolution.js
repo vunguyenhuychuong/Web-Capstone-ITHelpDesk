@@ -15,6 +15,8 @@ import moment from "moment";
 import { getDataUser } from "../../../app/api";
 import Slider from "react-slick";
 import { settings } from "../../helpers/useInView";
+import Gallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
 
 const CreateTicketSolution = () => {
   const navigate = useNavigate();
@@ -97,7 +99,6 @@ const CreateTicketSolution = () => {
     const files = e.target.files;
     setSelectedFile((prevFiles) => [...prevFiles, ...files]);
 
-    
     const promises = [];
     const previewUrls = [];
 
@@ -217,6 +218,12 @@ const CreateTicketSolution = () => {
       setIsSubmitting(false);
     }
   };
+
+  const images = imagePreviewUrl.map((url, index) => ({
+    original: url,
+    thumbnail: url,
+    description: `Attachment Preview ${index + 1}`,
+  }));
 
   const handlePublicToggle = () => {
     setData((prevData) => ({
@@ -614,17 +621,7 @@ const CreateTicketSolution = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <Slider {...settings}>
-            {imagePreviewUrl.map((url, index) => (
-              <div key={index}>
-                <img
-                  src={url}
-                  alt={`Attachment Preview ${index + 1}`}
-                  style={{ width: "100%" }}
-                />
-              </div>
-            ))}
-          </Slider>
+          <Gallery items={images} />
         </DialogContent>
       </Dialog>
     </Grid>

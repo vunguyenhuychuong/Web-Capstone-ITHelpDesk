@@ -9,11 +9,26 @@ import {
   MDBTableHead,
 } from "mdb-react-ui-kit";
 import React, { useCallback, useState } from "react";
-import { ContentCopy, Delete, DeleteForeverSharp, Edit } from "@mui/icons-material";
+import {
+  ArrowDropDown,
+  ArrowDropUp,
+  ContentCopy,
+  Delete,
+  DeleteForeverSharp,
+  Edit,
+} from "@mui/icons-material";
 import { useEffect } from "react";
 import { deleteDataMode, deleteMode, getDataMode } from "../../../app/api/mode";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import { Dialog, FormControl, MenuItem, Pagination, Select } from "@mui/material";
+import {
+  Dialog,
+  FormControl,
+  List,
+  Menu,
+  MenuItem,
+  Pagination,
+  Select,
+} from "@mui/material";
 import CreateMode from "./CreateMode";
 import EditMode from "./EditMode";
 import { toast } from "react-toastify";
@@ -35,7 +50,39 @@ const ModeList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
   const [sortBy, setSortBy] = useState("id");
-   const fetchAllMode =  useCallback(async () => {
+
+  const [contextMenu, setContextMenu] = useState({
+    isVisible: false,
+    position: { top: 0, left: 0 },
+    itemId: null,
+  });
+
+  const showContextMenu = (itemId, event) => {
+    event.preventDefault();
+    setContextMenu({
+      isVisible: true,
+      position: { top: event.pageY, left: event.pageX },
+      itemId: itemId,
+    });
+  };
+
+  const hideContextMenu = () => {
+    setContextMenu({
+      isVisible: false,
+      position: { top: 0, left: 0 },
+      itemId: null,
+    });
+  };
+
+  const handleDeleteClick = (itemId) => {
+    // Handle delete click logic
+  };
+
+  const handleListIconClick = (event) => {
+    showContextMenu(null, event);
+  };
+
+  const fetchAllMode = useCallback(async () => {
     try {
       let filter = "";
       if (searchQuery) {
@@ -77,25 +124,38 @@ const ModeList = () => {
     setCurrentPage(value);
   };
 
+  const handleSortChange = (field) => {
+    if (sortBy === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortDirection("asc");
+    }
+  };
+
   const handleDeleteSelectedModes = async (id) => {
     try {
       if (selectedModes.length === 0) {
         return;
-      }  
+      }
       const deletePromises = selectedModes.map(async (modeId) => {
         try {
           const res = await Promise.resolve(deleteMode(modeId));
           if (res.isError) {
-            throw new Error(`Error deleting mode with ID ${modeId}: ${res.message}`);
+            throw new Error(
+              `Error deleting mode with ID ${modeId}: ${res.message}`
+            );
           }
           return modeId;
         } catch (error) {
-          throw new Error(`Error deleting mode with ID ${modeId}: ${error.message}`);
+          throw new Error(
+            `Error deleting mode with ID ${modeId}: ${error.message}`
+          );
         }
       });
-  
+
       const results = await Promise.allSettled(deletePromises);
-  
+
       const successfulDeletes = [];
       results.forEach((result) => {
         if (result.status === "fulfilled") {
@@ -104,7 +164,9 @@ const ModeList = () => {
           toast.error(result.reason.message);
         }
       });
-      const updateModes = dataModes.filter((mode) => !successfulDeletes.includes(mode.id));
+      const updateModes = dataModes.filter(
+        (mode) => !successfulDeletes.includes(mode.id)
+      );
       setDataModes(updateModes);
       setSelectMode([]);
     } catch (error) {
@@ -121,11 +183,11 @@ const ModeList = () => {
       try {
         const result = await deleteDataMode(id);
         fetchAllMode();
-        toast.success( 'Delete Mode successful',result.message);
+        toast.success("Delete Mode successful", result.message);
         if (result.isError === false) {
           toast.success(result.message);
         } else {
-          toast.error(result.message); 
+          toast.error(result.message);
         }
       } catch (error) {
         toast.error("Failed to delete mode. Please try again later");
@@ -145,7 +207,7 @@ const ModeList = () => {
   };
 
   const handleCloseEdit = (e) => {
-    if(e){
+    if (e) {
       e.preventDefault();
     }
     setDialogEdit(false);
@@ -174,19 +236,28 @@ const ModeList = () => {
         <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
-              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} /> <span style={{ color: "#FFFFFF" }}>All Mode</span>
+              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
+              <span style={{ color: "#FFFFFF" }}>All Mode</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  color: "#FFFFFF",
+                }}
                 onClick={handleOpenMode}
               >
                 <FaPlus /> New
               </MDBBtn>
               <MDBBtn
                 color="eee"
-                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  color: "#FFFFFF",
+                }}
               >
                 <Delete onClick={handleDeleteSelectedModes} /> Delete
               </MDBBtn>
@@ -236,11 +307,7 @@ const ModeList = () => {
             </MDBNavbarNav>
           </MDBContainer>
         </MDBNavbar>
-        <MDBTable
-          className="align-middle mb-0"
-          responsive
-          style={{ border: "0.05px solid #50545c" }}
-        >
+        <MDBTable className="align-middle mb-0" responsive>
           <MDBTableHead className="bg-light">
             <tr style={{ fontSize: "1.2rem" }}>
               <th style={{ fontWeight: "bold" }}>
@@ -249,14 +316,74 @@ const ModeList = () => {
                   checked={selectedModes.length === dataModes.length}
                   onChange={handleSelectAllModes}
                 />
+              </th>             
+              <th
+                style={{ fontWeight: "bold" }}
+                className="sortable-header"
+                onClick={() => handleSortChange("id")}
+              >
+                ID
+                {sortBy === "id" &&
+                  (sortDirection === "asc" ? (
+                    <ArrowDropDown />
+                  ) : (
+                    <ArrowDropUp />
+                  ))}
               </th>
-              <th style={{ fontWeight: "bold" }}>Edit</th>
-              <th style={{ fontWeight: "bold" }}>Delete</th>
-              <th style={{ fontWeight: "bold" }}>ID</th>
-              <th style={{ fontWeight: "bold" }}>Mode Name</th>
-              <th style={{ fontWeight: "bold" }}>Description</th>
-              <th style={{ fontWeight: "bold" }}>Create Time</th>
-              <th style={{ fontWeight: "bold" }}>Modify Time</th>
+              <th
+                style={{ fontWeight: "bold" }}
+                className="sortable-header"
+                onClick={() => handleSortChange("name")}
+              >
+                Mode Name
+                {sortBy === "name" &&
+                  (sortDirection === "asc" ? (
+                    <ArrowDropDown />
+                  ) : (
+                    <ArrowDropUp />
+                  ))}
+              </th>
+              <th
+                style={{ fontWeight: "bold" }}
+                className="sortable-header"
+                onClick={() => handleSortChange("description")}
+              >
+                Description
+                {sortBy === "description" &&
+                  (sortDirection === "asc" ? (
+                    <ArrowDropDown />
+                  ) : (
+                    <ArrowDropUp />
+                  ))}
+              </th>
+              <th
+                style={{ fontWeight: "bold" }}
+                className="sortable-header"
+                onClick={() => handleSortChange("createdAt")}
+              >
+                Create Time
+                {sortBy === "createdAt" &&
+                  (sortDirection === "asc" ? (
+                    <ArrowDropDown />
+                  ) : (
+                    <ArrowDropUp />
+                  ))}
+              </th>
+              <th
+                style={{ fontWeight: "bold" }}
+                className="sortable-header"
+                onClick={() => handleSortChange("modifiedAt")}
+              >
+                Modify Time
+                {sortBy === "modifiedAt" &&
+                  (sortDirection === "asc" ? (
+                    <ArrowDropDown />
+                  ) : (
+                    <ArrowDropUp />
+                  ))}
+              </th>
+              <th style={{ fontWeight: "bold" }}></th>
+              <th style={{ fontWeight: "bold" }}></th>
             </tr>
           </MDBTableHead>
           <MDBTableBody className="bg-light">
@@ -270,23 +397,22 @@ const ModeList = () => {
                       checked={isSelected}
                       onChange={() => handleSelectMode(mode.id)}
                     />
-                  </td>
+                  </td>   
+                  <td>{mode.id}</td>
+                  <td>{mode.name}</td>
+                  <td>{mode.description}</td>
+                  <td>{formatDate(mode.createdAt || "-")}</td>
+                  <td>{formatDate(mode.modifiedAt || "-")}</td>
                   <td onClick={() => handleEditClick(mode.id)}>
                     <Edit />
                   </td>
                   <td onClick={() => onDeleteMode(mode.id)}>
                     <DeleteForeverSharp />
                   </td>
-                  <td>{mode.id}</td>
-                  <td>{mode.name}</td>
-                  <td>{mode.description}</td>
-                  <td>{formatDate(mode.createdAt || "-")}</td>
-                  <td>{formatDate(mode.modifiedAt || "-")}</td>
                 </tr>
               );
             })}
           </MDBTableBody>
-          <MDBTableBody className="bg-light"></MDBTableBody>
         </MDBTable>
       </MDBContainer>
       <Box display="flex" justifyContent="center" mt={2}>
@@ -296,10 +422,7 @@ const ModeList = () => {
           onChange={handleChangePage}
         />
       </Box>
-      <Dialog
-        open={dialogOpen}
-        onClose={handleCloseMode}
-      >
+      <Dialog open={dialogOpen} onClose={handleCloseMode}>
         <CreateMode onClose={handleCloseMode} />
       </Dialog>
 

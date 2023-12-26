@@ -28,7 +28,7 @@ import { Box, FormControl, MenuItem, Pagination, Select } from "@mui/material";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import PageSizeSelector from "../Pagination/Pagination";
-import Chip from '@mui/material/Chip';
+import Chip from "@mui/material/Chip";
 import {
   TicketStatusOptions,
   getPriorityOptionById,
@@ -48,6 +48,7 @@ const IndexTicket = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("desc");
   const [sortBy, setSortBy] = useState("id");
+  const [ticketStatus, setTicketStatus] = useState(null);
   const [selectedTickets, setSelectedTickets] = useState([]);
   const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [selectedTicketData, setSelectedTicketData] = useState(null);
@@ -68,7 +69,8 @@ const IndexTicket = () => {
         currentPage,
         pageSize,
         sortBy,
-        sortDirection
+        sortDirection,
+        ticketStatus
       );
       setDataTickets(res);
       setIsLoading(false);
@@ -76,7 +78,11 @@ const IndexTicket = () => {
       console.log("Error while fetching data", error);
       setIsLoading(false);
     }
-  }, [currentPage, pageSize, searchQuery, sortBy, sortDirection]);
+  }, [currentPage, pageSize, searchQuery, sortBy, sortDirection, ticketStatus]);
+
+  const handleStatusChange = (e) => {
+    setTicketStatus(e.target.value);
+  };
 
   const fetchAllCategories = async () => {
     try {
@@ -275,6 +281,45 @@ const IndexTicket = () => {
                 pageSize={pageSize}
                 handleChangePageSize={handleChangePageSize}
               />
+              <div style={{ textAlign: "center" }}>
+                <label
+                  style={{
+                    fontWeight: "bold",
+                    marginTop: "15px",
+                    color: "white",
+                  }}
+                >
+                  Sort Status Ticket:
+                </label>
+                <FormControl
+                  variant="outlined"
+                  style={{
+                    minWidth: 120,
+                    marginRight: 10,
+                    marginTop: 10,
+                    marginLeft: 10,
+                  }}
+                  size="small"
+                >
+                  <Select
+                    value={ticketStatus}
+                    onChange={handleStatusChange}
+                    inputProps={{
+                      name: "sortField",
+                      id: "search-field",
+                    }}
+                    style={{ color: "white" }}
+                  >
+                    <MenuItem value={null}>-</MenuItem>
+                    <MenuItem value={0}>Open</MenuItem>
+                    <MenuItem value={1}>Assign</MenuItem>
+                    <MenuItem value={2}>Progress</MenuItem>
+                    <MenuItem value={3}>Resolved</MenuItem>
+                    <MenuItem value={4}>Closed</MenuItem>
+                    <MenuItem value={5}>Cancelled</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
             </MDBNavbarNav>
           </MDBContainer>
         </MDBNavbar>
@@ -356,7 +401,7 @@ const IndexTicket = () => {
                   className="sortable-header"
                   onClick={() => handleSortChange("type")}
                 >
-                  Type{" "}
+                  Type
                   {sortBy === "type" &&
                     (sortDirection === "asc" ? (
                       <ArrowDropDown />
@@ -433,7 +478,9 @@ const IndexTicket = () => {
                         ticket.description
                       }\nCategory:${getCategoryNameById(ticket.categoryId)}`}
                     >
-                      {ticket.title.length > 20 ? `${ticket.title.slice(0, 20)}...` : ticket.title}
+                      {ticket.title.length > 20
+                        ? `${ticket.title.slice(0, 20)}...`
+                        : ticket.title}
                     </td>
                     <td>
                       {ticket.requester.lastName} {ticket.requester.firstName}

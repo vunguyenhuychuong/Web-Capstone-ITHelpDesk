@@ -10,6 +10,8 @@ import {
 } from "mdb-react-ui-kit";
 import React, { useState } from "react";
 import {
+  ArrowDropDown,
+  ArrowDropUp,
   ContentCopy,
   Delete,
   DeleteForeverSharp,
@@ -35,7 +37,6 @@ import { formatCurrency } from "../../helpers/FormatCurrency";
 import { formatDate } from "../../helpers/FormatDate";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 
-
 const ServiceList = () => {
   const [dataService, setDataService] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -50,7 +51,6 @@ const ServiceList = () => {
   const [sortBy, setSortBy] = useState("id");
   const [isLoading, setIsLoading] = useState(true);
 
-
   const fetchAllService = useCallback(async () => {
     try {
       let filter = "";
@@ -63,7 +63,8 @@ const ServiceList = () => {
         currentPage,
         pageSize,
         sortBy,
-        sortDirection);
+        sortDirection
+      );
       setDataService(service);
       setIsLoading(false);
     } catch (error) {
@@ -117,8 +118,6 @@ const ServiceList = () => {
     setDialogEdit(false);
   };
 
-  
-
   const onDeleteService = async (id) => {
     const shouldDelete = window.confirm(
       "Are you sure want to delete this mode"
@@ -153,19 +152,28 @@ const ServiceList = () => {
         <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
-              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} /> <span style={{ color: "#FFFFFF" }}>All Service</span>
+              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
+              <span style={{ color: "#FFFFFF" }}>All Service</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  color: "#FFFFFF",
+                }}
                 onClick={handleOpenCreateService}
               >
                 <FaPlus /> New
               </MDBBtn>
               <MDBBtn
                 color="eee"
-                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  color: "#FFFFFF",
+                }}
               >
                 <Delete /> Delete
               </MDBBtn>
@@ -216,62 +224,113 @@ const ServiceList = () => {
           </MDBContainer>
         </MDBNavbar>
         {isLoading ? (
-           <CustomizedProgressBars />
-          ) : (
-        <MDBTable
-          className="align-middle mb-0"
-          responsive
-          style={{ border: "0.05px solid #50545c" }}
-        >
-          <MDBTableHead className="bg-light">
-            <tr style={{ fontSize: "1.2rem" }}>
-              <th style={{ fontWeight: "bold" }}>
-                <input type="checkbox" />
-              </th>
-              <th style={{ fontWeight: "bold" }}>Edit</th>
-              <th style={{ fontWeight: "bold" }}>Delete</th>
-              <th 
-                style={{ fontWeight: "bold" }}
-                onClick={() => handleSortChange("description")}
-                >Service Name</th>
-              <th 
-                style={{ fontWeight: "bold" }}
-                onClick={() => handleSortChange("amount")}
-                >Price</th>
-              <th 
-                style={{ fontWeight: "bold" }}
-                onClick={() => handleSortChange("createdAt")}
-                >Create Time</th>
-              <th 
-                style={{ fontWeight: "bold" }}
-                onClick={() => handleSortChange("modifiedAt")}
-                >Modify Time</th>
-            </tr>
-          </MDBTableHead>
-          <MDBTableBody className="bg-light">
-            {dataService.map((service, index) => {
-              return (
-                <tr key={index}>
-                  <td>
-                    <input type="checkbox" />
-                  </td>
-                  <td onClick={() => handleEditClick(service.id)}>
-                    <Edit />
-                  </td>
-                  <td onClick={() => onDeleteService(service.id)}>
-                    <DeleteForeverSharp />
-                  </td>
-                  <td>{service.description}</td>
-                  <td>{formatCurrency(service.amount)} VND</td>
-                  <td>{formatDate(service.createdAt || "-")}</td>
-                  <td>{formatDate(service.modifiedAt || "-")}</td>
-                </tr>
-              );
-            })}
-          </MDBTableBody>
+          <CustomizedProgressBars />
+        ) : (
+          <MDBTable
+            className="align-middle mb-0"
+            responsive
+            style={{ border: "0.05px solid #50545c" }}
+          >
+            <MDBTableHead className="bg-light">
+              <tr style={{ fontSize: "1.2rem" }}>
+                <th style={{ fontWeight: "bold" }}>
+                  <input type="checkbox" />
+                </th>
 
-          <MDBTableBody className="bg-light"></MDBTableBody>
-        </MDBTable>
+                <th
+                  style={{ fontWeight: "bold" }}
+                  className="sortable-header"
+                  onClick={() => handleSortChange("description")}
+                >
+                  Service Name
+                  {sortBy === "description" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th
+                  style={{ fontWeight: "bold" }}
+                  className="sortable-header"
+                  onClick={() => handleSortChange("type")}
+                >
+                  Type
+                  {sortBy === "type" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th
+                  style={{ fontWeight: "bold" }}
+                  className="sortable-header"
+                  onClick={() => handleSortChange("amount")}
+                >
+                  Price
+                  {sortBy === "amount" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th
+                  style={{ fontWeight: "bold" }}
+                  className="sortable-header"
+                  onClick={() => handleSortChange("createdAt")}
+                >
+                  Create Time
+                  {sortBy === "createdAt" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th
+                  style={{ fontWeight: "bold" }}
+                  className="sortable-header"
+                  onClick={() => handleSortChange("modifiedAt")}
+                >
+                  Modify Time
+                  {sortBy === "modifiedAt" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th style={{ fontWeight: "bold" }}></th>
+                <th style={{ fontWeight: "bold" }}></th>
+              </tr>
+            </MDBTableHead>
+            <MDBTableBody className="bg-light">
+              {dataService.map((service, index) => {
+                return (
+                  <tr key={index}>
+                    <td>
+                      <input type="checkbox" />
+                    </td>      
+                    <td>{service.description}</td>
+                    <td>{service.type}</td>
+                    <td>{formatCurrency(service.amount)} VND</td>
+                    <td>{formatDate(service.createdAt || "-")}</td>
+                    <td>{formatDate(service.modifiedAt || "-")}</td>
+                    <td onClick={() => handleEditClick(service.id)}>
+                      <Edit />
+                    </td>
+                    <td onClick={() => onDeleteService(service.id)}>
+                      <DeleteForeverSharp />
+                    </td>
+                  </tr>
+                );
+              })}
+            </MDBTableBody>
+
+            <MDBTableBody className="bg-light"></MDBTableBody>
+          </MDBTable>
         )}
         <Box display="flex" justifyContent="center" mt={2}>
           <Pagination

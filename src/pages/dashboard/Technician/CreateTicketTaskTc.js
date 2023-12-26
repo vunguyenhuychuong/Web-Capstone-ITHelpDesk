@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Dialog, DialogContent, DialogTitle, Grid, IconButton, Switch, TextField } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, Grid, IconButton, TextField } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
@@ -17,6 +17,8 @@ import Process, {
 } from "../../helpers/tableComlumn";
 import { createTicketTask } from "../../../app/api/ticketTask";
 import { getAllTeams } from "../../../app/api/team";
+import Gallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
 
 const CreateTicketTaskTc = () => {
   const navigate = useNavigate();
@@ -31,22 +33,28 @@ const CreateTicketTaskTc = () => {
     scheduledStartTime: "",
     scheduledEndTime: "",
     progress: 1,
-    attachmentUrl: "",
+    attachmentUrls: [],
   });
   const [dataTeam, setDataTeam] = useState([]);
   const [dataTechnician, setDataTechnician] = useState([]);
   const [selectedTeamId, setSelectedTeamId] = useState("");
   const [selectedTechnicianId, setSelectedTechnicianId] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [scheduledStartTime, setScheduledStartTime] = useState(moment());
   const [scheduledEndTime, setScheduledEndTime] = useState(moment());
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
     title: "",
     description: "",
   });
+
+  const images = imagePreviewUrl.map((url, index) => ({
+    original: url,
+    thumbnail: url,
+    description: `Attachment Preview ${index + 1}`,
+  }));
 
   const handleScheduledStartTimeChange = (newDate) => {
     const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
@@ -110,27 +118,38 @@ const CreateTicketTaskTc = () => {
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    setSelectedFile(file);
+    const files = e.target.files;
+    setSelectedFile((prevFiles) => [...prevFiles, ...files]);
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreviewUrl(reader.result);
-    };
-    if (file) {
-      reader.readAsDataURL(file);
-    } else {
-      setImagePreviewUrl(null);
+    const promises = [];
+    const previewUrls = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const currentFile = files[i];
+      const reader = new FileReader();
+
+      promises.push(
+        new Promise((resolve) => {
+          reader.onloadend = () => {
+            previewUrls.push(reader.result);
+            resolve();
+          };
+          reader.readAsDataURL(currentFile);
+        })
+      );
     }
+
+    Promise.all(promises).then(() => {
+      setImagePreviewUrl(previewUrls);
+    });
+
+    setIsImagePreviewOpen(true);
   };
 
-  const closeImagePreview = () => {
-    setIsImagePreviewOpen(false);
-  };
 
   const validateDate = (reviewDate, expiredDate) => {
     if (!reviewDate || !expiredDate) {
-      return false; // If either date is missing, return false
+      return false; 
     }
     return moment(scheduledStartTime).isBefore(scheduledEndTime);
   };
@@ -152,13 +171,20 @@ const CreateTicketTaskTc = () => {
     }
     setIsSubmitting(true);
     try {
-      let attachmentUrl = data.attachmentUrl;
-      if (selectedFile) {
+      let attachmentUrls = data.attachmentUrls;
+      if (selectedFile.length > 0) {
         const storage = getStorage();
-        const storageRef = ref(storage, "images/" + selectedFile.name);
-        await uploadBytes(storageRef, selectedFile);
-        attachmentUrl = await getDownloadURL(storageRef);
+
+        for (let i = 0; i < selectedFile.length; i++) {
+          const file = selectedFile[i];
+          const storageRef = ref(storage, `images/${file.name}`);
+          await uploadBytes(storageRef, file);
+
+          const downloadURL = await getDownloadURL(storageRef);
+          attachmentUrls.push(downloadURL);
+        }
       }
+
 
       const isDataValid = validateDate(data.scheduledStartTime, data.scheduledEndTime);
       if (!isDataValid) {
@@ -175,7 +201,7 @@ const CreateTicketTaskTc = () => {
 
       const updatedData = {
         ...data,
-        attachmentUrl: attachmentUrl,
+        attachmentUrls: attachmentUrls,
         scheduledStartTime: formattedScheduledStartTime,
         scheduledEndTime: formattedScheduledEndTime,
         technicianId: selectedTechnicianId
@@ -192,9 +218,8 @@ const CreateTicketTaskTc = () => {
         scheduledStartTime: data.scheduledStartTime,
         scheduledEndTime: data.scheduledEndTime,
         progress: data.progress,
-        attachmentUrl: data.attachmentUrl,
+        attachmentUrls: data.attachmentUrls,
       });
-      console.log(response);
       toast.success("Ticket created successfully");
     } catch (error) {
       console.error(error);
@@ -206,10 +231,6 @@ const CreateTicketTaskTc = () => {
   const handleGoBack = () => {
     navigate(`/home/homeTechnician`);
   };
-
-  // const handleGoBack = (ticketId) => {
-  //   navigate(`/home/detailTicket/${ticketId}`);
-  // };
 
   return (
     <Grid
@@ -361,9 +382,10 @@ const CreateTicketTaskTc = () => {
                   className="form-control input-field"
                   id="attachmentUrl"
                   onChange={handleFileChange}
-                  value={data.attachmentUrl}
+                  multiple
+                  // value={data.attachmentUrl}
                 />
-                 {imagePreviewUrl && (
+                {imagePreviewUrl.length > 0 && (
                   <div
                     className="image-preview"
                     onClick={() => setIsImagePreviewOpen(true)}
@@ -596,7 +618,7 @@ const CreateTicketTaskTc = () => {
       </Grid>
       <Dialog
         open={isImagePreviewOpen}
-        onClose={closeImagePreview}
+        onClose={() => setIsImagePreviewOpen(false)}
         maxWidth="md"
         fullWidth
       >
@@ -605,18 +627,14 @@ const CreateTicketTaskTc = () => {
           <IconButton
             edge="end"
             color="inherit"
-            onClick={closeImagePreview}
+            onClick={() => setIsImagePreviewOpen(false)}
             aria-label="close"
           >
             <Close />
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <img
-            src={imagePreviewUrl}
-            alt="Attachment Preview"
-            style={{ width: "100%" }}
-          />
+          <Gallery items={images} />
         </DialogContent>
       </Dialog>
     </Grid>

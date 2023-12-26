@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Grid } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, Grid, IconButton } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
@@ -12,6 +12,8 @@ import {
   editTicketByManager,
   getTicketByTicketId,
 } from "../../../app/api/ticket";
+import Gallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
 
 const EditTicketCustomer = () => {
   const navigate = useNavigate();
@@ -21,12 +23,12 @@ const EditTicketCustomer = () => {
     description: "",
     priority: 0,
     categoryId: 1,
-    attachmentUrl: "",
+    attachmentUrls: [],
   });
   const [dataCategories, setDataCategories] = useState([]);
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
     title: "",
@@ -57,6 +59,12 @@ const EditTicketCustomer = () => {
     }
   };
 
+  const images = data.attachmentUrls.map((url, index) => ({
+    original: url,
+    thumbnail: url,
+    description: `Attachment Preview ${index + 1}`,
+  }));
+
   useEffect(() => {
     const fetchTicketData = async () => {
       try {
@@ -67,7 +75,7 @@ const EditTicketCustomer = () => {
           description: ticketData.description,
           categoryId: ticketData.categoryId,
           priority: ticketData.priority,
-          attachmentUrl: ticketData.attachmentUrl,
+          attachmentUrls: ticketData.attachmentUrls,
         }));
       } catch (error) {
         console.error("Error fetching ticket data: ", error);
@@ -78,22 +86,32 @@ const EditTicketCustomer = () => {
   }, []);
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
+    const files = e.target.files;
+    setSelectedFile([...files]);
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreviewUrl(reader.result);
-    };
-    if (file) {
-      reader.readAsDataURL(file);
-    } else {
-      setImagePreviewUrl(null);
+    const promises = [];
+    const previewUrls = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const currentFile = files[i];
+      const reader = new FileReader();
+
+      promises.push(
+        new Promise((resolve) => {
+          reader.onloadend = () => {
+            previewUrls.push(reader.result);
+            resolve();
+          };
+          reader.readAsDataURL(currentFile);
+        })
+      );
     }
-  };
 
-  const closeImagePreview = () => {
-    setIsImagePreviewOpen(false);
+    Promise.all(promises).then(() => {
+      setImagePreviewUrl(previewUrls);
+    });
+
+    setIsImagePreviewOpen(true);
   };
 
   const handleSubmitTicket = async (e) => {
@@ -110,6 +128,25 @@ const EditTicketCustomer = () => {
 
     setIsSubmitting(true);
     try {
+
+      let attachmentUrls = data.attachmentUrls || [];
+      if (selectedFile.length > 0) {
+        const storage = getStorage();
+        for (let i = 0; i < selectedFile.length; i++) {
+          const file = selectedFile[i];
+          const storageRef = ref(storage, `images/${file.name}`);
+          await uploadBytes(storageRef, file);
+
+          const downloadURL = await getDownloadURL(storageRef);
+          attachmentUrls.push(downloadURL);
+        }
+      }
+
+      const updatedData = {
+        ...data,
+        attachmentUrls: attachmentUrls,
+      };
+      setData(updatedData);
       const res = await editTicketByManager(ticketId, data);
       setIsSubmitting(false);
       if (res.isError && res.responseException?.exceptionMessage) {
@@ -266,10 +303,10 @@ const EditTicketCustomer = () => {
                   type="file"
                   name="file"
                   className="form-control input-field"
-                  id="attachmentUrl"
+                  id="attachmentUrls"
                   onChange={handleFileChange}
                 />
-                {imagePreviewUrl && (
+                {imagePreviewUrl.length > 0 && (
                   <div
                     className="image-preview"
                     onClick={() => setIsImagePreviewOpen(true)}
@@ -375,6 +412,28 @@ const EditTicketCustomer = () => {
           </MDBRow>
         </MDBCol>
       </Grid>
+
+      <Dialog
+        open={isImagePreviewOpen}
+        onClose={() => setIsImagePreviewOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          Image Preview
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={() => setIsImagePreviewOpen(false)}
+            aria-label="close"
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <Gallery items={images} />
+        </DialogContent>
+      </Dialog>
     </Grid>
   );
 };

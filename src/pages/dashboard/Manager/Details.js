@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import {
   Button,
   Dialog,
-  DialogActions,
   DialogContent,
   DialogTitle,
   Grid,
+  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import "../../../assets/css/detailTicket.css";
-import { ArrowBack, Cached, CreditScore } from "@mui/icons-material";
+import { ArrowBack, Cached, Close, CreditScore } from "@mui/icons-material";
 import UploadComponent from "../../helpers/UploadComponent";
 import PropTypes from "prop-types";
 import "../../../assets/css/homeManager.css";
@@ -21,14 +21,19 @@ import {
   getImpactById,
   getPriorityOption,
   getUrgencyById,
-  ticketStatus,
 } from "../../helpers/tableComlumn";
 import { formatDate } from "../../helpers/FormatDate";
 import EditTicketModel from "./EditTicketModel";
 import { UpdateTicketForTechnician } from "../../../app/api/ticket";
 import { useSelector } from "react-redux";
 import { Editor } from "primereact/editor";
-import { fetchCity, fetchDistricts, fetchWards } from "../Customer/StepForm/fetchDataSelect";
+import {
+  fetchCity,
+  fetchDistricts,
+  fetchWards,
+} from "../Customer/StepForm/fetchDataSelect";
+import Gallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
 
 const Details = ({ data, loading, dataCategories }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -39,10 +44,18 @@ const Details = ({ data, loading, dataCategories }) => {
   const [cityName, setCityName] = useState("");
   const [districtName, setDistrictName] = useState("");
   const [wardName, setWardName] = useState("");
+  const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
 
   const handleEditClick = () => {
     setIsEditDialogOpen(true);
   };
+
+  const images =
+    data?.attachmentUrls?.map((url, index) => ({
+      original: url,
+      thumbnail: url,
+      description: `Attachment Preview ${index + 1}`,
+    })) || [];
 
   const fetchLocationNames = async () => {
     try {
@@ -98,7 +111,7 @@ const Details = ({ data, loading, dataCategories }) => {
       reloadData();
     }
     fetchLocationNames();
-  }, [reloadDataFlag,data.city, data.district, data.ward]);
+  }, [reloadDataFlag, data.city, data.district, data.ward]);
 
   return (
     <div>
@@ -146,11 +159,11 @@ const Details = ({ data, loading, dataCategories }) => {
           />
           <UploadComponent />
           <div className="buttonContainer">
-            {data.attachmentUrl && (
+            {data?.attachmentUrls?.length > 0 && (
               <Button
                 variant="contained"
                 className="button"
-                onClick={handleImageDialogOpen}
+                onClick={() => setIsImagePreviewOpen(true)}
               >
                 See Image
               </Button>
@@ -340,7 +353,7 @@ const Details = ({ data, loading, dataCategories }) => {
                   Location
                 </TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                {cityName},{districtName},{wardName},{data && data.street}
+                  {cityName},{districtName},{wardName},{data && data.street}
                 </TableCell>
                 <TableCell
                   style={{
@@ -463,30 +476,25 @@ const Details = ({ data, loading, dataCategories }) => {
         </Grid>
       </Grid>
       <Dialog
-        open={openImageDialog}
-        onClose={handleImageDialogClose}
+        open={isImagePreviewOpen}
+        onClose={() => setIsImagePreviewOpen(false)}
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>Image</DialogTitle>
+        <DialogTitle>
+          Image Preview
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={() => setIsImagePreviewOpen(false)}
+            aria-label="close"
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
         <DialogContent>
-          <div
-            style={{
-              background: `url(${data.attachmentUrl})`,
-              backgroundSize: "contain",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
-              width: "100%",
-              height: "70vh",
-            }}
-          ></div>
-          
+          <Gallery items={images} />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleImageDialogClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
       </Dialog>
     </div>
   );

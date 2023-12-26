@@ -25,8 +25,8 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import DateValidation from "../../helpers/DateValidation";
 import { getDataUser } from "../../../app/api";
-import Slider from "react-slick";
-import { settings } from "../../helpers/useInView";
+import Gallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
 
 const EditTicketSolution = () => {
   const navigate = useNavigate();
@@ -53,7 +53,7 @@ const EditTicketSolution = () => {
   const [dataUsers, setDataUsers] = useState([]);
   const [expiredDate, setExpiredDate] = useState(moment());
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
     title: "",
@@ -84,6 +84,12 @@ const EditTicketSolution = () => {
       isPublic: !prevData.isPublic,
     }));
   };
+
+  const images = data.attachmentUrls.map((url, index) => ({
+    original: url,
+    thumbnail: url,
+    description: `Attachment Preview ${index + 1}`,
+  }));
 
   const handleFileChange = (e) => {
     const file = e.target.files;
@@ -370,7 +376,7 @@ const EditTicketSolution = () => {
                     ? data.attachmentUrls.name
                     : "No file selected"}
                 </div>
-                {imagePreviewUrl && (
+                {data.attachmentUrls.length > 0 && (
                   <div
                     className="image-preview"
                     onClick={() => setIsImagePreviewOpen(true)}
@@ -620,7 +626,7 @@ const EditTicketSolution = () => {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle >
+        <DialogTitle>
           Image Preview
           <IconButton
             edge="end"
@@ -632,17 +638,7 @@ const EditTicketSolution = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <Slider {...settings}>
-            {imagePreviewUrl.map((url, index) => (
-              <div key={index}>
-                <img
-                  src={url}
-                  alt={`Attachment Preview ${index + 1}`}
-                  style={{ width: "100%" }}
-                />
-              </div>
-            ))}
-          </Slider>
+          <Gallery items={images} />
         </DialogContent>
       </Dialog>
     </Grid>
