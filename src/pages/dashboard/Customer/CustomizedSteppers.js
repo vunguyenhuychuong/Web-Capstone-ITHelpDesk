@@ -19,6 +19,9 @@ export default function CustomizedSteppers({
   handleInputChange,
   handleFileChange,
   handleSubmitTicket,
+  imagePreviewUrl,
+  isImagePreviewOpen,
+  setIsImagePreviewOpen,
 }) {
   const [activeStep, setActiveStep] = React.useState(0);
   const navigate = useNavigate();
@@ -27,10 +30,20 @@ export default function CustomizedSteppers({
 
   const totalSteps = steps.length;
   const handleNext = () => {
-    if (activeStep === 0 || activeStep === 2 || activeStep === 3) {
+    if (activeStep === 2) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } else if (activeStep === 1) {
-      if (data.title && data.description) {
+      if (data.title && data.description && data.street) {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      } else {
+        toast.warning("Please fill in all required fields before proceeding.", {
+          autoClose: 3000,
+          hideProgressBar: false,
+          position: toast.POSITION.TOP_CENTER,
+        });
+      }
+    } else if (activeStep === 0) {
+      if (data.city && data.street && data.ward && data.district) {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
       } else {
         toast.warning("Please fill in all required fields before proceeding.", {
@@ -99,12 +112,22 @@ export default function CustomizedSteppers({
           data={data}
           handleInputChange={handleInputChange}
           handleFileChange={handleFileChange}
-          
+          imagePreviewUrl={imagePreviewUrl}
+          isImagePreviewOpen={isImagePreviewOpen}
+          setIsImagePreviewOpen={setIsImagePreviewOpen}
         />
       )}
 
       {activeStep === 2 && (
-        <Step3 data={data} districts={districts} wards={wards} handleSubmit={handleSubmitTicket} />
+        <Step3
+          data={data}
+          districts={districts}
+          wards={wards}
+          handleSubmit={handleSubmitTicket}
+          imagePreviewUrl={imagePreviewUrl}
+          isImagePreviewOpen={isImagePreviewOpen}
+          setIsImagePreviewOpen={setIsImagePreviewOpen}
+        />
       )}
 
       <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>

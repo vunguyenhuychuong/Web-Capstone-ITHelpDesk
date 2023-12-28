@@ -1,17 +1,44 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { FormControl, TextField, Button, LinearProgress, Tooltip } from "@mui/material";
-import { CloudUpload } from "@mui/icons-material";
+import {
+  FormControl,
+  TextField,
+  Button,
+  LinearProgress,
+  Tooltip,
+  Dialog,
+  IconButton,
+  DialogTitle,
+  DialogContent,
+} from "@mui/material";
+import { Close, CloudUpload } from "@mui/icons-material";
 import { useState } from "react";
+import Gallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
 
-const Step2 = ({ data, handleInputChange, handleFileChange }) => {
+const Step2 = ({
+  data,
+  handleInputChange,
+  handleFileChange,
+  imagePreviewUrl,
+  isImagePreviewOpen,
+  setIsImagePreviewOpen,
+}) => {
   const [selectedFileName, setSelectedFileNames] = useState([]);
-  const [uploadProgress, setUploadProgress] = useState(Array(selectedFileName.length).fill(0));
-  
+  const [uploadProgress, setUploadProgress] = useState(
+    Array(selectedFileName.length).fill(0)
+  );
+  console.log("setIsImagePreviewOpen:", setIsImagePreviewOpen);
+
+  const images = imagePreviewUrl.map((url, index) => ({
+    original: url,
+    thumbnail: url,
+    description: `Attachment Preview ${index + 1}`,
+  }));
 
   return (
-     <>
-     <Tooltip title="Writing you Reason you have problems" arrow>
+    <>
+      <Tooltip title="Writing you Reason you have problems" arrow>
         <FormControl fullWidth variant="outlined" style={{ marginBottom: 10 }}>
           <TextField
             id="title"
@@ -24,7 +51,7 @@ const Step2 = ({ data, handleInputChange, handleFileChange }) => {
             error={data.title === ""}
             helperText={data.title === "" ? "Title is required" : ""}
             InputProps={{
-              style: { height: '50px' }, // Adjust the height value as needed
+              style: { height: "50px" },
             }}
           />
         </FormControl>
@@ -42,52 +69,56 @@ const Step2 = ({ data, handleInputChange, handleFileChange }) => {
             multiline
             rows={4}
             error={data.description === ""}
-            helperText={data.description === "" ? "Description is required" : ""}
+            helperText={
+              data.description === "" ? "Description is required" : ""
+            }
           />
         </FormControl>
       </Tooltip>
 
-      <Tooltip title="Upload more Image so we can see details issue if necessary" arrow>
+      <Tooltip
+        title="Upload more Image so we can see details issue if necessary"
+        arrow
+      >
         <FormControl fullWidth variant="outlined" style={{ marginBottom: 16 }}>
           <input
             id="attachmentUrl"
             type="file"
             name="file"
             onChange={(e) => {
-              const files =  Array.from(e.target.files);
+              const files = Array.from(e.target.files);
               handleFileChange(e);
-          
-              // Handle multiple files
               files.forEach((file, index) => {
-                const totalSize = file.size; // Use the actual size of the file
+                const totalSize = file.size;
                 let uploadedSize = 0;
-          
                 const updateProgress = () => {
                   if (uploadedSize < totalSize) {
-                    uploadedSize += 1000000; // Simulating progress update
+                    uploadedSize += 1000000;
                     const progress = (uploadedSize / totalSize) * 100;
-                    
-                    // Set progress for each file
                     setUploadProgress((prevProgress) => {
                       const newProgress = [...prevProgress];
                       newProgress[index] = progress;
                       return newProgress;
                     });
-          
-                    setTimeout(updateProgress, 1); // Update progress every 1 second
+                    setTimeout(updateProgress, 1);
                   }
                 };
-          
                 updateProgress();
               });
-          
-              // Set the selected file names
               const fileNames = Array.from(files).map((file) => file.name);
               setSelectedFileNames(fileNames);
             }}
             multiple
             style={{ display: "none" }}
           />
+          {imagePreviewUrl.length > 0 && (
+            <div
+              className="image-preview"
+              onClick={() => setIsImagePreviewOpen(true)}
+            >
+              <p className="preview-text">Click here to view attachment</p>
+            </div>
+          )}
           <label htmlFor="attachmentUrl">
             <Button
               component="span"
@@ -112,7 +143,29 @@ const Step2 = ({ data, handleInputChange, handleFileChange }) => {
           )}
         </FormControl>
       </Tooltip>
-     </>
+
+      <Dialog
+        open={isImagePreviewOpen}
+        onClose={() => setIsImagePreviewOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          Image Preview
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={() => setIsImagePreviewOpen(false)}
+            aria-label="close"
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <Gallery items={images} />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
@@ -120,6 +173,9 @@ Step2.propTypes = {
   data: PropTypes.object.isRequired,
   handleInputChange: PropTypes.func.isRequired,
   handleFileChange: PropTypes.func.isRequired,
+  imagePreviewUrl: PropTypes.array.isRequired,
+  isImagePreviewOpen: PropTypes.bool.isRequired,
+  setIsImagePreviewOpen: PropTypes.func.isRequired,
 };
 
 export default Step2;

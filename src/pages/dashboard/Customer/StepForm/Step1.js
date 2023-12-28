@@ -137,11 +137,13 @@ const Step1 = ({ data, handleInputChange }) => {
             labelId="priority-label"
             id="type"
             name="type"
-            value={data.type}
+            value={data.type || "Offline"}
             onChange={handleInputChange}
             label="Type"
           >
-            {TypeOptions.filter((type) => type.id !== "").map((type) => (
+            {TypeOptions
+            .filter((type) => type.id !== "")
+            .map((type) => (
               <MenuItem key={type.id} value={type.name}>
                 {type.name}
               </MenuItem>
