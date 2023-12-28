@@ -9,13 +9,25 @@ import {
   DialogContent,
   DialogTitle,
   DialogActions,
+  IconButton,
 } from "@mui/material";
 import { useState } from "react";
 import { getPriorityOption } from "../../../helpers/tableComlumn";
 import { getAllService } from "../../../../app/api/service";
 import { fetchCity, fetchDistricts, fetchWards } from "./fetchDataSelect";
+import { Close } from "@mui/icons-material";
+import Gallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
 
-const Step3 = ({ data, handleSubmit }) => {
+const Step3 = ({
+  data,
+  districts,
+  wards,
+  handleSubmit,
+  imagePreviewUrl,
+  isImagePreviewOpen,
+  setIsImagePreviewOpen,
+}) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [dataService, setDataServices] = useState([]);
   const [cityName, setCityName] = useState("");
@@ -30,6 +42,12 @@ const Step3 = ({ data, handleSubmit }) => {
     } finally {
     }
   };
+
+  const images = imagePreviewUrl.map((url, index) => ({
+    original: url,
+    thumbnail: url,
+    description: `Attachment Preview ${index + 1}`,
+  }));
 
   const fetchLocationNames = async () => {
     try {
@@ -99,18 +117,18 @@ const Step3 = ({ data, handleSubmit }) => {
               <strong>Type of Ticket:</strong> {data.type || "Not Provided"}
             </Typography>
             <Typography variant="body1" paragraph>
-              <strong>Location:</strong>{" "}
-              {cityName},{districtName},{wardName},{data.street}
-              
+              <strong>Location:</strong> {cityName},{districtName},{wardName},
+              {data.street}
             </Typography>
             <Typography variant="body1" paragraph>
-              <strong>Image:</strong>{" "}
-              {data.avatarUrl ? (
-                <Button color="primary" onClick={handleDialogOpen}>
-                  View Image
-                </Button>
-              ) : (
-                "Not Provided"
+              {/* <strong>Image:</strong>{" "} */}
+              {imagePreviewUrl.length > 0 && (
+                <div
+                  className="image-preview"
+                  onClick={() => setIsImagePreviewOpen(true)}
+                >
+                  <p className="preview-text">Click here to view Images</p>
+                </div>
               )}
             </Typography>
           </div>
@@ -118,29 +136,25 @@ const Step3 = ({ data, handleSubmit }) => {
       </Card>
 
       <Dialog
-        open={openDialog}
-        onClose={handleDialogClose}
+        open={isImagePreviewOpen}
+        onClose={() => setIsImagePreviewOpen(false)}
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>Image</DialogTitle>
+        <DialogTitle>
+          Image Preview
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={() => setIsImagePreviewOpen(false)}
+            aria-label="close"
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
         <DialogContent>
-          <div
-            style={{
-              background: `url(${data.avatarUrl})`,
-              backgroundSize: "contain",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
-              width: "100%",
-              height: "70vh",
-            }}
-          ></div>
+          <Gallery items={images} />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDialogClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
       </Dialog>
     </>
   );

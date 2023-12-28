@@ -15,7 +15,7 @@ const RequestIssue = () => {
     title: "",
     description: "",
     serviceId: 1,
-    type: "",
+    type: "Offline",
     city: "",
     street: "",
     ward: "",
@@ -28,6 +28,8 @@ const RequestIssue = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [dataService, setDataServices] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
+  const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const navigate = useNavigate();
 
   const fetchService = async () => {
@@ -63,8 +65,34 @@ const RequestIssue = () => {
 
   const handleFileChange = (e) => {
     const files = e.target.files;
-    setSelectedFiles([...files]);  // Use [...files] instead of [...prevFiles, ...files]
+    setSelectedFiles([...files]);
+
+    const promises = [];
+    const previewUrls = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const currentFile = files[i];
+      const reader = new FileReader();
+
+      promises.push(
+        new Promise((resolve) => {
+          reader.onloadend = () => {
+            previewUrls.push(reader.result);
+            resolve();
+          };
+          reader.readAsDataURL(currentFile);
+        })
+      );
+    }
+
+    Promise.all(promises).then(() => {
+      setImagePreviewUrl(previewUrls);
+    });
+
+    setIsImagePreviewOpen(true);
   };
+
+  
 
   const handleSubmitTicket = async (e) => {
     e.preventDefault();
@@ -77,22 +105,16 @@ const RequestIssue = () => {
 
     if(selectedFiles.length > 0) {
       const storage = getStorage();
-
-      const uploadPromises = selectedFiles.map(async (file) => {
-        const storageRef = ref(storage, "images/" + file.name);
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        const storageRef = ref(storage, `images/${file.name}`);
         await uploadBytes(storageRef, file);
-        return getDownloadURL(storageRef);
-      });
-      
-      attachmentUrls = await Promise.all(uploadPromises);
+
+        const downloadURL = await getDownloadURL(storageRef);
+        attachmentUrls.push(downloadURL);
+      }
     }
 
-    // if (selectedFile) {
-    //   const storage = getStorage();
-    //   const storageRef = ref(storage, "images/" + selectedFile.name);
-    //   await uploadBytes(storageRef, selectedFile);
-    //   attachmentUrls = await getDownloadURL(storageRef);
-    // }
     const updatedData = {
       ...data,
       attachmentUrls: attachmentUrls,
@@ -175,6 +197,9 @@ const RequestIssue = () => {
             handleInputChange={handleInputChange}
             handleFileChange={handleFileChange}
             handleSubmitTicket={handleSubmitTicket}
+            imagePreviewUrl={imagePreviewUrl}
+            isImagePreviewOpen={isImagePreviewOpen}
+            setIsImagePreviewOpen={setIsImagePreviewOpen}
           />
         </MDBRow>
         <MDBCol md="12">
@@ -200,6 +225,8 @@ const RequestIssue = () => {
           </MDBRow>
         </MDBCol>
       </Grid>
+
+      
     </Grid>
   );
 };
