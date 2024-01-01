@@ -109,8 +109,18 @@ export async function updatePaymentById(paymentId, data) {
         Authorization: header,
       },
     });
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     return res.data.result;
   } catch (error) {
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     console.log(error);
   }
 }

@@ -236,11 +236,6 @@ const EditContract = () => {
         },
         contractId
       );
-      toast.success("Edit Contract Successful", {
-        autoClose: 2000,
-        hideProgressBar: false,
-        position: toast.POSITION.TOP_CENTER,
-      });
     } catch (error) {
       console.error(error);
     } finally {

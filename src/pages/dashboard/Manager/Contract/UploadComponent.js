@@ -15,7 +15,7 @@ import { Attachment, Close } from "@mui/icons-material";
 import { useState } from "react";
 import { data } from "autoprefixer";
 
-const UploadComponent = ({ attachmentURL }) => {
+const UploadComponent = ({ attachmentUrls }) => {
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
 
   const openImagePreview = () => {
@@ -62,7 +62,7 @@ const UploadComponent = ({ attachmentURL }) => {
             </Typography>
           </div>
         </Upload>
-        {attachmentURL ? (
+        {attachmentUrls ? (
           <Button
             variant="outlined"
             color="primary"
@@ -84,7 +84,7 @@ const UploadComponent = ({ attachmentURL }) => {
         <DialogContent>
           <div style={{ position: "relative" }}>
             <img
-              src={attachmentURL}
+              src={attachmentUrls}
               alt="Attachment Preview"
               style={{ width: "100%", height: "auto" }}
             />

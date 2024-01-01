@@ -38,7 +38,6 @@ import MyTask from "../../../../assets/images/NoService.jpg";
 import { toast } from "react-toastify";
 
 const Details = ({ data, loading, error }) => {
-  const user = useSelector((state) => state.auth);
   const { contractId } = useParams();
   const [dataContractService, setDataContractService] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
@@ -46,6 +45,8 @@ const Details = ({ data, loading, error }) => {
   const [dataSelectedService, setDataSelectedService] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+  console.log(data);
+
   Details.propTypes = {
     data: PropTypes.object,
     loading: PropTypes.bool.isRequired,
@@ -336,8 +337,8 @@ const Details = ({ data, loading, error }) => {
               </TableRow>
             </TableBody>
           </Table>
-          <UploadComponent attachmentURL={data.attachmentURL} />
-          {data?.attachmentURL && (
+          <UploadComponent attachmentUrls={data.attachmentUrls} />
+          {data?.attachmentUrls && (
             <Button
               variant="outlined"
               color="primary"

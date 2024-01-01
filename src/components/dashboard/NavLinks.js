@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import {links, additionalLinks} from "../../utils/links";
+import {links} from "../../utils/links";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 
@@ -25,7 +25,7 @@ const NavLinks = ({ toggleSidebar }) => {
   } else if (roleUser === 2) {
     filteredLink = links.filter(
       (link) =>
-        link.id === 1 || link.id === 13 || link.id === 16  || link.id === 19 || link.id === 21 || link.id === 17
+        link.id === 1 || link.id === 13 || link.id === 16  || link.id === 19 || link.id === 21 || link.id === 17 || link.id === 23
     );
   } else if (roleUser === 3) {
     filteredLink = links.filter(

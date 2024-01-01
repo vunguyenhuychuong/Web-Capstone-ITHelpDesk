@@ -75,13 +75,6 @@ const EditTickets = () => {
     description: "",
   });
 
-  const settings = {
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-  };
-
   const fetchDataManager = async () => {
     try {
       const fetchCategories = await getDataCategories();

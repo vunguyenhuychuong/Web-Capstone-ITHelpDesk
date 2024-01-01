@@ -99,7 +99,6 @@ const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket }) => {
         scheduledEndTime: formattedExpiredDate,
       };
       await UpdateTicketForTechnician(ticketId, updatedData);
-      toast.success(`Update Ticket${ticketId} successful`);
       updateTicket(updatedData);
     } catch (error) {
       console.log("Error while assigning ticket", error);

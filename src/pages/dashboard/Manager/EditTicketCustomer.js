@@ -147,22 +147,10 @@ const EditTicketCustomer = () => {
         attachmentUrls: attachmentUrls,
       };
       setData(updatedData);
-      const res = await editTicketByManager(ticketId, data);
+      await editTicketByManager(ticketId, data);
       setIsSubmitting(false);
-      if (res.isError && res.responseException?.exceptionMessage) {
-        toast.info("Ticket is currently being executed and cannot be updated.");
-      } else {
-        toast.success("Ticket updated successfully");
-      }
     } catch (error) {
-      if (error.response && error.response.status === 400) {
-        const errorMessage =
-          error.response.data?.message ||
-          "Ticket can not be updated when it is being executed";
-        toast.error(errorMessage);
-      } else {
-        toast.info("Error updating ticket. Please try again later");
-      }
+      console.error(error);
     } finally {
       setIsSubmitting(false);
     }

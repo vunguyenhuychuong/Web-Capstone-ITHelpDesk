@@ -22,14 +22,6 @@ const AssignTicketModal = ({ open, onClose, ticketId }) => {
     }
   };
 
-  // const handleTeamChange = (event) => {
-  //   const selectedTeamId = event.target.value;
-  //   setSelectedTeamId(selectedTeamId);
-  //   setTeamError('');
-  //   fetchAssignTicket(selectedTeamId);
-  //   setSelectedTechnicianId("");
-  // };
-
   const handleTeamChange = (event) => {
     const teamId = event.target.value;
     setSelectedTeamId(teamId);
@@ -44,10 +36,10 @@ const AssignTicketModal = ({ open, onClose, ticketId }) => {
   };
 
   const handleTechnicianChange = (event) => {
-    const selectedTechnicianId = event.target.value;
-    setSelectedTechnicianId(selectedTechnicianId);
-    setTechnicianError('');
-  };
+  const selectedTechnicianId = event.target.value;
+  setSelectedTechnicianId(selectedTechnicianId);
+  setTechnicianError(''); 
+};
 
   const handleSubmitAssignTicket = async () => {
     if (!selectedTeamId) {
@@ -106,8 +98,8 @@ const AssignTicketModal = ({ open, onClose, ticketId }) => {
               id="team"
               name="team"
               className="form-select"
-              onChange={handleTeamChange } // Call handleTeamChange when team is selected
-              value={selectedTeamId} // Set the selected team ID in the dropdown
+              onChange={handleTeamChange } 
+              value={selectedTeamId}
             >
               <option value="">Select Team</option>
               {dataTeam.map((team) => (
@@ -130,7 +122,8 @@ const AssignTicketModal = ({ open, onClose, ticketId }) => {
               name="technician"
               className="form-select"
               value={selectedTechnicianId}
-              onChange={(e) => setSelectedTechnicianId(e.target.value)}
+              // onChange={(e) => setSelectedTechnicianId(e.target.value)}
+              onChange={handleTechnicianChange}
             >
               <option value="">Select Technician</option>
               {dataTechnician.map((technician) => (

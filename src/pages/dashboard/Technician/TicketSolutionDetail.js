@@ -213,6 +213,7 @@ const TicketSolutionDetail = () => {
                           onClick={() =>
                             handleApproveTicketSolution(solutionId)
                           }
+                          disabled={data.isApproved} 
                         >
                           <span
                             className="action-menu-item"
@@ -236,6 +237,7 @@ const TicketSolutionDetail = () => {
                             color: "#dc3545", 
                           }}
                           onClick={() => handleRejectTicketSolution(solutionId)}
+                          disabled={!data.isApproved}
                         >
                           <span
                             className="action-menu-item"

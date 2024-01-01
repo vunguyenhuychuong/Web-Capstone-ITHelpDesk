@@ -228,9 +228,19 @@ export async function editTicketByManager(ticketId, data) {
         }
       }
     );
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     return res.data.result;
   } catch (error) {
     console.log("Error editing ticket:", error);
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     throw error;
   }
 };
@@ -283,9 +293,19 @@ export async function UpdateTicketForTechnician(ticketId, data) {
         Authorization: header,
       }
     });
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     return res.data.result;
   }catch(error){
     console.log(error);
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
   }
 }
 

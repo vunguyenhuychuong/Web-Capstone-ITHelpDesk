@@ -179,7 +179,7 @@ const CreateRenewContract = () => {
       };
 
       setData(updatedData);
-      const response = await updateContractReNew(
+      await updateContractReNew(
         {
           name: data.name,
           description: data.description,
@@ -191,15 +191,8 @@ const CreateRenewContract = () => {
         },
         contractId
       );
-      if (
-        response.data.isError &&
-        response.data.responseException.exceptionMessage
-      ) {
-        console.log(response.data.responseException.exceptionMessage);
-      } else {
-        toast.success("Contract Renew successfully");
-      }
     } catch (error) {
+      console.error(error);
     } finally {
       setIsSubmitting(false);
     }

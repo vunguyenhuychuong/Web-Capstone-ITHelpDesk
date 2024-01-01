@@ -2,7 +2,6 @@ import axios from "axios";
 import { getAuthHeader } from "./auth";
 import { baseURL } from "./link";
 import { toast } from "react-toastify";
-import { data } from "autoprefixer";
 
 export async function getAllTicketTasks(
   searchField,
@@ -78,29 +77,19 @@ export async function createTicketTask(data) {
         Authorization: header,
       },
     });
-
-    if (res.data && res.data.isError === false) {
-      toast.success(res.data.message || "Request successful.",
-       {
-        autoClose: 1000,
-        hideProgressBar: false,
-        position: toast.POSITION.BOTTOM_RIGHT,
-      });
-    } else {
-      toast.error("An error occurred while processing the request.");
-    }
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     return res.data.result;
   } catch (error) {
-    if (
-      error.response &&
-      error.response.data &&
-      error.response.data.responseException
-    ) {
-      const errorMessage =
-        error.response.data.responseException.exceptionMessage.errors
-          .ScheduledEndTime;
-      toast.error(`${errorMessage}`);
-    }
+    console.log(error.response.data.responseException.exceptionMessage);
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
   }
 }
 

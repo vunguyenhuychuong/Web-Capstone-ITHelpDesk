@@ -13,14 +13,11 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment from "moment";
 import { getDataUser } from "../../../app/api";
-import Slider from "react-slick";
-import { settings } from "../../helpers/useInView";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 
 const CreateTicketSolution = () => {
   const navigate = useNavigate();
-
   const [data, setData] = useState({
     title: "",
     content: "",
@@ -191,7 +188,7 @@ const CreateTicketSolution = () => {
       };
 
       setData(updatedData);
-      const response = await createTicketSolution({
+      await createTicketSolution({
         title: data.title,
         content: data.content,
         categoryId: data.categoryId,
@@ -203,15 +200,6 @@ const CreateTicketSolution = () => {
         isPublic: data.isPublic,
         attachmentUrls: attachmentUrls,
       });
-      if (
-        response.data.isError &&
-        response.data.responseException.exceptionMessage
-      ) {
-        console.log(response.data.responseException.exceptionMessage);
-      } else {
-        toast.success("Ticket created successfully");
-      }
-      toast.success("Ticket created successfully");
     } catch (error) {
       console.error(error);
     } finally {

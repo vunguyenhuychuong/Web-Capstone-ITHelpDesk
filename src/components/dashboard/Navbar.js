@@ -113,11 +113,8 @@ const Navbar = ({ notifications }) => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollPosition = window.scrollY;
-      console.log("Scroll Position:", currentScrollPosition);
-
       setScrollPosition(currentScrollPosition);
       setIsLogoVisible(currentScrollPosition <= 50);
-      console.log("Is Logo Visible:", isLogoVisible);
     };
     window.addEventListener("scroll", handleScroll);
     return () => {
