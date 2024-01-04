@@ -13,14 +13,14 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment from "moment";
 import { getDataUser } from "../../../app/api";
-import Slider from "react-slick";
-import { settings } from "../../helpers/useInView";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
+import { useSelector } from "react-redux";
 
 const CreateTicketSolution = () => {
   const navigate = useNavigate();
-
+  const user = useSelector((state) => state.auth);
+  const check = user.user.role;
   const [data, setData] = useState({
     title: "",
     content: "",
@@ -191,7 +191,7 @@ const CreateTicketSolution = () => {
       };
 
       setData(updatedData);
-      const response = await createTicketSolution({
+      await createTicketSolution({
         title: data.title,
         content: data.content,
         categoryId: data.categoryId,
@@ -203,15 +203,6 @@ const CreateTicketSolution = () => {
         isPublic: data.isPublic,
         attachmentUrls: attachmentUrls,
       });
-      if (
-        response.data.isError &&
-        response.data.responseException.exceptionMessage
-      ) {
-        console.log(response.data.responseException.exceptionMessage);
-      } else {
-        toast.success("Ticket created successfully");
-      }
-      toast.success("Ticket created successfully");
     } catch (error) {
       console.error(error);
     } finally {
@@ -233,7 +224,13 @@ const CreateTicketSolution = () => {
   };
 
   const handleGoBack = () => {
-    navigate(`/home/ticketSolution`);
+    if (check === 2) {
+      navigate(`/home/homeManager`);
+    } else if (check === 3) {
+      navigate(`/home/homeTechnician`);
+    } else {
+      console.warn('Unhandled user role:', check);
+    }
   };
 
   return (

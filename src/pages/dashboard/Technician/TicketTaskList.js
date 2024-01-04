@@ -241,24 +241,26 @@ const TicketTaskList = () => {
           </div>
         ) : (
           <>
-            <MDBNavbar expand="lg" style={{ backgroundColor: "#fff" }}>
-              <MDBContainer fluid>
+            <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
+              <MDBContainer fluid style={{ color: "#FFFFFF" }}>
                 <MDBNavbarBrand
                   style={{ fontWeight: "bold", fontSize: "24px" }}
                 >
-                  <ContentCopy style={{ marginRight: "20px" }} /> All Task
+                  <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />  <span style={{ color: "#FFFFFF" }}>All Task</span>
                 </MDBNavbarBrand>
                 <MDBNavbarNav className="ms-auto manager-navbar-nav">
                   <MDBBtn
                     color="#eee"
-                    style={{ fontWeight: "bold", fontSize: "20px" }}
+                    style={{ fontWeight: "bold", fontSize: "20px",
+                    color: "#FFFFFF" }}
                     onClick={() => handleOpenCreateTask(ticketId)}
                   >
                     <FaPlus /> Create
                   </MDBBtn>
                   <MDBBtn
                     color="#eee"
-                    style={{ fontWeight: "bold", fontSize: "20px" }}
+                    style={{ fontWeight: "bold", fontSize: "20px",
+                    color: "#FFFFFF" }}
                     // onClick={() => handleDeleteSelectedSolutions()}
                   >
                     <Delete /> Delete
@@ -280,6 +282,7 @@ const TicketTaskList = () => {
                         name: "searchField",
                         id: "search-field",
                       }}
+                      style={{ color: "white" }}
                     >
                       <MenuItem value="id">ID</MenuItem>
                       <MenuItem value="title">Title</MenuItem>
@@ -326,35 +329,44 @@ const TicketTaskList = () => {
                     <th style={{ fontWeight: "bold", fontSize: "18px" }}></th>
                     <th
                       style={{ fontWeight: "bold", fontSize: "18px" }}
-                      // onClick={() => handleSortChange("title")}
+                      onClick={() => handleSortChange("title")}
                     >
                       Title
                     </th>
                     <th
                       style={{ fontWeight: "bold", fontSize: "18px" }}
-                      // onClick={() => handleSortChange("keyword")}
+                      onClick={() => handleSortChange("keyword")}
                     >
                       Status
                     </th>
-                    <th
+                    {/* <th
                       style={{ fontWeight: "bold", fontSize: "18px" }}
-                      // onClick={() => handleSortChange("isApproved")}
+                      onClick={() => handleSortChange("isApproved")}
                     >
                       Team
-                    </th>
+                    </th> */}
                     <th
                       style={{ fontWeight: "bold", fontSize: "18px" }}
-                      // onClick={() => handleSortChange("isPublic")}
+                      onClick={() => handleSortChange("priority")}
                     >
                       Priority
                     </th>
-                    <th style={{ fontWeight: "bold", fontSize: "18px" }}>
+                    <th 
+                      style={{ fontWeight: "bold", fontSize: "18px" }}
+                      onClick={() => handleSortChange("scheduledStartTime")}
+                      >
                       Start time
                     </th>
-                    <th style={{ fontWeight: "bold", fontSize: "18px" }}>
+                    <th 
+                      style={{ fontWeight: "bold", fontSize: "18px" }}
+                      onClick={() => handleSortChange("scheduledEndTime")}
+                      >
                       End time
                     </th>
-                    <th style={{ fontWeight: "bold", fontSize: "18px" }}>
+                    <th 
+                      style={{ fontWeight: "bold", fontSize: "18px" }}
+                      onClick={() => handleSortChange("progress")}
+                      >
                       Progress
                     </th>
                   </tr>
@@ -401,7 +413,7 @@ const TicketTaskList = () => {
                               "Unknown Status"
                             )}
                           </td>
-                          <td>
+                          {/* <td>
                             {TicketTask.isApproved ? (
                               <>
                                 <Square
@@ -416,7 +428,7 @@ const TicketTaskList = () => {
                                 <span>Not Approved</span>
                               </>
                             )}
-                          </td>
+                          </td> */}
                           <td>{getPriorityOption(TicketTask.priority)}</td>
                           <td>{formatDate(TicketTask.scheduledStartTime)}</td>
                           <td>{formatDate(TicketTask.scheduledEndTime)}</td>

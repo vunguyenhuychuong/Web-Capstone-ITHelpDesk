@@ -41,7 +41,6 @@ import {
 import { toast } from "react-toastify";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import CloseTicket from "../../../assets/images/NoTicketSolution.jpg";
-import { getDataCategories } from "../../../app/api/category";
 
 const TicketSolutionList = () => {
   const [dataListTicketsSolution, setDataListTicketsSolution] = useState([]);
@@ -102,10 +101,7 @@ const TicketSolutionList = () => {
 
   const handleDeleteSelectedSolutions = (id) => {
     try {
-      console.log("Deleting selected solutions...");
-
       if (selectedSolutionIds.length === 0) {
-        console.log("No selected solutions to delete.");
         return;
       }
 

@@ -51,6 +51,7 @@ const CreateTicketTask = () => {
   const [scheduledEndTime, setScheduledEndTime] = useState(moment());
   const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
+  const [defaultTechnicianId, setDefaultTechnicianId] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({
     title: "",
     description: "",
@@ -93,10 +94,16 @@ const CreateTicketTask = () => {
   const handleTeamChange = async (event) => {
     const selectedTeamId = event.target.value;
     setSelectedTeamId(selectedTeamId);
-
+  
     try {
       const technicians = await AssignApi.getTechnician(selectedTeamId);
-      console.log(technicians);
+      const newDefaultTechnicianId  = technicians.length > 0 ? technicians[0].id : null;
+
+      setDefaultTechnicianId(newDefaultTechnicianId );
+      setData((prevData) => ({
+        ...prevData,
+        technicianId: newDefaultTechnicianId ,
+      }));
       setDataTechnician(technicians);
     } catch (error) {
       console.error("Error while fetching technicians", error);
@@ -166,7 +173,7 @@ const CreateTicketTask = () => {
     return moment(scheduledStartTime).isBefore(scheduledEndTime);
   };
 
-  const handleSubmitTicket = async (e) => {
+  const handleSubmitTicket = async (e, defaultTechnicianId) => {
     e.preventDefault();
 
     const errors = {};
@@ -228,6 +235,7 @@ const CreateTicketTask = () => {
         attachmentUrls: attachmentUrls,
         scheduledStartTime: formattedScheduledStartTime,
         scheduledEndTime: formattedScheduledEndTime,
+        technicianId: parseInt(defaultTechnicianId),
       };
       setData(updatedData);
       await createTicketTask({
@@ -336,7 +344,7 @@ const CreateTicketTask = () => {
                       <input
                         type="text"
                         name="title"
-                        className="form-control input-field"
+                        className="form-control-text input-field"
                         id="title"
                         value={data.title}
                         onChange={handleInputChange}
@@ -394,7 +402,7 @@ const CreateTicketTask = () => {
                   type="text"
                   id="description"
                   name="description"
-                  className="form-control input-field-2"
+                  className="form-control-text input-field-2"
                   rows="6"
                   value={data.description}
                   onChange={handleInputChange}
@@ -422,7 +430,7 @@ const CreateTicketTask = () => {
                   className="form-control input-field"
                   id="attachmentUrl"
                   onChange={handleFileChange}
-                  // value={data.attachmentUrl}
+
                 />
                 {imagePreviewUrl.length > 0 && (
                   <div
@@ -451,14 +459,14 @@ const CreateTicketTask = () => {
                           marginBottom: "25px",
                         }}
                       >
-                        <span style={{ color: "red" }}>*</span>TechnicianId
+                        <span style={{ color: "red" }}>*</span> Technician
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
                         id="teamId"
                         name="teamId"
-                        className="form-select"
+                        className="form-select-custom"
                         value={selectedTeamId}
                         onChange={handleTeamChange}
                       >
@@ -473,7 +481,7 @@ const CreateTicketTask = () => {
                       <select
                         id="technicianId"
                         name="technicianId"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.technicianId}
                         onChange={handleInputChange}
                       >
@@ -507,7 +515,7 @@ const CreateTicketTask = () => {
                       <select
                         id="priority"
                         name="priority"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.priority}
                         onChange={handleInputChange}
                       >
@@ -607,7 +615,7 @@ const CreateTicketTask = () => {
                       <select
                         id="taskStatus"
                         name="taskStatus"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.taskStatus}
                         onChange={handleInputChange}
                       >
@@ -640,7 +648,7 @@ const CreateTicketTask = () => {
                       <select
                         id="progress"
                         name="progress"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.progress}
                         onChange={handleInputChange}
                       >

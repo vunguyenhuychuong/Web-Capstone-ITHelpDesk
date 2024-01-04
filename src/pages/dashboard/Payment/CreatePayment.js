@@ -4,7 +4,6 @@ import { Grid, TextField } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
@@ -115,7 +114,7 @@ const CreatePayment = () => {
       };
 
       setData(updatedData);
-      const response = await createPayment({
+      await createPayment({
         contractId: data.contractId,
         description: data.description,
         numberOfTerms: data.numberOfTerms,
@@ -124,15 +123,6 @@ const CreatePayment = () => {
         initialPaymentAmount: data.initialPaymentAmount,
         note: data.note,
       });
-      if (
-        response.data.isError &&
-        response.data.responseException.exceptionMessage
-      ) {
-        console.log(response.data.responseException.exceptionMessage);
-      } else {
-        toast.success("Payment created successfully");
-      }
-      toast.success("Payment created successfully");
     } catch (error) {
       console.error(error);
     } finally {

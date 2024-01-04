@@ -84,10 +84,8 @@ const EditPayment = () => {
     setData(updatedData);
     try {
       await updatePaymentById(paymentId, data);
-      toast.success("Ticket Solution edit successful");
     } catch (error) {
       console.error(error);
-      toast.error("Error editing ticket solution");
     }
   };
 
@@ -116,11 +114,6 @@ const EditPayment = () => {
       setData((prevData) => ({ ...prevData, [name]: value }));
       setFieldErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
     }
-
-    // setData((prevData) => ({
-    //   ...prevData,
-    //   [name]: value || "",
-    // }));
   };
 
   const handleGoBack = () => {

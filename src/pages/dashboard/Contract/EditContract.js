@@ -18,7 +18,6 @@ import { toast } from "react-toastify";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import DateValidation from "../../helpers/DateValidation";
-import Slider from "react-slick";
 import {
   getAllAccountList,
   getAllCompanyList,
@@ -114,10 +113,6 @@ const EditContract = () => {
     });
 
     setIsImagePreviewOpen(true);
-  };
-
-  const closeImagePreview = () => {
-    setIsImagePreviewOpen(false);
   };
 
   const fetchDataCreateContract = async () => {
@@ -236,11 +231,6 @@ const EditContract = () => {
         },
         contractId
       );
-      toast.success("Edit Contract Successful", {
-        autoClose: 2000,
-        hideProgressBar: false,
-        position: toast.POSITION.TOP_CENTER,
-      });
     } catch (error) {
       console.error(error);
     } finally {

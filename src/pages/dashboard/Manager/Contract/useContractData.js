@@ -12,7 +12,7 @@ const useContractData = (contractId) => {
     isRenewed: "",
     parentContractId: 1,
     accountantId: 1,
-    attachmentUrl: "",
+    attachmentUrls: [],
     companyId: 1,
     status: 1,
     id: 1,

@@ -52,11 +52,7 @@ const CreateMode = ({ onClose, onSubmitSuccess }) => {
   try {
     await createMode(data);
     setIsSubmitting(false);
-    toast.success("Create Mode successful", {
-      autoClose: 1000,
-      hideProgressBar: false,
-    });
-      onClose();
+    onClose();
   } catch (error) {
     console.error(error);
   } finally {

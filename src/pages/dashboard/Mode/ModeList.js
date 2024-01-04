@@ -51,37 +51,6 @@ const ModeList = () => {
   const [sortDirection, setSortDirection] = useState("asc");
   const [sortBy, setSortBy] = useState("id");
 
-  const [contextMenu, setContextMenu] = useState({
-    isVisible: false,
-    position: { top: 0, left: 0 },
-    itemId: null,
-  });
-
-  const showContextMenu = (itemId, event) => {
-    event.preventDefault();
-    setContextMenu({
-      isVisible: true,
-      position: { top: event.pageY, left: event.pageX },
-      itemId: itemId,
-    });
-  };
-
-  const hideContextMenu = () => {
-    setContextMenu({
-      isVisible: false,
-      position: { top: 0, left: 0 },
-      itemId: null,
-    });
-  };
-
-  const handleDeleteClick = (itemId) => {
-    // Handle delete click logic
-  };
-
-  const handleListIconClick = (event) => {
-    showContextMenu(null, event);
-  };
-
   const fetchAllMode = useCallback(async () => {
     try {
       let filter = "";

@@ -3,102 +3,153 @@ import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "draft-js/dist/Draft.css";
-import { toast } from "react-toastify";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
-  FormControlLabel,
-  FormGroup,
   Grid,
   IconButton,
-  Switch,
+  TextField,
   Tooltip,
 } from "@mui/material";
-import { UpdateUser, getUserById } from "../../../app/api";
-import { ArrowBack, Close } from "@mui/icons-material";
+import {
+  ArrowBack,
+  Close,
+  Visibility,
+  VisibilityOff,
+} from "@mui/icons-material";
 import { genderOptions } from "../../helpers/tableComlumn";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import moment from "moment";
+import zxcvbn from "zxcvbn";
+import { createCompanyMember } from "../../../app/api/companyMember";
+import Gallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { useEffect } from "react";
+import moment from "moment";
+import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 
-const EditUser = () => {
+const CreateCompanyMember = () => {
   const navigate = useNavigate();
   const [data, setData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    gender: 0,
-    phoneNumber: "",
-    isActive: true,
-    dateOfBirth: "",
-    address: "",
-    avatarUrl: "",
+    user: {
+      firstName: "",
+      lastName: "",
+      username: "",
+      password: "",
+      email: "",
+      gender: 0,
+      avatarUrl: "",
+      phoneNumber: "",
+      dateOfBirth: "",
+    },
+    isCompanyAdmin: false,
+    memberPosition: "",
   });
-  const [date, setDate] = useState(moment());
-  const { userId } = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [DateBirth, setDateBirth] = useState(moment());
   const [selectedFile, setSelectedFile] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({
     firstName: "",
     lastName: "",
+    username: "",
+    password: "",
     email: "",
-    address: "",
-    dateOfBirth: "",
+    memberPosition: "",
   });
 
-  const closeImagePreview = () => {
-    setIsImagePreviewOpen(false);
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
-  const handleDateChange = (newDate) => {
-    const formattedDate = moment(newDate).format("YYYY-MM-DD");
+  const images = imagePreviewUrl.map((url, index) => ({
+    original: url,
+    thumbnail: url,
+    description: `Attachment Preview ${index + 1}`,
+  }));
 
-    const maxAllowedDate = moment("2005-12-31");
-    if (moment(newDate).isAfter(maxAllowedDate)) {
-      setFieldErrors((prevErrors) => ({
-        ...prevErrors,
-        dateOfBirth:
-          "Selected date exceeds the maximum allowed date (2005-12-31)",
-      }));
-      return;
-    }
-    setFieldErrors((prevErrors) => ({
-      ...prevErrors,
-      dateOfBirth: "",
-    }));
-    setDate(newDate);
+  const handleDateBirthChange = (newDate) => {
+    const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
+    setDateBirth(newDate);
     setData((prevInputs) => ({
       ...prevInputs,
-      dateOfBirth: formattedDate,
+      user: {
+        ...prevInputs.user,
+        dateOfBirth: formattedDate,
+      },
     }));
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
-
+    const file = e.target.files[0]; 
+    if (!file) return; 
+  
+    setSelectedFile([file]);
+  
     const reader = new FileReader();
+  
     reader.onloadend = () => {
-      setImagePreviewUrl(reader.result);
+      setImagePreviewUrl([reader.result]);
     };
-    if (file) {
-      reader.readAsDataURL(file);
-    } else {
-      setImagePreviewUrl(null);
+  
+    reader.readAsDataURL(file);
+    setIsImagePreviewOpen(true);
+  };
+
+  const getPasswordStrength = () => {
+    const passwordStrength = zxcvbn(data.password);
+    const score = passwordStrength.score;
+
+    switch (score) {
+      case 0:
+        return { label: "Weak", color: "red" };
+      case 1:
+        return { label: "Fair", color: "orange" };
+      case 2:
+        return { label: "Good", color: "yellow" };
+      case 3:
+        return { label: "Strong", color: "green" };
+      case 4:
+        return { label: "Very Strong", color: "blue" };
+      default:
+        return { label: "", color: "" };
     }
+  };
+
+  const handleIsCompanyAdminChange = (newValue) => {
+    setData((prevData) => ({
+      ...prevData,
+      isCompanyAdmin: newValue,
+    }));
+  };
+
+  const handleMemberPositionChange = (newValue) => {
+    setData((prevData) => ({
+      ...prevData,
+      memberPosition: newValue,
+    }));
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    const newValue = name === "role" ? parseInt(value, 10) : value;
 
-    setData((prevData) => ({ ...prevData, [name]: newValue }));
+    if (name in data.member) {
+      setData((prevData) => ({
+        ...prevData,
+        user: {
+          ...prevData.user,
+          [name]: value,
+        },
+      }));
+    } else {
+      setData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
     setFieldErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
     if (name === "email") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -110,6 +161,12 @@ const EditUser = () => {
       }
     }
 
+    if (name === "username" && value.length < 6) {
+      setFieldErrors((prevErrors) => ({
+        ...prevErrors,
+        username: "Username must be at least 6 characters",
+      }));
+    }
     if (name === "firstName" && value.length < 2) {
       setFieldErrors((prevErrors) => ({
         ...prevErrors,
@@ -123,29 +180,25 @@ const EditUser = () => {
         lastName: "Last Name must be at least 2 characters",
       }));
     }
-
-    if (name === "phoneNumber") {
-      if (!/^\d{10}$/.test(value)) {
-        setFieldErrors((prevErrors) => ({
-          ...prevErrors,
-          phoneNumber: "Phone Number must be at least 10 digits",
-        }));
-      }
-    }
   };
 
   const handleSubmitUser = async (e) => {
     e.preventDefault();
-
     const errors = {};
-    if (!data.firstName) {
+    if (!data.user.firstName) {
       errors.firstName = "First Name is required";
     }
-    if (!data.lastName) {
+    if (!data.user.lastName) {
       errors.lastName = "Last Name is required";
     }
-    if (!data.email) {
-      errors.email = "Email  is required";
+    if (!data.user.username) {
+      errors.username = "User Name is required";
+    }
+    if (!data.user.password) {
+      errors.password = "Password is required";
+    }
+    if (!data.user.email) {
+      errors.email = "Email is required";
     }
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
@@ -155,45 +208,40 @@ const EditUser = () => {
     setIsSubmitting(true);
     try {
       let avatarUrl = data.avatarUrl;
+
       if (selectedFile) {
         const storage = getStorage();
         const storageRef = ref(storage, "images/" + selectedFile.name);
         await uploadBytes(storageRef, selectedFile);
         avatarUrl = await getDownloadURL(storageRef);
       }
-
       const updatedData = {
-        ...data,
-        avatarUrl: avatarUrl,
+        user: {
+          ...data.user,
+          avatarUrl: avatarUrl,
+          dateOfBirth: data.user.dateOfBirth
+            ? moment(data.user.dateOfBirth).format("YYYY-MM-DDTHH:mm:ss")
+            : null,
+        },
+        isCompanyAdmin: data.isCompanyAdmin,
+        memberPosition: data.memberPosition,
       };
       setData(updatedData);
-      const result = await UpdateUser(
-        {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
-          phoneNumber: data.phoneNumber,
-          gender: data.gender,
-          isActive: data.isActive,
-          dateOfBirth: data.dateOfBirth,
-          address: data.address,
-          avatarUrl: avatarUrl,
+      await createCompanyMember({
+        user: {
+          firstName: data.user.firstName,
+          lastName: data.user.lastName,
+          username: data.user.username,
+          password: data.user.password,
+          email: data.user.email,
+          gender: data.user.gender,
+          avatarUrl: data.user.avatarUrl,
+          phoneNumber: data.user.phoneNumber,
+          dateOfBirth: data.user.dateOfBirth,
         },
-        userId
-      );
-      if (result.success) {
-        toast.success("User updated successfully", {
-          autoClose: 2000,
-          hideProgressBar: false,
-          position: toast.POSITION.TOP_CENTER,
-        });
-      } else {
-        toast.error(result.message, {
-          autoClose: 2000,
-          hideProgressBar: false,
-          position: toast.POSITION.TOP_CENTER,
-        });
-      }
+        isCompanyAdmin: data.isCompanyAdmin,
+        memberPosition: data.memberPosition,
+      });
     } catch (error) {
       console.error(error);
     } finally {
@@ -203,11 +251,11 @@ const EditUser = () => {
 
   const handleGoBack = () => {
     const isFormFilled =
-      data.firstName.trim() !== "" ||
-      data.lastName.trim() !== "" ||
-      data.username.trim() !== "" ||
-      data.password.trim() !== "" ||
-      data.email.trim() !== "";
+      data.user.firstName.trim() !== "" ||
+      data.user.lastName.trim() !== "" ||
+      data.user.username.trim() !== "" ||
+      data.user.password.trim() !== "" ||
+      data.user.email.trim() !== "";
     if (isFormFilled) {
       const confirmLeave = window.confirm(
         "Are you sure you want to leave? Your changes may not be saved."
@@ -216,32 +264,8 @@ const EditUser = () => {
         return;
       }
     }
-    navigate(`/home/userList`);
+    navigate(`/home/companyMember`);
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const userDetail = await getUserById(userId);
-        setData((prevData) => ({
-          ...prevData,
-          firstName: userDetail.firstName,
-          lastName: userDetail.lastName,
-          email: userDetail.email,
-          phoneNumber: userDetail.phoneNumber,
-          gender: userDetail.gender,
-          isActive: userDetail.isActive,
-          dateOfBirth: userDetail.dateOfBirth,
-          address: userDetail.address,
-          avatarUrl: userDetail.avatarUrl,
-        }));
-        setImagePreviewUrl(userDetail.avatarUrl);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchData();
-  }, [userId]);
 
   return (
     <Grid
@@ -271,19 +295,17 @@ const EditUser = () => {
                     alignItems: "center",
                   }}
                 >
-                  <Tooltip title="Create a new user for system" arrow>
-                    <h2
-                      style={{
-                        fontSize: "30px",
-                        fontWeight: "bold",
-                        marginRight: "10px",
-                      }}
-                    >
-                      Edit User
-                    </h2>
-                  </Tooltip>
+                  <h2
+                    style={{
+                      fontSize: "30px",
+                      fontWeight: "bold",
+                      marginRight: "10px",
+                    }}
+                  >
+                    Create Customer
+                  </h2>
                   <span style={{ fontSize: "18px", color: "#888" }}>
-                    Edit change user for assistance.
+                    Create a customer for assistance.
                   </span>
                 </div>
               </div>
@@ -387,20 +409,22 @@ const EditUser = () => {
                           textAlign: "right",
                         }}
                       >
-                        <span style={{ color: "red" }}>*</span>email
+                        <span style={{ color: "red" }}>*</span>User Name
                       </h2>
                     </Grid>
                     <Grid item xs={6}>
                       <input
-                        id="email"
-                        type="email"
-                        name="email"
+                        id="username"
+                        type="text"
+                        name="username"
                         className="form-control-text input-field"
-                        value={data.email}
+                        value={data.username}
                         onChange={handleInputChange}
                       />
-                      {fieldErrors.email && (
-                        <div style={{ color: "red" }}>{fieldErrors.email}</div>
+                      {fieldErrors.username && (
+                        <div style={{ color: "red" }}>
+                          {fieldErrors.username}
+                        </div>
                       )}
                     </Grid>
                   </Grid>
@@ -415,24 +439,39 @@ const EditUser = () => {
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                          marginBottom: "40px",
+                          marginBottom: "60px",
                         }}
                       >
-                        <span style={{ color: "red" }}>*</span>Phone Number
+                        <span style={{ color: "red" }}>*</span>Password
+                        <IconButton onClick={togglePasswordVisibility}>
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
                       </h2>
                     </Grid>
                     <Grid item xs={6}>
                       <input
-                        id="phoneNumber"
-                        type="text"
-                        name="phoneNumber"
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        name="password"
                         className="form-control-text input-field"
-                        value={data.phoneNumber}
+                        value={data.password}
                         onChange={handleInputChange}
+                        style={{
+                          marginBottom: "50px",
+                        }}
                       />
-                       {fieldErrors.phoneNumber && (
+                      {fieldErrors.password && (
                         <div style={{ color: "red" }}>
-                          {fieldErrors.phoneNumber}
+                          {fieldErrors.password}
+                        </div>
+                      )}
+                      {data.password && (
+                        <div
+                          style={{
+                            color: getPasswordStrength().color,
+                          }}
+                        >
+                          Password Seem: {getPasswordStrength().label}
                         </div>
                       )}
                     </Grid>
@@ -449,7 +488,7 @@ const EditUser = () => {
                     textAlign: "right",
                   }}
                 >
-                  Image Avatar
+                  Attachment
                 </h2>
               </Grid>
               <Grid item xs={9}>
@@ -457,9 +496,8 @@ const EditUser = () => {
                   type="file"
                   name="file"
                   className="form-control input-field"
-                  id="avatarUrl"
+                  id="attachmentUrls"
                   onChange={handleFileChange}
-                  defaultValue={data.avatarUrl}
                 />
                 {imagePreviewUrl && (
                   <div
@@ -489,7 +527,37 @@ const EditUser = () => {
                           textAlign: "right",
                         }}
                       >
-                        <span style={{ color: "red" }}>*</span>Gender
+                        <span style={{ color: "red" }}>*</span>email
+                      </h2>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <input
+                        id="email"
+                        type="email"
+                        name="email"
+                        className="form-control-text input-field"
+                        value={data.email}
+                        onChange={handleInputChange}
+                      />
+                      {fieldErrors.email && (
+                        <div style={{ color: "red" }}>{fieldErrors.email}</div>
+                      )}
+                    </Grid>
+                  </Grid>
+                </Grid>
+
+                <Grid item xs={6}>
+                  <Grid container alignItems="center">
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Gender
                       </h2>
                     </Grid>
                     <Grid item xs={6}>
@@ -511,6 +579,44 @@ const EditUser = () => {
                     </Grid>
                   </Grid>
                 </Grid>
+              </Grid>
+
+              <Grid
+                container
+                justifyContent="flex-end"
+                style={{ marginBottom: "20px" }}
+              >
+                <Grid item xs={6}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        <span style={{ color: "red" }}>*</span>phone number
+                      </h2>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <input
+                        id="phoneNumber"
+                        type="text"
+                        name="phoneNumber"
+                        className="form-control-text input-field"
+                        value={data.phoneNumber}
+                        onChange={handleInputChange}
+                      />
+                      {fieldErrors.phoneNumber && (
+                        <div style={{ color: "red" }}>
+                          {fieldErrors.phoneNumber}
+                        </div>
+                      )}
+                    </Grid>
+                  </Grid>
+                </Grid>
 
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
@@ -521,28 +627,27 @@ const EditUser = () => {
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
+                          marginBottom: "40px",
                         }}
                       >
-                        Status
+                        Date Customer
                       </h2>
                     </Grid>
                     <Grid item xs={6}>
-                      <FormGroup>
-                        <FormControlLabel
-                          control={
-                            <Switch
-                              checked={data.isActive}
-                              onChange={() =>
-                                setData((prevData) => ({
-                                  ...prevData,
-                                  isActive: !prevData.isActive,
-                                }))
-                              }
-                            />
+                      <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <DateTimePicker
+                          slotProps={{
+                            textField: {
+                              helperText: `${DateBirth}`,
+                            },
+                          }}
+                          value={DateBirth}
+                          onChange={(newValue) =>
+                            handleDateBirthChange(newValue)
                           }
-                          label={data.isActive ? "Active" : "Inactive"}
+                          renderInput={(props) => <TextField {...props} />}
                         />
-                      </FormGroup>
+                      </LocalizationProvider>
                     </Grid>
                   </Grid>
                 </Grid>
@@ -564,24 +669,20 @@ const EditUser = () => {
                           textAlign: "right",
                         }}
                       >
-                        <span style={{ color: "red" }}>*</span>Date Of Birth
+                        <span style={{ color: "red" }}>*</span>Member Position
                       </h2>
                     </Grid>
                     <Grid item xs={6}>
-                      <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <DatePicker
-                          required
-                          fullWidth
-                          value={date}
-                          maxDate={moment()}
-                          onChange={(newValue) => handleDateChange(newValue)}
-                        />
-                      </LocalizationProvider>
-                      {fieldErrors.dateOfBirth && (
-                        <div style={{ color: "red" }}>
-                          {fieldErrors.dateOfBirth}
-                        </div>
-                      )}
+                      <input
+                        id="memberPosition"
+                        type="text"
+                        name="memberPosition"
+                        className="form-control-text input-field"
+                        value={data.memberPosition}
+                        onChange={(e) =>
+                          handleMemberPositionChange(e.target.value)
+                        }
+                      />
                     </Grid>
                   </Grid>
                 </Grid>
@@ -595,27 +696,28 @@ const EditUser = () => {
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                          marginBottom: "20px"
                         }}
                       >
-                        Address
+                        Company Admin
                       </h2>
                     </Grid>
                     <Grid item xs={6}>
-                      <input
-                        id="address"
-                        type="text"
-                        name="address"
-                        className="form-control-text input-field"
-                        value={data.address}
-                        onChange={handleInputChange}
-                      />
+                      <select
+                        id="isCompanyAdmin"
+                        name="isCompanyAdmin"
+                        className="form-select-custom"
+                        value={data.isCompanyAdmin}
+                        onChange={(e) =>
+                          handleIsCompanyAdminChange(e.target.value === "true")
+                        }
+                      >
+                        <option value="true">True</option>
+                        <option value="false">False</option>
+                      </select>
                     </Grid>
                   </Grid>
                 </Grid>
               </Grid>
-
-             
             </Grid>
           </MDBCol>
         </MDBRow>
@@ -635,7 +737,6 @@ const EditUser = () => {
                 <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
-                  onClick={handleGoBack}
                 >
                   Cancel
                 </button>
@@ -644,9 +745,10 @@ const EditUser = () => {
           </MDBRow>
         </MDBCol>
       </Grid>
+
       <Dialog
         open={isImagePreviewOpen}
-        onClose={closeImagePreview}
+        onClose={() => setIsImagePreviewOpen(false)}
         maxWidth="md"
         fullWidth
       >
@@ -655,22 +757,18 @@ const EditUser = () => {
           <IconButton
             edge="end"
             color="inherit"
-            onClick={closeImagePreview}
+            onClick={() => setIsImagePreviewOpen(false)}
             aria-label="close"
           >
             <Close />
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <img
-            src={imagePreviewUrl}
-            alt="Attachment Preview"
-            style={{ width: "100%" }}
-          />
+          <Gallery items={images} />
         </DialogContent>
       </Dialog>
     </Grid>
   );
 };
 
-export default EditUser;
+export default CreateCompanyMember;

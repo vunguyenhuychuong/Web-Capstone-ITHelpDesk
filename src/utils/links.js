@@ -106,6 +106,12 @@ const links = [
     path: "ticketAssign",
     icon: <Assessment />
   },
+  {
+    id: 28,
+    text: "Company Member",
+    path: "companyMember",
+    icon: <Assessment />
+  },
 ];
 
 const additionalLinks = [

@@ -7,7 +7,7 @@ import {
   MDBTableHead,
 } from "mdb-react-ui-kit";
 import React, { useState } from "react";
-import { Badge, ContentCopy, Edit } from "@mui/icons-material";
+import { ContentCopy, Edit } from "@mui/icons-material";
 import { getAllAssigns } from "../../../app/api/assign";
 import { useEffect } from "react";
 import { getTicketByTicketId } from "../../../app/api/ticket";

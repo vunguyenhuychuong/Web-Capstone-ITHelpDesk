@@ -223,6 +223,7 @@ const CreateContract = () => {
         companyId: data.companyId,
         attachmentUrls: attachmentUrls,
       });
+      navigate("/home/contractList")
     } catch (error) {
       console.error(error);
     } finally {

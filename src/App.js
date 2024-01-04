@@ -60,6 +60,9 @@ import DetailContract from './pages/dashboard/Manager/Contract/DetailContract';
 import CreateRenewContract from './pages/dashboard/Manager/Contract/CreateRenewContract';
 import TicketAssignAvailableList from './pages/dashboard/Technician/TicketAssignAvailableList';
 import ChatMessage from './components/chat/ChatMessage';
+import CompanyMemberList from './pages/dashboard/Company Member/CompanyMemberList';
+import CreateCompanyMember from './pages/dashboard/Company Member/CreateCompanyMember';
+import EditCompanyMember from './pages/dashboard/Company Member/EditCompanyMember';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -128,9 +131,11 @@ function App() {
           {(hasManagerRole || hasAccountantRole) && <Route path='editPayment/:paymentId' element={<EditPayment />} />}
           <Route path='ticketLog/:ticketId' element={<TicketLogList />} />
           <Route path='teamMember' element={<TeamMemberList />} />
-          <Route path='chatMessager' element={<ChatMessage />} />
           <Route path='createTeamMember' element={<CreateTeamMember />} />
           <Route path='editTeamMember/:teamMemberId' element={<EditTeamMember />} />
+          <Route path='companyMember' element={<CompanyMemberList />} />
+          <Route path='createCompanyMember' element={<CreateCompanyMember />} />
+          <Route path='editCompanyMember/:memberId' element={<EditCompanyMember />} />
           </Route>
         <Route path='login' element={<Login />} />
         <Route path='forgot-password' element={<ForgetPassword /> }  />

@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Dialog, DialogContent, DialogTitle, Grid, IconButton, TextField } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  IconButton,
+  TextField,
+} from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack, Close } from "@mui/icons-material";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -19,16 +26,18 @@ import { createTicketTask } from "../../../app/api/ticketTask";
 import { getAllTeams } from "../../../app/api/team";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
+import { useSelector } from "react-redux";
 
 const CreateTicketTaskTc = () => {
   const navigate = useNavigate();
-  const {ticketId} = useParams();
+  const user = useSelector((state) => state.auth);
+  const userId = parseInt(user.user.id, 10);
   const [data, setData] = useState({
-    ticketId: ticketId,
+    ticketId: 1,
     title: "",
     description: "",
     taskStatus: 1,
-    technicianId: 1,
+    technicianId: userId,
     priority: 1,
     scheduledStartTime: "",
     scheduledEndTime: "",
@@ -87,7 +96,7 @@ const CreateTicketTaskTc = () => {
   const handleTeamChange = async (event) => {
     const selectedTeamId = event.target.value;
     setSelectedTeamId(selectedTeamId);
-  
+
     try {
       const technicians = await AssignApi.getTechnician(selectedTeamId);
       console.log(technicians);
@@ -146,10 +155,9 @@ const CreateTicketTaskTc = () => {
     setIsImagePreviewOpen(true);
   };
 
-
   const validateDate = (reviewDate, expiredDate) => {
     if (!reviewDate || !expiredDate) {
-      return false; 
+      return false;
     }
     return moment(scheduledStartTime).isBefore(scheduledEndTime);
   };
@@ -185,8 +193,10 @@ const CreateTicketTaskTc = () => {
         }
       }
 
-
-      const isDataValid = validateDate(data.scheduledStartTime, data.scheduledEndTime);
+      const isDataValid = validateDate(
+        data.scheduledStartTime,
+        data.scheduledEndTime
+      );
       if (!isDataValid) {
         toast.info("Review Date must be earlier than Expired Date.");
         return;
@@ -204,11 +214,10 @@ const CreateTicketTaskTc = () => {
         attachmentUrls: attachmentUrls,
         scheduledStartTime: formattedScheduledStartTime,
         scheduledEndTime: formattedScheduledEndTime,
-        technicianId: selectedTechnicianId
       };
 
       setData(updatedData);
-      const response = await createTicketTask({
+      await createTicketTask({
         ticketId: data.ticketId,
         title: data.title,
         description: data.description,
@@ -220,7 +229,7 @@ const CreateTicketTaskTc = () => {
         progress: data.progress,
         attachmentUrls: data.attachmentUrls,
       });
-      toast.success("Ticket created successfully");
+      navigate("/home/homeTechnician");
     } catch (error) {
       console.error(error);
     } finally {
@@ -297,12 +306,14 @@ const CreateTicketTaskTc = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" 
-                      style={{
-                        fontSize: "20px",
-                        fontWeight: "bold",
-                        textAlign: "right",
-                      }}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
                         <span style={{ color: "red" }}>*</span>Title
                       </h2>
                     </Grid>
@@ -310,7 +321,7 @@ const CreateTicketTaskTc = () => {
                       <input
                         type="text"
                         name="title"
-                        className="form-control input-field"
+                        className="form-control-text input-field"
                         id="title"
                         value={data.title}
                         onChange={handleInputChange}
@@ -325,17 +336,23 @@ const CreateTicketTaskTc = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    textAlign: "right",
-                  }}>TicketId</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                          marginBottom: "20px"
+                        }}
+                      >
+                        TicketId
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <input
                         type="number"
                         name="ticketId"
-                        className="form-control input-field"
+                        className="form-control-text input-field"
                         id="ticketId"
                         value={data.ticketId}
                         onChange={handleInputChange}
@@ -346,11 +363,14 @@ const CreateTicketTaskTc = () => {
                 </Grid>
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right" style={{
+                <h2
+                  className="align-right"
+                  style={{
                     fontSize: "20px",
                     fontWeight: "bold",
                     textAlign: "right",
-                  }}>
+                  }}
+                >
                   <span style={{ color: "red" }}>*</span>Description
                 </h2>
               </Grid>
@@ -369,11 +389,16 @@ const CreateTicketTaskTc = () => {
                 )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right" style={{
+                <h2
+                  className="align-right"
+                  style={{
                     fontSize: "20px",
                     fontWeight: "bold",
                     textAlign: "right",
-                  }}>Attachment</h2>
+                  }}
+                >
+                  Attachment
+                </h2>
               </Grid>
               <Grid item xs={9}>
                 <input
@@ -383,7 +408,6 @@ const CreateTicketTaskTc = () => {
                   id="attachmentUrl"
                   onChange={handleFileChange}
                   multiple
-                  // value={data.attachmentUrl}
                 />
                 {imagePreviewUrl.length > 0 && (
                   <div
@@ -404,11 +428,14 @@ const CreateTicketTaskTc = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    textAlign: "right",
-                  }}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
                         <span style={{ color: "red" }}>*</span>TechnicianId
                       </h2>
                     </Grid>
@@ -416,7 +443,7 @@ const CreateTicketTaskTc = () => {
                       <select
                         id="teamId"
                         name="teamId"
-                        className="form-select"
+                        className="form-select-custom"
                         value={selectedTeamId}
                         onChange={handleTeamChange}
                       >
@@ -431,10 +458,12 @@ const CreateTicketTaskTc = () => {
                       <select
                         id="technician"
                         name="technician"
-                        className="form-select"
+                        className="form-select-custom"
                         value={selectedTechnicianId}
-                        onChange={(e) => setSelectedTechnicianId(e.target.value)}
-                        >
+                        onChange={(e) =>
+                          setSelectedTechnicianId(e.target.value)
+                        }
+                      >
                         {dataTechnician
                           .filter((technician) => technician.id !== "")
                           .map((technician) => (
@@ -450,17 +479,22 @@ const CreateTicketTaskTc = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    textAlign: "right",
-                  }}>Priority</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Priority
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
                         id="priority"
                         name="priority"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.priority}
                         onChange={handleInputChange}
                       >
@@ -480,11 +514,16 @@ const CreateTicketTaskTc = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    textAlign: "right",
-                  }}>Schedule startTime</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Schedule startTime
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -507,11 +546,16 @@ const CreateTicketTaskTc = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    textAlign: "right",
-                  }}>Schedule endTime</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Schedule endTime
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -535,17 +579,22 @@ const CreateTicketTaskTc = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    textAlign: "right",
-                  }}>Task Status</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Task Status
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
                         id="taskStatus"
                         name="taskStatus"
-                        className="form-select"
+                        className="form-select-custom"
                         value={data.taskStatus}
                         onChange={handleInputChange}
                       >
@@ -563,18 +612,23 @@ const CreateTicketTaskTc = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    textAlign: "right",
-                  }}>Progress</h2>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Progress
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
                         id="progress"
                         name="progress"
-                        className="form-select"
-                        value={data.progress} 
+                        className="form-select-custom"
+                        value={data.progress}
                         onChange={handleInputChange}
                       >
                         <option value="">Select Progress</option>{" "}

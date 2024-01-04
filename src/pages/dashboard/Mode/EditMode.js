@@ -45,7 +45,7 @@ const EditMode = ({ onClose, modeId }) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const result = await updateMode(modeId, data);
+      await updateMode(modeId, data);
       setIsSubmitting(false);
       toast.success("Update Mode successful", {
         autoClose: 1000,

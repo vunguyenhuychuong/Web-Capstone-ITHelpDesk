@@ -430,8 +430,7 @@ const UserList = () => {
                   </td>
                   <td>
                     <div style={{ display: "flex", alignItems: "center" }}>
-                      <Phone style={{ marginRight: "4px" }} />
-                      {user.phoneNumber}
+                      {user.phoneNumber || "-"}
                     </div>
                   </td>
                   <td>

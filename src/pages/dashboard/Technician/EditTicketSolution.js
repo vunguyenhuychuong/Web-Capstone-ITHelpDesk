@@ -212,14 +212,10 @@ const EditTicketSolution = () => {
         reviewDate: formattedReviewDate,
         expiredDate: formattedExpiredDate,
       };
-
       setData(updatedData);
-      const res = await editTicketSolution(solutionId, data);
-      console.log(res);
-      toast.success("Ticket Solution edit successful");
+      await editTicketSolution(solutionId, data);
     } catch (error) {
       console.error(error);
-      toast.error("Error editing ticket solution");
     }
   };
 
