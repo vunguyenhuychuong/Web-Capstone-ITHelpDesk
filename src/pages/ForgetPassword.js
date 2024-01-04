@@ -14,11 +14,34 @@ import {
   Paper,
   Checkbox,
 } from "@mui/material";
-
+import { forgotPassword } from "../app/api/companyMember";
+import { useNavigate } from "react-router-dom";
 
 function ForgetPassword() {
-  //const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [confirmation, setConfirmation] = useState(false);
+  const [errorText, setErrorText] = useState("");
+  const navigate = useNavigate();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!email) {
+      setErrorText("Please enter your email");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await forgotPassword(email);
+      setErrorText("");
+      navigate("/login");
+    } catch (error) {
+      console.error("Error resetting password:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Container component="main" maxWidth="lg">
@@ -67,7 +90,12 @@ function ForgetPassword() {
               <Typography component="h1" variant="h5">
                 Forgot Password Page
               </Typography>
-              <Box component="form" noValidate sx={{ mt: 1 }}>
+              <Box
+                component="form"
+                noValidate
+                sx={{ mt: 1 }}
+                onSubmit={handleSubmit}
+              >
                 <TextField
                   margin="normal"
                   required
@@ -76,10 +104,27 @@ function ForgetPassword() {
                   label="Email"
                   type="email"
                   id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
+                {errorText && (
+                  <Typography
+                    color="error"
+                    variant="body2"
+                    sx={{ mt: 1, mb: 1 }}
+                  >
+                    {errorText}
+                  </Typography>
+                )}
                 <FormControlLabel
-                  control={<Checkbox value="remember" color="primary" />}
-                  label="confirm email"
+                  control={
+                    <Checkbox
+                      value={confirmation}
+                      onChange={() => setConfirmation(!confirmation)}
+                      color="primary"
+                    />
+                  }
+                  label="Confirm email"
                 />
                 <Button
                   type="submit"
@@ -96,7 +141,7 @@ function ForgetPassword() {
                   sx={{ mt: 3, mb: 2 }}
                   disabled={loading}
                 >
-                  <Link href="/login">Back to Login</Link>
+                  Back to Login<Link href="/login"></Link>
                 </Button>
               </Box>
             </Box>

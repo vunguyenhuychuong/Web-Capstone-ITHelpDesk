@@ -90,18 +90,18 @@ export async function AddDataProfile(userData) {
         Authorization: header,
       },
     });
-
-    if (res.data && !res.data.isError) {
-      return { success: true, result: res.data.result };
-    } else if (res.data && res.data.responseException && res.data.responseException.exceptionMessage) {
-      console.log(res.data.responseException.exceptionMessage);
-      return { success: false, message: res.data.responseException.exceptionMessage };
-    } else {
-      return { success: false, message: 'An unknown error occurred while creating the user.' };
-    }
+    toast.success(res.data.result.message, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
   } catch (error) {
     console.error(error);
-    return { success: false, message: 'An error occurred while creating the user.' };
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
   }
 }
 

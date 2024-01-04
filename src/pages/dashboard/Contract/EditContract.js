@@ -18,7 +18,6 @@ import { toast } from "react-toastify";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import DateValidation from "../../helpers/DateValidation";
-import Slider from "react-slick";
 import {
   getAllAccountList,
   getAllCompanyList,
@@ -114,10 +113,6 @@ const EditContract = () => {
     });
 
     setIsImagePreviewOpen(true);
-  };
-
-  const closeImagePreview = () => {
-    setIsImagePreviewOpen(false);
   };
 
   const fetchDataCreateContract = async () => {

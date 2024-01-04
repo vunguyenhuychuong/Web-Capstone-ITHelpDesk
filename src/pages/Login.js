@@ -34,7 +34,6 @@ function Login() {
     try {
       dispatch(clearError());
       const userDataResponse = await LoginUser(data);
-      console.log(userDataResponse);
       if (
         userDataResponse &&
         userDataResponse.isError === false &&

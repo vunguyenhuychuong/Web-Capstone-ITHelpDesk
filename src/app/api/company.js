@@ -30,7 +30,21 @@ export async function getAllCompany(
     console.log(error);
     return [];
   }
-}
+};
+
+export async function getAllCompanyList() {
+  const header = getAuthHeader();
+  try {
+    const res = await axios.get(`${baseURL}/company/all`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data.result;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export async function createCompany(data) {
   const header = getAuthHeader();

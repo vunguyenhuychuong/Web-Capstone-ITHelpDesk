@@ -229,6 +229,7 @@ const CreateTicketTaskTc = () => {
         progress: data.progress,
         attachmentUrls: data.attachmentUrls,
       });
+      navigate("/home/homeTechnician");
     } catch (error) {
       console.error(error);
     } finally {

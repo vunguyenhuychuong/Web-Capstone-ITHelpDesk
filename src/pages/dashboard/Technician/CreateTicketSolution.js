@@ -15,9 +15,12 @@ import moment from "moment";
 import { getDataUser } from "../../../app/api";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
+import { useSelector } from "react-redux";
 
 const CreateTicketSolution = () => {
   const navigate = useNavigate();
+  const user = useSelector((state) => state.auth);
+  const check = user.user.role;
   const [data, setData] = useState({
     title: "",
     content: "",
@@ -221,7 +224,13 @@ const CreateTicketSolution = () => {
   };
 
   const handleGoBack = () => {
-    navigate(`/home/ticketSolution`);
+    if (check === 2) {
+      navigate(`/home/homeManager`);
+    } else if (check === 3) {
+      navigate(`/home/homeTechnician`);
+    } else {
+      console.warn('Unhandled user role:', check);
+    }
   };
 
   return (
