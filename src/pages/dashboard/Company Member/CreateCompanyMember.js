@@ -136,12 +136,12 @@ const CreateCompanyMember = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    if (name in data.member) {
+    if (name in data.user) {
       setData((prevData) => ({
         ...prevData,
         user: {
           ...prevData.user,
-          [name]: value,
+          [name]: name === 'gender' ? + value : value,
         },
       }));
     } else {

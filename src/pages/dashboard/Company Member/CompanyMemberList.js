@@ -9,9 +9,14 @@ import {
   MDBTableHead,
 } from "mdb-react-ui-kit";
 import React, { useCallback, useState } from "react";
-import { ContentCopy, Delete, Edit } from "@mui/icons-material";
+import {
+  ArrowDropDown,
+  ArrowDropUp,
+  ContentCopy,
+  Delete,
+  Edit,
+} from "@mui/icons-material";
 import { useEffect } from "react";
-import { deleteMode } from "../../../app/api/mode";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import { FormControl, MenuItem, Pagination, Select } from "@mui/material";
 import { toast } from "react-toastify";
@@ -20,7 +25,10 @@ import PageSizeSelector from "../Pagination/Pagination";
 import { Box } from "@mui/system";
 import { useNavigate } from "react-router-dom";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
-import { deleteCompanyMember, getAllMemberCompany } from "../../../app/api/companyMember";
+import {
+  deleteCompanyMember,
+  getAllMemberCompany,
+} from "../../../app/api/companyMember";
 import EditCompanyMember from "./EditCompanyMember";
 
 const CompanyMemberList = () => {
@@ -56,14 +64,16 @@ const CompanyMemberList = () => {
       setDataCompanyMembers(companyMember);
     } catch (error) {
       console.error(error);
-    }finally{
+    } finally {
       setIsLoading(false);
     }
   }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection]);
 
   const handleSelectCompanyMember = (memberId) => {
     if (selectedTeamMembers.includes(memberId)) {
-      setSelectedTeamMember(selectedTeamMembers.filter((id) => id !== memberId));
+      setSelectedTeamMember(
+        selectedTeamMembers.filter((id) => id !== memberId)
+      );
       console.log("many select", selectMode);
     } else {
       setSelectedTeamMember([...selectedTeamMembers, memberId]);
@@ -77,6 +87,18 @@ const CompanyMemberList = () => {
       setSelectedTeamMember(dataCompanyMembers.map((mode) => mode.id));
     }
   };
+
+  const handleSortChange = useCallback(
+    (field) => {
+      if (sortBy === field) {
+        setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      } else {
+        setSortBy(field);
+        setSortDirection("asc");
+      }
+    },
+    [sortBy, sortDirection]
+  );
 
   const handleOpenEditCompanyMember = (companyMemberId) => {
     setSelectedCompanyMemberId(companyMemberId);
@@ -252,12 +274,82 @@ const CompanyMemberList = () => {
                     />
                   </th>
                   <th style={{ fontWeight: "bold" }}>Edit</th>
-                  <th style={{ fontWeight: "bold" }}>ID</th>
-                  <th style={{ fontWeight: "bold" }}>Member ID</th>
-                  <th style={{ fontWeight: "bold" }}>Member Position</th>
-                  <th style={{ fontWeight: "bold" }}>Role</th>
-                  <th style={{ fontWeight: "bold" }}>Create Time</th>
-                  <th style={{ fontWeight: "bold" }}>Modify Time</th>
+                  <th
+                    style={{ fontWeight: "bold" }}
+                    className="sortable-header"
+                    onClick={() => handleSortChange("memberId")}
+                    title="Click to Sort by MemberID"
+                  >
+                    Member ID
+                    {sortBy === "memberId" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </th>
+                  <th
+                    style={{ fontWeight: "bold" }}
+                    className="sortable-header"
+                  >
+                    Name Member
+                  </th>
+                  <th
+                    style={{ fontWeight: "bold" }}
+                    className="sortable-header"
+                    onClick={() => handleSortChange("memberPosition")}
+                    title="Click to Sort by Member Position"
+                  >
+                    Member Position
+                    {sortBy === "memberPosition" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </th>
+                  <th
+                    style={{ fontWeight: "bold" }}
+                    className="sortable-header"
+                    onClick={() => handleSortChange("isCompanyAdmin")}
+                    title="Click to Sort by CompanyAdmin"
+                  >
+                    Role
+                    {sortBy === "isCompanyAdmin" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </th>
+                  <th
+                    style={{ fontWeight: "bold" }}
+                    className="sortable-header"
+                    onClick={() => handleSortChange("createdAt")}
+                    title="Click to Sort by CreatedAt"
+                  >
+                    Create Time
+                    {sortBy === "createdAt" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </th>
+                  <th
+                    style={{ fontWeight: "bold" }}
+                    className="sortable-header"
+                    onClick={() => handleSortChange("modifiedAt")}
+                    title="Click to Sort by ModifiedAt"
+                  >
+                    Modify Time
+                    {sortBy === "modifiedAt" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </th>
                 </tr>
               </MDBTableHead>
               <MDBTableBody className="bg-light">
@@ -283,8 +375,11 @@ const CompanyMemberList = () => {
                           }
                         />
                       </td>
-                      <td>{companyMember.id}</td>
                       <td>{companyMember.memberId}</td>
+                      <td>
+                        {companyMember.member.lastName}{" "}
+                        {companyMember.member.firstName}
+                      </td>
                       <td>{companyMember.memberPosition}</td>
                       <td>
                         {companyMember.isCompanyAdmin

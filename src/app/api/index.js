@@ -90,7 +90,8 @@ export async function AddDataProfile(userData) {
         Authorization: header,
       },
     });
-    toast.success(res.data.result.message, {
+    console.log(res);
+    toast.success(res.data.result, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,

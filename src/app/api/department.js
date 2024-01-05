@@ -14,6 +14,7 @@ export async function getAllDepartmentSelect(companyId) {
         },
       }
     );
+    console.log(header);
     return res.data.result;
   } catch (error) {
     console.log(error);

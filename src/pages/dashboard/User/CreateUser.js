@@ -64,6 +64,7 @@ const CreateUser = () => {
     username: "",
     password: "",
     email: "",
+    phoneNumber: "",
   });
 
   const togglePasswordVisibility = () => {
@@ -108,14 +109,14 @@ const CreateUser = () => {
     description: `Attachment Preview ${index + 1}`,
   }));
 
-  const handleDateBirthChange = (newDate) => {
-    const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
-    setDateBirth(newDate);
+  const handleDateOfBirthChange = (newValue) => {
+    const formattedDateOfBirth = moment(newValue).format("YYYY-MM-DDTHH:mm:ss");
+
     setData((prevInputs) => ({
       ...prevInputs,
-      user: {
-        ...prevInputs.user,
-        dateOfBirth: formattedDate,
+      userModel: {
+        ...prevInputs.userModel,
+        dateOfBirth: formattedDateOfBirth,
       },
     }));
   };
@@ -182,7 +183,6 @@ const CreateUser = () => {
         }));
       }
     }
-
     if (name === "username" && value.length < 6) {
       setFieldErrors((prevErrors) => ({
         ...prevErrors,
@@ -195,7 +195,6 @@ const CreateUser = () => {
         firstName: "First Name must be at least 2 characters",
       }));
     }
-
     if (name === "lastName" && value.length < 2) {
       setFieldErrors((prevErrors) => ({
         ...prevErrors,
@@ -204,6 +203,15 @@ const CreateUser = () => {
     }
     if (name === "companyId") {
       fetchDepartmentsByCompany(parseInt(value, 10));
+    }
+    if (name === "phoneNumber" && value.length > 0) {
+      const phoneRegex = /^\d{10}$/;
+      if (!phoneRegex.test(value)) {
+        setFieldErrors((prevErrors) => ({
+          ...prevErrors,
+          phoneNumber: "Invalid phone number",
+        }));
+      }
     }
   };
 
@@ -234,23 +242,24 @@ const CreateUser = () => {
       setFieldErrors(errors);
       return;
     }
-
     setIsSubmitting(true);
     try {
-      let avatarUrl = data.avatarUrl;
+      let avatarUrl = data.userModel.avatarUrl;
       if (selectedFile) {
         const storage = getStorage();
         const storageRef = ref(storage, "images/" + selectedFile.name);
         await uploadBytes(storageRef, selectedFile);
         avatarUrl = await getDownloadURL(storageRef);
       }
+
+      const formattedDateOfBirth = moment(data.userModel.dateOfBirth).format(
+        "YYYY-MM-DDTHH:mm:ss"
+      );
       const updatedData = {
         userModel: {
           ...data.userModel,
           avatarUrl: avatarUrl,
-          dateOfBirth: data.userModel.dateOfBirth
-            ? moment(data.userModel.dateOfBirth).format("YYYY-MM-DDTHH:mm:ss")
-            : null,
+          dateOfBirth: formattedDateOfBirth,
         },
         companyId: companyId,
         departmentId: departmentId,
@@ -744,14 +753,9 @@ const CreateUser = () => {
                     <Grid item xs={6}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
                         <DateTimePicker
-                          slotProps={{
-                            textField: {
-                              helperText: `${DateBirth}`,
-                            },
-                          }}
                           value={DateBirth}
                           onChange={(newValue) =>
-                            handleDateBirthChange(newValue)
+                            handleDateOfBirthChange(newValue)
                           }
                           renderInput={(props) => <TextField {...props} />}
                         />
@@ -788,13 +792,14 @@ const CreateUser = () => {
                         value={data.departmentId}
                         onChange={handleInputChange}
                       >
-                        {dataDepartment
-                          .filter((department) => department.id !== "")
-                          .map((department) => (
-                            <option key={department.id} value={department.id}>
-                              {department.address}
-                            </option>
-                          ))}
+                        {dataDepartment &&
+                          dataDepartment
+                            .filter((department) => department.id !== "")
+                            .map((department) => (
+                              <option key={department.id} value={department.id}>
+                                {department.address}
+                              </option>
+                            ))}
                       </select>
                     </Grid>
                   </Grid>
