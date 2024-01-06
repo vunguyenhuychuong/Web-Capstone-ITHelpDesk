@@ -87,12 +87,33 @@ const CreateUser = () => {
       try {
         const companyList = await getAllCompanyList();
         setDataCompany(companyList);
+        if (companyList.length > 0) {
+          setData((prevData) => ({
+            ...prevData,
+            companyId: companyList[0].id,
+          }));
+        }
       } catch (error) {
         console.log(error);
       }
     };
     fetchDataCreateUser();
+  }, []);
+  
+  useEffect(() => {
+    if (data.companyId) {
+      fetchDepartmentsByCompany(data.companyId);
+    }
   }, [data.companyId]);
+  
+  useEffect(() => {
+    if (dataDepartment && dataDepartment.length > 0) {
+      setData((prevData) => ({
+        ...prevData,
+        departmentId: dataDepartment[0].id,
+      }));
+    }
+  }, [dataDepartment]);
 
   const images = imagePreviewUrl.map((url, index) => ({
     original: url,
