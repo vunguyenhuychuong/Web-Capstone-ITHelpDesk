@@ -57,7 +57,7 @@ export const roleOptions = [
   { id: 1, name: "Customer" },
   { id: 2, name: "Manager" },
   { id: 3, name: "Technical Staff" },
-  { id: 4, name: "Sale Staff" },
+  { id: 4, name: "Accountant" },
 ];
 
 export const genderOptions = [

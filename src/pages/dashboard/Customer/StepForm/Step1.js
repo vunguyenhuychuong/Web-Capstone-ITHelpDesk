@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useEffect } from "react";
-import { getAllService } from "../../../../app/api/service";
+import { getAllUserActiveService } from "../../../../app/api/service";
 import { Close,CloudUpload } from "@mui/icons-material";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
@@ -29,7 +29,7 @@ const Step1 = ({ data, handleInputChange,handleFileChange,imagePreviewUrl,isImag
   );
   const fetchService = async () => {
     try {
-      const response = await getAllService();
+      const response = await getAllUserActiveService();
       setDataServices(response);
     } catch (error) {
       console.log("Error while fetching data", error);

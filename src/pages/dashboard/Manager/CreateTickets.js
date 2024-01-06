@@ -25,11 +25,6 @@ import { getDataUser } from "../../../app/api";
 import ModeApi from "../../../app/api/mode";
 import { getAllServiceByCategory } from "../../../app/api/service";
 import { createTicketByManager } from "../../../app/api/ticket";
-import {
-  fetchCity,
-  fetchDistricts,
-  fetchWards,
-} from "../Customer/StepForm/fetchDataSelect";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 
@@ -50,11 +45,6 @@ const CreateTickets = () => {
     impact: 0,
     urgency: 0,
     type: "Offline",
-    street: "",
-    ward: 0,
-    district: 0,
-    city: 0,
-    isPeriodic: false,
     categoryId: 1,
     attachmentUrls: [],
   });
@@ -64,9 +54,6 @@ const CreateTickets = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
-  const [dataLocation, setDataLocation] = useState([]);
-  const [districts, setDistricts] = useState([]);
-  const [wards, setWards] = useState([]);
   const [categoryServices, setCategoryServices] = useState([]);
   const [fieldErrors, setFieldErrors] = useState({
     title: "",
@@ -96,32 +83,6 @@ const CreateTickets = () => {
     thumbnail: url,
     description: `Attachment Preview ${index + 1}`,
   }));
-
-  const handleCityChange = async (e) => {
-    const { name, value } = e.target;
-    handleInputChange(e);
-
-    if (value) {
-      const districtResponse = await fetchDistricts(value);
-      setDistricts(districtResponse);
-      setWards([]);
-    } else {
-      setDistricts([]);
-      setWards([]);
-    }
-  };
-
-  const handleDistrictChange = async (e) => {
-    const { name, value } = e.target;
-    handleInputChange(e);
-
-    if (value) {
-      const wardResponse = await fetchWards(value);
-      setWards(wardResponse);
-    } else {
-      setWards([]);
-    }
-  };
 
   const handleInputChange = async (e) => {
     const { name, value } = e.target;
@@ -165,17 +126,7 @@ const CreateTickets = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const cityResponse = await fetchCity();
-        setDataLocation(cityResponse);
-      } catch (error) {
-        console.log("Error while fetching data", error);
-      }
-    };
-    fetchCity();
     fetchDataManager();
-    fetchData();
   }, []);
 
   useEffect(() => {
@@ -263,11 +214,6 @@ const CreateTickets = () => {
         impact: data.impact,
         urgency: data.urgency,
         type: data.type,
-        street: data.street,
-        ward: data.ward,
-        district: data.district,
-        city: data.city,
-        isPeriodic: data.isPeriodic,
         categoryId: data.categoryId,
         attachmentUrls: attachmentUrls,
       });
@@ -324,17 +270,7 @@ const CreateTickets = () => {
                     Create a new ticket for assistance.
                   </span>
                 </div>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={isPeriodic}
-                      onChange={handleToggle}
-                      inputProps={{ "aria-label": "Periodic switch" }}
-                    />
-                  }
-                  label="Periodic"
-                  labelPlacement="start"
-                />
+                
               </div>
             </MDBCol>
           </MDBRow>
@@ -748,137 +684,6 @@ const CreateTickets = () => {
                           </option>
                         ))}
                       </select>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid
-                container
-                justifyContent="flex-end"
-                style={{ marginTop: "15px" }}
-              >
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        City
-                      </h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <select
-                        id="city"
-                        name="city"
-                        className="form-select-custom"
-                        value={data.city}
-                        onChange={handleCityChange}
-                      >
-                        {dataLocation.map((city) => (
-                          <option key={city.code} value={city.code}>
-                            {city.name}
-                          </option>
-                        ))}
-                      </select>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        District
-                      </h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <select
-                        id="district"
-                        name="district"
-                        className="form-select-custom"
-                        value={data.district}
-                        onChange={handleDistrictChange}
-                      >
-                        {districts.map((district) => (
-                          <option key={district.code} value={district.code}>
-                            {district.name}
-                          </option>
-                        ))}
-                      </select>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid
-                container
-                justifyContent="flex-end"
-                style={{ marginTop: "15px" }}
-              >
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        Ward
-                      </h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <select
-                        id="ward"
-                        name="ward"
-                        className="form-select-custom"
-                        value={data.ward}
-                        onChange={handleInputChange}
-                      >
-                        {wards.map((ward) => (
-                          <option key={ward.code} value={ward.code}>
-                            {ward.name}
-                          </option>
-                        ))}
-                      </select>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        Street
-                      </h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <input
-                        id="street"
-                        type="text"
-                        name="street"
-                        className="form-control-text"
-                        value={data.street}
-                        onChange={handleInputChange}
-                      />
                     </Grid>
                   </Grid>
                 </Grid>

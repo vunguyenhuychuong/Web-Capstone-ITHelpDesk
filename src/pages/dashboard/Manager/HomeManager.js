@@ -4,6 +4,7 @@ import {
   LocalActivity,
   Payment,
   ReceiptLong,
+  RoomServiceRounded,
   SupervisedUserCircle,
 } from "@mui/icons-material";
 import { Grid, Tab, Tabs } from "@mui/material";
@@ -18,6 +19,7 @@ import { useParams } from "react-router-dom";
 import TeamMemberList from "../TeamMember/TeamMemberList";
 import ContractList from "../Contract/ContractList";
 import PaymentList from "../Payment/PaymentList";
+import ServiceList from "../ServicePack/ServiceList";
 
 const HomeManager = () => {
 
@@ -160,6 +162,23 @@ const HomeManager = () => {
               }
               className="custom-tab-label"
             />
+            <Tab
+              label={
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    textTransform: "none",
+                  }}
+                >
+                  <RoomServiceRounded
+                    sx={{ marginRight: 1, color: "#0099FF" }}
+                  />{" "}
+                  Service
+                </div>
+              }
+              className="custom-tab-label"
+            />
           </Tabs>
 
           <Box role="tabpanel" hidden={value !== 0}>
@@ -179,6 +198,9 @@ const HomeManager = () => {
           </Box>
           <Box role="tabpanel" hidden={value !== 5}>
             {value === 5 ? <PaymentList /> : <LoadingSkeleton />}
+          </Box>
+          <Box role="tabpanel" hidden={value !== 6}>
+            {value === 6 ? <ServiceList /> : <LoadingSkeleton />}
           </Box>
         </Box>
       </Grid>

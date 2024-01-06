@@ -118,6 +118,20 @@ export async function getAllService() {
   }
 }
 
+export async function getAllUserActiveService() {
+  const header = getAuthHeader();
+  try {
+    const res = await axios.get(`${baseURL}/user/active-services`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data.result;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export async function getAllServiceByCategory(categoryId) {
   const header = getAuthHeader();
   try {

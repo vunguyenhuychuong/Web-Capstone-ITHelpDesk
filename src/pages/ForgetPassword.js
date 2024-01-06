@@ -43,6 +43,10 @@ function ForgetPassword() {
     }
   };
 
+  const handleGoBack = () => {
+    navigate(`/login`);
+  };
+
   return (
     <Container component="main" maxWidth="lg">
       <Box
@@ -140,8 +144,9 @@ function ForgetPassword() {
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
                   disabled={loading}
+                  onClick={() => handleGoBack()}
                 >
-                  Back to Login<Link href="/login"></Link>
+                  Back to Login
                 </Button>
               </Box>
             </Box>
