@@ -52,7 +52,6 @@ const CreateCompanyMember = () => {
     departmentId: 1,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [DateBirth, setDateBirth] = useState(moment());
   const [dataDepartment, setDataDepartment] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -66,10 +65,6 @@ const CreateCompanyMember = () => {
     email: "",
     memberPosition: "",
   });
-
-  const togglePasswordVisibility = () => {
-    setShowPassword((prevShowPassword) => !prevShowPassword);
-  };
 
   const images = imagePreviewUrl.map((url, index) => ({
     original: url,
@@ -115,26 +110,6 @@ const CreateCompanyMember = () => {
       setDataDepartment(departmentList);
     } catch (error) {
       console.log(error);
-    }
-  };
-
-  const getPasswordStrength = () => {
-    const passwordStrength = zxcvbn(data.password);
-    const score = passwordStrength.score;
-
-    switch (score) {
-      case 0:
-        return { label: "Weak", color: "red" };
-      case 1:
-        return { label: "Fair", color: "orange" };
-      case 2:
-        return { label: "Good", color: "yellow" };
-      case 3:
-        return { label: "Strong", color: "green" };
-      case 4:
-        return { label: "Very Strong", color: "blue" };
-      default:
-        return { label: "", color: "" };
     }
   };
 
@@ -215,9 +190,6 @@ const CreateCompanyMember = () => {
     if (!data.user.username) {
       errors.username = "User Name is required";
     }
-    if (!data.user.password) {
-      errors.password = "Password is required";
-    }
     if (!data.user.email) {
       errors.email = "Email is required";
     }
@@ -254,7 +226,6 @@ const CreateCompanyMember = () => {
           firstName: data.user.firstName,
           lastName: data.user.lastName,
           username: data.user.username,
-          password: data.user.password,
           email: data.user.email,
           gender: data.user.gender,
           avatarUrl: data.user.avatarUrl,
@@ -282,8 +253,9 @@ const CreateCompanyMember = () => {
       data.user.firstName.trim() !== "" ||
       data.user.lastName.trim() !== "" ||
       data.user.username.trim() !== "" ||
-      data.user.password.trim() !== "" ||
-      data.user.email.trim() !== "";
+      data.user.email.trim() !== "" ||
+      data.user.phoneNumber.trim() !== "" ||
+      data.memberPosition.trim() !== "";
     if (isFormFilled) {
       const confirmLeave = window.confirm(
         "Are you sure you want to leave? Your changes may not be saved."
@@ -460,48 +432,34 @@ const CreateCompanyMember = () => {
 
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
-                    <Grid item xs={6}>
+                  <Grid item xs={6}>
                       <h2
                         className="align-right"
                         style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                          marginBottom: "60px",
                         }}
                       >
-                        <span style={{ color: "red" }}>*</span>Password
-                        <IconButton onClick={togglePasswordVisibility}>
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
+                        Gender
                       </h2>
                     </Grid>
                     <Grid item xs={6}>
-                      <input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        name="password"
-                        className="form-control-text input-field"
-                        value={data.password}
+                      <select
+                        id="gender"
+                        name="gender"
+                        className="form-select-custom"
+                        value={data.gender}
                         onChange={handleInputChange}
-                        style={{
-                          marginBottom: "50px",
-                        }}
-                      />
-                      {fieldErrors.password && (
-                        <div style={{ color: "red" }}>
-                          {fieldErrors.password}
-                        </div>
-                      )}
-                      {data.password && (
-                        <div
-                          style={{
-                            color: getPasswordStrength().color,
-                          }}
-                        >
-                          Password Seem: {getPasswordStrength().label}
-                        </div>
-                      )}
+                      >
+                        {genderOptions
+                          .filter((gender) => gender.id !== "")
+                          .map((gender) => (
+                            <option key={gender.id} value={gender.id}>
+                              {gender.name}
+                            </option>
+                          ))}
+                      </select>
                     </Grid>
                   </Grid>
                 </Grid>
@@ -576,53 +534,14 @@ const CreateCompanyMember = () => {
 
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
-                    <Grid item xs={6}>
+                  <Grid item xs={6}>
                       <h2
                         className="align-right"
                         style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                        }}
-                      >
-                        Gender
-                      </h2>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <select
-                        id="gender"
-                        name="gender"
-                        className="form-select-custom"
-                        value={data.gender}
-                        onChange={handleInputChange}
-                      >
-                        {genderOptions
-                          .filter((gender) => gender.id !== "")
-                          .map((gender) => (
-                            <option key={gender.id} value={gender.id}>
-                              {gender.name}
-                            </option>
-                          ))}
-                      </select>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-
-              <Grid
-                container
-                justifyContent="flex-end"
-                style={{ marginBottom: "20px" }}
-              >
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
+                          marginBottom: "40px"
                         }}
                       >
                         <span style={{ color: "red" }}>*</span>phone number
@@ -645,40 +564,6 @@ const CreateCompanyMember = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-
-                <Grid item xs={6}>
-                  <Grid container alignItems="center">
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                          marginBottom: "40px",
-                        }}
-                      >
-                        Date Customer
-                      </h2>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <DateTimePicker
-                          slotProps={{
-                            textField: {
-                              helperText: `${DateBirth}`,
-                            },
-                          }}
-                          value={DateBirth}
-                          onChange={(newValue) =>
-                            handleDateBirthChange(newValue)
-                          }
-                          renderInput={(props) => <TextField {...props} />}
-                        />
-                      </LocalizationProvider>
-                    </Grid>
-                  </Grid>
-                </Grid>
               </Grid>
 
               <Grid
@@ -688,7 +573,7 @@ const CreateCompanyMember = () => {
               >
                 <Grid item xs={6}>
                   <Grid container>
-                    <Grid item xs={6}>
+                  <Grid item xs={6}>
                       <h2
                         className="align-right"
                         style={{
@@ -724,24 +609,27 @@ const CreateCompanyMember = () => {
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
+                          marginBottom: "40px",
                         }}
                       >
-                        Company Admin
+                        Date 
                       </h2>
                     </Grid>
                     <Grid item xs={6}>
-                      <select
-                        id="isCompanyAdmin"
-                        name="isCompanyAdmin"
-                        className="form-select-custom"
-                        value={data.isCompanyAdmin}
-                        onChange={(e) =>
-                          handleIsCompanyAdminChange(e.target.value === "true")
-                        }
-                      >
-                        <option value="true">True</option>
-                        <option value="false">False</option>
-                      </select>
+                      <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <DateTimePicker
+                          slotProps={{
+                            textField: {
+                              helperText: `${DateBirth}`,
+                            },
+                          }}
+                          value={DateBirth}
+                          onChange={(newValue) =>
+                            handleDateBirthChange(newValue)
+                          }
+                          renderInput={(props) => <TextField {...props} />}
+                        />
+                      </LocalizationProvider>
                     </Grid>
                   </Grid>
                 </Grid>
@@ -754,7 +642,7 @@ const CreateCompanyMember = () => {
               >
                 <Grid item xs={6}>
                   <Grid container>
-                    <Grid item xs={6}>
+                  <Grid item xs={6}>
                       <h2
                         className="align-right"
                         style={{
@@ -797,9 +685,24 @@ const CreateCompanyMember = () => {
                           fontWeight: "bold",
                           textAlign: "right",
                         }}
-                      ></h2>
+                      >
+                        Company Admin
+                      </h2>
                     </Grid>
-                    <Grid item xs={6}></Grid>
+                    <Grid item xs={6}>
+                      <select
+                        id="isCompanyAdmin"
+                        name="isCompanyAdmin"
+                        className="form-select-custom"
+                        value={data.isCompanyAdmin}
+                        onChange={(e) =>
+                          handleIsCompanyAdminChange(e.target.value === "true")
+                        }
+                      >
+                        <option value="true">True</option>
+                        <option value="false">False</option>
+                      </select>
+                    </Grid>
                   </Grid>
                 </Grid>
               </Grid>

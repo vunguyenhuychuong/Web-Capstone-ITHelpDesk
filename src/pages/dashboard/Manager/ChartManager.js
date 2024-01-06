@@ -22,9 +22,9 @@ import "../../../assets/css/homeManager.css";
 import React, { useEffect, useState } from "react";
 import {
   getChartCategory,
+  getChartDashBoardManager,
   getChartLastMonth,
   getChartLastWeek,
-  getChartManagerContract,
   getChartMode,
   getChartPriority,
   getChartService,
@@ -45,6 +45,7 @@ import { Chart } from "primereact/chart";
 import { FaTicketAlt } from "react-icons/fa";
 
 const ChartManager = () => {
+  const [dataTotalDashBoard, setDataTotalDashBoard] = useState([]);
   const [dataCategory, setDataCategory] = useState([]);
   const [dataPriority, setDataPriority] = useState([]);
   const [dataMode, setDataMode] = useState([]);
@@ -61,10 +62,12 @@ const ChartManager = () => {
   const fetchDataListTicketTask = async () => {
     try {
       setLoading(true);
+      const dashBoard = await getChartDashBoardManager();
       const categoryChart = await getChartCategory();
       const priorityChart = await getChartPriority();
       const modeChart = await getChartMode();
       const serviceChart = await getChartService();
+      setDataTotalDashBoard(dashBoard);
       setDataCategory(categoryChart);
       setDataPriority(priorityChart);
       setDataMode(modeChart);
@@ -354,7 +357,7 @@ const ChartManager = () => {
                         variant="h5"
                         style={{ fontWeight: "bold", color: "#222222" }}
                       >
-                        123
+                        {dataTotalDashBoard.totalTicketOfDay} 
                       </Typography>
                     </div>
                     <div
@@ -420,7 +423,7 @@ const ChartManager = () => {
                         variant="h5"
                         style={{ fontWeight: "bold", color: "#222222" }}
                       >
-                        123
+                       {dataTotalDashBoard.totalContractOfDay} 
                       </Typography>
                     </div>
                     <div
@@ -486,7 +489,7 @@ const ChartManager = () => {
                         variant="h5"
                         style={{ fontWeight: "bold", color: "#222222" }}
                       >
-                        123
+                         {dataTotalDashBoard.totalSolutionOfDay} 
                       </Typography>
                     </div>
                     <div
@@ -552,7 +555,7 @@ const ChartManager = () => {
                         variant="h5"
                         style={{ fontWeight: "bold", color: "#222222" }}
                       >
-                        123
+                        {dataTotalDashBoard.totalPaymentOfDay} 
                       </Typography>
                     </div>
                     <div

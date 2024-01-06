@@ -112,6 +112,10 @@ function Login() {
     });
   };
 
+  const handleForgotPassword = () => {
+    navigate(`/forgot-password`);
+  };
+
   return (
     <Container component="main" maxWidth="lg">
       <Box
@@ -231,7 +235,7 @@ function Login() {
                 </Button>
                 <Grid container>
                   <Grid item xs>
-                    <Link href="/forgot-password" variant="body2">
+                    <Link onClick={() => handleForgotPassword()} variant="body2">
                       Forgot password?
                     </Link>
                   </Grid>

@@ -8,7 +8,7 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { createTicketByCustomer } from "../../../app/api/ticket";
 import CustomizedSteppers from "./CustomizedSteppers";
 import { useNavigate } from "react-router-dom";
-import { getAllService } from "../../../app/api/service";
+import { getAllUserActiveService } from "../../../app/api/service";
 
 const RequestIssue = () => {
   const [data, setData] = useState({
@@ -27,7 +27,7 @@ const RequestIssue = () => {
 
   const fetchService = async () => {
     try {
-      const response = await getAllService();
+      const response = await getAllUserActiveService();
       setDataServices(response);
     } catch (error) {
       console.log("Error while fetching data", error);

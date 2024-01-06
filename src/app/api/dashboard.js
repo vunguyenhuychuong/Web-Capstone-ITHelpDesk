@@ -59,6 +59,20 @@ export async function  getChartCategory() {
   }
 };
 
+export async function  getChartDashBoardManager() {
+  const header = getAuthHeader();
+  try{
+    const res = await axios.get(`${baseURL}/dashboard/manager/dashboard`, {
+      headers: {
+        Authorization: header,
+      }
+    });
+    return res.data.result;
+  }catch(error){
+    console.log(error);
+  }
+};
+
 export async function getChartPriority() {
   const header = getAuthHeader();
   try{

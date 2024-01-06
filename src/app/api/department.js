@@ -8,7 +8,7 @@ export async function getAllDepartmentSelect(companyId) {
   try {
     const header = getAuthHeader();
     const res = await axios.get(
-      `${baseURL}/company/department/${companyId}/select-list`,
+      `${baseURL}/company/companyAddress/${companyId}/select-list`,
       {
         headers: {
           Authorization: header,

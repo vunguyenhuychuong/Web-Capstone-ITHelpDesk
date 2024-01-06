@@ -33,7 +33,6 @@ import EditService from "./EditService";
 import { toast } from "react-toastify";
 import { useCallback } from "react";
 import PageSizeSelector from "../Pagination/Pagination";
-import { formatCurrency } from "../../helpers/FormatCurrency";
 import { formatDate } from "../../helpers/FormatDate";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 
@@ -196,7 +195,7 @@ const ServiceList = () => {
                   }}
                   style={{ color: "white" }}
                 >
-                  <MenuItem value="name">Name</MenuItem>
+                  <MenuItem value="type">Type</MenuItem>
                   <MenuItem value="description">Description</MenuItem>
                   <MenuItem value="id">Id</MenuItem>
                 </Select>
@@ -266,19 +265,6 @@ const ServiceList = () => {
                 <th
                   style={{ fontWeight: "bold" }}
                   className="sortable-header"
-                  onClick={() => handleSortChange("amount")}
-                >
-                  Price
-                  {sortBy === "amount" &&
-                    (sortDirection === "asc" ? (
-                      <ArrowDropDown />
-                    ) : (
-                      <ArrowDropUp />
-                    ))}
-                </th>
-                <th
-                  style={{ fontWeight: "bold" }}
-                  className="sortable-header"
                   onClick={() => handleSortChange("createdAt")}
                 >
                   Create Time
@@ -315,7 +301,6 @@ const ServiceList = () => {
                     </td>      
                     <td>{service.description}</td>
                     <td>{service.type}</td>
-                    <td>{formatCurrency(service.amount)} VND</td>
                     <td>{formatDate(service.createdAt || "-")}</td>
                     <td>{formatDate(service.modifiedAt || "-")}</td>
                     <td onClick={() => handleEditClick(service.id)}>
