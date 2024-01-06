@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
@@ -28,9 +28,13 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import moment from "moment";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { useSelector } from "react-redux";
+import { getAllDepartmentSelect } from "../../../app/api/department";
 
 const CreateCompanyMember = () => {
   const navigate = useNavigate();
+  const user = useSelector((state) => state.auth);
+  const userCompanyId = user.user.companyId;
   const [data, setData] = useState({
     user: {
       firstName: "",
@@ -45,10 +49,12 @@ const CreateCompanyMember = () => {
     },
     isCompanyAdmin: false,
     memberPosition: "",
+    departmentId: 1,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [DateBirth, setDateBirth] = useState(moment());
+  const [dataDepartment, setDataDepartment] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
@@ -84,19 +90,32 @@ const CreateCompanyMember = () => {
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0]; 
-    if (!file) return; 
-  
+    const file = e.target.files[0];
+    if (!file) return;
+
     setSelectedFile([file]);
-  
+
     const reader = new FileReader();
-  
+
     reader.onloadend = () => {
       setImagePreviewUrl([reader.result]);
     };
-  
+
     reader.readAsDataURL(file);
     setIsImagePreviewOpen(true);
+  };
+
+  const fetchDepartmentsByCompany = async (userCompanyId) => {
+    try {
+      if (!userCompanyId) {
+        console.error("companyId is null or undefined");
+        return;
+      }
+      const departmentList = await getAllDepartmentSelect(userCompanyId);
+      setDataDepartment(departmentList);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getPasswordStrength = () => {
@@ -141,13 +160,15 @@ const CreateCompanyMember = () => {
         ...prevData,
         user: {
           ...prevData.user,
-          [name]: name === 'gender' ? + value : value,
+          [name]: name === "gender" ? +value : value,
         },
       }));
     } else {
+      const numericValue =
+        name === "departmentId" ? parseInt(value, 10) : value;
       setData((prevData) => ({
         ...prevData,
-        [name]: value,
+        [name]: numericValue,
       }));
     }
     setFieldErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
@@ -225,6 +246,7 @@ const CreateCompanyMember = () => {
         },
         isCompanyAdmin: data.isCompanyAdmin,
         memberPosition: data.memberPosition,
+        departmentId: data.departmentId,
       };
       setData(updatedData);
       await createCompanyMember({
@@ -241,13 +263,19 @@ const CreateCompanyMember = () => {
         },
         isCompanyAdmin: data.isCompanyAdmin,
         memberPosition: data.memberPosition,
+        departmentId: data.departmentId,
       });
+      navigate("/home/companyMember");
     } catch (error) {
       console.error(error);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    fetchDepartmentsByCompany(userCompanyId);
+  }, [userCompanyId]);
 
   const handleGoBack = () => {
     const isFormFilled =
@@ -715,6 +743,63 @@ const CreateCompanyMember = () => {
                         <option value="false">False</option>
                       </select>
                     </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+
+              <Grid
+                container
+                justifyContent="flex-end"
+                style={{ marginBottom: "20px" }}
+              >
+                <Grid item xs={6}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        <span style={{ color: "red" }}>*</span>Department
+                      </h2>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <select
+                        id="departmentId"
+                        name="departmentId"
+                        className="form-select-custom"
+                        value={data.departmentId}
+                        onChange={handleInputChange}
+                      >
+                        {dataDepartment &&
+                          dataDepartment
+                            .filter((department) => department.id !== "")
+                            .map((department) => (
+                              <option key={department.id} value={department.id}>
+                                {department.address}
+                              </option>
+                            ))}
+                      </select>
+                    </Grid>
+                  </Grid>
+                </Grid>
+
+                <Grid item xs={6}>
+                  <Grid container alignItems="center">
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      ></h2>
+                    </Grid>
+                    <Grid item xs={6}></Grid>
                   </Grid>
                 </Grid>
               </Grid>

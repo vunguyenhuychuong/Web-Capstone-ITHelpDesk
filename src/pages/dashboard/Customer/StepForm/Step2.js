@@ -1,34 +1,36 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import {
-  FormControl,
-  TextField,
-  Button,
-  LinearProgress,
-  Tooltip,
   Dialog,
   IconButton,
   DialogTitle,
   DialogContent,
+  Typography,
+  Card,
+  Box,
 } from "@mui/material";
-import { Close, CloudUpload } from "@mui/icons-material";
+import { Close } from "@mui/icons-material";
 import { useState } from "react";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
+import { getAllService } from "../../../../app/api/service";
 
 const Step2 = ({
   data,
-  handleInputChange,
-  handleFileChange,
   imagePreviewUrl,
   isImagePreviewOpen,
   setIsImagePreviewOpen,
 }) => {
-  const [selectedFileName, setSelectedFileNames] = useState([]);
-  const [uploadProgress, setUploadProgress] = useState(
-    Array(selectedFileName.length).fill(0)
-  );
-  console.log("setIsImagePreviewOpen:", setIsImagePreviewOpen);
+  const [dataService, setDataServices] = useState([]);
+  const fetchService = async () => {
+    try {
+      const response = await getAllService();
+      setDataServices(response);
+    } catch (error) {
+      console.log("Error while fetching data", error);
+    } finally {
+    }
+  };
 
   const images = imagePreviewUrl.map((url, index) => ({
     original: url,
@@ -36,113 +38,47 @@ const Step2 = ({
     description: `Attachment Preview ${index + 1}`,
   }));
 
+  useEffect(() => {
+    fetchService();
+  }, []);
+
   return (
     <>
-      <Tooltip title="Writing you Reason you have problems" arrow>
-        <FormControl fullWidth variant="outlined" style={{ marginBottom: 10 }}>
-          <TextField
-            id="title"
-            type="text"
-            name="title"
-            value={data.title}
-            onChange={handleInputChange}
-            label="Title"
-            variant="outlined"
-            error={data.title === ""}
-            helperText={data.title === "" ? "Title is required" : ""}
-            InputProps={{
-              style: { height: "50px" },
-            }}
-          />
-        </FormControl>
-      </Tooltip>
-
-      <Tooltip title="Writing the details more about your problems" arrow>
-        <FormControl fullWidth variant="outlined" style={{ marginBottom: 16 }}>
-          <TextField
-            id="description"
-            name="description"
-            value={data.description}
-            onChange={handleInputChange}
-            label="Description"
-            variant="outlined"
-            multiline
-            rows={4}
-            error={data.description === ""}
-            helperText={
-              data.description === "" ? "Description is required" : ""
-            }
-          />
-        </FormControl>
-      </Tooltip>
-
-      <Tooltip
-        title="Upload more Image so we can see details issue if necessary"
-        arrow
-      >
-        <FormControl fullWidth variant="outlined" style={{ marginBottom: 16 }}>
-          <input
-            id="attachmentUrl"
-            type="file"
-            name="file"
-            onChange={(e) => {
-              const files = Array.from(e.target.files);
-              handleFileChange(e);
-              files.forEach((file, index) => {
-                const totalSize = file.size;
-                let uploadedSize = 0;
-                const updateProgress = () => {
-                  if (uploadedSize < totalSize) {
-                    uploadedSize += 1000000;
-                    const progress = (uploadedSize / totalSize) * 100;
-                    setUploadProgress((prevProgress) => {
-                      const newProgress = [...prevProgress];
-                      newProgress[index] = progress;
-                      return newProgress;
-                    });
-                    setTimeout(updateProgress, 1);
-                  }
-                };
-                updateProgress();
-              });
-              const fileNames = Array.from(files).map((file) => file.name);
-              setSelectedFileNames(fileNames);
-            }}
-            multiple
-            style={{ display: "none" }}
-          />
-          {imagePreviewUrl.length > 0 && (
-            <div
-              className="image-preview"
-              onClick={() => setIsImagePreviewOpen(true)}
-            >
-              <p className="preview-text">Click here to view attachment</p>
-            </div>
-          )}
-          <label htmlFor="attachmentUrl">
-            <Button
-              component="span"
-              variant="contained"
-              startIcon={<CloudUpload />}
-              className="file-upload-button input-field file-input"
-            >
-              Upload file
-            </Button>
-          </label>
-          {uploadProgress > 0 && (
-            <LinearProgress
-              variant="determinate"
-              value={uploadProgress}
-              style={{ marginTop: "8px" }}
-            />
-          )}
-          {selectedFileName && (
-            <p style={{ margin: "8px 0 0", fontSize: "14px" }}>
-              File: {selectedFileName}
-            </p>
-          )}
-        </FormControl>
-      </Tooltip>
+      <Card style={{ display: "flex", backgroundColor: "#f0f0f0" }}>
+        <Box
+          p={4}
+          style={{ flex: "2", display: "flex", flexDirection: "column" }}
+        >
+          <div>
+            <Typography variant="h6" gutterBottom>
+              Summary Your Ticket Send
+            </Typography>
+          </div>
+          <div style={{ flexGrow: 1 }}>
+            <Typography variant="body1" paragraph>
+              <strong>Service Ticket:</strong>{" "}
+              {dataService.find((service) => service.id === data.serviceId)
+                ?.description || "Not Provided"}
+            </Typography>
+            <Typography variant="body1" paragraph>
+              <strong>Title of Ticket:</strong> {data.title || "Not Provided"}
+            </Typography>
+            <Typography variant="body1" paragraph>
+              <strong>Description:</strong> {data.description || "Not Provided"}
+            </Typography>
+            <Typography variant="body1" paragraph>
+              {imagePreviewUrl.length > 0 && (
+                <div
+                  className="image-preview"
+                  onClick={() => setIsImagePreviewOpen(true)}
+                >
+                  <p className="preview-text">Click here to view Images</p>
+                </div>
+              )}
+            </Typography>
+          </div>
+        </Box>
+      </Card>
 
       <Dialog
         open={isImagePreviewOpen}
@@ -171,11 +107,8 @@ const Step2 = ({
 
 Step2.propTypes = {
   data: PropTypes.object.isRequired,
-  handleInputChange: PropTypes.func.isRequired,
-  handleFileChange: PropTypes.func.isRequired,
-  imagePreviewUrl: PropTypes.array.isRequired,
-  isImagePreviewOpen: PropTypes.bool.isRequired,
-  setIsImagePreviewOpen: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
 };
+
 
 export default Step2;

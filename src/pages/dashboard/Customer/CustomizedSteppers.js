@@ -10,7 +10,8 @@ import Step3 from "./StepForm/Step3";
 import { CheckCircle, FastForward, FastRewind } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useState } from "react";
+
+
 
 const steps = ["Select Category", "Fill Request", "Complete And Send"];
 
@@ -25,25 +26,14 @@ export default function CustomizedSteppers({
 }) {
   const [activeStep, setActiveStep] = React.useState(0);
   const navigate = useNavigate();
-  const [districts, setDistricts] = useState([]);
-  const [wards, setWards] = useState([]);
-
   const totalSteps = steps.length;
   const handleNext = () => {
     if (activeStep === 2) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } else if (activeStep === 1) {
-      if (data.title && data.description && data.street) {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-      } else {
-        toast.warning("Please fill in all required fields before proceeding.", {
-          autoClose: 3000,
-          hideProgressBar: false,
-          position: toast.POSITION.TOP_CENTER,
-        });
-      }
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } else if (activeStep === 0) {
-      if (data.city && data.street && data.ward && data.district) {
+      if (data.title && data.description) {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
       } else {
         toast.warning("Please fill in all required fields before proceeding.", {
@@ -103,14 +93,6 @@ export default function CustomizedSteppers({
         <Step1
           data={data}
           handleInputChange={handleInputChange}
-          location={data.location}
-        />
-      )}
-
-      {activeStep === 1 && (
-        <Step2
-          data={data}
-          handleInputChange={handleInputChange}
           handleFileChange={handleFileChange}
           imagePreviewUrl={imagePreviewUrl}
           isImagePreviewOpen={isImagePreviewOpen}
@@ -118,17 +100,20 @@ export default function CustomizedSteppers({
         />
       )}
 
-      {activeStep === 2 && (
-        <Step3
+      {activeStep === 1 && (
+        <Step2
           data={data}
-          districts={districts}
-          wards={wards}
           handleSubmit={handleSubmitTicket}
           imagePreviewUrl={imagePreviewUrl}
           isImagePreviewOpen={isImagePreviewOpen}
           setIsImagePreviewOpen={setIsImagePreviewOpen}
         />
       )}
+
+       {activeStep === 2 && (
+        <Step3
+        />
+      )}  
 
       <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
         <Button

@@ -21,10 +21,9 @@ import { useEffect } from "react";
 import { deleteDataMode, deleteMode, getDataMode } from "../../../app/api/mode";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import {
+  CircularProgress,
   Dialog,
   FormControl,
-  List,
-  Menu,
   MenuItem,
   Pagination,
   Select,
@@ -69,6 +68,8 @@ const ModeList = () => {
       setDataModes(mode);
     } catch (error) {
       console.error(error);
+    }finally {
+      setLoading(false); 
     }
   }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection]);
 
@@ -276,113 +277,124 @@ const ModeList = () => {
             </MDBNavbarNav>
           </MDBContainer>
         </MDBNavbar>
-        <MDBTable className="align-middle mb-0" responsive>
-          <MDBTableHead className="bg-light">
-            <tr style={{ fontSize: "1.2rem" }}>
-              <th style={{ fontWeight: "bold" }}>
-                <input
-                  type="checkbox"
-                  checked={selectedModes.length === dataModes.length}
-                  onChange={handleSelectAllModes}
-                />
-              </th>             
-              <th
-                style={{ fontWeight: "bold" }}
-                className="sortable-header"
-                onClick={() => handleSortChange("id")}
-              >
-                ID
-                {sortBy === "id" &&
-                  (sortDirection === "asc" ? (
-                    <ArrowDropDown />
-                  ) : (
-                    <ArrowDropUp />
-                  ))}
-              </th>
-              <th
-                style={{ fontWeight: "bold" }}
-                className="sortable-header"
-                onClick={() => handleSortChange("name")}
-              >
-                Mode Name
-                {sortBy === "name" &&
-                  (sortDirection === "asc" ? (
-                    <ArrowDropDown />
-                  ) : (
-                    <ArrowDropUp />
-                  ))}
-              </th>
-              <th
-                style={{ fontWeight: "bold" }}
-                className="sortable-header"
-                onClick={() => handleSortChange("description")}
-              >
-                Description
-                {sortBy === "description" &&
-                  (sortDirection === "asc" ? (
-                    <ArrowDropDown />
-                  ) : (
-                    <ArrowDropUp />
-                  ))}
-              </th>
-              <th
-                style={{ fontWeight: "bold" }}
-                className="sortable-header"
-                onClick={() => handleSortChange("createdAt")}
-              >
-                Create Time
-                {sortBy === "createdAt" &&
-                  (sortDirection === "asc" ? (
-                    <ArrowDropDown />
-                  ) : (
-                    <ArrowDropUp />
-                  ))}
-              </th>
-              <th
-                style={{ fontWeight: "bold" }}
-                className="sortable-header"
-                onClick={() => handleSortChange("modifiedAt")}
-              >
-                Modify Time
-                {sortBy === "modifiedAt" &&
-                  (sortDirection === "asc" ? (
-                    <ArrowDropDown />
-                  ) : (
-                    <ArrowDropUp />
-                  ))}
-              </th>
-              <th style={{ fontWeight: "bold" }}></th>
-              <th style={{ fontWeight: "bold" }}></th>
-            </tr>
-          </MDBTableHead>
-          <MDBTableBody className="bg-light">
-            {dataModes.map((mode, index) => {
-              const isSelected = selectedModes.includes(mode.id);
-              return (
-                <tr key={index}>
-                  <td>
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => handleSelectMode(mode.id)}
-                    />
-                  </td>   
-                  <td>{mode.id}</td>
-                  <td>{mode.name}</td>
-                  <td>{mode.description}</td>
-                  <td>{formatDate(mode.createdAt || "-")}</td>
-                  <td>{formatDate(mode.modifiedAt || "-")}</td>
-                  <td onClick={() => handleEditClick(mode.id)}>
-                    <Edit />
-                  </td>
-                  <td onClick={() => onDeleteMode(mode.id)}>
-                    <DeleteForeverSharp />
-                  </td>
-                </tr>
-              );
-            })}
-          </MDBTableBody>
-        </MDBTable>
+        {loading ? ( 
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="300px"
+          >
+            <CircularProgress color="primary" size={60} />
+          </Box>
+        ) : (
+          <MDBTable className="align-middle mb-0" responsive>
+            <MDBTableHead className="bg-light">
+              <tr style={{ fontSize: "1.2rem" }}>
+                <th style={{ fontWeight: "bold" }}>
+                  <input
+                    type="checkbox"
+                    checked={selectedModes.length === dataModes.length}
+                    onChange={handleSelectAllModes}
+                  />
+                </th>
+                <th
+                  style={{ fontWeight: "bold" }}
+                  className="sortable-header"
+                  onClick={() => handleSortChange("id")}
+                >
+                  ID
+                  {sortBy === "id" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th
+                  style={{ fontWeight: "bold" }}
+                  className="sortable-header"
+                  onClick={() => handleSortChange("name")}
+                >
+                  Mode Name
+                  {sortBy === "name" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th
+                  style={{ fontWeight: "bold" }}
+                  className="sortable-header"
+                  onClick={() => handleSortChange("description")}
+                >
+                  Description
+                  {sortBy === "description" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th
+                  style={{ fontWeight: "bold" }}
+                  className="sortable-header"
+                  onClick={() => handleSortChange("createdAt")}
+                >
+                  Create Time
+                  {sortBy === "createdAt" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th
+                  style={{ fontWeight: "bold" }}
+                  className="sortable-header"
+                  onClick={() => handleSortChange("modifiedAt")}
+                >
+                  Modify Time
+                  {sortBy === "modifiedAt" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th style={{ fontWeight: "bold" }}></th>
+                <th style={{ fontWeight: "bold" }}></th>
+              </tr>
+            </MDBTableHead>
+            <MDBTableBody className="bg-light">
+              {dataModes.map((mode, index) => {
+                const isSelected = selectedModes.includes(mode.id);
+                return (
+                  <tr key={index}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => handleSelectMode(mode.id)}
+                      />
+                    </td>
+                    <td>{mode.id}</td>
+                    <td>{mode.name}</td>
+                    <td>{mode.description}</td>
+                    <td>{formatDate(mode.createdAt || "-")}</td>
+                    <td>{formatDate(mode.modifiedAt || "-")}</td>
+                    <td onClick={() => handleEditClick(mode.id)}>
+                      <Edit />
+                    </td>
+                    <td onClick={() => onDeleteMode(mode.id)}>
+                      <DeleteForeverSharp />
+                    </td>
+                  </tr>
+                );
+              })}
+            </MDBTableBody>
+          </MDBTable>
+        )}
       </MDBContainer>
       <Box display="flex" justifyContent="center" mt={2}>
         <Pagination

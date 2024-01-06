@@ -15,16 +15,9 @@ const RequestIssue = () => {
     title: "",
     description: "",
     serviceId: 1,
-    type: "Offline",
-    city: "",
-    street: "",
-    ward: "",
-    district: "",
-    priority: 0,
     attachmentUrls: [],
   });
 
-  // const [selectedFile, setSelectedFile] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [dataService, setDataServices] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -126,12 +119,6 @@ const RequestIssue = () => {
         title: data.title,
         description: data.description,
         serviceId: data.serviceId,
-        type: data.type,
-        city:  data.city,
-        street: data.street,
-        ward: data.ward,
-        district: data.district,
-        priority: data.priority,
         attachmentUrls: attachmentUrls,
       });
       navigate(`/home/mains`);
