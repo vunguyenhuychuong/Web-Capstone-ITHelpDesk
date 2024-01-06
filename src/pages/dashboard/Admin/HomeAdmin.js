@@ -105,40 +105,6 @@ import UserList from "../User/UserList";
                   }
                   className="custom-tab-label"
                 />
-                <Tab
-                  label={
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        textTransform: "none",
-                      }}
-                    >
-                      <MedicalServices
-                        sx={{ marginRight: 1, color: "#0099FF" }}
-                      />{" "}
-                    Service
-                    </div>
-                  }
-                  className="custom-tab-label"
-                />
-                 <Tab
-                  label={
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        textTransform: "none",
-                      }}
-                    >
-                      <Groups
-                        sx={{ marginRight: 1, color: "#0099FF" }}
-                      />{" "}
-                    Team
-                    </div>
-                  }
-                  className="custom-tab-label"
-                />
               </Tabs>
   
               <Box role="tabpanel" hidden={value !== 0}>
@@ -150,12 +116,9 @@ import UserList from "../User/UserList";
               <Box role="tabpanel" hidden={value !== 2}>
                 {value === 2 ? <ModeList /> : <LoadingSkeleton />}
               </Box>
-              <Box role="tabpanel" hidden={value !== 3}>
+              {/* <Box role="tabpanel" hidden={value !== 3}>
                 {value === 3 ? <ServiceList /> : <LoadingSkeleton />}
-              </Box>
-              <Box role="tabpanel" hidden={value !== 4}>
-                {value === 4 ? <ModeList /> : <LoadingSkeleton />}
-              </Box>
+              </Box> */}
             </Box>
           </Grid>       
         </Grid>

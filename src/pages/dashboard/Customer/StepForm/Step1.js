@@ -1,8 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  LinearProgress,
   FormControl,
-  FormHelperText,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -11,17 +16,17 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useEffect } from "react";
-import { TypeOptions, priorityOption } from "../../../helpers/tableComlumn";
 import { getAllService } from "../../../../app/api/service";
-import { fetchCity, fetchDistricts, fetchWards } from "./fetchDataSelect";
+import { Close,CloudUpload } from "@mui/icons-material";
+import Gallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
 
-const Step1 = ({ data, handleInputChange }) => {
+const Step1 = ({ data, handleInputChange,handleFileChange,imagePreviewUrl,isImagePreviewOpen,setIsImagePreviewOpen}) => {
   const [dataService, setDataServices] = useState([]);
-  const [dataLocation, setDataLocation] = useState([]);
-  const [districts, setDistricts] = useState([]);
-  const [wards, setWards] = useState([]);
-  const [typeError, setTypeError] = useState(false);
-
+  const [selectedFileName, setSelectedFileNames] = useState([]);
+  const [uploadProgress, setUploadProgress] = useState(
+    Array(selectedFileName.length).fill(0)
+  );
   const fetchService = async () => {
     try {
       const response = await getAllService();
@@ -32,51 +37,15 @@ const Step1 = ({ data, handleInputChange }) => {
     }
   };
 
-  const handleCityChange = async (e) => {
-    const { name, value } = e.target;
-    handleInputChange(e);
-
-    if (value) {
-      const districtResponse = await fetchDistricts(value);
-      setDistricts(districtResponse);
-      setWards([]); // Reset wards when city changes
-    } else {
-      setDistricts([]);
-      setWards([]);
-    }
-  };
-
-  const validateType = (value) => {
-    const isValid = value !== "";
-    setTypeError(!isValid);
-    return isValid;
-  };
-
-  const handleDistrictChange = async (e) => {
-    const { name, value } = e.target;
-    handleInputChange(e);
-
-    if (value) {
-      const wardResponse = await fetchWards(value);
-      setWards(wardResponse);
-    } else {
-      setWards([]);
-    }
-  };
-
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const cityResponse = await fetchCity();
-        setDataLocation(cityResponse);
-      } catch (error) {
-        console.log("Error while fetching data", error);
-      }
-    };
     fetchService();
-    fetchCity();
-    fetchData();
   }, []);
+
+  const images = imagePreviewUrl.map((url, index) => ({
+    original: url,
+    thumbnail: url,
+    description: `Attachment Preview ${index + 1}`,
+  }));
 
   return (
     <>
@@ -92,7 +61,7 @@ const Step1 = ({ data, handleInputChange }) => {
             label="Service"
           >
             {dataService
-              .filter((service) => service.id !== "") // Filter out the disabled option
+              .filter((service) => service.id !== "") 
               .map((service) => (
                 <MenuItem key={service.id} value={service.id}>
                   {service.description}
@@ -102,154 +71,132 @@ const Step1 = ({ data, handleInputChange }) => {
         </FormControl>
       </Tooltip>
 
-      <Tooltip
-        title="Select the level issue so we have can suggest time to solve help you"
-        arrow
-      >
-        <FormControl fullWidth variant="outlined">
-          <InputLabel id="priority-label">Priority</InputLabel>
-          <Select
-            labelId="priority-label"
-            id="priority"
-            name="priority"
-            value={data.priority}
-            onChange={handleInputChange}
-            label="Priority"
-          >
-            {priorityOption
-              .filter((priority) => priority.id !== "") // Filter out the disabled option
-              .map((priority) => (
-                <MenuItem key={priority.id} value={priority.id}>
-                  {priority.name}
-                </MenuItem>
-              ))}
-          </Select>
-        </FormControl>
-      </Tooltip>
-
-      <Tooltip
-        title="Select the Type support   so we have can suggest time to solve help you"
-        arrow
-      >
-        <FormControl fullWidth variant="outlined">
-          <InputLabel id="priority-label">Type</InputLabel>
-          <Select
-            labelId="priority-label"
-            id="type"
-            name="type"
-            value={data.type || "Offline"}
-            onChange={handleInputChange}
-            label="Type"
-          >
-            {TypeOptions
-            .filter((type) => type.id !== "")
-            .map((type) => (
-              <MenuItem key={type.id} value={type.name}>
-                {type.name}
-              </MenuItem>
-            ))}
-             {typeError && (
-            <FormHelperText error>Select a valid Type</FormHelperText>
-          )}
-          </Select>
-        </FormControl>
-      </Tooltip>
-
-      <div style={{ display: "flex" }}>
-        <FormControl
-          variant="outlined"
-          fullWidth
-          style={{ marginRight: "8px", flex: 1 }}
-        >
-          <InputLabel id="city-label">Chọn tỉnh thành</InputLabel>
-          <Select
-            labelId="city-label"
-            id="city"
-            name="city"
-            value={data.city}
-            onChange={handleCityChange}
-            label="Chọn tỉnh thành"
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            {dataLocation.map((city) => (
-              <MenuItem key={city.code} value={city.code}>
-                {city.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl
-          variant="outlined"
-          fullWidth
-          style={{ marginRight: "8px", flex: 1 }}
-        >
-          <InputLabel id="district-label">Chọn quận huyện</InputLabel>
-          <Select
-            labelId="district-label"
-            id="district"
-            name="district"
-            value={data.district}
-            onChange={handleDistrictChange}
-            label="Chọn quận huyện"
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            {districts.map((district) => (
-              <MenuItem key={district.code} value={district.code}>
-                {district.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl variant="outlined" fullWidth style={{ flex: 1 }}>
-          <InputLabel id="ward-label">Chọn phường xã</InputLabel>
-          <Select
-            labelId="ward-label"
-            id="ward"
-            name="ward"
-            value={data.ward}
-            onChange={handleInputChange}
-            label="Chọn phường xã"
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            {wards.map((ward) => (
-              <MenuItem key={ward.code} value={ward.code}>
-                {ward.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </div>
-
-      <Tooltip
-        title="Writing your street to more detail location"
-        arrow
-        interactive={false}
-      >
+      <Tooltip title="Writing you Reason you have problems" arrow>
         <FormControl fullWidth variant="outlined" style={{ marginBottom: 10 }}>
           <TextField
-            id="street"
+            id="title"
             type="text"
-            name="street"
-            value={data.street}
+            name="title"
+            value={data.title}
             onChange={handleInputChange}
-            label="Street"
+            label="Title"
             variant="outlined"
-            error={data.street === ""}
-            helperText={data.street === "" ? "Street is required" : ""}
+            error={data.title === ""}
+            helperText={data.title === "" ? "Title is required" : ""}
             InputProps={{
               style: { height: "50px" },
             }}
           />
         </FormControl>
       </Tooltip>
+
+      <Tooltip title="Writing the details more about your problems" arrow>
+        <FormControl fullWidth variant="outlined" style={{ marginBottom: 16 }}>
+          <TextField
+            id="description"
+            name="description"
+            value={data.description}
+            onChange={handleInputChange}
+            label="Description"
+            variant="outlined"
+            multiline
+            rows={4}
+            error={data.description === ""}
+            helperText={
+              data.description === "" ? "Description is required" : ""
+            }
+          />
+        </FormControl>
+      </Tooltip>
+      <Tooltip
+        title="Upload more Image so we can see details issue if necessary"
+        arrow
+      >
+        <FormControl fullWidth variant="outlined" style={{ marginBottom: 16 }}>
+          <input
+            id="attachmentUrl"
+            type="file"
+            name="file"
+            onChange={(e) => {
+              const files = Array.from(e.target.files);
+              handleFileChange(e);
+              files.forEach((file, index) => {
+                const totalSize = file.size;
+                let uploadedSize = 0;
+                const updateProgress = () => {
+                  if (uploadedSize < totalSize) {
+                    uploadedSize += 1000000;
+                    const progress = (uploadedSize / totalSize) * 100;
+                    setUploadProgress((prevProgress) => {
+                      const newProgress = [...prevProgress];
+                      newProgress[index] = progress;
+                      return newProgress;
+                    });
+                    setTimeout(updateProgress, 1);
+                  }
+                };
+                updateProgress();
+              });
+              const fileNames = Array.from(files).map((file) => file.name);
+              setSelectedFileNames(fileNames);
+            }}
+            multiple
+            style={{ display: "none" }}
+          />
+          {imagePreviewUrl.length > 0 && (
+            <div
+              className="image-preview"
+              onClick={() => setIsImagePreviewOpen(true)}
+            >
+              <p className="preview-text">Click here to view attachment</p>
+            </div>
+          )}
+          <label htmlFor="attachmentUrl">
+            <Button
+              component="span"
+              variant="contained"
+              startIcon={<CloudUpload />}
+              className="file-upload-button input-field file-input"
+            >
+              Upload file
+            </Button>
+          </label>
+          {uploadProgress > 0 && (
+            <LinearProgress
+              variant="determinate"
+              value={uploadProgress}
+              style={{ marginTop: "8px" }}
+            />
+          )}
+          {selectedFileName && (
+            <p style={{ margin: "8px 0 0", fontSize: "14px" }}>
+              File: {selectedFileName}
+            </p>
+          )}
+        </FormControl>
+      </Tooltip>
+    
+      <Dialog
+        open={isImagePreviewOpen}
+        onClose={() => setIsImagePreviewOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          Image Preview
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={() => setIsImagePreviewOpen(false)}
+            aria-label="close"
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <Gallery items={images} />
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

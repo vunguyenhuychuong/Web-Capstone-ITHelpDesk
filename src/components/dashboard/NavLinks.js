@@ -19,7 +19,6 @@ const NavLinks = ({ toggleSidebar }) => {
     filteredLink = links.filter(
       (link) =>
         link.id === 20||
-        link.id === 2 ||
         link.id === 3 ||
         link.id === 5 
     );

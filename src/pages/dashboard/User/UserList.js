@@ -208,7 +208,6 @@ const UserList = () => {
                   <MenuItem value="firstName">FirstName</MenuItem>
                   <MenuItem value="lastName">LastName</MenuItem>
                   <MenuItem value="username">UserName</MenuItem>
-                  <MenuItem value="address">Address</MenuItem>
                   <MenuItem value="email">Email</MenuItem>
                   <MenuItem value="gender">Gender</MenuItem>
                   <MenuItem value="phoneNumber">Phone</MenuItem>
@@ -277,7 +276,7 @@ const UserList = () => {
                     ))}
                 </Tooltip>
               </th>
-              <th
+              {/* <th
                 style={{ fontWeight: "bold" }}
                 className="sortable-header"
                 onClick={() => handleSortChange("address")}
@@ -291,7 +290,7 @@ const UserList = () => {
                       <ArrowDropUp />
                     ))}
                 </Tooltip>
-              </th>
+              </th> */}
               <th
                 style={{ fontWeight: "bold" }}
                 className="sortable-header"
@@ -417,7 +416,7 @@ const UserList = () => {
                       </span>
                     </div>
                   </td>
-                  <td className="tooltip-cell">
+                  {/* <td className="tooltip-cell">
                     {user.address ? (
                       <Tooltip title={user.address} arrow>
                         {user.address.length > 20
@@ -427,7 +426,7 @@ const UserList = () => {
                     ) : (
                       "-"
                     )}
-                  </td>
+                  </td> */}
                   <td>
                     <div style={{ display: "flex", alignItems: "center" }}>
                       {user.phoneNumber || "-"}

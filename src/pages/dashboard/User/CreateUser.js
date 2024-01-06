@@ -19,11 +19,8 @@ import "react-image-gallery/styles/css/image-gallery.css";
 import {
   ArrowBack,
   Close,
-  Visibility,
-  VisibilityOff,
 } from "@mui/icons-material";
 import { genderOptions, roleOptions } from "../../helpers/tableComlumn";
-import zxcvbn from "zxcvbn";
 import moment from "moment";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -53,7 +50,6 @@ const CreateUser = () => {
   const [dataCompany, setDataCompany] = useState([]);
   const [dataDepartment, setDataDepartment] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [DateBirth, setDateBirth] = useState(moment());
   const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
@@ -62,14 +58,9 @@ const CreateUser = () => {
     firstName: "",
     lastName: "",
     username: "",
-    password: "",
     email: "",
     phoneNumber: "",
   });
-
-  const togglePasswordVisibility = () => {
-    setShowPassword((prevShowPassword) => !prevShowPassword);
-  };
 
   const handleIsCompanyAdminChange = (newValue) => {
     setData((prevData) => ({
@@ -135,26 +126,6 @@ const CreateUser = () => {
 
     reader.readAsDataURL(file);
     setIsImagePreviewOpen(true);
-  };
-
-  const getPasswordStrength = () => {
-    const passwordStrength = zxcvbn(data.password);
-    const score = passwordStrength.score;
-
-    switch (score) {
-      case 0:
-        return { label: "Weak", color: "red" };
-      case 1:
-        return { label: "Fair", color: "orange" };
-      case 2:
-        return { label: "Good", color: "yellow" };
-      case 3:
-        return { label: "Strong", color: "green" };
-      case 4:
-        return { label: "Very Strong", color: "blue" };
-      default:
-        return { label: "", color: "" };
-    }
   };
 
   const handleInputChange = (e) => {
@@ -232,9 +203,6 @@ const CreateUser = () => {
     if (!data.userModel.username) {
       errors.username = "User Name is required";
     }
-    if (!data.userModel.password) {
-      errors.password = "Password  is required";
-    }
     if (!data.userModel.email) {
       errors.email = "Email  is required";
     }
@@ -283,6 +251,7 @@ const CreateUser = () => {
         departmentId: departmentId,
         isCompanyAdmin: data.isCompanyAdmin,
       });
+      navigate("/home/userList");
     } catch (error) {
       console.error(error);
     } finally {
@@ -482,40 +451,28 @@ const CreateUser = () => {
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                          marginBottom: "40px",
+                          marginBottom: "10px",
                         }}
                       >
-                        <span style={{ color: "red" }}>*</span>Password
-                        <IconButton onClick={togglePasswordVisibility}>
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
+                        <span style={{ color: "red" }}>*</span>Gender
                       </h2>
                     </Grid>
-
                     <Grid item xs={6}>
-                      <input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        name="password"
-                        className="form-control-text input-field"
-                        value={data.password}
+                      <select
+                        id="gender"
+                        name="gender"
+                        className="form-select-custom"
+                        value={data.gender}
                         onChange={handleInputChange}
-                      />
-                      {fieldErrors.password && (
-                        <div style={{ color: "red" }}>
-                          {fieldErrors.password}
-                        </div>
-                      )}
-                      {data.password && (
-                        <div
-                          style={{
-                            marginTop: "10px",
-                            color: getPasswordStrength().color,
-                          }}
-                        >
-                          Password Seem: {getPasswordStrength().label}
-                        </div>
-                      )}
+                      >
+                        {genderOptions
+                          .filter((gender) => gender.id !== "")
+                          .map((gender) => (
+                            <option key={gender.id} value={gender.id}>
+                              {gender.name}
+                            </option>
+                          ))}
+                      </select>
                     </Grid>
                   </Grid>
                 </Grid>
@@ -530,7 +487,7 @@ const CreateUser = () => {
                     textAlign: "right",
                   }}
                 >
-                  Attachment
+                  Avatar User
                 </h2>
               </Grid>
               <Grid item xs={9}>
@@ -639,29 +596,28 @@ const CreateUser = () => {
                           textAlign: "right",
                         }}
                       >
-                        <span style={{ color: "red" }}>*</span>Gender
+                        <span style={{ color: "red" }}>*</span>Company
                       </h2>
                     </Grid>
                     <Grid item xs={6}>
                       <select
-                        id="gender"
-                        name="gender"
+                        id="companyId"
+                        name="companyId"
                         className="form-select-custom"
-                        value={data.gender}
+                        value={data.companyId}
                         onChange={handleInputChange}
                       >
-                        {genderOptions
-                          .filter((gender) => gender.id !== "")
-                          .map((gender) => (
-                            <option key={gender.id} value={gender.id}>
-                              {gender.name}
+                        {dataCompany
+                          .filter((company) => company.id !== "")
+                          .map((company) => (
+                            <option key={company.id} value={company.id}>
+                              {company.companyName}
                             </option>
                           ))}
                       </select>
                     </Grid>
                   </Grid>
                 </Grid>
-
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
@@ -712,75 +668,6 @@ const CreateUser = () => {
                           textAlign: "right",
                         }}
                       >
-                        <span style={{ color: "red" }}>*</span>Company
-                      </h2>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <select
-                        id="companyId"
-                        name="companyId"
-                        className="form-select-custom"
-                        value={data.companyId}
-                        onChange={handleInputChange}
-                      >
-                        {dataCompany
-                          .filter((company) => company.id !== "")
-                          .map((company) => (
-                            <option key={company.id} value={company.id}>
-                              {company.companyName}
-                            </option>
-                          ))}
-                      </select>
-                    </Grid>
-                  </Grid>
-                </Grid>
-
-                <Grid item xs={6}>
-                  <Grid container alignItems="center">
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                          marginBottom: "40px",
-                        }}
-                      >
-                        DateBirth
-                      </h2>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <DateTimePicker
-                          value={DateBirth}
-                          onChange={(newValue) =>
-                            handleDateOfBirthChange(newValue)
-                          }
-                          renderInput={(props) => <TextField {...props} />}
-                        />
-                      </LocalizationProvider>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-
-              <Grid
-                container
-                justifyContent="flex-end"
-                style={{ marginBottom: "20px" }}
-              >
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
                         <span style={{ color: "red" }}>*</span>Department
                       </h2>
                     </Grid>
@@ -805,6 +692,41 @@ const CreateUser = () => {
                   </Grid>
                 </Grid>
 
+                <Grid item xs={6}>
+                  <Grid container alignItems="center">
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                          marginBottom: "40px",
+                        }}
+                      >
+                        Date Create
+                      </h2>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <DateTimePicker
+                          value={DateBirth}
+                          onChange={(newValue) =>
+                            handleDateOfBirthChange(newValue)
+                          }
+                          renderInput={(props) => <TextField {...props} />}
+                        />
+                      </LocalizationProvider>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+
+              <Grid
+                container
+                justifyContent="flex-end"
+                style={{ marginBottom: "20px" }}
+              >
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>

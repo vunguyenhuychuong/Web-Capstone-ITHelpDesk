@@ -3,9 +3,10 @@ import { getAuthHeader } from "./auth";
 import { baseURL } from "./link";
 import { toast } from "react-toastify";
 
-const header = getAuthHeader();
+
 export async function getAllDepartmentSelect(companyId) {
   try {
+    const header = getAuthHeader();
     const res = await axios.get(
       `${baseURL}/company/department/${companyId}/select-list`,
       {
@@ -14,7 +15,6 @@ export async function getAllDepartmentSelect(companyId) {
         },
       }
     );
-    console.log(header);
     return res.data.result;
   } catch (error) {
     console.log(error);
@@ -31,6 +31,7 @@ export async function getAllDepartmentList(
   companyId
 ) {
   try {
+    const header = getAuthHeader();
     let filter = `${searchField}.contains("${searchQuery}")`;
     const params = {
       filter: filter,
@@ -55,6 +56,7 @@ export async function getAllDepartmentList(
 
 export async function getDepartmentById(companyId) {
   try {
+    const header = getAuthHeader();
     const res = await axios.get(`${baseURL}/company/department/${companyId}`, {
       headers: {
         Authorization: header,
@@ -68,6 +70,7 @@ export async function getDepartmentById(companyId) {
 
 export async function createDepartment(data, companyId) {
   try {
+    const header = getAuthHeader();
     const res = await axios.post(
       `${baseURL}/company/department?companyId=${companyId}`,
       data,
@@ -95,6 +98,7 @@ export async function createDepartment(data, companyId) {
 
 export async function updateDepartment(data, companyId) {
   try {
+    const header = getAuthHeader();
     const res = await axios.put(
       `${baseURL}/company/department?companyId=${companyId}`,
       data,
@@ -122,6 +126,7 @@ export async function updateDepartment(data, companyId) {
 
 export async function deleteDepartment(companyId) {
     try {
+      const header = getAuthHeader();
       const res = await axios.delete(`${baseURL}/company/department/${companyId}`, {
         headers: {
           Authorization: header,
