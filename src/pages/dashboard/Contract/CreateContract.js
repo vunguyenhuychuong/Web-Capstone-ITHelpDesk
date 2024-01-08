@@ -94,6 +94,10 @@ const CreateContract = () => {
       // setDataAccountList(accountList);
       setDataCompanyList(companyList);
       setDataServiceList(serviceList);
+      setData((prevInputs) => ({
+        ...prevInputs,
+        companyId: companyList[0].id,
+      }));
     } catch (error) {
       console.log(error);
     }
@@ -191,6 +195,13 @@ const CreateContract = () => {
     }));
   }
 
+  const mapServiceDescriptionToId = () => {
+    const serviceIds = data.serviceIds.map(service => {
+      return dataServiceList.find(d => d.description === service).id;
+    })
+    return serviceIds;
+  }
+
   const handleSubmitContract = async (e) => {
     e.preventDefault();
 
@@ -210,14 +221,14 @@ const CreateContract = () => {
     }
 
     const isDataValid = validateDate(data.startDate, data.endDate);
-    if (!isDataValid) {
-      toast.info("Start Date must be earlier than End Date.", {
-        autoClose: 2000,
-        hideProgressBar: false,
-        position: toast.POSITION.TOP_CENTER,
-      });
-      return;
-    }
+    // if (!isDataValid) {
+    //   toast.info("Start Date must be earlier than End Date.", {
+    //     autoClose: 2000,
+    //     hideProgressBar: false,
+    //     position: toast.POSITION.TOP_CENTER,
+    //   });
+    //   return;
+    // }
 
     const formattedReviewDate = moment(data.startDate).format(
       "YYYY-MM-DDTHH:mm:ss"
@@ -227,6 +238,7 @@ const CreateContract = () => {
     );
 
     setIsSubmitting(true);
+    mapServiceDescriptionToId();
     try {
       let attachmentUrls = data.attachmentUrls || []; 
       if (selectedFile.length > 0) {
@@ -261,6 +273,7 @@ const CreateContract = () => {
         companyId: data.companyId,
         attachmentUrls: attachmentUrls,
         duration: data.duration,
+        serviceIds: mapServiceDescriptionToId(),
       });
       navigate("/home/contractList")
     } catch (error) {
@@ -469,8 +482,8 @@ const CreateContract = () => {
                     className={{width: '100%'}}
                   >
                     {dataServiceList.map((name) => (
-                      <MenuItem key={name.id} value={name.id}>
-                        <Checkbox checked={data.serviceIds.indexOf(name.id) > -1} />
+                      <MenuItem key={name.id} value={name.description}>
+                        <Checkbox checked={data.serviceIds.indexOf(name.description) > -1} />
                         <ListItemText primary={name.description} className="text-wrap" />
                       </MenuItem>
                     ))}
@@ -483,7 +496,7 @@ const CreateContract = () => {
                 style={{ marginBottom: "20px", marginTop: "20px" }}
               >
 
-                  <Grid item xs={6}>
+                <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
                       <h2
@@ -499,10 +512,10 @@ const CreateContract = () => {
                     </Grid>
                     <Grid item xs={5}>
                       <select
-                        id="accountantId"
-                        name="accountantId"
+                        id="duration"
+                        name="duration"
                         className="form-select-custom"
-                        value={data.accountantId}
+                        value={data.duration}
                         onChange={handleInputChange}
                       >
                         <option  value={3}>
@@ -625,7 +638,7 @@ const CreateContract = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item xs={6}>
+                {/* <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
                       <h2
@@ -651,6 +664,39 @@ const CreateContract = () => {
                           onChange={(newValue) => handleEndDateChange(newValue)}
                         />
                       </LocalizationProvider>
+                    </Grid>
+                  </Grid>
+                </Grid> */}
+                <Grid item xs={6}>
+                  <Grid container alignItems="center">
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Company{" "}
+                      </h2>
+                    </Grid>
+                    <Grid item xs={5}>
+                      <select
+                        id="companyId"
+                        name="companyId"
+                        className="form-select-custom"
+                        value={data.companyId}
+                        onChange={handleInputChange}
+                      >
+                        {dataCompanyList
+                          .filter((company) => company.id !== "")
+                          .map((company) => (
+                            <option key={company.id} value={company.id}>
+                              {company.companyName}
+                            </option>
+                          ))}
+                      </select>
                     </Grid>
                   </Grid>
                 </Grid>
@@ -693,83 +739,6 @@ const CreateContract = () => {
                     </Grid>
                   </Grid>
                 </Grid> */}
-
-
-                {/* <Grid item xs={6}>
-                  <Grid container alignItems="center">
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        Services{" "}
-                      </h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <FormControl style={{width: '100%'}}>
-                        <InputLabel id="demo-multiple-checkbox-label">Tag</InputLabel>
-                        <Select
-                          labelId="demo-multiple-checkbox-label"
-                          id="demo-multiple-checkbox"
-                          multiple
-                          value={data.serviceIds}
-                          onChange={() => {}}
-                          input={<OutlinedInput label="Tag" />}
-                          renderValue={(selected) => selected.join(', ')}
-                          MenuProps={MenuProps}
-                          className={{width: '100%'}}
-                        >
-                          {dataServiceList.map((name) => (
-                            <MenuItem key={name.id} value={name.id}>
-                              <Checkbox checked={data.serviceIds.indexOf(name.id) > -1} />
-                              <ListItemText primary={name.description} className="text-wrap" />
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                  </Grid>
-                </Grid> */}
-
-
-
-                <Grid item xs={6}>
-                  <Grid container alignItems="center">
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        Company{" "}
-                      </h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <select
-                        id="companyId"
-                        name="companyId"
-                        className="form-select-custom"
-                        value={data.companyId}
-                        onChange={handleInputChange}
-                      >
-                        {dataCompanyList
-                          .filter((company) => company.id !== "")
-                          .map((company) => (
-                            <option key={company.id} value={company.id}>
-                              {company.companyName}
-                            </option>
-                          ))}
-                      </select>
-                    </Grid>
-                  </Grid>
-                </Grid>
               </Grid>
             </Grid>
           </MDBCol>

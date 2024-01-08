@@ -399,7 +399,7 @@ const ContractList = () => {
                       <td
                          className="tooltip-cell"
                          title={`Name Contract: ${Contract.name}\nDescription: ${Contract.description}`}
-                      >{Contract.name}</td>
+                         onClick={() => handleOpenDetailContract(Contract.id)}>{Contract.name}</td>
                       <td>
                         {Contract.isApproved ? (
                           <>

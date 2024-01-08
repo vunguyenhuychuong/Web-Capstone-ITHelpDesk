@@ -212,9 +212,7 @@ const Details = ({ data, loading, error }) => {
                   >
                     {data && data.status
                       ? "Active"
-                      : data.status
-                      ? "Not Active"
-                      : "No status available"}
+                      : "Not Active"}
                   </span>
                 </TableCell>
               </TableRow>
@@ -614,7 +612,7 @@ const Details = ({ data, loading, error }) => {
                       }}
                     >
                       Services
-                      <Button
+                      {/* <Button
                         variant="contained"
                         color="primary"
                         style={{ marginLeft: "10px" }}
@@ -628,7 +626,7 @@ const Details = ({ data, loading, error }) => {
                         style={{ marginLeft: "10px" }}
                       >
                         <RemoveCircleOutline /> Remove
-                      </Button>
+                      </Button> */}
                     </TableCell>
                   </TableRow>
                 </TableBody>
