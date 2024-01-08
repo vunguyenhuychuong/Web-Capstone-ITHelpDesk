@@ -13,10 +13,13 @@ import {
 import "../../../../assets/css/UploadComponent.css";
 import { Attachment, Close } from "@mui/icons-material";
 import { useState } from "react";
-import { data } from "autoprefixer";
+import { useEffect, useRef } from "react";
+import { uploadFiles } from "../../../../app/api/upload";
 
 const UploadComponent = ({ attachmentUrls }) => {
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
+  const [clonedAttachmentUrls, setClonedAttachmentUrls] = useState(attachmentUrls);
+  const [fileList, setFileList] = useState([]);
 
   const openImagePreview = () => {
     setIsImagePreviewOpen(true);
@@ -51,10 +54,33 @@ const UploadComponent = ({ attachmentUrls }) => {
     onDrop(e) {},
   };
 
+  const handleChange = ({ file, fileList }) => {
+    if (file.status === 'done') {
+      setFileList(fileList);
+    }
+  };
+
+  const prevFileListRef = useRef();
+
+  useEffect(() => {
+    prevFileListRef.current = fileList;
+  });
+
+  const prevFileList = prevFileListRef.current;
+
+  useEffect(() => {
+    if (fileList.length > (prevFileList?.length || 0)) {
+      uploadFiles(fileList);
+    }
+    const urls = fileList.map(file => URL.createObjectURL(file.originFileObj));
+    setClonedAttachmentUrls(urls);
+  }, [fileList]);
+
   return (
     <div>
       <Paper elevation={3} className="upload-container">
-        <Upload {...props}>
+        <Upload {...props}
+          onChange={handleChange}>
           <div className="upload-content">
             <Typography variant="h6">
               <Attachment /> <span>Browse Files</span> or Drag files here [Max
@@ -62,15 +88,28 @@ const UploadComponent = ({ attachmentUrls }) => {
             </Typography>
           </div>
         </Upload>
-        {attachmentUrls ? (
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={openImagePreview}
-            style={{ marginTop: "10px", textTransform: "none" }}
-          >
-            View Attachment Image
-          </Button>
+        
+        {clonedAttachmentUrls && clonedAttachmentUrls.length > 0 ? (
+          <>
+          <div className="d-flex gap-2">
+            {Array.isArray(clonedAttachmentUrls)  ? clonedAttachmentUrls.map((url, index) => (
+              <img
+                key={index}
+                src={url}
+                alt={`Attachment Preview ${index}`}
+                style={{ width: "20rem", height: "10rem", objectFit: "cover" }}
+              />
+            )) : null}
+          </div>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={openImagePreview}
+              style={{ marginTop: "10px", textTransform: "none" }}
+            >
+              View Attachment Image
+            </Button>
+            </>
         ) : (
           <div>No image currently</div>
         )}
@@ -84,7 +123,7 @@ const UploadComponent = ({ attachmentUrls }) => {
         <DialogContent>
           <div style={{ position: "relative" }}>
             <img
-              src={attachmentUrls}
+              src={clonedAttachmentUrls}
               alt="Attachment Preview"
               style={{ width: "100%", height: "auto" }}
             />

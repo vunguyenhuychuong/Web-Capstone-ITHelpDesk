@@ -136,35 +136,35 @@ const Details = ({ data, loading, error }) => {
       width: 500,
       editable: true,
     },
-    {
-      field: "Type",
-      headerName: "Type",
-      width: 250,
-      editable: true,
-    },
-    {
-      field: "amount",
-      headerName: "Value(VND)",
-      type: "number",
-      width: 150,
-      editable: true,
-    },
+    // {
+    //   field: "Type",
+    //   headerName: "Type",
+    //   width: 250,
+    //   editable: true,
+    // },
+    // {
+    //   field: "amount",
+    //   headerName: "Value(VND)",
+    //   type: "number",
+    //   width: 150,
+    //   editable: true,
+    // },
     {
       field: "createdAt",
       headerName: "Date Added",
       width: 350,
       editable: true,
     },
-    {
-      field: "delete",
-      headerName: "Delete",
-      width: 100,
-      renderCell: (params) => (
-        <IconButton onClick={() => handleDelete([params.id])} color="secondary">
-          <Delete />
-        </IconButton>
-      ),
-    },
+    // {
+    //   field: "delete",
+    //   headerName: "Delete",
+    //   width: 100,
+    //   renderCell: (params) => (
+    //     <IconButton onClick={() => handleDelete([params.id])} color="secondary">
+    //       <Delete />
+    //     </IconButton>
+    //   ),
+    // },
   ];
 
   const formattedDataContractService = dataContractService.map((contract) => ({
@@ -277,7 +277,7 @@ const Details = ({ data, loading, error }) => {
                     ? data.description
                     : "No data available"}
                 </TableCell>
-                <TableCell
+                {/* <TableCell
                   style={{
                     background: "#CCCCCC",
                     marginTop: "10px",
@@ -294,9 +294,28 @@ const Details = ({ data, loading, error }) => {
                   {data && data.parentContractId
                     ? data.parentContractId
                     : "No data available"}
+                </TableCell> */}
+                <TableCell
+                  style={{
+                    background: "#CCCCCC",
+                    marginTop: "10px",
+                    textAlign: "right",
+                    width: "250px",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    padding: "15px",
+                  }}
+                >
+                  Value (VND)
+                </TableCell>
+                <TableCell style={{ marginTop: "10px" }}>
+                  {data && formatCurrency(data.value)
+                    ? formatCurrency(data.value)
+                    : "No data available"}{" "}
+                  VND
                 </TableCell>
               </TableRow>
-              <TableRow>
+              {/* <TableRow>
                 <TableCell
                   style={{
                     background: "#CCCCCC",
@@ -334,7 +353,7 @@ const Details = ({ data, loading, error }) => {
                     ? `${data.accountant.lastName} ${data.accountant.firstName}`
                     : "No data available"}
                 </TableCell>
-              </TableRow>
+              </TableRow> */}
             </TableBody>
           </Table>
           <UploadComponent attachmentUrls={data.attachmentUrls} />
@@ -498,7 +517,7 @@ const Details = ({ data, loading, error }) => {
                     "No data available"
                   )}
                 </TableCell>
-                <TableCell
+                {/* <TableCell
                   style={{
                     background: "#CCCCCC",
                     marginTop: "10px",
@@ -513,9 +532,7 @@ const Details = ({ data, loading, error }) => {
                   {data && data.company
                     ? data.company.companyAddress
                     : "No data available"}
-                </TableCell>
-              </TableRow>
-              <TableRow>
+                </TableCell> */}
                 <TableCell
                   style={{
                     background: "#CCCCCC",
@@ -526,7 +543,26 @@ const Details = ({ data, loading, error }) => {
                     fontWeight: "bold",
                   }}
                 >
-                  Field Of Address
+                  Field Of Business
+                </TableCell>
+                <TableCell style={{ marginTop: "10px", width: "150px" }}>
+                  {data && data.company
+                    ? data.company.fieldOfBusiness
+                    : "No data available"}
+                </TableCell>
+              </TableRow>
+              {/* <TableRow>
+                <TableCell
+                  style={{
+                    background: "#CCCCCC",
+                    marginTop: "10px",
+                    textAlign: "right",
+                    width: "150px",
+                    fontSize: "18px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Field Of Business
                 </TableCell>
                 <TableCell style={{ marginTop: "10px", width: "150px" }}>
                   {data && data.company
@@ -549,7 +585,7 @@ const Details = ({ data, loading, error }) => {
                     ? data.company.customerAdmin
                     : "No data available"}
                 </TableCell>
-              </TableRow>
+              </TableRow> */}
             </TableBody>
           </Table>
           <Grid
@@ -577,7 +613,7 @@ const Details = ({ data, loading, error }) => {
                         fontWeight: "bold",
                       }}
                     >
-                      Associate Service
+                      Services
                       <Button
                         variant="contained"
                         color="primary"
