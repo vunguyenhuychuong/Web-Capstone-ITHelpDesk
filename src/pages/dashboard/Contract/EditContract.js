@@ -22,6 +22,7 @@ import {
   getAllAccountList,
   getAllCompanyList,
   getContractById,
+  getContractService,
   getParentContract,
   updateContract,
 } from "../../../app/api/contract";
@@ -42,12 +43,15 @@ const EditContract = () => {
     companyId: 1,
     attachmentUrls: [],
     status: 0,
+    duration: 3,
+    serviceIds: [],
   });
   const [selectedFile, setSelectedFile] = useState(null);
   const [dataParentContract, setDataParentContract] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dataAccountList, setDataAccountList] = useState([]);
   const [dataCompanyList, setDataCompanyList] = useState([]);
+  const [dataContractService, setDataContractService] = useState([]);
   const [startDate, setStartDate] = useState(
     moment(data.startDate ? data.startDate : undefined)
   );
@@ -86,6 +90,23 @@ const EditContract = () => {
     }));
   };
 
+  const calculateMonthsDifference = (startDate, endDate) => {
+    // Convert both "startDate" and "endDate" to a date format
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+
+    // Subtract the "startDate" from the "endDate" to get the difference in milliseconds
+    let differenceInMilliseconds = end - start;
+
+    // Convert the difference from milliseconds to months
+    let differenceInMonths = differenceInMilliseconds / 2.628e+9;
+
+    // Round the result to the nearest integer
+    differenceInMonths = Math.round(differenceInMonths);
+
+    return differenceInMonths;
+  }
+
   const handleFileChange = (e) => {
     const file = e.target.files;
     setSelectedFile([...file]);
@@ -117,11 +138,11 @@ const EditContract = () => {
 
   const fetchDataCreateContract = async () => {
     try {
-      const contractParent = await getParentContract();
-      const accountList = await getAllAccountList();
+      // const contractParent = await getParentContract();
+      // const accountList = await getAllAccountList();
       const companyList = await getAllCompanyList();
-      setDataParentContract(contractParent);
-      setDataAccountList(accountList);
+      // setDataParentContract(contractParent);
+      // setDataAccountList(accountList);
       setDataCompanyList(companyList);
     } catch (error) {
       console.log(error);
@@ -132,19 +153,22 @@ const EditContract = () => {
     const fetchContractData = async () => {
       try {
         const contractData = await getContractById(contractId);
+        const contractServiceData = await getContractService(contractId);
         setData((prevData) => ({
           ...prevData,
+          contractNumber: contractData.contractNumber,
           name: contractData.name,
           description: contractData.description,
           value: contractData.value,
           startDate: contractData.startDate,
           endDate: contractData.endDate,
-          parentContractId: contractData.parentContractId,
-          accountantId: contractData.accountantId,
+          // parentContractId: contractData.parentContractId,
+          // accountantId: contractData.accountantId,
           attachmentUrls: contractData.attachmentUrls,
           companyId: contractData.companyId,
+          duration: calculateMonthsDifference(contractData.startDate, contractData.endDate)
         }));
-
+        setDataContractService(contractServiceData);
         setStartDate(moment(contractData.startDate));
         setEndDate(moment(contractData.endDate));
       } catch (error) {
@@ -152,9 +176,12 @@ const EditContract = () => {
       }
     };
     fetchContractData();
-    fetchDataCreateContract();
     setImagePreviewUrl(data.attachmentUrls);
-  }, [contractId, data.attachmentUrls]);
+  }, [contractId]);
+
+  useEffect(() => {
+    fetchDataCreateContract();
+  }, [])
 
   const validateDate = (startDate, endDate) => {
     if (!startDate || !endDate) {
@@ -180,10 +207,10 @@ const EditContract = () => {
     }
 
     const isDataValid = validateDate(data.startDate, data.endDate);
-    if (!isDataValid) {
-      toast.info("Review Date must be earlier than Expired Date.");
-      return;
-    }
+    // if (!isDataValid) {
+    //   toast.info("Review Date must be earlier than Expired Date.");
+    //   return;
+    // }
 
     const formattedReviewDate = moment(data.startDate).format(
       "YYYY-MM-DDTHH:mm:ss"
@@ -195,7 +222,7 @@ const EditContract = () => {
     setIsSubmitting(true);
     try {
       let attachmentUrls = data.attachmentUrls || [];
-      if (selectedFile.length > 0) {
+      if (selectedFile && selectedFile.length > 0) {
         const storage = getStorage();
         const promises = [];
 
@@ -218,16 +245,19 @@ const EditContract = () => {
       setData(updatedData);
       await updateContract(
         {
+          contractNumber: updatedData.contractNumber,
           name: updatedData.name,
           description: updatedData.description,
           value: updatedData.value,
           startDate: formattedReviewDate,
-          endDate: formattedExpiredDate,
-          parentContractId: updatedData.parentContractId,
-          accountantId: updatedData.accountantId,
+          duration: updatedData.duration,
+          // endDate: formattedExpiredDate,
+          // parentContractId: updatedData.parentContractId,
+          // accountantId: updatedData.accountantId,
           companyId: updatedData.companyId,
           attachmentUrls: attachmentUrls,
-          status: updatedData.status,
+          // status: updatedData.status,
+          serviceIds: dataContractService.map(service => service.id),
         },
         contractId
       );
@@ -421,7 +451,48 @@ const EditContract = () => {
                   </div>
                 )}
               </Grid>
+              
               <Grid container justifyContent="flex-end">
+
+                <Grid item xs={6}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        <span style={{ color: "red" }}>*</span>Duration
+                      </h2>
+                    </Grid>
+                    <Grid item xs={5}>
+                      <select
+                        id="duration"
+                        name="duration"
+                        className="form-select-custom"
+                        value={data.duration}
+                        onChange={handleInputChange}
+                      >
+                        <option  value={3}>
+                          3 months
+                        </option>
+                        <option  value={6}>
+                          6 months
+                        </option>
+                        <option  value={12}>
+                          12 months
+                        </option>
+                        <option  value={24}>
+                          24 months
+                        </option>
+                      </select>
+                    </Grid>
+                  </Grid>
+                </Grid>
+
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
@@ -452,7 +523,7 @@ const EditContract = () => {
                   </Grid>
                 </Grid>
 
-                <Grid item xs={6}>
+                {/* <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
                       <h2
@@ -487,7 +558,7 @@ const EditContract = () => {
                       </select>
                     </Grid>
                   </Grid>
-                </Grid>
+                </Grid> */}
               </Grid>
               <Grid container justifyContent="flex-end">
                 <Grid item xs={6}>
@@ -528,7 +599,7 @@ const EditContract = () => {
                   </Grid>
                 </Grid>
 
-                <Grid item xs={6}>
+                {/* <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
                       <h2
@@ -557,9 +628,43 @@ const EditContract = () => {
                       </LocalizationProvider>
                     </Grid>
                   </Grid>
+                </Grid> */}
+
+                <Grid item xs={6}>
+                  <Grid container alignItems="center">
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Company{" "}
+                      </h2>
+                    </Grid>
+                    <Grid item xs={5}>
+                      <select
+                        id="companyId"
+                        name="companyId"
+                        className="form-select-custom"
+                        value={data.companyId}
+                        onChange={handleInputChange}
+                      >
+                        {dataCompanyList
+                          .filter((company) => company.id !== "")
+                          .map((company) => (
+                            <option key={company.id} value={company.id}>
+                              {company.companyName}
+                            </option>
+                          ))}
+                      </select>
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Grid>
-              <Grid
+              {/* <Grid
                 container
                 justifyContent="flex-end"
                 style={{ marginBottom: "20px" }}
@@ -631,7 +736,7 @@ const EditContract = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
+              </Grid> */}
             </Grid>
           </MDBCol>
         </MDBRow>

@@ -57,6 +57,11 @@ const UploadComponent = ({ attachmentUrls }) => {
   const handleChange = ({ file, fileList }) => {
     if (file.status === 'done') {
       setFileList(fileList);
+      if (fileList.length > (prevFileList?.length || 0)) {
+        uploadFiles(fileList);
+      }
+      const urls = fileList.map(file => URL.createObjectURL(file.originFileObj));
+      setClonedAttachmentUrls(urls);
     }
   };
 
@@ -69,12 +74,16 @@ const UploadComponent = ({ attachmentUrls }) => {
   const prevFileList = prevFileListRef.current;
 
   useEffect(() => {
-    if (fileList.length > (prevFileList?.length || 0)) {
-      uploadFiles(fileList);
-    }
-    const urls = fileList.map(file => URL.createObjectURL(file.originFileObj));
-    setClonedAttachmentUrls(urls);
-  }, [fileList]);
+    setClonedAttachmentUrls(attachmentUrls)
+  }, [attachmentUrls])
+
+  // useEffect(() => {
+  //   if (fileList.length > (prevFileList?.length || 0)) {
+  //     uploadFiles(fileList);
+  //   }
+  //   const urls = fileList.map(file => URL.createObjectURL(file.originFileObj));
+  //   setClonedAttachmentUrls(urls);
+  // }, [fileList]);
 
   return (
     <div>

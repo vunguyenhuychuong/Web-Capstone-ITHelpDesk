@@ -1,13 +1,22 @@
 import React from "react";
 import {
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
   Grid,
   IconButton,
+  InputLabel,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  ListSubheader,
   MenuItem,
+  OutlinedInput,
   Select,
   Table,
   TableBody,
@@ -28,12 +37,13 @@ import {
   deleteContractService,
   getContractService,
   getServiceSelect,
+  updateContract,
 } from "../../../../app/api/contract";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import UploadComponent from "./UploadComponent";
-import { ControlPoint, Delete, RemoveCircleOutline } from "@mui/icons-material";
+import { ControlPoint, Delete, Label, RemoveCircleOutline } from "@mui/icons-material";
 import MyTask from "../../../../assets/images/NoService.jpg";
 import { toast } from "react-toastify";
 
@@ -45,17 +55,33 @@ const Details = ({ data, loading, error }) => {
   const [dataSelectedService, setDataSelectedService] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [serviceToAdd, setServiceToAdd] = useState([]);
+
   console.log(data);
 
   Details.propTypes = {
     data: PropTypes.object,
     loading: PropTypes.bool.isRequired,
   };
+
+    // Dropdown service
+    const ITEM_HEIGHT = 48;
+    const ITEM_PADDING_TOP = 8;
+    const MenuProps = {
+      PaperProps: {
+        style: {
+          maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+          width: 250,
+        },
+      },
+    };
+
   const handleOpenDialog = () => {
     setOpenDialog(true);
   };
 
   const handleCloseDialog = () => {
+    setServiceToAdd([]);
     setOpenDialog(false);
   };
 
@@ -94,13 +120,57 @@ const Details = ({ data, loading, error }) => {
     }
   };
 
+  const mapServiceDescriptionToId = () => {
+    const currentServiceIds = formattedDataContractService.map(s => s.id);
+    const newServiceIds = serviceToAdd.map(service => {
+      return dataSelectedService.find(d => d.description === service).id;
+    })
+    return [...currentServiceIds, ...newServiceIds];
+  }
+
+  const calculateMonthsDifference = (startDate, endDate) => {
+    // Convert both "startDate" and "endDate" to a date format
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+
+    // Subtract the "startDate" from the "endDate" to get the difference in milliseconds
+    let differenceInMilliseconds = end - start;
+
+    // Convert the difference from milliseconds to months
+    let differenceInMonths = differenceInMilliseconds / 2.628e+9;
+
+    // Round the result to the nearest integer
+    differenceInMonths = Math.round(differenceInMonths);
+
+    return differenceInMonths;
+  }
+
   const handleAddService = async () => {
-    if (!selectedService) {
+    if (!serviceToAdd) {
       toast.warning("Please select a service");
       return;
     }
     try {
-      const result = await createContractService(contractId, [selectedService]);
+      console.log(mapServiceDescriptionToId())
+      // const result = await createContractService(contractId, [selectedService]);
+      const result = await updateContract(
+        {
+          contractNumber: data.contractNumber,
+          name: data.name,
+          description: data.description,
+          value: data.value,
+          startDate: data.startDate,
+          duration: calculateMonthsDifference(data.startDate, data.endDate),
+          // endDate: formattedExpiredDate,
+          // parentContractId: data.parentContractId,
+          // accountantId: data.accountantId,
+          companyId: data.companyId,
+          attachmentUrls: data.attachmentUrls,
+          // status: updatedData.status,
+          serviceIds: mapServiceDescriptionToId(),
+        },
+        contractId
+      );
       fetchData();
       handleCloseDialog();
       toast.success(result.message, {
@@ -175,6 +245,20 @@ const Details = ({ data, loading, error }) => {
     createdAt: formatDate(contract.createdAt),
   }));
 
+  const handleServiceListChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setServiceToAdd(typeof value === 'string' ? value.split(',') : value)
+  }
+
+  // const mapServiceDescriptionToId = () => {
+  //   const serviceIds = data.serviceIds.map(service => {
+  //     return selectedService.find(d => d.description === service).id;
+  //   })
+  //   return serviceIds;
+  // }
+
   return (
     <div>
       <Grid container spacing={2} alignItems="center" className="gridContainer">
@@ -212,9 +296,7 @@ const Details = ({ data, loading, error }) => {
                   >
                     {data && data.status
                       ? "Active"
-                      : data.status
-                      ? "Not Active"
-                      : "No status available"}
+                      : "Not Active"}
                   </span>
                 </TableCell>
               </TableRow>
@@ -357,7 +439,7 @@ const Details = ({ data, loading, error }) => {
             </TableBody>
           </Table>
           <UploadComponent attachmentUrls={data.attachmentUrls} />
-          {data?.attachmentUrls && (
+          {/* {data?.attachmentUrls && (
             <Button
               variant="outlined"
               color="primary"
@@ -366,7 +448,7 @@ const Details = ({ data, loading, error }) => {
             >
               View Attachment Image
             </Button>
-          )}
+          )} */}
           {dataContractService.length === 0 && (
             <Typography variant="subtitle1" style={{ margin: "20px" }}>
               This contract has no payment yet.
@@ -689,21 +771,58 @@ const Details = ({ data, loading, error }) => {
         </Grid>
       </Grid>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
+      <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth={true} maxWidth={'md'}>
         <DialogTitle>Add Service</DialogTitle>
-        <DialogContent>
-          <Select
+        <DialogContent style={{paddingTop: '1rem'}}>
+          {/* <Select
             label="Service"
             value={selectedService}
             onChange={handleServiceChange}
             fullWidth
           >
-            {dataSelectedService.map((service) => (
+            {dataSelectedService && dataSelectedService.length > 0 ? dataSelectedService.map((service) => (
               <MenuItem key={service.id} value={service.id}>
                 {`${service.description} - ${service.amount}VND - ${service.type}`}
               </MenuItem>
-            ))}
-          </Select>
+            )) : null}
+          </Select> */}
+          <FormControl style={{width: '100%'}}>
+            <InputLabel id="demo-multiple-checkbox-label">Services</InputLabel>
+            <Select
+              labelId="demo-multiple-checkbox-label"
+              id="demo-multiple-checkbox"
+              multiple
+              value={serviceToAdd}
+              onChange={handleServiceListChange}
+              input={<OutlinedInput label="Services" />}
+              renderValue={(selected) => selected.join(', ')}
+              MenuProps={MenuProps}
+              className={{width: '100%'}}
+            >
+              {dataSelectedService && dataSelectedService.length > 0 ? dataSelectedService.map((name) => (
+                <MenuItem key={name.id} value={name.description}>
+                  <Checkbox checked={serviceToAdd.indexOf(name.description) > -1} />
+                  <ListItemText primary={name.description} className="text-wrap" />
+                </MenuItem>
+              )) : null}
+            </Select>
+          </FormControl>
+          <div className="rounded border mt-4">
+
+            <List 
+              subheader={<ListSubheader>Preview</ListSubheader>}
+            >
+              {serviceToAdd.map(service => (
+                <ListItem>
+                  <ListItemButton>
+                    <ListItemText
+                      primary={service}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </div>
         </DialogContent>
         <DialogActions>
           <Button color="primary" onClick={handleAddService}>
