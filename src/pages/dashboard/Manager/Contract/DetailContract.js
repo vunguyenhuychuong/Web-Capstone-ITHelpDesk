@@ -257,7 +257,7 @@ const DetailContract = () => {
             <Box role="tabpanel" hidden={value !== 1}>
               {value === 1 ? (
                 <PaymentContract
-                  dataPayment={dataPayment}
+                  dataPayment={data}
                   loading={loading || false}
                 />
               ) : (
