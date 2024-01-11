@@ -10,24 +10,17 @@ import {
   DialogTitle,
   Grid,
   IconButton,
-  TextField,
-  Tooltip,
+
 } from "@mui/material";
 import {
   ArrowBack,
   Close,
-  Visibility,
-  VisibilityOff,
 } from "@mui/icons-material";
 import { genderOptions } from "../../helpers/tableComlumn";
-import zxcvbn from "zxcvbn";
 import { createCompanyMember } from "../../../app/api/companyMember";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import moment from "moment";
-import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { useSelector } from "react-redux";
 import { getAllDepartmentSelect } from "../../../app/api/department";
 
@@ -45,14 +38,12 @@ const CreateCompanyMember = () => {
       gender: 0,
       avatarUrl: "",
       phoneNumber: "",
-      dateOfBirth: "",
     },
     isCompanyAdmin: false,
     memberPosition: "",
     departmentId: 1,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [DateBirth, setDateBirth] = useState(moment());
   const [dataDepartment, setDataDepartment] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
@@ -71,18 +62,6 @@ const CreateCompanyMember = () => {
     thumbnail: url,
     description: `Attachment Preview ${index + 1}`,
   }));
-
-  const handleDateBirthChange = (newDate) => {
-    const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
-    setDateBirth(newDate);
-    setData((prevInputs) => ({
-      ...prevInputs,
-      user: {
-        ...prevInputs.user,
-        dateOfBirth: formattedDate,
-      },
-    }));
-  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -209,13 +188,6 @@ const CreateCompanyMember = () => {
         avatarUrl = await getDownloadURL(storageRef);
       }
       const updatedData = {
-        user: {
-          ...data.user,
-          avatarUrl: avatarUrl,
-          dateOfBirth: data.user.dateOfBirth
-            ? moment(data.user.dateOfBirth).format("YYYY-MM-DDTHH:mm:ss")
-            : null,
-        },
         isCompanyAdmin: data.isCompanyAdmin,
         memberPosition: data.memberPosition,
         departmentId: data.departmentId,
@@ -230,7 +202,6 @@ const CreateCompanyMember = () => {
           gender: data.user.gender,
           avatarUrl: data.user.avatarUrl,
           phoneNumber: data.user.phoneNumber,
-          dateOfBirth: data.user.dateOfBirth,
         },
         isCompanyAdmin: data.isCompanyAdmin,
         memberPosition: data.memberPosition,
@@ -609,27 +580,25 @@ const CreateCompanyMember = () => {
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                          marginBottom: "40px",
+                          marginBottom: "20px",
                         }}
                       >
-                        Date 
+                        Company Admin
                       </h2>
                     </Grid>
                     <Grid item xs={6}>
-                      <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <DateTimePicker
-                          slotProps={{
-                            textField: {
-                              helperText: `${DateBirth}`,
-                            },
-                          }}
-                          value={DateBirth}
-                          onChange={(newValue) =>
-                            handleDateBirthChange(newValue)
-                          }
-                          renderInput={(props) => <TextField {...props} />}
-                        />
-                      </LocalizationProvider>
+                    <select
+                        id="isCompanyAdmin"
+                        name="isCompanyAdmin"
+                        className="form-select-custom"
+                        value={data.isCompanyAdmin}
+                        onChange={(e) =>
+                          handleIsCompanyAdminChange(e.target.value === "true")
+                        }
+                      >
+                        <option value="true">True</option>
+                        <option value="false">False</option>
+                      </select>
                     </Grid>
                   </Grid>
                 </Grid>
@@ -651,7 +620,7 @@ const CreateCompanyMember = () => {
                           textAlign: "right",
                         }}
                       >
-                        <span style={{ color: "red" }}>*</span>Department
+                        <span style={{ color: "red" }}>*</span>Company Address
                       </h2>
                     </Grid>
                     <Grid item xs={6}>
@@ -678,30 +647,8 @@ const CreateCompanyMember = () => {
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        Company Admin
-                      </h2>
                     </Grid>
                     <Grid item xs={6}>
-                      <select
-                        id="isCompanyAdmin"
-                        name="isCompanyAdmin"
-                        className="form-select-custom"
-                        value={data.isCompanyAdmin}
-                        onChange={(e) =>
-                          handleIsCompanyAdminChange(e.target.value === "true")
-                        }
-                      >
-                        <option value="true">True</option>
-                        <option value="false">False</option>
-                      </select>
                     </Grid>
                   </Grid>
                 </Grid>

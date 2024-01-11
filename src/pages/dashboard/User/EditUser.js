@@ -546,76 +546,7 @@ const EditUser = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
-
-              <Grid
-                container
-                justifyContent="flex-end"
-                style={{ marginBottom: "20px" }}
-              >
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        <span style={{ color: "red" }}>*</span>Date Of Birth
-                      </h2>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <DatePicker
-                          required
-                          fullWidth
-                          value={date}
-                          maxDate={moment()}
-                          onChange={(newValue) => handleDateChange(newValue)}
-                        />
-                      </LocalizationProvider>
-                      {fieldErrors.dateOfBirth && (
-                        <div style={{ color: "red" }}>
-                          {fieldErrors.dateOfBirth}
-                        </div>
-                      )}
-                    </Grid>
-                  </Grid>
-                </Grid>
-
-                <Grid item xs={6}>
-                  <Grid container alignItems="center">
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                          marginBottom: "20px"
-                        }}
-                      >
-                        Address
-                      </h2>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <input
-                        id="address"
-                        type="text"
-                        name="address"
-                        className="form-control-text input-field"
-                        value={data.address}
-                        onChange={handleInputChange}
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-
-             
+              </Grid>     
             </Grid>
           </MDBCol>
         </MDBRow>

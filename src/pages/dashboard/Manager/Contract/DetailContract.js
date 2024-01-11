@@ -15,7 +15,7 @@ import {
 } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import AssignTicketModal from "../AssignTicketModal";
-import { Grid, MenuItem, Select, Tab, Tabs } from "@mui/material";
+import { Grid, Tab, Tabs } from "@mui/material";
 import { formatDate } from "../../../helpers/FormatDate";
 import { Box } from "@mui/system";
 import LoadingSkeleton from "../../../../components/iconify/LoadingSkeleton";
@@ -37,7 +37,6 @@ const DetailContract = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth);
   const userRole = user.user.role;
-  const [selectedValue, setSelectedValue] = useState("");
 
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
@@ -66,10 +65,6 @@ const DetailContract = () => {
   if (loading) {
     return <div>Loading...</div>;
   }
-
-  const handleChange = (event) => {
-    setSelectedValue(event.target.value);
-  };
 
   return (
     <>
@@ -109,37 +104,7 @@ const DetailContract = () => {
                 >
                   Edit
                 </button>
-                <Select
-                  displayEmpty
-                  value={selectedValue}
-                  onChange={handleChange}
-                  inputProps={{ "aria-label": "Without label" }}
-                  style={{
-                    backgroundColor: "#f2f2f2",
-                    borderRadius: "5px",
-                    paddingLeft: "10px",
-                    height: "45px",
-                    padding: "10px 0",
-                    zIndex: 9999,
-                  }}
-                >
-                  {selectedValue !== "" ? null : (
-                    <MenuItem value="" disabled>
-                      <em className="action-menu-item">Action</em>
-                    </MenuItem>
-                  )}
-
-                  <MenuItem value={10}>Renew Contract</MenuItem>
-
-                  {userRole === 2 && [
-                    <MenuItem key={20} value={20}>
-                      Add Child Contract
-                    </MenuItem>,
-                    <MenuItem key={30} value={30}>
-                      Add Payment Information
-                    </MenuItem>,
-                  ]}
-                </Select>
+                
               </div>
             </Grid>
           </Grid>
