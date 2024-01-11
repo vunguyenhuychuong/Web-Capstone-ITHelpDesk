@@ -2,8 +2,16 @@ import React, { useCallback } from "react";
 import {
   Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   FormControl,
+  FormLabel,
   Grid,
+  List,
+  ListItem,
+  ListItemButton,
   MenuItem,
   Pagination,
   Select,
@@ -12,6 +20,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  TextField,
   Typography,
 } from "@mui/material";
 import "../../../../assets/css/detailTicket.css";
@@ -35,6 +44,7 @@ import {
   Delete,
   DeleteSweep,
   EditCalendar,
+  Label,
   ViewCompact,
 } from "@mui/icons-material";
 import {
@@ -52,8 +62,15 @@ import CustomizedProgressBars from "../../../../components/iconify/LinearProcces
 import { toast } from "react-toastify";
 import PageSizeSelector from "../../Pagination/Pagination";
 import { deleteMode } from "../../../../app/api/mode";
+import { PostPaymentContract, getPaymentContract } from "../../../../app/api/contract";
+import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import moment from "moment";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
-const PaymentContract = () => {
+const emails = ['username@gmail.com', 'user02@gmail.com'];
+
+const PaymentContract = ({dataPayment}) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [dataPaymentTerm, setDataPaymentTerm] = useState([]);
@@ -282,10 +299,43 @@ const PaymentContract = () => {
     })
   );
 
+
+
+
+
+
+  const [open, setOpen] = React.useState(false);
+  const [selectedValue, setSelectedValue] = React.useState(emails[1]);
+  const [payment, setPayment] = useState();
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (value) => {
+    setOpen(false);
+    setSelectedValue(value);
+  };
+
+  useEffect(() => {
+    fetchPaymentData();
+  }, [dataPayment])
+
+  const fetchPaymentData = async () => {
+    try {
+      const payment = await getPaymentContract(dataPayment?.id ?? 0);
+      setPayment(payment);
+      console.log(payment)
+      console.log('asasa', dataPayment)
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div>
       <Grid container spacing={2} alignItems="center" className="gridContainer">
-        <MDBContainer
+        {/* <MDBContainer
           className="py-5"
           style={{ paddingLeft: 20, paddingRight: 20, maxWidth: "100%" }}
         >
@@ -731,10 +781,173 @@ const PaymentContract = () => {
               </Grid>
             </Grid>
           </Grid>
-        )}
+        )} */}
+
+        <div>
+          <Button variant="outlined" onClick={handleClickOpen}>
+            Create payment
+          </Button>
+          <SimpleDialog
+            selectedValue={selectedValue}
+            open={open}
+            onClose={handleClose}
+            contractId={dataPayment?.id}
+          />
+        </div>
+
       </Grid>
     </div>
   );
 };
 
 export default PaymentContract;
+
+function SimpleDialog(props) {
+  const { onClose, selectedValue, open, contractId } = props;
+  const [newPayment, setNewPayment] = useState({
+    contractId: contractId ?? 0,
+    description: "",
+    startDateOfPayment: new Date(),
+    daysAmountForPayment: 0,
+    note: "",
+    attachmentUrls: []
+  })
+  
+  const [selectedFile, setSelectedFile] = useState(null);
+  const handleClose = () => {
+    onClose(selectedValue);
+  };
+
+  useEffect(() => console.log(contractId), [contractId])
+
+  const handleListItemClick = (value) => {
+    onClose(value);
+  };
+
+  const handleCreatePayment = async (e) => {
+    e.preventDefault();
+    const formattedStartDateOfPayment = moment(newPayment.startDateOfPayment).format(
+      "YYYY-MM-DDTHH:mm:ss"
+    );
+    try {
+      let attachmentUrls = [];
+      if (selectedFile && selectedFile.length > 0) {
+        const storage = getStorage();
+        const promises = [];
+
+        for (let i = 0; i < selectedFile.length; i++) {
+          const file = selectedFile[i];
+          const storageRef = ref(storage, `images/${file.name}`);
+          await uploadBytes(storageRef, file);
+
+          const downloadURL = await getDownloadURL(storageRef);
+          attachmentUrls.push(downloadURL);
+        }
+      }
+      const paymentPayload = {
+        ...newPayment,
+        attachmentUrls: attachmentUrls,
+        startDateOfPayment: formattedStartDateOfPayment,
+      };
+      await PostPaymentContract(paymentPayload);
+    }  catch (error) {
+      console.error(error);
+    } finally {
+      handleClose();
+    }
+  }
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewPayment((pre) => ({...pre, [name]: value}))
+  }
+  const handleStartDateChange = (newDate) => {
+    const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
+    setStartDate(newDate);
+    setNewPayment((prevInputs) => ({
+      ...prevInputs,
+      startDateOfPayment: formattedDate,
+    }));
+  };
+  const [startDate, setStartDate] = useState(
+    moment(newPayment.startDateOfPayment ?? undefined)
+  );
+  const handleFileChange = (e) => {
+    const file = e.target.files;
+    console.log(file)
+    // file.filter(f => f !== {} || f !== undefined || f !== null)
+    setSelectedFile([...file]);
+    setNewPayment((prevInputs) => ({
+      ...prevInputs,
+      attachmentUrls: [...file],
+    }));
+  };
+
+  return (
+    <Dialog onClose={handleClose} open={open} sx={{ '& .MuiDialog-paper': { width: '80%' } }}>
+      <DialogTitle>Create Payment</DialogTitle>
+      <DialogContent className="pt-2">
+        <Grid container>
+          <Grid item className="w-100 pb-3">
+            <FormLabel>Description</FormLabel>
+            <TextField
+              id="outlined-multiline-static"
+              multiline
+              rows={1}
+              className="w-100"
+              name="description"
+              value={newPayment.description}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <FormLabel>Start Date</FormLabel>
+            <LocalizationProvider dateAdapter={AdapterMoment}>
+              <DateTimePicker
+                slotProps={{
+                  textField: {
+                    helperText: `${startDate}`,
+                  },
+                }}
+                value={startDate}
+                onChange={(newValue) =>
+                  handleStartDateChange(newValue)
+                }
+                renderInput={(props) => <TextField {...props} />}
+              />
+            </LocalizationProvider>
+          </Grid>
+          <Grid item xs={6}>
+            <FormLabel>Days Amount for Payment</FormLabel>
+            <TextField fullWidth type="number" name="daysAmountForPayment" id="outlined-basic" variant="outlined" onChange={handleInputChange} />
+          </Grid>
+          <Grid item className="w-100 pt-3">
+            <FormLabel>Note</FormLabel>
+            <TextField
+              id="outlined-multiline-static"
+              multiline
+              rows={1}
+              className="w-100"
+              name="note"
+              value={newPayment.note}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item className="pt-3" xs={12}>
+          <FormLabel>Attachments</FormLabel>
+          <TextField fullWidth type="file" name="attachmentUrls" className="form-control input-field" multiple onChange={handleFileChange}/>
+          </Grid>
+        </Grid>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCreatePayment}>Save</Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
+SimpleDialog.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  open: PropTypes.bool.isRequired,
+  selectedValue: PropTypes.string.isRequired,
+  contractId: PropTypes.number.isRequired,
+};
