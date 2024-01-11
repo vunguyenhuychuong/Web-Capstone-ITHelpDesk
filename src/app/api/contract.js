@@ -347,6 +347,31 @@ export async function PostPaymentContract (payload) {
   }
 }
 
+export async function PutPaymentContract (id, payload) {
+  const header = getAuthHeader();
+  try {
+    const res = await axios.put(`${baseURL}/payment/${id}`, payload, {
+      headers: {
+        Authorization: header,
+      },
+    });
+
+    console.log(res.data.result);
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+  } catch (error) {
+    console.error(error);
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+  }
+}
+
 export async function getAllAccountant () {
   const header = getAuthHeader();
   try{
