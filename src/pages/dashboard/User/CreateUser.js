@@ -35,7 +35,7 @@ const CreateUser = () => {
     phoneNumber: "",
     companyDetail: {
       companyId: 0,
-      departmentId: 0,
+      companyAddressId: 0,
       isCompanyAdmin: true,
     },
   });
@@ -84,7 +84,14 @@ const CreateUser = () => {
     };
     fetchDataCreateUser();
   }, [data.companyId]);
-
+  useEffect(() => {
+    if (dataDepartment && dataDepartment.length > 0) {
+      setData((prevData) => ({
+        ...prevData,
+        companyAddressId: dataDepartment[0].id,
+      }));
+    }
+  }, [dataDepartment]);
   useEffect(() => {
     if (data.companyId) {
       fetchDepartmentsByCompany(data.companyId);
@@ -97,7 +104,7 @@ const CreateUser = () => {
         ...prevData,
         companyDetail: {
           ...prevData.companyDetail,
-          departmentId: dataDepartment[0].id,
+          companyAddressId: dataDepartment[0].id,
         },
       }));
     }
@@ -198,7 +205,7 @@ const CreateUser = () => {
     e.preventDefault();
 
     const companyId = parseInt(data.companyDetail.companyId, 10);
-    const departmentId = parseInt(data.companyDetail.departmentId, 10);
+    const companyAddressId = parseInt(data.companyDetail.companyAddressId, 10);
     const role = parseInt(data.role, 10);
 
     const errors = {};
@@ -239,7 +246,7 @@ const CreateUser = () => {
         phoneNumber: data.phoneNumber,
         companyDetail: {
           companyId: companyId,
-          departmentId: departmentId,
+          companyAddressId: companyAddressId,
           isCompanyAdmin: data.companyDetail.isCompanyAdmin,
         },
       };
@@ -720,10 +727,10 @@ const CreateUser = () => {
                     </Grid>
                     <Grid item xs={6}>
                       <select
-                        id="departmentId"
-                        name="departmentId"
+                        id="companyAddressId"
+                        name="companyAddressId"
                         className="form-select-custom"
-                        value={data.departmentId}
+                        value={data.companyAddressId}
                         onChange={handleInputChange}
                       >
                         {dataDepartment &&

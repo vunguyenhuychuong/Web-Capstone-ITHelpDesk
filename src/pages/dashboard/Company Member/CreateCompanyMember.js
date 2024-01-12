@@ -41,7 +41,7 @@ const CreateCompanyMember = () => {
     },
     isCompanyAdmin: false,
     memberPosition: "",
-    departmentId: 1,
+    companyAddressId: 1,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dataDepartment, setDataDepartment] = useState([]);
@@ -119,7 +119,7 @@ const CreateCompanyMember = () => {
       }));
     } else {
       const numericValue =
-        name === "departmentId" ? parseInt(value, 10) : value;
+        name === "companyAddressId" ? parseInt(value, 10) : value;
       setData((prevData) => ({
         ...prevData,
         [name]: numericValue,
@@ -188,9 +188,12 @@ const CreateCompanyMember = () => {
         avatarUrl = await getDownloadURL(storageRef);
       }
       const updatedData = {
+        user:{
+          avatarUrl: avatarUrl,
+        },
         isCompanyAdmin: data.isCompanyAdmin,
         memberPosition: data.memberPosition,
-        departmentId: data.departmentId,
+        companyAddressId: data.companyAddressId,
       };
       setData(updatedData);
       await createCompanyMember({
@@ -200,12 +203,12 @@ const CreateCompanyMember = () => {
           username: data.user.username,
           email: data.user.email,
           gender: data.user.gender,
-          avatarUrl: data.user.avatarUrl,
+          avatarUrl: avatarUrl,
           phoneNumber: data.user.phoneNumber,
         },
         isCompanyAdmin: data.isCompanyAdmin,
         memberPosition: data.memberPosition,
-        departmentId: data.departmentId,
+        companyAddressId: data.companyAddressId,
       });
       navigate("/home/companyMember");
     } catch (error) {
@@ -625,10 +628,10 @@ const CreateCompanyMember = () => {
                     </Grid>
                     <Grid item xs={6}>
                       <select
-                        id="departmentId"
-                        name="departmentId"
+                        id="companyAddressId"
+                        name="companyAddressId"
                         className="form-select-custom"
-                        value={data.departmentId}
+                        value={data.companyAddressId}
                         onChange={handleInputChange}
                       >
                         {dataDepartment &&
