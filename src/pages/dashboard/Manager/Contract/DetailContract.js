@@ -124,6 +124,12 @@ const DetailContract = () => {
                 <span style={{ marginBottom: "5px", fontSize: "1.5em" }}>
                   #{data.id} {data.name || "null Name"}
                 </span>
+                <span>
+                  Contract number:{" "}
+                  <span style={{ fontWeight: "bold" }}>
+                    {data.contractNumber}
+                  </span>
+                </span>
                 <span style={{ fontSize: "1rem" }}>
                   Status:{" "}
                   <span style={{ color: "red" }}>
@@ -216,7 +222,7 @@ const DetailContract = () => {
             <Box role="tabpanel" hidden={value !== 1}>
               {value === 1 ? (
                 <PaymentContract
-                  dataPayment={dataPayment}
+                  dataPayment={data}
                   loading={loading || false}
                 />
               ) : (
