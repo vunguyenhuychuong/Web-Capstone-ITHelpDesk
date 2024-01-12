@@ -5,6 +5,7 @@ import { getAuthHeader } from "./auth";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase";
 import { baseURL } from "./link";
+import { useNavigate } from "react-router-dom";
 
 // Get all users in system
 export async function getAllUser(searchField, searchQuery, page = 1, pageSize = 5, sortBy = "id", sortDirection = "asc") {
@@ -85,12 +86,11 @@ export async function LoginUser(data) {
 export async function AddDataProfile(userData) {
   const header = getAuthHeader();
   try {
-    const res = await axios.post(`${baseURL}/user`, userData, {
+    const res = await axios.post(`${baseURL}/user/create`, userData, {
       headers: {
         Authorization: header,
       },
     });
-    console.log(res.data.result);
     toast.success(res.data.result, {
       autoClose: 2000,
       hideProgressBar: false,
