@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import "../../../assets/css/ticketSolution.css";
 import { Grid } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
@@ -8,7 +8,6 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { createTicketByCustomer } from "../../../app/api/ticket";
 import CustomizedSteppers from "./CustomizedSteppers";
 import { useNavigate } from "react-router-dom";
-import { getAllUserActiveService } from "../../../app/api/service";
 
 const RequestIssue = () => {
   const [data, setData] = useState({
@@ -17,27 +16,11 @@ const RequestIssue = () => {
     serviceId: 1,
     attachmentUrls: [],
   });
-  const [activeStep, setActiveStep] = React.useState(0);
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [dataService, setDataServices] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const navigate = useNavigate();
-
-  const fetchService = async () => {
-    try {
-      const response = await getAllUserActiveService();
-      setDataServices(response);
-    } catch (error) {
-      console.log("Error while fetching data", error);
-    } finally {
-    }
-  };
-
-  useEffect(() => {
-    fetchService();
-  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target || e;
@@ -191,24 +174,22 @@ const RequestIssue = () => {
         <MDBCol md="12">
           <MDBRow className="border-box">
             <MDBCol md="12" className="mt-2 mb-2">
-              {activeStep === 0 && (
-                <div className="d-flex justify-content-center align-items-center">
-                  <button
-                    type="button"
-                    className="btn btn-primary custom-btn-margin"
-                    onClick={handleSubmitTicket}
-                    disabled={isSubmitting}
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-secondary custom-btn-margin"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              )}
+              <div className="d-flex justify-content-center align-items-center">
+                <button
+                  type="button"
+                  className="btn btn-primary custom-btn-margin"
+                  onClick={handleSubmitTicket}
+                  disabled={isSubmitting}
+                >
+                  Save
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary custom-btn-margin"
+                >
+                  Cancel
+                </button>
+              </div>
             </MDBCol>
           </MDBRow>
         </MDBCol>

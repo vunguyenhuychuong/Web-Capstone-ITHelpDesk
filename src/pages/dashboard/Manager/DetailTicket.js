@@ -15,7 +15,6 @@ import {
   ChatOutlined,
   Feedback,
   MessageSharp,
-  Square,
   Task,
   WorkHistory,
 } from "@mui/icons-material";
@@ -284,9 +283,7 @@ const DetailTicket = () => {
                     {roleName && roleName.name ? roleName.name : "-"}
                   </span>{" "}
                   <ChatOutlined color="#007bff" /> on:
-                  {formatDate(data.scheduledStartTime)} |
-                  <span className="bold-text">DueBy:</span>{" "}
-                  {formatDate(data.scheduledEndTime)}
+                  {formatDate(data.createdAt)} 
                 </span>
               </div>
             </MDBCol>
@@ -396,25 +393,6 @@ const DetailTicket = () => {
           <MDBRow className="mb-4 mt-4">
             <MDBRow className="mb-4">
               <MDBCol md="12" className="mt-2 text-box">
-                <div className="label-col col-md-4 ">Status</div>
-                <div className="data-col col-md-8">
-                  {data.isApproved ? (
-                    <>
-                      <Square
-                        className="square-icon"
-                        style={{ color: "green" }}
-                      />
-                      <span>Approved</span>
-                    </>
-                  ) : (
-                    <>
-                      <Square className="square-icon" />
-                      <span>Not Approved</span>
-                    </>
-                  )}
-                </div>
-              </MDBCol>
-              <MDBCol md="12" className="mt-2 text-box">
                 <div className="label-col col-md-4 ">Priority</div>
                 <div className="data-col col-md-8">
                   <span
@@ -497,12 +475,14 @@ const DetailTicket = () => {
                 {data.requester && data.requester.username ? (
                   <>
                     <p className="fw-bold mb-1">
-                      {data.requester && data.requester.username
-                        ? `${data.requester.username} `
-                        : ""}{" "}
+                      {data.requester && data.requester.lastName
+                        ? `${data.requester.lastName} `
+                        : ""}
+                        {data.requester && data.requester.firstName
+                        ? `${data.requester.firstName} `
+                        : ""}
                       <MessageSharp style={{ color: "#3399FF" }} />{" "}
-                    </p>
-                    <p className="text-muted mb-0">Requests(2) | Assets</p>
+                    </p>                  
                   </>
                 ) : (
                   <p className="text-muted">User Information Not have</p>
@@ -554,6 +534,22 @@ const DetailTicket = () => {
                       color: "#007bff",
                     }}
                   >
+                    UserName
+                  </th>
+                  <th>
+                  {data.requester && data.requester.username
+                        ? `${data.requester.username} `
+                        : ""}{" "}
+                  </th>
+                </tr>
+                <tr>
+                  <th
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                      color: "#007bff",
+                    }}
+                  >
                     Phone
                   </th>
                   <th>
@@ -570,32 +566,15 @@ const DetailTicket = () => {
                       color: "#007bff",
                     }}
                   >
-                    Address
+                    Email
                   </th>
                   <th>
-                    {data.requester && data.requester.address
-                      ? data.requester.address
+                    {data.requester && data.requester.email
+                      ? data.requester.email
                       : "-"}
                   </th>
                 </tr>
-                <tr>
-                  <th
-                    style={{
-                      fontWeight: "bold",
-                      fontSize: "16px",
-                      color: "#007bff",
-                    }}
-                  >
-                    BirthDay
-                  </th>
-                  <th>
-                    {data.requester &&
-                    data.requester.dateOfBirth &&
-                    formatDate(data.requester.dateOfBirth)
-                      ? formatDate(data.requester.dateOfBirth)
-                      : "-"}
-                  </th>
-                </tr>
+                
                 <tr>
                   <th
                     style={{
@@ -607,7 +586,7 @@ const DetailTicket = () => {
                     Gender
                   </th>
                   <th>
-                    {data.requester && data.requester.gender
+                    {data.requester && getGenderById(data.requester.gender)
                       ? getGenderById(data.requester.gender)
                       : "-"}
                   </th>

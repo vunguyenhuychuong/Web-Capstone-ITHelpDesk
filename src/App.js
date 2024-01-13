@@ -59,7 +59,6 @@ import EditUser from './pages/dashboard/User/EditUser';
 import DetailContract from './pages/dashboard/Manager/Contract/DetailContract';
 import CreateRenewContract from './pages/dashboard/Manager/Contract/CreateRenewContract';
 import TicketAssignAvailableList from './pages/dashboard/Technician/TicketAssignAvailableList';
-import ChatMessage from './components/chat/ChatMessage';
 import CompanyMemberList from './pages/dashboard/Company Member/CompanyMemberList';
 import CreateCompanyMember from './pages/dashboard/Company Member/CreateCompanyMember';
 import EditCompanyMember from './pages/dashboard/Company Member/EditCompanyMember';
@@ -93,7 +92,7 @@ function App() {
           <Route path='menu' element={<Menu />} />
           {(hasCustomerRole || hasManagerRole) && <Route path='service' element={<ServiceList />} />}
           {(hasAdminRole ) && <Route path='mode' element={<ModeList />} />} 
-          <Route path='customerTicket' element={<IssueList />} />
+          {(hasCustomerRole ) && <Route path='customerTicket' element={<IssueList />} />}
           <Route path='ticketService/:ticketId' element={<TicketService />} />
           <Route path='createTicket' element={<CreateTickets />} />
           <Route path='editTicket/:ticketId' element={<EditTickets />} />
@@ -117,7 +116,7 @@ function App() {
           {(hasCustomerRole) && <Route path='createRequest' element={<RequestIssue />} />}
           {(hasCustomerRole) && <Route path='requestCustomerList' element={<MyRequestList />} />}
           {(hasManagerRole || hasTechnicianRole) && <Route path='listTicket' element={<ManagersTabs />} />}
-          <Route path='ticketAssign' element={<TicketAssignAvailableList />} />
+          {(hasTechnicianRole) &&<Route path='ticketAssign' element={<TicketAssignAvailableList />} />}
           {(hasManagerRole) &&<Route path='homeManager' element={<HomeManager />} />}
           {(hasAdminRole) &&<Route path='homeAdmin' element={<HomeAdmin />} />}
           {(hasManagerRole || hasAccountantRole) && <Route path='contractList' element={<ContractList />} />}
