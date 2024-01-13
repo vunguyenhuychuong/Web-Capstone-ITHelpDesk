@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect } from "react";
-import { ReadNotification, getAllNotification } from "../../../app/api/notification";
+import { ReadNotification } from "../../../app/api/notification";
 import { useState } from "react";
 import {
   IconButton,
@@ -34,7 +34,7 @@ const NotificationList = ({
     };
 
     fetchData();
-  }, []);
+  }, [fetchDataListNotification]);
 
   const handleMarkAsRead = async (notificationId) =>{
     try{
@@ -48,7 +48,6 @@ const NotificationList = ({
   return (
     <div className="notification-list-container">
       {loading ? (
-        // Display LoadingImg when data is still loading
         <div
           style={{
             display: "flex",

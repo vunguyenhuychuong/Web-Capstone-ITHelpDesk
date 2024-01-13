@@ -11,9 +11,7 @@ import { CheckCircle, FastForward, FastRewind } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-
-
-const steps = ["Select Category", "Fill Request", "Complete And Send"];
+const steps = ["Fill Request", "Complete And Send"];
 
 export default function CustomizedSteppers({
   data,
@@ -23,6 +21,7 @@ export default function CustomizedSteppers({
   imagePreviewUrl,
   isImagePreviewOpen,
   setIsImagePreviewOpen,
+  isSubmitting
 }) {
   const [activeStep, setActiveStep] = React.useState(0);
   const navigate = useNavigate();
@@ -43,6 +42,14 @@ export default function CustomizedSteppers({
         });
       }
     }
+  };
+
+  const isStep1 = activeStep === 0;
+  const isStep2 = activeStep === 1;
+  const isStep3 = activeStep === 2;
+
+  const moveToStep3 = () => {
+    setActiveStep(2);
   };
 
   const handleBack = () => {
@@ -89,7 +96,7 @@ export default function CustomizedSteppers({
         ))}
       </Stepper>
 
-      {activeStep === 0 && (
+      {isStep1  && (
         <Step1
           data={data}
           handleInputChange={handleInputChange}
@@ -100,20 +107,23 @@ export default function CustomizedSteppers({
         />
       )}
 
-      {activeStep === 1 && (
+      {isStep2  && (
         <Step2
           data={data}
           handleSubmit={handleSubmitTicket}
           imagePreviewUrl={imagePreviewUrl}
           isImagePreviewOpen={isImagePreviewOpen}
           setIsImagePreviewOpen={setIsImagePreviewOpen}
+          isSubmitting={isSubmitting}
+          moveToStep3={moveToStep3}
+          setActiveStep={setActiveStep}
         />
       )}
 
-       {activeStep === 2 && (
+       {/* {isStep3 && (
         <Step3
         />
-      )}  
+      )}   */}
 
       <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
         <Button

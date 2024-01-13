@@ -17,7 +17,7 @@ const RequestIssue = () => {
     serviceId: 1,
     attachmentUrls: [],
   });
-
+  const [activeStep, setActiveStep] = React.useState(0);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [dataService, setDataServices] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -85,8 +85,6 @@ const RequestIssue = () => {
     setIsImagePreviewOpen(true);
   };
 
-  
-
   const handleSubmitTicket = async (e) => {
     e.preventDefault();
 
@@ -96,7 +94,7 @@ const RequestIssue = () => {
     }
     let attachmentUrls = data.attachmentUrls;
 
-    if(selectedFiles.length > 0) {
+    if (selectedFiles.length > 0) {
       const storage = getStorage();
       for (let i = 0; i < selectedFiles.length; i++) {
         const file = selectedFiles[i];
@@ -187,33 +185,34 @@ const RequestIssue = () => {
             imagePreviewUrl={imagePreviewUrl}
             isImagePreviewOpen={isImagePreviewOpen}
             setIsImagePreviewOpen={setIsImagePreviewOpen}
+            isSubmitting={isSubmitting}
           />
         </MDBRow>
         <MDBCol md="12">
           <MDBRow className="border-box">
             <MDBCol md="12" className="mt-2 mb-2">
-              <div className="d-flex justify-content-center align-items-center">
-                <button
-                  type="button"
-                  className="btn btn-primary custom-btn-margin"
-                  onClick={handleSubmitTicket}
-                  disabled={isSubmitting}
-                >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary custom-btn-margin"
-                >
-                  Cancel
-                </button>
-              </div>
+              {activeStep === 0 && (
+                <div className="d-flex justify-content-center align-items-center">
+                  <button
+                    type="button"
+                    className="btn btn-primary custom-btn-margin"
+                    onClick={handleSubmitTicket}
+                    disabled={isSubmitting}
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary custom-btn-margin"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
             </MDBCol>
           </MDBRow>
         </MDBCol>
       </Grid>
-
-      
     </Grid>
   );
 };

@@ -65,7 +65,7 @@ const CompanyMemberList = () => {
     } catch (error) {
       console.error(error);
     } finally {
-      // setIsLoading(false);
+      setIsLoading(false);
     }
   }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection]);
 
