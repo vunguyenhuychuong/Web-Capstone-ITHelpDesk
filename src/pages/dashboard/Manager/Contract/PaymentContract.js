@@ -2,16 +2,27 @@ import React, { useCallback } from "react";
 import {
   Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   FormControl,
+  FormLabel,
   Grid,
+  List,
+  ListItem,
+  ListItemButton,
   MenuItem,
   Pagination,
+  Paper,
   Select,
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Typography,
 } from "@mui/material";
 import "../../../../assets/css/detailTicket.css";
@@ -35,6 +46,7 @@ import {
   Delete,
   DeleteSweep,
   EditCalendar,
+  Label,
   ViewCompact,
 } from "@mui/icons-material";
 import {
@@ -52,8 +64,15 @@ import CustomizedProgressBars from "../../../../components/iconify/LinearProcces
 import { toast } from "react-toastify";
 import PageSizeSelector from "../../Pagination/Pagination";
 import { deleteMode } from "../../../../app/api/mode";
+import { PostPaymentContract, PutPaymentContract, getPaymentContract } from "../../../../app/api/contract";
+import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import moment from "moment";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
-const PaymentContract = () => {
+const emails = ['username@gmail.com', 'user02@gmail.com'];
+
+const PaymentContract = ({dataPayment}) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [dataPaymentTerm, setDataPaymentTerm] = useState([]);
@@ -282,10 +301,60 @@ const PaymentContract = () => {
     })
   );
 
+
+
+
+
+
+  const [open, setOpen] = React.useState(false);
+  const [selectedValue, setSelectedValue] = React.useState(emails[1]);
+  const [payment, setPayment] = useState();
+  const [selectedFile, setSelectedFile] = useState(null);
+
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (value) => {
+    setOpen(false);
+    setSelectedValue(value);
+    fetchPaymentData();
+  };
+
+  useEffect(() => {
+    fetchPaymentData();
+  }, [dataPayment])
+
+  const fetchPaymentData = async () => {
+    try {
+      const payment = await getPaymentContract(dataPayment?.id ?? 0);
+      setPayment(payment);
+      console.log('bag', payment)
+      console.log('asasa', dataPayment)
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setPayment((pre) => ({...pre, [name]: value}))
+  }
+  const handleFileChange = (e) => {
+    const file = e.target.files;
+    console.log(file)
+    setSelectedFile([...file]);
+    setPayment((prevInputs) => ({
+      ...prevInputs,
+      attachmentUrls: [...file],
+    }));
+  };
+
   return (
     <div>
       <Grid container spacing={2} alignItems="center" className="gridContainer">
-        <MDBContainer
+        {/* <MDBContainer
           className="py-5"
           style={{ paddingLeft: 20, paddingRight: 20, maxWidth: "100%" }}
         >
@@ -731,10 +800,328 @@ const PaymentContract = () => {
               </Grid>
             </Grid>
           </Grid>
-        )}
+        )} */}
+
+        <Grid item className="justify-content-center d-flex w-100 border p-5 mt-5">
+          {
+            payment ? 
+            <>
+              <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} aria-label="caption table">
+                  <TableBody>
+                    <TableRow>
+                      <TableCell component="th" className="fw-bold" scope="row">Description</TableCell>
+                      <TableCell align="right">{payment.description}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell component="th" className="fw-bold" scope="row">Start Date</TableCell>
+                      <TableCell align="right">{moment(payment.startDateOfPayment).format("MM/DD/YYYY hh:mm A")}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell component="th" className="fw-bold" scope="row">End Date</TableCell>
+                      <TableCell align="right">{moment(payment.endDateOfPayment).format("MM/DD/YYYY hh:mm A")}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell component="th" className="fw-bold" scope="row">Created At</TableCell>
+                      <TableCell align="right">{moment(payment.createdAt).format("MM/DD/YYYY hh:mm A")}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell component="th" className="fw-bold" scope="row">Note</TableCell>
+                      <TableCell align="right">{payment.note}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell component="th" className="fw-bold" scope="row">Is Fully Paid</TableCell>
+                      <TableCell align="right" className={payment.isFullyPaid ? 'text-success' : 'text-danger'}>{payment.isFullyPaid ? "Paid" : "Not Paid"}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell component="th" className="fw-bold" scope="row">Attachments</TableCell>
+                      <TableCell align="right">
+                        {
+                          payment.attachmentUrls?.map(attachment => (
+                            <img onClick={()=> window.open(attachment, "_blank")} src={attachment} alt="Attachment" style={{width: '20rem', height: '20rem', objectFit: 'cover'}} />
+                          ))
+                        }
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </> : <>No payment.</>
+          }
+        </Grid>
+
+        { payment ? 
+          <>
+            <Grid item className="justify-content-center d-flex w-100 mb-5">
+              <Button variant="outlined" onClick={handleClickOpen}>
+                Update payment
+              </Button>
+              <EditDialog
+                selectedValue={selectedValue}
+                open={open}
+                onClose={handleClose}
+                payment={payment}
+              />
+            </Grid>
+          </>
+          :
+          <>
+            <Grid item className="justify-content-center d-flex w-100 mb-5">
+              <Button variant="outlined" onClick={handleClickOpen}>
+                Create payment
+              </Button>
+              <SimpleDialog
+                selectedValue={selectedValue}
+                open={open}
+                onClose={handleClose}
+                contractId={dataPayment?.id}
+              />
+            </Grid>
+          </>
+        }
       </Grid>
     </div>
   );
 };
 
 export default PaymentContract;
+
+function SimpleDialog(props) {
+  const { onClose, selectedValue, open, contractId } = props;
+  const [newPayment, setNewPayment] = useState({
+    contractId: contractId ?? 0,
+    description: "",
+    startDateOfPayment: new Date(),
+    daysAmountForPayment: 0,
+    note: "",
+    attachmentUrls: []
+  })
+  
+  const [selectedFile, setSelectedFile] = useState(null);
+  const handleClose = () => {
+    onClose(selectedValue);
+  };
+
+  useEffect(() => console.log(contractId), [contractId])
+
+  const handleListItemClick = (value) => {
+    onClose(value);
+  };
+
+  const handleCreatePayment = async (e) => {
+    e.preventDefault();
+    const formattedStartDateOfPayment = moment(newPayment.startDateOfPayment).format(
+      "YYYY-MM-DDTHH:mm:ss"
+    );
+    try {
+      let attachmentUrls = [];
+      if (selectedFile && selectedFile.length > 0) {
+        const storage = getStorage();
+        const promises = [];
+
+        for (let i = 0; i < selectedFile.length; i++) {
+          const file = selectedFile[i];
+          const storageRef = ref(storage, `images/${file.name}`);
+          await uploadBytes(storageRef, file);
+
+          const downloadURL = await getDownloadURL(storageRef);
+          attachmentUrls.push(downloadURL);
+        }
+      }
+      const paymentPayload = {
+        ...newPayment,
+        attachmentUrls: attachmentUrls,
+        startDateOfPayment: formattedStartDateOfPayment,
+      };
+      await PostPaymentContract(paymentPayload);
+    }  catch (error) {
+      console.error(error);
+    } finally {
+      handleClose();
+    }
+  }
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewPayment((pre) => ({...pre, [name]: value}))
+  }
+  const handleStartDateChange = (newDate) => {
+    const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
+    setStartDate(newDate);
+    setNewPayment((prevInputs) => ({
+      ...prevInputs,
+      startDateOfPayment: formattedDate,
+    }));
+  };
+  const [startDate, setStartDate] = useState(
+    moment(newPayment.startDateOfPayment ?? undefined)
+  );
+  const handleFileChange = (e) => {
+    const file = e.target.files;
+    console.log(file)
+    // file.filter(f => f !== {} || f !== undefined || f !== null)
+    setSelectedFile([...file]);
+    setNewPayment((prevInputs) => ({
+      ...prevInputs,
+      attachmentUrls: [...file],
+    }));
+  };
+
+  return (
+    <Dialog onClose={handleClose} open={open} sx={{ '& .MuiDialog-paper': { width: '80%' } }}>
+      <DialogTitle>Create Payment</DialogTitle>
+      <DialogContent className="pt-2">
+        <Grid container>
+          <Grid item className="w-100 pb-3">
+            <FormLabel>Description</FormLabel>
+            <TextField
+              id="outlined-multiline-static"
+              multiline
+              rows={1}
+              className="w-100"
+              name="description"
+              value={newPayment.description}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <FormLabel>Start Date</FormLabel>
+            <LocalizationProvider dateAdapter={AdapterMoment}>
+              <DateTimePicker
+                slotProps={{
+                  textField: {
+                    helperText: `${startDate}`,
+                  },
+                }}
+                value={startDate}
+                onChange={(newValue) =>
+                  handleStartDateChange(newValue)
+                }
+                renderInput={(props) => <TextField {...props} />}
+              />
+            </LocalizationProvider>
+          </Grid>
+          <Grid item xs={6}>
+            <FormLabel>Days Amount for Payment</FormLabel>
+            <TextField fullWidth type="number" name="daysAmountForPayment" id="outlined-basic" variant="outlined" onChange={handleInputChange} />
+          </Grid>
+          <Grid item className="w-100 pt-3">
+            <FormLabel>Note</FormLabel>
+            <TextField
+              id="outlined-multiline-static"
+              multiline
+              rows={1}
+              className="w-100"
+              name="note"
+              value={newPayment.note}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item className="pt-3" xs={12}>
+          <FormLabel>Attachments</FormLabel>
+          <TextField fullWidth type="file" name="attachmentUrls" className="form-control input-field" multiple onChange={handleFileChange}/>
+          </Grid>
+        </Grid>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCreatePayment}>Save</Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
+SimpleDialog.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  open: PropTypes.bool.isRequired,
+  selectedValue: PropTypes.string.isRequired,
+  contractId: PropTypes.number.isRequired,
+};
+
+function EditDialog(props) {
+  const { onClose, selectedValue, open, payment } = props;
+  const handleClose = () => {
+    onClose(selectedValue);
+  };
+  const [isFullyPaid, setIsFullyPaid] = useState(payment.isFullyPaid);
+  const [note, setNote] = useState(payment.note);
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  useEffect(() => {
+    setIsFullyPaid(payment.isFullyPaid);
+    setNote(payment.note);
+  }, [payment]);
+  const handleFileChange = (e) => {
+    const file = e.target.files;
+    console.log(file)
+    // file.filter(f => f !== {} || f !== undefined || f !== null)
+    setSelectedFile([...file]);
+  };
+  const handleUpdatePayment = async (e) => {
+    e.preventDefault();
+    try {
+      let attachmentUrls = [];
+      if (selectedFile && selectedFile.length > 0) {
+        const storage = getStorage();
+
+        for (let i = 0; i < selectedFile.length; i++) {
+          const file = selectedFile[i];
+          const storageRef = ref(storage, `images/${file.name}`);
+          await uploadBytes(storageRef, file);
+
+          const downloadURL = await getDownloadURL(storageRef);
+          attachmentUrls.push(downloadURL);
+        }
+      }
+      const paymentPayload = {
+        isFullyPaid: isFullyPaid,
+        attachmentUrls: attachmentUrls,
+        note: note,
+      };
+      await PutPaymentContract(payment.id, paymentPayload)
+    } catch (error) {
+      console.error(error);
+    } finally {
+      handleClose();
+    }
+  }
+  return (
+    <Dialog onClose={handleClose} open={open} sx={{ '& .MuiDialog-paper': { width: '80%' } }}>
+      <DialogTitle>Edit Payment</DialogTitle>
+      <DialogContent className="pt-2">
+        <Grid container>
+          <Grid item className="w-100">
+            <FormLabel>Is Fully Paid</FormLabel>
+            <Select
+                label="Is Fully Paid"
+                className="w-100"
+                variant="outlined"
+                value={isFullyPaid}
+                onChange={(e) => setIsFullyPaid(e.target.value)}
+              >
+                  <MenuItem value={false}>Not Paid</MenuItem>
+                  <MenuItem value={true}>Paid</MenuItem>
+              </Select>
+          </Grid>
+          <Grid item className="w-100 pt-2">
+            <FormLabel>Note</FormLabel>
+            <TextField
+              id="outlined-multiline-static"
+              multiline
+              rows={1}
+              className="w-100"
+              name="note"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+            />
+          </Grid>
+          <Grid item className="pt-3" xs={12}>
+          <FormLabel>Attachments</FormLabel>
+          <TextField fullWidth type="file" name="attachmentUrls" className="form-control input-field" multiple onChange={handleFileChange}/>
+          </Grid>
+        </Grid>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleUpdatePayment}>Save</Button>
+      </DialogActions>
+    </Dialog>
+  )
+}
