@@ -8,6 +8,7 @@ import {
   Typography,
   Card,
   Box,
+  Button,
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { useState } from "react";
@@ -20,6 +21,8 @@ const Step2 = ({
   imagePreviewUrl,
   isImagePreviewOpen,
   setIsImagePreviewOpen,
+  handleSubmitTicket,
+  isSubmitting,
 }) => {
   const [dataService, setDataServices] = useState([]);
   const fetchService = async () => {
@@ -80,6 +83,24 @@ const Step2 = ({
         </Box>
       </Card>
 
+      <Box sx={{ flex: "1 1 auto" }}>
+        <Button
+          color="primary"
+          variant="contained"
+          onClick={handleSubmitTicket}
+          disabled={isSubmitting}        
+        >
+          Save
+        </Button>
+        <Button
+          color="secondary"
+          variant="contained"
+          style={{ marginLeft: "8px" }}     
+        >
+          Cancel
+        </Button>
+      </Box>
+
       <Dialog
         open={isImagePreviewOpen}
         onClose={() => setIsImagePreviewOpen(false)}
@@ -109,6 +130,5 @@ Step2.propTypes = {
   data: PropTypes.object.isRequired,
   handleSubmit: PropTypes.func.isRequired,
 };
-
 
 export default Step2;

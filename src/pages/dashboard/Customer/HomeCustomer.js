@@ -137,7 +137,7 @@ const HomeCustomer = () => {
                   marginLeft: "8px",
                   marginTop: "4px",
                   fontWeight: "bold",
-                  fontSize: "14px",
+                  fontSize: "24px",
                 }}
               >
                 My Requests
@@ -164,10 +164,10 @@ const HomeCustomer = () => {
                     style={{ display: "flex", flexDirection: "column" }}
                   >
                     <div style={{ display: "flex" }}>
-                      <p style={{ marginRight: "8px", fontSize: "12px" }}>
+                      <p style={{ marginRight: "8px", fontSize: "20px" }}>
                         #{ticket.id} -
                       </p>
-                      <p style={{ fontSize: "12px" }}>{ticket.title}</p>
+                      <p style={{ fontSize: "20px" }}>{ticket.title}</p>
                     </div>
                     <div
                       style={{
@@ -176,12 +176,12 @@ const HomeCustomer = () => {
                       }}
                     >
                       <div>
-                        <p style={{ fontSize: "12px" }}>
+                        <p style={{ fontSize: "20px" }}>
                           Description: {ticket.description || "No Description"}
                         </p>
                       </div>
                       <div>
-                        <p style={{ fontWeight: "bold", fontSize: "12px" }}>
+                        <p style={{ fontWeight: "bold", fontSize: "20px" }}>
                           Create Time: {formatTicketDate(ticket.createdAt)}
                         </p>
                       </div>

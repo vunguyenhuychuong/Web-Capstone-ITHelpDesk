@@ -3,12 +3,19 @@ import {
   Box,
   Card,
 } from "@mui/material";
-import { useState } from "react";
 
 import "react-image-gallery/styles/css/image-gallery.css";
+import { useNavigate } from "react-router-dom";
 
 const Step3 = () => {
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      navigate('/home/mains');
+    }, 5000);
+    return () => clearTimeout(timeoutId);
+  }, [navigate]);
   return (
     <>
       <Card style={{ display: "flex", backgroundColor: "#f0f0f0" }}>

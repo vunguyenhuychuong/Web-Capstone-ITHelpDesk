@@ -108,7 +108,8 @@ const Navbar = ({ notifications }) => {
 
   useEffect(() => {
     fetchDataListNotification();
-  }, []);
+    setNotificationCount(notifications?.length || 0);
+  }, [notifications]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -240,7 +241,7 @@ const Navbar = ({ notifications }) => {
             <div className="icons-wrapper">
               <Tooltip title="Message" arrow>
                 <IconButton size="large" style={{ color: "#0099FF" }}>
-                  <Badge badgeContent={4} color="error">
+                  <Badge color="error">
                     <Mail />
                   </Badge>
                 </IconButton>

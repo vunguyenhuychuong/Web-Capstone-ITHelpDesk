@@ -11,9 +11,21 @@ import {
 import React, { useCallback, useEffect, useState } from "react";
 import "../../../assets/css/ticketCustomer.css";
 import PageSizeSelector from "../Pagination/Pagination";
-import { ContentCopy, ViewCompact } from "@mui/icons-material";
+import {
+  ArrowDropDown,
+  ArrowDropUp,
+  ContentCopy,
+  ViewCompact,
+} from "@mui/icons-material";
 import { formatDate } from "../../helpers/FormatDate";
-import { Box, FormControl, MenuItem, Pagination, Select } from "@mui/material";
+import {
+  Box,
+  FormControl,
+  MenuItem,
+  Pagination,
+  Select,
+  Tooltip,
+} from "@mui/material";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import { getTicketByUserIdPagination } from "../../../app/api/ticket";
@@ -30,7 +42,6 @@ const MyRequestList = () => {
   const user = useSelector((state) => state.auth);
   const userId = user.user.id;
   const [dataCategories, setDataCategories] = useState([]);
-  const [selectedTicketIds, setSelectedTicketIds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -73,26 +84,6 @@ const MyRequestList = () => {
     userId,
   ]);
 
-  const handleSelectTicket = (ticketId) => {
-    if (selectedTicketIds.includes(ticketId)) {
-      setSelectedTicketIds(
-        selectedTicketIds.filter((id) => id !== ticketId)
-      );
-    } else {
-      setSelectedTicketIds([...selectedTicketIds, ticketId]);
-    }
-  };
-
-  const handleSelectAllSolutions = () => {
-    if (selectedTicketIds.length === dataListTicketsCustomer.length) {
-      setSelectedTicketIds([]);
-    } else {
-      setSelectedTicketIds(
-        dataListTicketsCustomer.map((ticket) => ticket.id)
-      );
-    }
-  };
-
   const fetchAllCategories = async () => {
     try {
       const res = await getAllCategories();
@@ -126,10 +117,6 @@ const MyRequestList = () => {
     }
   };
 
-  const handleOpenDetailTicketLog = (ticketId) => {
-    navigate(`/home/ticketLog/${ticketId}`);
-  };
-
   const handleOpenDetailTicket = (ticketId) => {
     navigate(`/home/detailTicket/${ticketId}`);
   };
@@ -154,9 +141,13 @@ const MyRequestList = () => {
               <span style={{ color: "#FFFFFF" }}>All My Requests</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
-            <MDBBtn
+              <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px", color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  color: "#FFFFFF",
+                }}
                 onClick={handleOpenRequestTicket}
               >
                 <FaPlus /> New
@@ -178,7 +169,7 @@ const MyRequestList = () => {
                     name: "searchField",
                     id: "search-field",
                   }}
-                  style={{color: 'white'}}
+                  style={{ color: "white" }}
                 >
                   <MenuItem value="id">ID</MenuItem>
                   <MenuItem value="title">Title</MenuItem>
@@ -215,47 +206,96 @@ const MyRequestList = () => {
             <MDBTableHead className="bg-light">
               <tr>
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>
-                  <input
-                    type="checkbox"
-                    checked={
-                      selectedTicketIds.length ===
-                      dataListTicketsCustomer.length
-                    }
-                    onChange={handleSelectAllSolutions}
-                  />
-                </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>Log</th>
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}>Detail</th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("title")}
+                  className="sortable-header"
                 >
-                  Title
+                  <Tooltip title="Click here to sort by Title" arrow>
+                    Title
+                    {sortBy === "title" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </Tooltip>
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
+                  className="sortable-header"
                   onClick={() => handleSortChange("categoryId")}
                 >
-                  Category
+                  <Tooltip title="Click here to sort by Category" arrow>
+                    Category
+                    {sortBy === "categoryId" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </Tooltip>
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("priority")}
+                  className="sortable-header"
                 >
-                  Priority
+                  <Tooltip title="Click here to sort by Priority" arrow>
+                    Priority
+                    {sortBy === "priority" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </Tooltip>
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("ticketStatus")}
+                  className="sortable-header"
                 >
-                  Ticket Status
+                  <Tooltip title="Click here to sort by Ticket Status" arrow>
+                    Ticket Status
+                    {sortBy === "ticketStatus" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </Tooltip>
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
-                  Created
+                <th
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
+                  onClick={() => handleSortChange("createdAt")}
+                  className="sortable-header"
+                >
+                  <Tooltip title="Click here to sort by Create Time" arrow>
+                    Created
+                    {sortBy === "modifiedAt" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </Tooltip>
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
-                  Last Update
+                <th
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
+                  onClick={() => handleSortChange("modifiedAt")}
+                  className="sortable-header"
+                >
+                  <Tooltip title="Click here to sort by Update Time" arrow>
+                    Last Update
+                    {sortBy === "modifiedAt" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </Tooltip>
                 </th>
               </tr>
             </MDBTableHead>
@@ -264,9 +304,6 @@ const MyRequestList = () => {
             ) : (
               <MDBTableBody className="bg-light">
                 {dataListTicketsCustomer.map((Ticket, index) => {
-                  const isSelected = selectedTicketIds.includes(
-                    Ticket.id
-                  );
                   const ticketStatusOption = TicketStatusOptions.find(
                     (option) => option.id === Ticket.ticketStatus
                   );
@@ -275,42 +312,27 @@ const MyRequestList = () => {
                     <tr key={index}>
                       <td>{Ticket.id}</td>
                       <td>
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() =>
-                            handleSelectTicket(Ticket.id)
-                          }
-                        />
-                      </td>
-                      <td>
                         <ViewCompact
-                          onClick={() =>
-                            handleOpenDetailTicketLog(Ticket.id)
-                          }
-                        />{" "}
-                      </td>
-                      <td>
-                        <ViewCompact
-                          onClick={() =>
-                            handleOpenDetailTicket(Ticket.id)
-                          }
+                          onClick={() => handleOpenDetailTicket(Ticket.id)}
                         />{" "}
                       </td>
                       <td>{Ticket.title}</td>
                       <td>{getCategoryNameById(Ticket.categoryId)}</td>
-                      <td> <span
-                        className={`badge ${priorityOption.colorClass} rounded-pill`}
-                        style={{ fontSize: priorityOption.fontSize }}
-                      >
-                        {priorityOption.name}
-                      </span></td>
+                      <td>
+                        {" "}
+                        <span
+                          className={`badge ${priorityOption.colorClass} rounded-pill`}
+                          style={{ fontSize: priorityOption.fontSize }}
+                        >
+                          {priorityOption.name}
+                        </span>
+                      </td>
                       <td>
                         <span style={ticketStatusOption.badgeStyle}>
                           {ticketStatusOption.icon}
                           {ticketStatusOption.name}
                         </span>
-                         {/* <td>{getStatusNameById(Ticket.ticketStatus)}</td> */}
+                        {/* <td>{getStatusNameById(Ticket.ticketStatus)}</td> */}
                       </td>
                       <td>{formatDate(Ticket.createdAt)}</td>
                       <td>{formatDate(Ticket.modifiedAt)}</td>
