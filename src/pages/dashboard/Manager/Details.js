@@ -20,30 +20,20 @@ import "../../../assets/css/homeManager.css";
 import {
   getImpactById,
   getPriorityOption,
-  getUrgencyById,
 } from "../../helpers/tableComlumn";
 import { formatDate } from "../../helpers/FormatDate";
 import EditTicketModel from "./EditTicketModel";
 import { UpdateTicketForTechnician } from "../../../app/api/ticket";
 import { useSelector } from "react-redux";
 import { Editor } from "primereact/editor";
-import {
-  fetchCity,
-  fetchDistricts,
-  fetchWards,
-} from "../Customer/StepForm/fetchDataSelect";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 
 const Details = ({ data, loading, dataCategories }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [openImageDialog, setOpenImageDialog] = useState(false);
   const [reloadDataFlag, setReloadDataFlag] = useState(false);
   const user = useSelector((state) => state.auth);
   const userRole = user.user.role;
-  const [cityName, setCityName] = useState("");
-  const [districtName, setDistrictName] = useState("");
-  const [wardName, setWardName] = useState("");
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
 
   const handleEditClick = () => {
@@ -56,29 +46,6 @@ const Details = ({ data, loading, dataCategories }) => {
       thumbnail: url,
       description: `Attachment Preview ${index + 1}`,
     })) || [];
-
-  const fetchLocationNames = async () => {
-    try {
-      const cityResponse = await fetchCity();
-      const districtResponse = await fetchDistricts(data.city);
-      const wardResponse = await fetchWards(data.district);
-
-      setCityName(
-        cityResponse.find((city) => city.code === data.city)?.name ||
-          "Not Provided"
-      );
-      setDistrictName(
-        districtResponse.find((district) => district.code === data.district)
-          ?.name || "Not Provided"
-      );
-      setWardName(
-        wardResponse.find((ward) => ward.code === data.ward)?.name ||
-          "Not Provided"
-      );
-    } catch (error) {
-      console.log("Error while fetching location names", error);
-    }
-  };
 
   const handleReloadData = () => {
     setReloadDataFlag(true);
@@ -94,24 +61,10 @@ const Details = ({ data, loading, dataCategories }) => {
     }
   };
 
-  const handleImageDialogOpen = () => {
-    setOpenImageDialog(true);
-  };
-
-  const handleImageDialogClose = () => {
-    setOpenImageDialog(false);
-  };
-
   Details.propTypes = {
     data: PropTypes.object,
     loading: PropTypes.bool.isRequired,
   };
-  useEffect(() => {
-    if (reloadDataFlag) {
-      reloadData();
-    }
-    fetchLocationNames();
-  }, [reloadDataFlag, data.city, data.district, data.ward]);
 
   return (
     <div>
@@ -302,10 +255,10 @@ const Details = ({ data, loading, dataCategories }) => {
                     backgroundColor: "#f2f2f2",
                   }}
                 >
-                  Urgency
+                  Priority
                 </TableCell>
                 <TableCell style={{ textAlign: "left" }}>
-                  {getUrgencyById(data.urgency)}
+                  {getPriorityOption(data.priority)}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -334,36 +287,6 @@ const Details = ({ data, loading, dataCategories }) => {
                     backgroundColor: "#f2f2f2",
                   }}
                 >
-                  Priority
-                </TableCell>
-                <TableCell style={{ textAlign: "left" }}>
-                  {getPriorityOption(data.priority)}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  style={{
-                    textAlign: "right",
-                    fontWeight: "bold",
-                    color: "#007bff",
-                    paddingRight: "16px",
-                    backgroundColor: "#f2f2f2",
-                  }}
-                >
-                  Location
-                </TableCell>
-                <TableCell style={{ textAlign: "left" }}>
-                  {cityName},{districtName},{wardName},{data && data.street}
-                </TableCell>
-                <TableCell
-                  style={{
-                    textAlign: "right",
-                    fontWeight: "bold",
-                    color: "#007bff",
-                    paddingRight: "16px",
-                    backgroundColor: "#f2f2f2",
-                  }}
-                >
                   Category
                 </TableCell>
                 <TableCell style={{ textAlign: "left" }}>
@@ -382,10 +305,40 @@ const Details = ({ data, loading, dataCategories }) => {
                     backgroundColor: "#f2f2f2",
                   }}
                 >
+                  Location
+                </TableCell>
+                <TableCell style={{ textAlign: "left" }}>
+                {data.address}
+                </TableCell>
+                <TableCell
+                  style={{
+                    textAlign: "right",
+                    fontWeight: "bold",
+                    color: "#007bff",
+                    paddingRight: "16px",
+                    backgroundColor: "#f2f2f2",
+                  }}
+                >
                   Scheduled Start Time
                 </TableCell>
                 <TableCell style={{ textAlign: "left" }}>
                   {formatDate(data.scheduledStartTime)}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell
+                  style={{
+                    textAlign: "right",
+                    fontWeight: "bold",
+                    color: "#007bff",
+                    paddingRight: "16px",
+                    backgroundColor: "#f2f2f2",
+                  }}
+                >
+                  Completed Time
+                </TableCell>
+                <TableCell style={{ textAlign: "left" }}>
+                {formatDate(data.completedTime)}
                 </TableCell>
                 <TableCell
                   style={{
@@ -402,36 +355,7 @@ const Details = ({ data, loading, dataCategories }) => {
                   {formatDate(data.scheduledEndTime)}
                 </TableCell>
               </TableRow>
-              <TableRow>
-                <TableCell
-                  style={{
-                    textAlign: "right",
-                    fontWeight: "bold",
-                    color: "#007bff",
-                    paddingRight: "16px",
-                    backgroundColor: "#f2f2f2",
-                  }}
-                >
-                  DueTime
-                </TableCell>
-                <TableCell style={{ textAlign: "left" }}>
-                  {formatDate(data.dueTime)}
-                </TableCell>
-                <TableCell
-                  style={{
-                    textAlign: "right",
-                    fontWeight: "bold",
-                    color: "#007bff",
-                    paddingRight: "16px",
-                    backgroundColor: "#f2f2f2",
-                  }}
-                >
-                  Completed Time
-                </TableCell>
-                <TableCell style={{ textAlign: "left" }}>
-                  {formatDate(data.completedTime)}
-                </TableCell>
-              </TableRow>
+             
               <TableRow>
                 <TableCell
                   style={{

@@ -6,7 +6,6 @@ import { Box, Button, StepButton, StepLabel } from "@mui/material";
 import { ColorlibConnector, ColorlibStepIcon } from "./StepperDecorate";
 import Step1 from "./StepForm/Step1";
 import Step2 from "./StepForm/Step2";
-import Step3 from "./StepForm/Step3";
 import { CheckCircle, FastForward, FastRewind } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -27,10 +26,9 @@ export default function CustomizedSteppers({
   const navigate = useNavigate();
   const totalSteps = steps.length;
   const handleNext = () => {
-    if (activeStep === 2) {
+    if (activeStep === 1) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    } else if (activeStep === 1) {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      handleSubmitTicket();
     } else if (activeStep === 0) {
       if (data.title && data.description) {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -46,7 +44,6 @@ export default function CustomizedSteppers({
 
   const isStep1 = activeStep === 0;
   const isStep2 = activeStep === 1;
-  const isStep3 = activeStep === 2;
 
   const moveToStep3 = () => {
     setActiveStep(2);
@@ -119,11 +116,6 @@ export default function CustomizedSteppers({
           setActiveStep={setActiveStep}
         />
       )}
-
-       {/* {isStep3 && (
-        <Step3
-        />
-      )}   */}
 
       <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
         <Button

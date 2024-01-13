@@ -8,31 +8,27 @@ import {
   MDBTableBody,
   MDBTableHead,
 } from "mdb-react-ui-kit";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "../../../assets/css/ticketCustomer.css";
-import {
-  ContentCopy,
-  Lock,
-  LockOpen,
-  Square,
-  ViewCompact,
-} from "@mui/icons-material";
+import { ContentCopy, ViewCompact } from "@mui/icons-material";
 import { formatDate } from "../../helpers/FormatDate";
 import { useNavigate } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-} from "@mui/material";
+import { Card, CardContent } from "@mui/material";
 import { FaPlus } from "react-icons/fa";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import CloseTicket from "../../../assets/images/NoTicketSolution.jpg";
-import { getTicketAssignAvailable } from "../../../app/api/ticket";
-import { getImpactById, getPriorityOption, getUrgencyById } from "../../helpers/tableComlumn";
+import { ChangeStatusTicket, getTicketAssignAvailable } from "../../../app/api/ticket";
+import {
+  TicketStatusOptions,
+  getImpactById,
+  getPriorityOption,
+} from "../../helpers/tableComlumn";
 
 const TicketAssignAvailableList = () => {
   const [dataListTicketsAssign, setDataListTicketsAssign] = useState([]);
   const [refreshData, setRefreshData] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isDropdownVisible, setDropdownVisible] = useState(false);
   const navigate = useNavigate();
 
   const fetchDataListTicketSolution = async () => {
@@ -48,17 +44,31 @@ const TicketAssignAvailableList = () => {
     }
   };
 
+
+  const handleTicketStatusChange = useCallback(async (ticketId, newStatus) => {
+    try {
+      await ChangeStatusTicket(ticketId, newStatus);
+    } catch (error) {
+      console.log("Error changing ticket status:", error);
+    }
+  }, []);
+
+  const handleDropdownClick = (e) => {
+    e.stopPropagation();
+    setDropdownVisible(!isDropdownVisible);
+  };
+
   const handleOpenCreateTicketSolution = () => {
     navigate("/home/createTask");
   };
 
-  const handleOpenDetailTicketSolution = (ticketId) => {
+  const handleOpenDetailTicketAssign = (ticketId) => {
     navigate(`/home/detailTicket/${ticketId}`);
   };
 
   useEffect(() => {
     fetchDataListTicketSolution();
-  }, [ refreshData]);
+  }, [refreshData]);
 
   return (
     <>
@@ -89,45 +99,25 @@ const TicketAssignAvailableList = () => {
           <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr>
-                <th
-                  style={{ fontWeight: "bold", fontSize: "18px" }}
-                >
-                  ID
-                </th>
+                <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th>
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}>
-                  <input
-                    type="checkbox"
-                  />
+                  <input type="checkbox" />
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
-                <th
-                  style={{ fontWeight: "bold", fontSize: "14px" }}
-                >
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
                   Title{""}
                 </th>
-                <th
-                  style={{ fontWeight: "bold", fontSize: "14px" }}
-                >
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
                   Priority
                 </th>
-                <th
-                  style={{ fontWeight: "bold", fontSize: "14px" }}
-                >
-                  Impact
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}>Impact</th>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                  Ticket Status
                 </th>
-                <th
-                  style={{ fontWeight: "bold", fontSize: "14px" }}
-                >
-                  Urgency
-                </th>
-                <th
-                  style={{ fontWeight: "bold", fontSize: "14px" }}
-                >
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
                   Created
                 </th>
-                <th
-                  style={{ fontWeight: "bold", fontSize: "14px" }}
-                >
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
                   Last Update
                 </th>
               </tr>
@@ -136,36 +126,72 @@ const TicketAssignAvailableList = () => {
               <CustomizedProgressBars />
             ) : (
               <MDBTableBody className="bg-light">
-                {dataListTicketsAssign.map((TicketSolution, index) => {
+                {dataListTicketsAssign.map((TicketAssign, index) => {
+                  const ticketStatusOption = TicketStatusOptions.find(
+                    (option) => option.id === TicketAssign.ticketStatus
+                  );
                   return (
                     <tr key={index}>
-                      <td>{TicketSolution.id}</td>
+                      <td>{TicketAssign.id}</td>
                       <td>
-                        <input
-                          type="checkbox"
-
-                        />
+                        <input type="checkbox" />
                       </td>
                       <td>
                         <ViewCompact
                           onClick={() =>
-                            handleOpenDetailTicketSolution(TicketSolution.id)
+                            handleOpenDetailTicketAssign(TicketAssign.id)
                           }
                         />{" "}
                       </td>
                       <td
-                       className="tooltip-cell"
-                       title={`Id:${TicketSolution.id} \nDescription:${
-                        TicketSolution.description
-                       }`}
+                        className="tooltip-cell"
+                        title={`Id:${TicketAssign.id} \nDescription:${TicketAssign.description}`}
                       >
-                        {TicketSolution.title.length > 20 ? `${TicketSolution.title.slice(0, 20)}...` : TicketSolution.title}
+                        {TicketAssign.title.length > 20
+                          ? `${TicketAssign.title.slice(0, 20)}...`
+                          : TicketAssign.title}
                       </td>
-                      <td>{getPriorityOption(TicketSolution.priority)}</td>
-                      <td>{getImpactById(TicketSolution.impact)}</td>
-                      <td>{getUrgencyById(TicketSolution.urgency)}</td>
-                      <td>{formatDate(TicketSolution.createdAt)}</td>
-                      <td>{formatDate(TicketSolution.modifiedAt)}</td>
+                      <td>{getPriorityOption(TicketAssign.priority)}</td>
+                      <td>{getImpactById(TicketAssign.impact)}</td>
+                      <td>
+                      {
+                        <span
+                          onMouseDown={(e) => e.stopPropagation()}
+                          onClick={handleDropdownClick}
+                          style={ticketStatusOption.badgeStyle}
+                        >
+                          {isDropdownVisible ? (
+                            <select
+                              value={TicketAssign.ticketStatus}
+                              onChange={(e) =>
+                                handleTicketStatusChange(
+                                  TicketAssign.id,
+                                  parseInt(e.target.value)
+                                )
+                              }
+                              onBlur={() => setDropdownVisible(false)}
+                            >
+                              {TicketStatusOptions.map((option) => (
+                                <option
+                                  key={option.id}
+                                  value={option.id}
+                                  className={option.iconClass}
+                                >
+                                  {option.icon} {option.name}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <>
+                              {ticketStatusOption.icon}
+                              {ticketStatusOption.name}
+                            </>
+                          )}
+                        </span>
+                      }
+                    </td>
+                      <td>{formatDate(TicketAssign.createdAt)}</td>
+                      <td>{formatDate(TicketAssign.modifiedAt)}</td>
                     </tr>
                   );
                 })}

@@ -11,7 +11,6 @@ import {
 import {
   Dialog,
   DialogTitle,
-  TextField,
   DialogActions,
   Select,
   DialogContent,
@@ -21,30 +20,26 @@ import {
   Tooltip,
   FormControl,
   InputLabel,
-  Typography,
   CircularProgress,
+  ListItemText,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close";
 import LockIcon from "@mui/icons-material/Lock";
-import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import moment from "moment";
 import "../../assets/css/profile.css";
 import React, { useEffect, useState } from "react";
 import { GetDataProfileUser, UpdateProfile } from "../../app/api";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import ChangePassword from "../ChangePassword";
-import { genderOptions, getGenderById, getRoleNameById } from "../helpers/tableComlumn";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import {
-  CalendarMonth,
-  LocalPhone,
-  Mail,
-  Portrait,
-} from "@mui/icons-material";
+  genderOptions,
+  getGenderById,
+  getRoleNameById,
+} from "../helpers/tableComlumn";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { CalendarMonth, LocalPhone, Mail, Portrait } from "@mui/icons-material";
 import CustomTextField from "../CustomTextField";
 import { Image } from "primereact/image";
 
@@ -68,11 +63,9 @@ const Profile = (props) => {
     email: "",
     avatarUrl: "",
     phoneNumber: "",
-    dateOfBirth: "",
     address: "",
     gender: "",
     team: "",
-    address: "",
     role: "",
     company: {
       id: 0,
@@ -96,7 +89,6 @@ const Profile = (props) => {
     email: "",
     phoneNumber: "",
     gender: "",
-    dateOfBirth: "",
     address: "",
   });
 
@@ -104,7 +96,6 @@ const Profile = (props) => {
   const [openAdd, setOpenAdd] = React.useState(false);
   const [openChangePassword, setChangePassword] = React.useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [date, setDate] = useState(moment());
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prevInputs) => ({
@@ -113,19 +104,9 @@ const Profile = (props) => {
     }));
   };
 
-  const handleDateChange = (newDate) => {
-    const formattedDateBirth = moment(newDate).format("YYYY-MM-DD");
-    setDate(newDate);
-    setData((prevInputs) => ({
-      ...prevInputs,
-      dateOfBirth: formattedDateBirth,
-    }));
-  };
-
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedFile(file);
-    console.log(selectedFile);
     const reader = new FileReader();
 
     reader.onloadend = () => {
@@ -162,7 +143,6 @@ const Profile = (props) => {
   const fetchDataProfile = async () => {
     try {
       const profile = await GetDataProfileUser();
-      console.log(profile);
       setData(profile);
     } catch (error) {}
   };
@@ -204,17 +184,14 @@ const Profile = (props) => {
         avatarUrl = await getDownloadURL(storageRef);
       }
 
-      const formattedDateOfBirth = moment(date).format("YYYY-MM-DD");
-
       const updatedData = {
         ...data,
         avatarUrl: avatarUrl,
-        dateOfBirth: formattedDateOfBirth,
       };
 
       setData(updatedData);
       await UpdateProfile(updatedData);
-      toast.success("Edit Successful");
+      toast.success("Edit Profile Successful");
       setOpenAdd(false);
       fetchDataProfile();
     } catch (error) {
@@ -231,7 +208,7 @@ const Profile = (props) => {
         <MDBContainer className="py-5">
           <MDBRow>
             <MDBCol lg="4">
-              <MDBCard className="mb-4" style={{ height: '650px' }}>
+              <MDBCard className="mb-4" style={{ height: "650px" }}>
                 <MDBCardBody className="text-center">
                   <div className="card flex justify-content-center">
                     <Image
@@ -286,7 +263,7 @@ const Profile = (props) => {
                       <MDBCardText
                         style={{ fontWeight: "bold", color: "#000000" }}
                       >
-                        UserName 
+                        UserName
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="8">
@@ -394,36 +371,46 @@ const Profile = (props) => {
                 </MDBCardBody>
               </MDBCard>
               <MDBRow>
-                <MDBCol md="6">
+                <MDBCol md="7">
                   <MDBCard className="mb-4 mb-md-0">
                     <MDBCardBody>
-                      <MDBCardText className="mb-4" style={{ fontWeight: "bold", color: "black" }}>
+                      <MDBCardText
+                        className="mb-4"
+                        style={{ fontWeight: "bold", color: "black" }}
+                      >
                         Company Information
                       </MDBCardText>
                       <MDBCardText
                         className="mb-1"
                         style={{ fontSize: "1rem" }}
                       >
-                        Company Name:{" "}
-                        {data && data.company && data.company.companyName ? data.company.companyName : "N/A"}
+                        Name:{" "}
+                        {data && data.company && data.company.companyName
+                          ? data.company.companyName
+                          : "N/A"}
                       </MDBCardText>
                       <MDBCardText
                         className="mt-4 mb-1"
                         style={{ fontSize: "1rem" }}
                       >
-                        Tax Code: {data && data.company && data.company.taxCode ? data.company.taxCode : "N/A"}
+                        Tax Code:{" "}
+                        {data && data.company && data.company.taxCode
+                          ? data.company.taxCode
+                          : "N/A"}
                       </MDBCardText>
                       <MDBCardText
                         className="mt-4 mb-1"
                         style={{ fontSize: "1rem" }}
                       >
                         Business Role:{" "}
-                        {data && data.company && data.company.fieldOfBusiness ? data.company.fieldOfBusiness : "N/A"}
+                        {data && data.company && data.company.fieldOfBusiness
+                          ? data.company.fieldOfBusiness
+                          : "N/A"}
                       </MDBCardText>
                     </MDBCardBody>
                   </MDBCard>
                 </MDBCol>
-                <MDBCol md="6">
+                <MDBCol md="5">
                   <MDBCard className="mb-4 mb-md-0">
                     <MDBCardBody>
                       <MDBCardText
@@ -436,7 +423,7 @@ const Profile = (props) => {
                         className="mb-1"
                         style={{ fontSize: "1rem" }}
                       >
-                        Email-contact:{" "}
+                        Email-Co:{" "}
                         {data && data.email && data.company.email && (
                           <a
                             href={`mailto:${data.company.email}`}
@@ -458,7 +445,9 @@ const Profile = (props) => {
                               href={`tel:${data.company.phoneNumber}`}
                               style={{ textDecoration: "underline" }}
                             >
-                              {data.company.phoneNumber ? data.company.phoneNumber : "N/A"}
+                              {data.company.phoneNumber
+                                ? data.company.phoneNumber
+                                : "N/A"}
                             </a>
                           )}
                       </MDBCardText>
@@ -473,7 +462,9 @@ const Profile = (props) => {
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            {data.company.website ? data.company.website : "N/A"}
+                            {data.company.website
+                              ? data.company.website
+                              : "N/A"}
                           </a>
                         )}
                       </MDBCardText>
@@ -558,15 +549,6 @@ const Profile = (props) => {
                     }
                   />
                   <CustomTextField
-                    label="Email"
-                    name="email"
-                    value={data.email}
-                    onChange={handleChange}
-                    helperText={
-                      <span style={{ color: "red" }}>{errors.email}</span>
-                    }
-                  />
-                  <CustomTextField
                     label="Phone Number"
                     name="phoneNumber"
                     value={data.phoneNumber}
@@ -582,56 +564,23 @@ const Profile = (props) => {
                     <Select
                       labelId="gender-label"
                       id="gender"
+                      name="gender"
                       value={data.gender}
                       onChange={handleChange}
                       label="Gender"
+                      style={{ textAlign: "center" }} // Center align the selected value
                     >
                       {genderOptions.map((gender) => (
                         <MenuItem key={gender.id} value={gender.id}>
-                          {gender.name}
+                          <ListItemText
+                            primary={gender.name}
+                            style={{ textAlign: "left" }}
+                          />{" "}
+                          {/* Left align the menu item text */}
                         </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
-                  <CustomTextField
-                    label="Address"
-                    name="address"
-                    value={data.address}
-                    onChange={handleChange}
-                  />
-                  <Grid
-                    item
-                    xs={10}
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <Typography
-                      variant="body1"
-                      style={{
-                        marginRight: "10px",
-                        color: "#3399FF",
-                        marginTop: "10px",
-                      }}
-                    >
-                      Birth Day
-                    </Typography>
-                    <LocalizationProvider dateAdapter={AdapterMoment}>
-                      <div style={{ marginTop: "20px" }}>
-                        <MobileDatePicker
-                          required
-                          fullWidth
-                          value={date}
-                          onChange={(newValue) => handleDateChange(newValue)}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              variant="outlined"
-                              size="small"
-                            />
-                          )}
-                        />
-                      </div>
-                    </LocalizationProvider>
-                  </Grid>
                 </Grid>
               </Grid>
             </MDBCardBody>

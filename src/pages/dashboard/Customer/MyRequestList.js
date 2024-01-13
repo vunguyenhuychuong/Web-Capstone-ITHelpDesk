@@ -50,6 +50,7 @@ const MyRequestList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
   const [sortBy, setSortBy] = useState("id");
+  const [ticketStatus, setTicketStatus] = useState(null);
   const navigate = useNavigate();
 
   const fetchDataListTicketCustomer = useCallback(async () => {
@@ -66,7 +67,8 @@ const MyRequestList = () => {
         pageSize,
         sortBy,
         sortDirection,
-        userId
+        userId,
+        ticketStatus
       );
       setDataListTicketsCustomer(response);
     } catch (error) {
@@ -82,7 +84,12 @@ const MyRequestList = () => {
     sortBy,
     sortDirection,
     userId,
+    ticketStatus
   ]);
+
+  const handleStatusChange = (e) => {
+    setTicketStatus(e.target.value);
+  };
 
   const fetchAllCategories = async () => {
     try {
@@ -198,6 +205,45 @@ const MyRequestList = () => {
                 pageSize={pageSize}
                 handleChangePageSize={handleChangePageSize}
               />
+               <div style={{ textAlign: "center" }}>
+                <label
+                  style={{
+                    fontWeight: "bold",
+                    marginTop: "15px",
+                    color: "white",
+                  }}
+                >
+                  Sort Status Ticket:
+                </label>
+                <FormControl
+                  variant="outlined"
+                  style={{
+                    minWidth: 120,
+                    marginRight: 10,
+                    marginTop: 10,
+                    marginLeft: 10,
+                  }}
+                  size="small"
+                >
+                  <Select
+                    value={ticketStatus}
+                    onChange={handleStatusChange}
+                    inputProps={{
+                      name: "sortField",
+                      id: "search-field",
+                    }}
+                    style={{ color: "white" }}
+                  >
+                    <MenuItem value={null}>-</MenuItem>
+                    <MenuItem value={0}>Open</MenuItem>
+                    <MenuItem value={1}>Assign</MenuItem>
+                    <MenuItem value={2}>Progress</MenuItem>
+                    <MenuItem value={3}>Resolved</MenuItem>
+                    <MenuItem value={4}>Closed</MenuItem>
+                    <MenuItem value={5}>Cancelled</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
             </MDBNavbarNav>
           </MDBContainer>
         </MDBNavbar>

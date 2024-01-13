@@ -168,7 +168,6 @@ const CompanyMemberList = () => {
   useEffect(() => {
     fetchAllCompanyMember();
     setTotalPages(4);
-    setIsLoading(false);
   }, [fetchAllCompanyMember]);
 
   return (

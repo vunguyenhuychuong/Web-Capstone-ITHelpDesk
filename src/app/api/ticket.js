@@ -45,7 +45,8 @@ export async function getTicketByUserIdPagination(
   pageSize = 5, 
   sortBy = "id", 
   sortDirection = "asc", 
-  id) {
+  id,
+  ticketStatus) {
   const header = getAuthHeader();
   try {
     const filter = `${searchField}.contains("${searchQuery}")`;
@@ -54,6 +55,7 @@ export async function getTicketByUserIdPagination(
       page: page,
       pageSize: pageSize,
       sort: `${sortBy} ${sortDirection}`,
+      ticketStatus: ticketStatus
     }
     const res = await axios.get(`${baseURL}/ticket/user/${id}`, {
       headers: {
