@@ -28,7 +28,6 @@ import {
 import "../../../../assets/css/detailTicket.css";
 import PropTypes from "prop-types";
 import "../../../../assets/css/homeManager.css";
-import { useSelector } from "react-redux";
 import { formatDate } from "../../../helpers/FormatDate";
 import { formatCurrency } from "../../../helpers/FormatCurrency";
 import { useState } from "react";

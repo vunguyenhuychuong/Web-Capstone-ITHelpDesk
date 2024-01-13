@@ -119,7 +119,7 @@ const HomeCustomer = () => {
       </div>
 
       <Grid item container xs={12} spacing={2} className="section-body">
-        <Grid item xs={4}>
+        <Grid item xs={8}>
           <Grid item xs={12}>
             <div
               className="nav-header bordered-grid-item"
@@ -215,71 +215,6 @@ const HomeCustomer = () => {
                 </div>
               )}
             </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-        <Grid item xs={4}>
-          <Grid item xs={12}>
-            <div
-              className="nav-header bordered-grid-item"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                border: "1px solid #CCCCCC",
-                padding: "8px",
-                background: "#FFFFFF",
-              }}
-            >
-              <Notifications sx={{ margin: 1, color: "#3399CC" }} />
-              <h4
-                style={{
-                  marginLeft: "8px",
-                  marginTop: "4px",
-                  fontWeight: "bold",
-                  fontSize: "14px",
-                }}
-              >
-                Ticket Log
-              </h4>
-              <div style={{ marginLeft: "auto" }}>
-                <button
-                  variant="contained"
-                  color="secondary"
-                  className="custom-button"
-                >
-                  Show All
-                </button>
-              </div>
-            </div>
-          </Grid>
-          <Grid item xs={12}>
-            <Card style={{ height: "300px", overflowY: "auto" }}>
-              <CardContent>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    marginTop: "30px",
-                  }}
-                >
-                  <img
-                    src={Announcements}
-                    alt="No Pending"
-                    style={{ maxWidth: "300px", maxHeight: "200px" }}
-                  />
-                  <p
-                    style={{
-                      marginTop: "2px",
-                      fontSize: "16px",
-                      color: "#666",
-                    }}
-                  >
-                    There are no new announcements today
-                  </p>
-                </div>
-              </CardContent>
             </Card>
           </Grid>
         </Grid>

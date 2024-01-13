@@ -96,7 +96,7 @@ const CreateUser = () => {
       fetchDepartmentsByCompany(data.companyId);
     }
   }, [data.companyId]);
-  
+
   useEffect(() => {
     if (dataDepartment && dataDepartment.length > 0) {
       setData((prevData) => ({
@@ -105,6 +105,7 @@ const CreateUser = () => {
       }));
     }
   }, [dataDepartment]);
+
   useEffect(() => {
     if (data.companyId) {
       fetchDepartmentsByCompany(data.companyId);

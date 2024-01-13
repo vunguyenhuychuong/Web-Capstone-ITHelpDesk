@@ -7,9 +7,6 @@ import {
   MDBCardBody,
   MDBCardImage,
   MDBBtn,
-  MDBIcon,
-  MDBListGroup,
-  MDBListGroupItem,
 } from "mdb-react-ui-kit";
 import {
   Dialog,
@@ -40,13 +37,10 @@ import { GetDataProfileUser, UpdateProfile } from "../../app/api";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import ChangePassword from "../ChangePassword";
-import { genderOptions, getRoleNameById } from "../helpers/tableComlumn";
-import { formatTicketDate } from "../helpers/FormatAMPM";
+import { genderOptions, getGenderById, getRoleNameById } from "../helpers/tableComlumn";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import {
   CalendarMonth,
-  CorporateFare,
-  Group,
   LocalPhone,
   Mail,
   Portrait,
@@ -75,10 +69,23 @@ const Profile = (props) => {
     avatarUrl: "",
     phoneNumber: "",
     dateOfBirth: "",
+    address: "",
     gender: "",
     team: "",
     address: "",
     role: "",
+    company: {
+      id: 0,
+      companyName: "",
+      taxCode: "",
+      website: "",
+      phoneNumber: "",
+      email: "",
+      addresses: "",
+      fieldOfBusiness: "",
+      isActive: "",
+      createdAt: "",
+    },
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -107,7 +114,6 @@ const Profile = (props) => {
   };
 
   const handleDateChange = (newDate) => {
-    console.log(newDate);
     const formattedDateBirth = moment(newDate).format("YYYY-MM-DD");
     setDate(newDate);
     setData((prevInputs) => ({
@@ -225,7 +231,7 @@ const Profile = (props) => {
         <MDBContainer className="py-5">
           <MDBRow>
             <MDBCol lg="4">
-              <MDBCard className="mb-4">
+              <MDBCard className="mb-4" style={{ height: '650px' }}>
                 <MDBCardBody className="text-center">
                   <div className="card flex justify-content-center">
                     <Image
@@ -236,6 +242,7 @@ const Profile = (props) => {
                       }
                       alt="Avatar"
                       width="250"
+                      height="300"
                       preview
                     />
                   </div>
@@ -267,7 +274,6 @@ const Profile = (props) => {
                   </div>
                 </MDBCardBody>
               </MDBCard>
-
             </MDBCol>
             <MDBCol lg="8">
               <div className="blue-summary">
@@ -280,7 +286,7 @@ const Profile = (props) => {
                       <MDBCardText
                         style={{ fontWeight: "bold", color: "#000000" }}
                       >
-                        UserName :
+                        UserName 
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="8">
@@ -302,7 +308,7 @@ const Profile = (props) => {
                       <MDBCardText
                         style={{ fontWeight: "bold", color: "#000000" }}
                       >
-                        Email :
+                        Email-personal:
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="8">
@@ -324,7 +330,7 @@ const Profile = (props) => {
                       <MDBCardText
                         style={{ fontWeight: "bold", color: "#000000" }}
                       >
-                        Phone :
+                        Phone-personal:
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="8">
@@ -351,11 +357,7 @@ const Profile = (props) => {
                     </MDBCol>
                     <MDBCol sm="8">
                       <MDBCardText className="text-muted">
-                        {data && data.gender
-                          ? genderOptions.find(
-                              (gender) => gender.id === gender.role
-                            ).name
-                          : "N/A"}
+                        {data && getGenderById(data.gender)}
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="1">
@@ -372,12 +374,12 @@ const Profile = (props) => {
                       <MDBCardText
                         style={{ fontWeight: "bold", color: "#000000" }}
                       >
-                        Date Of Birth :
+                        Address :
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="8">
                       <MDBCardText className="text-muted">
-                        {formatTicketDate(data.dateOfBirth)}
+                        {data.address}
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="1">
@@ -389,72 +391,34 @@ const Profile = (props) => {
                     </MDBCol>
                   </MDBRow>
                   <hr />
-                  {/* <MDBRow>
-                    <MDBCol sm="3">
-                      <MDBCardText
-                        style={{ fontWeight: "bold", color: "#000000" }}
-                      >
-                        Team :
-                      </MDBCardText>
-                    </MDBCol>
-                    <MDBCol sm="8">
-                      <MDBCardText className="text-muted">
-                        {data && data.team ? data.team : "N/A"}
-                      </MDBCardText>
-                    </MDBCol>
-                    <MDBCol sm="1">
-                      <Group
-                        fontSize="small"
-                        color="primary"
-                        onClick={handleOpenEditUser}
-                      />
-                    </MDBCol>
-                  </MDBRow>
-                  <hr />
-                  <MDBRow>
-                    <MDBCol sm="3">
-                      <MDBCardText
-                        style={{ fontWeight: "bold", color: "#000000" }}
-                      >
-                        Company :
-                      </MDBCardText>
-                    </MDBCol>
-                    <MDBCol sm="8">
-                      <MDBCardText className="text-muted">
-                        {data && data.company ? data.company : "N/A"}
-                      </MDBCardText>
-                    </MDBCol>
-                    <MDBCol sm="1">
-                      <CorporateFare
-                        fontSize="small"
-                        color="primary"
-                        onClick={handleOpenEditUser}
-                      />
-                    </MDBCol>
-                  </MDBRow> */}
                 </MDBCardBody>
               </MDBCard>
               <MDBRow>
                 <MDBCol md="6">
                   <MDBCard className="mb-4 mb-md-0">
                     <MDBCardBody>
-                      <MDBCardText className="mb-4">
-                        <span className="text-primary font-italic me-1">
-                          assigment
-                        </span>{" "}
-                        Project Status
+                      <MDBCardText className="mb-4" style={{ fontWeight: "bold", color: "black" }}>
+                        Company Information
                       </MDBCardText>
                       <MDBCardText
                         className="mb-1"
-                        style={{ fontSize: ".77rem" }}
+                        style={{ fontSize: "1rem" }}
                       >
-                        Web Design
+                        Company Name:{" "}
+                        {data && data.company && data.company.companyName ? data.company.companyName : "N/A"}
                       </MDBCardText>
                       <MDBCardText
                         className="mt-4 mb-1"
-                        style={{ fontSize: ".77rem" }}
+                        style={{ fontSize: "1rem" }}
                       >
-                        Website Markup
+                        Tax Code: {data && data.company && data.company.taxCode ? data.company.taxCode : "N/A"}
+                      </MDBCardText>
+                      <MDBCardText
+                        className="mt-4 mb-1"
+                        style={{ fontSize: "1rem" }}
+                      >
+                        Business Role:{" "}
+                        {data && data.company && data.company.fieldOfBusiness ? data.company.fieldOfBusiness : "N/A"}
                       </MDBCardText>
                     </MDBCardBody>
                   </MDBCard>
@@ -462,23 +426,56 @@ const Profile = (props) => {
                 <MDBCol md="6">
                   <MDBCard className="mb-4 mb-md-0">
                     <MDBCardBody>
-                      <MDBCardText className="mb-4">
-                        <span className="text-primary font-italic me-1">
-                          assigment
-                        </span>{" "}
-                        Project Status
+                      <MDBCardText
+                        className="mb-4"
+                        style={{ fontWeight: "bold", color: "black" }}
+                      >
+                        About us
                       </MDBCardText>
                       <MDBCardText
                         className="mb-1"
-                        style={{ fontSize: ".77rem" }}
+                        style={{ fontSize: "1rem" }}
                       >
-                        Web Design
+                        Email-contact:{" "}
+                        {data && data.email && data.company.email && (
+                          <a
+                            href={`mailto:${data.company.email}`}
+                            style={{ textDecoration: "underline" }}
+                          >
+                            {data.company.email ? data.company.email : "N/A"}
+                          </a>
+                        )}
                       </MDBCardText>
                       <MDBCardText
                         className="mt-4 mb-1"
-                        style={{ fontSize: ".77rem" }}
+                        style={{ fontSize: "1rem" }}
                       >
-                        Website Markup
+                        Phone-company:{" "}
+                        {data &&
+                          data.phoneNumber &&
+                          data.company.phoneNumber && (
+                            <a
+                              href={`tel:${data.company.phoneNumber}`}
+                              style={{ textDecoration: "underline" }}
+                            >
+                              {data.company.phoneNumber ? data.company.phoneNumber : "N/A"}
+                            </a>
+                          )}
+                      </MDBCardText>
+                      <MDBCardText
+                        className="mt-4 mb-1"
+                        style={{ fontSize: "1rem" }}
+                      >
+                        Website-company:{" "}
+                        {data && data.company && data.company.website && (
+                          <a
+                            href={data.company.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {data.company.website ? data.company.website : "N/A"}
+                          </a>
+                        )}
                       </MDBCardText>
                     </MDBCardBody>
                   </MDBCard>
