@@ -84,12 +84,7 @@ const CreateUser = () => {
     };
     fetchDataCreateUser();
   }, [data.companyId]);
-<<<<<<< HEAD
-=======
-<<<<<<< Updated upstream
-=======
-  
->>>>>>> a2a5891e0a1bc8f922fca8720ba0f4c05012ea82
+
   useEffect(() => {
     if (dataDepartment && dataDepartment.length > 0) {
       setData((prevData) => ({
@@ -98,11 +93,7 @@ const CreateUser = () => {
       }));
     }
   }, [dataDepartment]);
-<<<<<<< HEAD
-=======
->>>>>>> Stashed changes
 
->>>>>>> a2a5891e0a1bc8f922fca8720ba0f4c05012ea82
   useEffect(() => {
     if (data.companyId) {
       fetchDepartmentsByCompany(data.companyId);

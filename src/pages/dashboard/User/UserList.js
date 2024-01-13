@@ -8,7 +8,7 @@ import {
 } from "mdb-react-ui-kit";
 import React, { useCallback, useState } from "react";
 import {
-  ArrowDropDown,ArrowDropUp,ContentCopy,Delete,Female,Lock,LockOpen,Male,Phone,ViewCompact,
+  ArrowDropDown,ArrowDropUp,ContentCopy,Delete,Female,Lock,LockOpen,Male,ViewCompact,
 } from "@mui/icons-material";
 import { useEffect } from "react";
 import { FaPlus, FaSearch } from "react-icons/fa";
@@ -89,6 +89,7 @@ const UserList = () => {
   const handleDeleteSelectedUsers = async (id) => {
     try {
       if (selectedUsers.length === 0) {
+        toast.warning("Please select at least one user to delete.");
         return;
       }
       const deletePromises = selectedUsers.map(async (userId) => {
@@ -182,8 +183,9 @@ const UserList = () => {
                 }}
                 data-mdb-toggle="tooltip"
                 title="Delete Selected Users"
+                onClick={handleDeleteSelectedUsers} 
               >
-                <Delete onClick={handleDeleteSelectedUsers} /> Delete
+                <Delete /> Delete
               </MDBBtn>
               <FormControl
                 variant="outlined"

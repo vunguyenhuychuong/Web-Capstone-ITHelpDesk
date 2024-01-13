@@ -8,10 +8,14 @@ export const formatDate = (dateString) => {
         hour12: true,
       };
 
-    const formattedDate = new Date(dateString).toLocaleDateString(
-        undefined,
-        options
-    );
+      const parsedDate = new Date(dateString);
 
-    return formattedDate;
+      // Check if the parsed date is a valid date
+      if (isNaN(parsedDate)) {
+          return "-";
+      }
+  
+      const formattedDate = parsedDate.toLocaleDateString(undefined, options);
+  
+      return formattedDate;
 }

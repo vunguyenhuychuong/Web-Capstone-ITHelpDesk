@@ -5,7 +5,6 @@ import { getAuthHeader } from "./auth";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase";
 import { baseURL } from "./link";
-import { useNavigate } from "react-router-dom";
 
 // Get all users in system
 export async function getAllUser(searchField, searchQuery, page = 1, pageSize = 5, sortBy = "id", sortDirection = "asc") {
@@ -129,9 +128,19 @@ export async function DeleteDataUser(id) {
         Authorization: header,
       },
     });
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     return res.data;
   }catch(error) {
     console.log(error);
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
   }
 };
 
