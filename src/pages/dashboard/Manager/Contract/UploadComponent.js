@@ -3,9 +3,7 @@ import { Upload } from "antd";
 import {
   Button,
   Dialog,
-  DialogActions,
   DialogContent,
-  DialogTitle,
   IconButton,
   Paper,
   Typography,
@@ -13,7 +11,6 @@ import {
 import "../../../../assets/css/UploadComponent.css";
 import { Attachment, Close } from "@mui/icons-material";
 import { useState } from "react";
-import { data } from "autoprefixer";
 
 const UploadComponent = ({ attachmentUrls }) => {
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);

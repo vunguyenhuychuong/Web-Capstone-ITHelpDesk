@@ -19,7 +19,6 @@ import { useState } from "react";
 import { GetTicketUserAvailable } from "../../../app/api/ticket";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Announcements from "../../../assets/images/announcements.jpg";
 import HoldTicket from "../../../assets/images/holding ticket.png";
 import AwaitTicket from "../../../assets/images/await ticket.png";
 import PendingTicket from "../../../assets/images/pending ticket.png";
@@ -45,10 +44,6 @@ const HomeCustomer = () => {
 
   const handleOpenListTicket = () => {
     navigate(`/home/requestCustomerList`);
-  };
-
-  const handleOpenListTicketLog = () => {
-    navigate('/home/ticketLog');
   };
 
   useEffect(() => {
