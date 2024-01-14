@@ -30,6 +30,8 @@ import {
   MenuItem,
   Pagination,
   Select,
+  Stack,
+  Tooltip,
 } from "@mui/material";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import {
@@ -37,8 +39,9 @@ import {
   getAllTicketSolutions,
 } from "../../../app/api/ticketSolution";
 import { toast } from "react-toastify";
-import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
+
 import CloseTicket from "../../../assets/images/NoTicketSolution.jpg";
+import CircularLoading from "../../../components/iconify/CircularLoading";
 import { useSelector } from "react-redux";
 
 const TicketSolutionList = () => {
@@ -72,7 +75,8 @@ const TicketSolutionList = () => {
         sortBy,
         sortDirection
       );
-      setDataListTicketsSolution(response);
+      setDataListTicketsSolution(response.data);
+      setTotalPages(response.totalPage);
     } catch (error) {
       console.log(error);
     } finally {
@@ -175,7 +179,6 @@ const TicketSolutionList = () => {
 
   useEffect(() => {
     fetchDataListTicketSolution();
-    setTotalPages(4);
   }, [fetchDataListTicketSolution, refreshData]);
 
   return (
@@ -184,10 +187,10 @@ const TicketSolutionList = () => {
         <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid style={{ color: "#FFFFFF" }}>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
-              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
+              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />
               <span style={{ color: "#FFFFFF" }}>All Solutions</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               {userRole === 1 ? null : (
                 <>
                   <MDBBtn
@@ -218,14 +221,11 @@ const TicketSolutionList = () => {
                   )}
                 </>
               )}
-
               <FormControl
                 variant="outlined"
                 style={{
                   minWidth: 120,
-                  marginRight: 10,
-                  marginTop: 10,
-                  marginLeft: 10,
+                  margin: 10,
                 }}
                 size="small"
               >
@@ -236,9 +236,8 @@ const TicketSolutionList = () => {
                     name: "searchField",
                     id: "search-field",
                   }}
-                  style={{ color: "white" }}
+                  style={{ color: "white", height: "100%" }}
                 >
-                  <MenuItem value="id">ID</MenuItem>
                   <MenuItem value="title">Title</MenuItem>
                   <MenuItem value="keyword">Keyword</MenuItem>
                   <MenuItem value="isApproved">Status</MenuItem>
@@ -249,7 +248,7 @@ const TicketSolutionList = () => {
                 <input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => {
+                  onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
                       fetchDataListTicketSolution();
@@ -270,7 +269,7 @@ const TicketSolutionList = () => {
           <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>
+                {/* <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                   <input
                     type="checkbox"
                     checked={
@@ -279,8 +278,7 @@ const TicketSolutionList = () => {
                     }
                     onChange={handleSelectAllSolutions}
                   />
-                </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
+                </th> */}
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   className="sortable-header"
@@ -322,7 +320,18 @@ const TicketSolutionList = () => {
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
-                  className="sortable-header"
+                  onClick={() => handleSortChange("reviewDate")}
+                >
+                  Review Date
+                  {sortBy === "reviewDate" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("createdAt")}
                 >
                   Created
@@ -346,10 +355,17 @@ const TicketSolutionList = () => {
                       <ArrowDropUp />
                     ))}
                 </th>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
               </tr>
             </MDBTableHead>
             {loading ? (
-              <CustomizedProgressBars />
+              <MDBTableBody className="bg-light">
+                <tr>
+                  <td>
+                    <CircularLoading />
+                  </td>
+                </tr>
+              </MDBTableBody>
             ) : (
               <MDBTableBody className="bg-light">
                 {dataListTicketsSolution.map((TicketSolution, index) => {
@@ -358,7 +374,8 @@ const TicketSolutionList = () => {
                   );
                   return (
                     <tr key={index}>
-                      <td>
+                      {/* <td>{TicketSolution.id}</td> */}
+                      {/* <td>
                         <input
                           type="checkbox"
                           checked={isSelected}
@@ -366,31 +383,21 @@ const TicketSolutionList = () => {
                             handleSelectSolution(TicketSolution.id)
                           }
                         />
-                      </td>
-                      <td>
-                        <ViewCompact
-                          onClick={() =>
-                            handleOpenDetailTicketSolution(TicketSolution.id)
-                          }
-                        />{" "}
-                      </td>
+                      </td> */}
+
                       <td
-                        className="tooltip-cell"
+                        className="tooltip-cell text-truncate"
+                        style={{ maxWidth: 250 }}
                         title={`Id:${TicketSolution.id} \n💡:${TicketSolution.title}\nContent:${TicketSolution.content}`}
                       >
-                        {TicketSolution.title.length > 10
-                          ? `${TicketSolution.title.slice(0, 10)}...`
-                          : TicketSolution.title}
+                        {TicketSolution.title}
                       </td>
                       <td
-                        className="tooltip-cell"
+                        className="tooltip-cell text-truncate"
+                        style={{ maxWidth: 250 }}
                         title={`Keyword:${TicketSolution.keyword}`}
                       >
-                        {TicketSolution.keyword
-                          ? TicketSolution.keyword.length > 10
-                            ? `${TicketSolution.keyword.slice(0, 10)}...`
-                            : TicketSolution.keyword
-                          : "-"}
+                        {TicketSolution.keyword}
                       </td>
                       <td>
                         {TicketSolution.isApproved ? (
@@ -408,8 +415,33 @@ const TicketSolutionList = () => {
                           </>
                         )}
                       </td>
+                      {/* <td>
+                        {TicketSolution.isPublic ? (
+                          <>
+                            <LockOpen
+                              className="square-icon"
+                              style={{ color: "green" }}
+                            />{" "}
+                            <span>Public</span>
+                          </>
+                        ) : (
+                          <>
+                            <Lock className="square-icon" /> Private
+                          </>
+                        )}
+                      </td> */}
+                      <td>{formatDate(TicketSolution.reviewDate)}</td>
                       <td>{formatDate(TicketSolution.createdAt)}</td>
                       <td>{formatDate(TicketSolution.modifiedAt)}</td>
+                      <td>
+                        <Tooltip title="View detail" arrow>
+                          <ViewCompact
+                            onClick={() =>
+                              handleOpenDetailTicketSolution(TicketSolution.id)
+                            }
+                          />
+                        </Tooltip>
+                      </td>
                     </tr>
                   );
                 })}

@@ -3,11 +3,13 @@ import "../../../assets/css/ticket.css";
 import "../../../assets/css/ServiceTicket.css";
 import {
   Box,
+  Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Grid,
+  Stack,
   Tab,
   Tabs,
   TextField,
@@ -29,26 +31,32 @@ import {
   approveTicketSolution,
   changePublicSolution,
   rejectTicketSolution,
+  submitApprovalTicketSolution,
 } from "../../../app/api/ticketSolution";
 import { toast } from "react-toastify";
 import { getRoleName } from "../../helpers/tableComlumn";
-import { Button } from "flowbite-react";
 import { useSelector } from "react-redux";
 import UploadComponent from "../../helpers/UploadComponent";
+import { capitalizeWord } from "../../../utils/helper";
+import Gallery from "react-image-gallery";
+import { getManagerList } from "../../../app/api/team";
 
 const TicketSolutionDetail = () => {
   const [value, setValue] = useState(0);
+  const [formData, setFormData] = useState({ managerId: "" });
   const [selectedFile, setSelectedFile] = useState(null);
   const { solutionId } = useParams();
   const navigate = useNavigate();
   const { loading, data, dataCategories, error, refetch } =
     useSolutionTicketData(solutionId);
-
+  const [dataManagers, setDataManagers] = useState([]);
+  const [previewImages, setPreviewImages] = useState([]);
   const associationsRequesterCount = 42;
   const user = useSelector((state) => state.auth);
   const userRole = user.user.role;
   const [fileName, setFileName] = useState("");
   const [openImageDialog, setOpenImageDialog] = useState(false);
+  const [openApprovalDialog, setOpenApprovalDialog] = useState(false);
   const [views, setViews] = useState(0);
 
   const handleTabChange = (event, newValue) => {
@@ -66,10 +74,47 @@ const TicketSolutionDetail = () => {
       setFileName(file.name);
     }
   };
-  
+
+  const fetchDataManagerList = async () => {
+    try {
+      const Managers = await getManagerList();
+      setDataManagers(Managers);
+      setFormData((prevData) => ({
+        ...prevData,
+        managerId: Managers[0].id,
+      }));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value || "",
+    }));
+  };
   useEffect(() => {
     setViews((prevViews) => prevViews + 1);
+    fetchDataManagerList();
   }, []);
+
+  useEffect(() => {
+    try {
+      const attachmentUrls = data?.attachmentUrls;
+      if (attachmentUrls && attachmentUrls.length > 0) {
+        const images = attachmentUrls.map((url, index) => ({
+          original: url,
+          thumbnail: url,
+          description: `Attachment Preview ${index + 1}`,
+        }));
+        setPreviewImages(images);
+      }
+    } catch (error) {
+      console.log("Error", error);
+    }
+  }, [data]);
 
   const handleBackTicketSolution = () => {
     navigate("/home/ticketSolution");
@@ -80,6 +125,17 @@ const TicketSolutionDetail = () => {
     try {
       await changePublicSolution(solutionId);
       toast.success("Change Ticket Solution public");
+      refetch();
+    } catch (error) {
+      console.log("Error while changing public", error);
+    }
+  };
+
+  const handleSubmitApproval = async (solutionId, managerId) => {
+    try {
+      await submitApprovalTicketSolution(solutionId, managerId);
+      toast.success("Submitted approval successfully");
+      handleApprovalDialogClose();
       refetch();
     } catch (error) {
       console.log("Error while changing public", error);
@@ -122,6 +178,13 @@ const TicketSolutionDetail = () => {
     setOpenImageDialog(false);
   };
 
+  const handleApprovalDialogOpen = () => {
+    setOpenApprovalDialog(true);
+  };
+
+  const handleApprovalDialogClose = () => {
+    setOpenApprovalDialog(false);
+  };
   return (
     <Grid
       container
@@ -132,136 +195,97 @@ const TicketSolutionDetail = () => {
       }}
     >
       <Grid item xs={9} style={{ paddingRight: "12px" }}>
-        <MDBCol md="12">
-          <MDBRow className="border-box" style={{ backgroundColor: "#EEEEEE" }}>
-            <MDBCol md="1" className="mt-2">
-              <div className="d-flex align-items-center">
-                <button type="button" className="btn btn-link icon-label">
-                  <ArrowBack
-                    onClick={handleBackTicketSolution}
-                    style={{ color: "#0099FF" }}
-                  />
-                </button>
-              </div>
-            </MDBCol>
-            <MDBCol md="2" className="mt-2">
-              <div className="d-flex align-items-center">
-                {userRole === 2 ? (
-                  <Button
-                    type="button"
-                    className="btn btn-link narrow-input"
-                    style={{
-                      backgroundColor: "#FFFFFF",
-                      borderRadius: "5px",
-                      paddingLeft: "10px",
-                      height: "45px",
-                      padding: "10px 0",
-                      marginBottom: "10px",
-                    }}
-                    onClick={() => handleOpenEditTicketSolution()}
-                  >
-                    <span
-                      className="action-menu-item"
-                      style={{ fontSize: "16px", textTransform: "none" }}
-                    >
-                      Edit
-                    </span>
-                  </Button>
-                ) : null}
-                {userRole === 2 ? (
-                  <>
-                    <Button
-                      type="button"
-                      className="btn btn-link narrow-input"
-                      style={{
-                        backgroundColor: "#FFFFFF",
-                        borderRadius: "5px",
-                        paddingLeft: "10px",
-                        height: "45px",
-                        padding: "10px 0",
-                        marginBottom: "10px",
-                        color: "#0099FF", 
-                      }}
-                      onClick={() => handleClickChangePublic(solutionId)}
-                    >
-                      <span
-                        className="action-menu-item"
-                        style={{ fontSize: "16px", textTransform: "none" }}
-                      >
-                        {data.isPublic ? "Private" : "Public"}
-                      </span>
-                    </Button>
+        <Stack
+          direction={"row"}
+          sx={{ backgroundColor: "#EEEEEE" }}
+          spacing={2}
+        >
+          <Stack direction={"row"} alignItems={"center"}>
+            <Button>
+              <ArrowBack
+                onClick={handleBackTicketSolution}
+                style={{ color: "#0099FF" }}
+              />
+            </Button>
+          </Stack>
+          {userRole === 2 ? (
+            <Stack direction={"row"} spacing={2} py={1} alignItems={"center"}>
+              <Button
+                sx={{
+                  backgroundColor: "#FFFFFF",
+                  borderRadius: "5px",
+                }}
+                onClick={() => handleOpenEditTicketSolution()}
+              >
+                Edit
+              </Button>
+              <Button
+                sx={{
+                  backgroundColor: "#FFFFFF",
+                  borderRadius: "5px",
+                }}
+                onClick={() => handleClickChangePublic(solutionId)}
+              >
+                {data.isPublic ? "Private" : "Public"}
+              </Button>
+              <Button
+                sx={{
+                  backgroundColor: "#FFFFFF",
+                  borderRadius: "5px",
+                  color: "green",
+                }}
+                onClick={() => handleApproveTicketSolution(solutionId)}
+                disabled={data.isApproved}
+              >
+                Approve
+              </Button>
+              <Button
+                sx={{
+                  backgroundColor: "#FFFFFF",
+                  borderRadius: "5px",
+                  color: "#dc3545",
+                }}
+                onClick={() => handleRejectTicketSolution(solutionId)}
+                disabled={!data.isApproved}
+              >
+                Reject
+              </Button>
+            </Stack>
+          ) : null}
 
-                    {userRole === 2 && (
-                      <>
-                        <Button
-                          type="button"
-                          className="btn btn-link narrow-input"
-                          style={{
-                            backgroundColor: "#FFFFFF",
-                            borderRadius: "5px",
-                            height: "45px",
-                            padding: "10px 0",
-                            marginBottom: "10px",
-                            color: "#28a745", 
-                          }}
-                          onClick={() =>
-                            handleApproveTicketSolution(solutionId)
-                          }
-                          disabled={data.isApproved} 
-                        >
-                          <span
-                            className="action-menu-item"
-                            style={{ fontSize: "16px", textTransform: "none", marginLeft: "5px",
-                            marginRight: "auto",}}
-                          >
-                            Approve
-                          </span>
-                        </Button>
-
-                        <Button
-                          type="button"
-                          className="btn btn-link narrow-input"
-                          style={{
-                            backgroundColor: "#FFFFFF",
-                            borderRadius: "5px",
-                            paddingLeft: "10px",
-                            height: "45px",
-                            padding: "10px 0",
-                            marginBottom: "10px",
-                            color: "#dc3545", 
-                          }}
-                          onClick={() => handleRejectTicketSolution(solutionId)}
-                          disabled={!data.isApproved}
-                        >
-                          <span
-                            className="action-menu-item"
-                            style={{ fontSize: "16px", textTransform: "none" }}
-                          >
-                            Reject
-                          </span>
-                        </Button>
-                      </>
-                    )}
-                  </>
-                ) : null}
-              </div>
-            </MDBCol>
-          </MDBRow>
-        </MDBCol>
+          {userRole === 3 ? (
+            <Stack direction={"row"} spacing={2} py={1} alignItems={"center"}>
+              <Button
+                sx={{
+                  backgroundColor: "#FFFFFF",
+                  borderRadius: "5px",
+                }}
+                onClick={() => handleOpenEditTicketSolution()}
+              >
+                Edit
+              </Button>
+              <Button
+                sx={{
+                  backgroundColor: "#FFFFFF",
+                  borderRadius: "5px",
+                }}
+                onClick={() => handleApprovalDialogOpen()}
+              >
+                Submit for Approval
+              </Button>
+            </Stack>
+          ) : null}
+        </Stack>
         <MDBRow className="mb-4">
           <MDBCol
             md="10"
             className="mt-2"
             style={{ display: "flex", alignItems: "center" }}
           >
-            <div className="circular-container" style={{ marginRight: "10px" }}>
+            <div className="circular-container" style={{ marginRight: 20 }}>
               <TipsAndUpdates size="2em" style={{ color: "#FFCC33" }} />
             </div>
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <span style={{ marginBottom: "5px", fontSize: "1.5em" }}>
-                {data.title}
-              </span>
               <span style={{ fontSize: "0.8em" }}>
                 <span>Topic: </span>{" "}
                 <span className="bold-text">
@@ -270,11 +294,14 @@ const TicketSolutionDetail = () => {
                   )?.name || "Unknown Category"}
                 </span>
               </span>
+              <span style={{ marginBottom: "5px", fontSize: "1.5em" }}>
+                {data.title}
+              </span>
             </div>
           </MDBCol>
         </MDBRow>
-        <Grid item xs={12}>
-          <div className="labelContainer">
+        <Stack px={12}>
+          {/* <div className="labelContainer">
             <Typography
               variant="subtitle1"
               color="textSecondary"
@@ -288,24 +315,32 @@ const TicketSolutionDetail = () => {
               Description
             </Typography>
             <ArrowBack className="icon" />
-          </div>
+          </div> */}
           <TextField
             id="description"
             name="description"
             multiline
             rows={3}
             fullWidth
-            variant="outlined"
+            variant="standard"
             value={data?.content || ""}
             disabled
             InputProps={{
               style: { fontSize: "1.5em" },
             }}
           />
-          <UploadComponent />
-        </Grid>
-        <div className="buttonContainer">
-          {data.attachmentUrl && (
+          {/* <Stack width={"50%"} pt={5}>
+            <UploadComponent />
+          </Stack> */}
+        </Stack>
+
+        {data.attachmentUrls && (
+          <Stack
+            width={"100%"}
+            alignItems={"center"}
+            justifyContent={"center"}
+            pt={5}
+          >
             <Button
               variant="contained"
               className="button"
@@ -316,12 +351,12 @@ const TicketSolutionDetail = () => {
                 fontWeight: "bold",
               }}
             >
-              See Image
+              See Attachment
             </Button>
-          )}
-        </div>
+          </Stack>
+        )}
 
-        <Box sx={{ width: "100%" }}>
+        <Box sx={{ width: "100%", pt: 5 }}>
           <Tabs
             onChange={handleTabChange}
             value={value}
@@ -377,102 +412,104 @@ const TicketSolutionDetail = () => {
                   color: "#007bff",
                 }}
               >
-                More
+                Other Information
               </h2>
             </div>
           </MDBCol>
         </MDBRow>
-        <MDBRow className="mb-4 mt-4">
-          <MDBRow className="mb-4">
-            <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-4 font-weight-bold">
-                Solution ID:
-              </div>
-              <div className="data-col col-md-8">{data.id}</div>
-            </MDBCol>
-            <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-4 font-weight-bold">
-                Approval Status:
-              </div>
-              <div className="data-col col-md-8">
-                {data.isApproved ? (
-                  <>
-                    <Square
-                      className="square-icon"
-                      style={{ color: "green" }}
-                    />
-                    <span className="text-success">Approved</span>
-                  </>
-                ) : (
-                  <>
-                    <Square className="square-icon" />
-                    <span className="text-danger">Not Approved</span>
-                  </>
-                )}
-              </div>
-            </MDBCol>
-            <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-4 font-weight-bold">
-                Review Date:
-              </div>
-              <div className="data-col col-md-8">
-                {formatDate(data.reviewDate)}
-              </div>
-            </MDBCol>
-            <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-4 font-weight-bold">
-                Expiry Date:
-              </div>
-              <div className="data-col col-md-8">
-                {formatDate(data.expiredDate)}
-              </div>
-            </MDBCol>
-          </MDBRow>
-        </MDBRow>
 
-        <MDBRow
-          className="mb-4 mt-4"
-          style={{ border: "1px solid #ccc", padding: "5px" }}
+        <Stack marginBottom={3} spacing={2}>
+          <Stack
+            direction={"row"}
+            width={"100%"}
+            justifyContent={"space-between"}
+          >
+            <Typography fontWeight={"bold"}> Solution ID:</Typography>
+            <Typography>{data.id}</Typography>
+          </Stack>
+          <Stack
+            direction={"row"}
+            width={"100%"}
+            justifyContent={"space-between"}
+          >
+            <Typography fontWeight={"bold"}> Approval Status:</Typography>
+            <Typography>
+              {" "}
+              {data.isApproved ? (
+                <>
+                  <Square className="square-icon" style={{ color: "green" }} />
+                  <span className="text-success">Approved</span>
+                </>
+              ) : (
+                <>
+                  <Square className="square-icon" />
+                  <span className="text-danger">Not Approved</span>
+                </>
+              )}
+            </Typography>
+          </Stack>
+          <Stack
+            direction={"row"}
+            width={"100%"}
+            justifyContent={"space-between"}
+            gap={3}
+          >
+            <Typography fontWeight={"bold"}>Review Date:</Typography>
+            <Typography>{formatDate(data.reviewDate)}</Typography>
+          </Stack>
+
+          <Stack
+            direction={"row"}
+            width={"100%"}
+            justifyContent={"space-between"}
+          >
+            <Typography fontWeight={"bold"}>Expiry Date:</Typography>
+            <Typography>{formatDate(data.expiredDate)}</Typography>
+          </Stack>
+        </Stack>
+
+        <Stack
+          paddingTop={3}
+          marginTop={3}
+          spacing={2}
+          sx={{ borderTop: "1px solid #ccc" }}
         >
-          <MDBRow className="mb-4">
-            <MDBCol md="12" className="mt-2 text-box">
-              <div
-                className="label-col col-md-5 "
-                style={{ fontWeight: "bold" }}
-              >
-                Created By
-              </div>
-            </MDBCol>
-            <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-12">
-                <span style={{ color: "#3399FF" }}>
-                  {data.owner && data.owner.role
-                    ? getRoleName(data.owner.role)
-                    : "Unknown Role"}
-                </span>{" "}
+          <Stack
+            direction={"row"}
+            width={"100%"}
+            justifyContent={"space-between"}
+          >
+            <Typography fontWeight={"bold"}> Created By:</Typography>
+            <Stack textAlign={"end"}>
+              <Typography fontWeight={"bold"} color="#3399FF">
+                {data.owner && data.owner.role
+                  ? capitalizeWord(getRoleName(data.owner.role))
+                  : "Unknown Role"}
+              </Typography>
+              <Typography>
                 {data.owner ? formatDate(data.owner.createdAt) : "Unknown Date"}
-              </div>
-            </MDBCol>
-            <MDBCol md="12" className="mt-2 text-box">
-              <div
-                className="label-col col-md-5 "
-                style={{ fontWeight: "bold" }}
-              >
-                Last Updated By
-              </div>
-            </MDBCol>
-            <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-12">
-                <span style={{ color: "#3399FF" }}>
-                  {data.owner && data.owner.role
-                    ? getRoleName(data.owner.role)
-                    : "Unknown Role"}
-                </span>{" "}
+              </Typography>
+            </Stack>
+          </Stack>
+          <Stack
+            direction={"row"}
+            width={"100%"}
+            justifyContent={"space-between"}
+            fontWeight={"bold"}
+          >
+            <Typography fontWeight={"bold"}>Last Updated By:</Typography>
+            <Stack textAlign={"end"}>
+              <Typography color="#3399FF" fontWeight={"bold"}>
+                {data.owner && data.owner.role
+                  ? capitalizeWord(getRoleName(data.owner.role))
+                  : "Unknown Role"}
+              </Typography>
+              <Typography>
                 {data.owner ? formatDate(data.modifiedAt) : "Unknown Date"}
-              </div>
-            </MDBCol>
-          </MDBRow>
-        </MDBRow>
+              </Typography>
+            </Stack>
+          </Stack>
+        </Stack>
       </Grid>
       <Dialog
         open={openImageDialog}
@@ -480,22 +517,46 @@ const TicketSolutionDetail = () => {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>Image</DialogTitle>
+        <DialogTitle>Images</DialogTitle>
         <DialogContent>
-          <div
-            style={{
-              background: `url(${data.attachmentUrl})`,
-              backgroundSize: "contain",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
-              width: "100%",
-              height: "70vh",
-            }}
-          ></div>
+          <Gallery items={previewImages} />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleImageDialogClose} color="primary">
+          <Button onClick={handleImageDialogClose} color="inherit">
             Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={openApprovalDialog}
+        onClose={handleApprovalDialogClose}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Submit Approval to Manager</DialogTitle>
+        <DialogContent>
+          <select
+            id="maganerId"
+            name="maganerId"
+            className="form-select-custom"
+            onChange={handleInputChange}
+          >
+            {dataManagers.map((manager) => (
+              <option key={manager.id} value={manager.id}>
+                {manager.lastName} {manager.firstName}
+              </option>
+            ))}
+          </select>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleApprovalDialogClose} color="inherit">
+            Close
+          </Button>
+          <Button
+            onClick={() => handleSubmitApproval(solutionId, formData.managerId)}
+            color="primary"
+          >
+            Save
           </Button>
         </DialogActions>
       </Dialog>

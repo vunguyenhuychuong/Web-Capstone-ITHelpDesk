@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogTitle,
   Grid,
   IconButton,
+  Stack,
   TextField,
 } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
@@ -94,15 +96,16 @@ const CreateTicketTask = () => {
   const handleTeamChange = async (event) => {
     const selectedTeamId = event.target.value;
     setSelectedTeamId(selectedTeamId);
-  
+
     try {
       const technicians = await AssignApi.getTechnician(selectedTeamId);
-      const newDefaultTechnicianId  = technicians.length > 0 ? technicians[0].id : null;
+      const newDefaultTechnicianId =
+        technicians.length > 0 ? technicians[0].id : null;
 
-      setDefaultTechnicianId(newDefaultTechnicianId );
+      setDefaultTechnicianId(newDefaultTechnicianId);
       setData((prevData) => ({
         ...prevData,
-        technicianId: newDefaultTechnicianId ,
+        technicianId: newDefaultTechnicianId,
       }));
       setDataTechnician(technicians);
     } catch (error) {
@@ -275,12 +278,14 @@ const CreateTicketTask = () => {
           <MDBRow className="border-box">
             <MDBCol md="5" className="mt-2">
               <div className="d-flex align-items-center">
-                <button type="button" className="btn btn-link icon-label">
-                  <ArrowBack
-                    onClick={() => handleGoBack(ticketId)}
-                    className="arrow-back-icon"
-                  />
-                </button>
+                <Stack direction={"row"} alignItems={"center"}>
+                  <Button>
+                    <ArrowBack
+                      onClick={handleGoBack}
+                      style={{ color: "#0099FF" }}
+                    />
+                  </Button>
+                </Stack>
 
                 <div
                   style={{
@@ -430,7 +435,6 @@ const CreateTicketTask = () => {
                   className="form-control input-field"
                   id="attachmentUrl"
                   onChange={handleFileChange}
-
                 />
                 {imagePreviewUrl.length > 0 && (
                   <div

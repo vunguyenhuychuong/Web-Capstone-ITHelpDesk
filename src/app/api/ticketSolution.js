@@ -150,6 +150,24 @@ export async function approveTicketSolution(solutionId) {
   }
 }
 
+export async function submitApprovalTicketSolution(solutionId, managerId) {
+  const header = getAuthHeader();
+  try {
+    const res = await axios.patch(
+      `${baseURL}/solution/submit-approval?solutionId=${solutionId}`,
+      { managerId: managerId },
+      {
+        headers: {
+          Authorization: header,
+        },
+      }
+    );
+    return res.data.result;
+  } catch (error) {
+    console.log("Error approve public solutionID", error);
+  }
+}
+
 export async function rejectTicketSolution(solutionId) {
   const header = getAuthHeader();
   try {
