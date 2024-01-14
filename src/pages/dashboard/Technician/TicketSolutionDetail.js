@@ -17,15 +17,11 @@ import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import {
   ArrowBack,
   Feedback,
-  Lock,
-  LockOpen,
   Square,
   TipsAndUpdates,
-  WorkHistory,
 } from "@mui/icons-material";
 import CommentSolution from "./CommentSolution.js/CommentSolution";
 import LoadingSkeleton from "../../../components/iconify/LoadingSkeleton";
-import CountBox from "../../helpers/CountBox";
 import useSolutionTicketData from "./SolutionTicketData";
 import { useNavigate, useParams } from "react-router-dom";
 import { formatDate } from "../../helpers/FormatDate";
@@ -39,7 +35,6 @@ import { getRoleName } from "../../helpers/tableComlumn";
 import { Button } from "flowbite-react";
 import { useSelector } from "react-redux";
 import UploadComponent from "../../helpers/UploadComponent";
-import { FaEye } from "react-icons/fa";
 
 const TicketSolutionDetail = () => {
   const [value, setValue] = useState(0);
@@ -217,7 +212,7 @@ const TicketSolutionDetail = () => {
                         >
                           <span
                             className="action-menu-item"
-                            style={{ fontSize: "16px", textTransform: "none", marginLeft: "5px",marginLeft: "auto",
+                            style={{ fontSize: "16px", textTransform: "none", marginLeft: "5px",
                             marginRight: "auto",}}
                           >
                             Approve
@@ -352,20 +347,6 @@ const TicketSolutionDetail = () => {
               }
               className="custom-tab-label"
             />
-            <Tab
-              label={
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    textTransform: "none",
-                  }}
-                >
-                  <WorkHistory sx={{ marginRight: 1 }} /> History
-                </div>
-              }
-              className="custom-tab-label"
-            />
           </Tabs>
           <Box role="tabpanel" hidden={value !== 0}>
             {value === 0 ? (
@@ -374,9 +355,6 @@ const TicketSolutionDetail = () => {
               <LoadingSkeleton />
             )}
           </Box>
-          {/* <Box role="tabpanel" hidden={value !== 1}>
-            {value === 1 ? <HistorySolution /> : <LoadingSkeleton />}
-          </Box> */}
         </Box>
       </Grid>
       <Grid
@@ -434,31 +412,6 @@ const TicketSolutionDetail = () => {
               </div>
             </MDBCol>
             <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-4 font-weight-bold">Type:</div>
-              <div className="data-col col-md-8">{data.type}</div>
-            </MDBCol>
-            <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-4 font-weight-bold">
-                Visibility:
-              </div>
-              <div className="data-col col-md-8">
-                {data.isPublic ? (
-                  <>
-                    <LockOpen
-                      className="square-icon"
-                      style={{ color: "green" }}
-                    />
-                    <span className="text-success">Public</span>
-                  </>
-                ) : (
-                  <>
-                    <Lock className="square-icon" />{" "}
-                    <span className="text-danger">Private</span>
-                  </>
-                )}
-              </div>
-            </MDBCol>
-            <MDBCol md="12" className="mt-2 text-box">
               <div className="label-col col-md-4 font-weight-bold">
                 Review Date:
               </div>
@@ -473,10 +426,6 @@ const TicketSolutionDetail = () => {
               <div className="data-col col-md-8">
                 {formatDate(data.expiredDate)}
               </div>
-            </MDBCol>
-            <MDBCol md="12" className="mt-2 text-box">
-              <div className="label-col col-md-4 font-weight-bold">Views:</div>
-              <div className="data-col col-md-8">{views} <FaEye /> </div>
             </MDBCol>
           </MDBRow>
         </MDBRow>
@@ -521,28 +470,6 @@ const TicketSolutionDetail = () => {
                 </span>{" "}
                 {data.owner ? formatDate(data.modifiedAt) : "Unknown Date"}
               </div>
-            </MDBCol>
-          </MDBRow>
-        </MDBRow>
-
-        <MDBRow className="mb-4 mt-4">
-          <MDBRow className="mb-4">
-            <MDBCol md="12" className="mt-2 text-box">
-              <div className="col-md-5 " style={{ fontWeight: "bold" }}>
-                Associations
-              </div>
-            </MDBCol>
-            <MDBCol md="12" className="mt-2 text-box">
-              <div className=" col-md-11">Associations Requester</div>
-              <CountBox count={associationsRequesterCount} />
-            </MDBCol>
-            <MDBCol md="12" className="mt-2 text-box">
-              <div className="col-md-11">Associations Problems</div>
-              <CountBox count={associationsRequesterCount} />
-            </MDBCol>
-            <MDBCol md="12" className="mt-2 text-box">
-              <div className="col-md-11">Linked Solutions</div>
-              <CountBox count={associationsRequesterCount} />
             </MDBCol>
           </MDBRow>
         </MDBRow>

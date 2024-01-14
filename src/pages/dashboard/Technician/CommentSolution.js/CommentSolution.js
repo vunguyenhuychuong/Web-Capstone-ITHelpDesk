@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   Avatar,
   Button,
-  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
@@ -435,7 +434,6 @@ const CommentSolution = (props) => {
           <h4 style={{ color: "#666666", fontWeight: "bold" }}>Add Comment</h4>
           <p style={{ color: "#666666" }}>
             <Info style={{ color: "#33CCFF" }} />
-            Tag Technician(@Technician-name) to notify them
           </p>
         </div>
         <TextField
@@ -451,12 +449,6 @@ const CommentSolution = (props) => {
           style={{ marginBottom: "10px" }}
         />
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <div style={{ display: "flex", marginRight: "auto" }}>
-            <Checkbox color="primary" onChange={handleInputChange} />
-            <span style={{ marginTop: "10px" }}>
-              Show a comment to requester
-            </span>
-          </div>
           <Button
             variant="contained"
             color="primary"
