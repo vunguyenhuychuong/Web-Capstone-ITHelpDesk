@@ -62,6 +62,7 @@ import TicketAssignAvailableList from './pages/dashboard/Technician/TicketAssign
 import CompanyMemberList from './pages/dashboard/Company Member/CompanyMemberList';
 import CreateCompanyMember from './pages/dashboard/Company Member/CreateCompanyMember';
 import EditCompanyMember from './pages/dashboard/Company Member/EditCompanyMember';
+import CategoryList from './pages/dashboard/Category/CategoryList';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -135,6 +136,7 @@ function App() {
           {(hasManagerRole) &&<Route path='companyMember' element={<CompanyMemberList />} />}
            {(hasManagerRole) &&<Route path='createCompanyMember' element={<CreateCompanyMember />} />}
            {(hasManagerRole) &&<Route path='editCompanyMember/:memberId' element={<EditCompanyMember />} />}
+          <Route path='categoryList' element={<CategoryList />} />
           </Route>
         <Route path='login' element={<Login />} />
         <Route path='forgot-password' element={<ForgetPassword /> }  />

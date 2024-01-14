@@ -1,4 +1,5 @@
 import {
+  CategoryOutlined,
   ConfirmationNumber,
   Dashboard,
   LocalActivity,
@@ -18,6 +19,7 @@ import { useParams } from "react-router-dom";
 import TeamMemberList from "../TeamMember/TeamMemberList";
 import ContractList from "../Contract/ContractList";
 import ServiceList from "../ServicePack/ServiceList";
+import CategoryList from "../Category/CategoryList";
 
 const HomeManager = () => {
 
@@ -160,6 +162,23 @@ const HomeManager = () => {
               }
               className="custom-tab-label"
             />
+            <Tab
+              label={
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    textTransform: "none",
+                  }}
+                >
+                  <CategoryOutlined
+                    sx={{ marginRight: 1, color: "#0099FF" }}
+                  />{" "}
+                  Category
+                </div>
+              }
+              className="custom-tab-label"
+            />
           </Tabs>
 
           <Box role="tabpanel" hidden={value !== 0}>
@@ -179,6 +198,9 @@ const HomeManager = () => {
           </Box>
           <Box role="tabpanel" hidden={value !== 5}>
             {value === 5? <ServiceList /> : <LoadingSkeleton />}
+          </Box>
+          <Box role="tabpanel" hidden={value !== 6}>
+            {value === 6? <CategoryList /> : <LoadingSkeleton />}
           </Box>
         </Box>
       </Grid>
