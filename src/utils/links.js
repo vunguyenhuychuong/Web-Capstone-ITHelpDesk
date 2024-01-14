@@ -4,6 +4,7 @@ import {
   Assessment,
   Business,
   Category,
+  CategoryOutlined,
   DesignServices,
   Details,
   FolderShared,
@@ -111,6 +112,12 @@ const links = [
     text: "Company Member",
     path: "companyMember",
     icon: <Assessment />
+  },
+  {
+    id: 29,
+    text: "Category",
+    path: "categoryList",
+    icon: <CategoryOutlined />
   },
 ];
 
