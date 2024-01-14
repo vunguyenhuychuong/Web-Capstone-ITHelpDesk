@@ -98,8 +98,8 @@ function App() {
           <Route path='editTicket/:ticketId' element={<EditTickets />} />
           <Route path='editTicketCustomer/:ticketId' element={<EditTicketCustomer />} />
           <Route path='ticketSolution' element={<TicketSolutionList />} />
-          <Route path='createSolution' element={<CreateTicketSolution />} />
-          <Route path='editSolution/:solutionId' element={<EditTicketSolution />} />
+          {(hasTechnicianRole || hasManagerRole) &&<Route path='createSolution' element={<CreateTicketSolution />} />}
+          {(hasTechnicianRole || hasManagerRole) &&<Route path='editSolution/:solutionId' element={<EditTicketSolution />} />}
           <Route path='detailSolution/:solutionId' element={<TicketSolutionDetail />} />
           <Route path='detailTicket/:ticketId' element={<DetailTicket />} />
           {(hasTechnicianRole) &&<Route path='homeTechnician' element={<HomeTechnician />} />}

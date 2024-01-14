@@ -16,8 +16,6 @@ import {
   ArrowDropUp,
   ContentCopy,
   DeleteForever,
-  Lock,
-  LockOpen,
   Square,
   ViewCompact,
 } from "@mui/icons-material";
@@ -41,6 +39,7 @@ import {
 import { toast } from "react-toastify";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import CloseTicket from "../../../assets/images/NoTicketSolution.jpg";
+import { useSelector } from "react-redux";
 
 const TicketSolutionList = () => {
   const [dataListTicketsSolution, setDataListTicketsSolution] = useState([]);
@@ -54,6 +53,8 @@ const TicketSolutionList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("desc");
   const [sortBy, setSortBy] = useState("createdAt");
+  const user = useSelector((state) => state.auth);
+  const userRole = user.user.role;
   const navigate = useNavigate();
 
   const fetchDataListTicketSolution = useCallback(async () => {
@@ -187,30 +188,36 @@ const TicketSolutionList = () => {
               <span style={{ color: "#FFFFFF" }}>All Solutions</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
-              <MDBBtn
-                color="#eee"
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "20px",
-                  color: "#FFFFFF",
-                }}
-                onClick={() => handleOpenCreateTicketSolution()}
-              >
-                <FaPlus style={{ color: "#FFFFFF" }} />{" "}
-                <span style={{ color: "#FFFFFF" }}>New</span>
-              </MDBBtn>
-              <MDBBtn
-                color="#eee"
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "20px",
-                  color: "#FFFFFF",
-                }}
-                onClick={() => handleDeleteSelectedSolutions()}
-              >
-                <DeleteForever style={{ color: "#FFFFFF" }} />{" "}
-                <span style={{ color: "#FFFFFF" }}>Delete</span>
-              </MDBBtn>
+              {userRole === 1 ? null : (
+                <>
+                  <MDBBtn
+                    color="#eee"
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "20px",
+                      color: "#FFFFFF",
+                    }}
+                    onClick={() => handleOpenCreateTicketSolution()}
+                  >
+                    <FaPlus style={{ color: "#FFFFFF" }} />{" "}
+                    <span style={{ color: "#FFFFFF" }}>New</span>
+                  </MDBBtn>
+                  {userRole === 3 ? null : (
+                    <MDBBtn
+                      color="#eee"
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: "20px",
+                        color: "#FFFFFF",
+                      }}
+                      onClick={() => handleDeleteSelectedSolutions()}
+                    >
+                      <DeleteForever style={{ color: "#FFFFFF" }} />{" "}
+                      <span style={{ color: "#FFFFFF" }}>Delete</span>
+                    </MDBBtn>
+                  )}
+                </>
+              )}
 
               <FormControl
                 variant="outlined"
@@ -235,8 +242,6 @@ const TicketSolutionList = () => {
                   <MenuItem value="title">Title</MenuItem>
                   <MenuItem value="keyword">Keyword</MenuItem>
                   <MenuItem value="isApproved">Status</MenuItem>
-                  <MenuItem value="isPublic">Visibility</MenuItem>
-                  <MenuItem value="reviewDate">reviewDate</MenuItem>
                 </Select>
               </FormControl>
               <div className="input-wrapper">
@@ -265,18 +270,6 @@ const TicketSolutionList = () => {
           <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr>
-                <th
-                  style={{ fontWeight: "bold", fontSize: "18px" }}
-                  onClick={() => handleSortChange("id")}
-                >
-                  ID
-                  {sortBy === "id" &&
-                    (sortDirection === "asc" ? (
-                      <ArrowDropDown />
-                    ) : (
-                      <ArrowDropUp />
-                    ))}
-                </th>
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                   <input
                     type="checkbox"
@@ -290,6 +283,7 @@ const TicketSolutionList = () => {
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
+                  className="sortable-header"
                   onClick={() => handleSortChange("title")}
                 >
                   Title{""}
@@ -302,6 +296,7 @@ const TicketSolutionList = () => {
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
+                  className="sortable-header"
                   onClick={() => handleSortChange("keyword")}
                 >
                   Keyword
@@ -314,6 +309,7 @@ const TicketSolutionList = () => {
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
+                  className="sortable-header"
                   onClick={() => handleSortChange("isApproved")}
                 >
                   Status
@@ -326,30 +322,7 @@ const TicketSolutionList = () => {
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
-                  onClick={() => handleSortChange("isPublic")}
-                >
-                  Visibility
-                  {sortBy === "isPublic" &&
-                    (sortDirection === "asc" ? (
-                      <ArrowDropDown />
-                    ) : (
-                      <ArrowDropUp />
-                    ))}
-                </th>
-                <th
-                  style={{ fontWeight: "bold", fontSize: "14px" }}
-                  onClick={() => handleSortChange("reviewDate")}
-                >
-                  Review Date
-                  {sortBy === "reviewDate" &&
-                    (sortDirection === "asc" ? (
-                      <ArrowDropDown />
-                    ) : (
-                      <ArrowDropUp />
-                    ))}
-                </th>
-                <th
-                  style={{ fontWeight: "bold", fontSize: "14px" }}
+                  className="sortable-header"
                   onClick={() => handleSortChange("createdAt")}
                 >
                   Created
@@ -363,6 +336,7 @@ const TicketSolutionList = () => {
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("modifiedAt")}
+                  className="sortable-header"
                 >
                   Last Update
                   {sortBy === "modifiedAt" &&
@@ -384,7 +358,6 @@ const TicketSolutionList = () => {
                   );
                   return (
                     <tr key={index}>
-                      <td>{TicketSolution.id}</td>
                       <td>
                         <input
                           type="checkbox"
@@ -435,22 +408,6 @@ const TicketSolutionList = () => {
                           </>
                         )}
                       </td>
-                      <td>
-                        {TicketSolution.isPublic ? (
-                          <>
-                            <LockOpen
-                              className="square-icon"
-                              style={{ color: "green" }}
-                            />{" "}
-                            <span>Public</span>
-                          </>
-                        ) : (
-                          <>
-                            <Lock className="square-icon" /> Private
-                          </>
-                        )}
-                      </td>
-                      <td>{formatDate(TicketSolution.reviewDate)}</td>
                       <td>{formatDate(TicketSolution.createdAt)}</td>
                       <td>{formatDate(TicketSolution.modifiedAt)}</td>
                     </tr>
