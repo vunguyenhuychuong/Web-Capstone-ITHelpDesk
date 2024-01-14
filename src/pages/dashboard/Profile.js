@@ -352,6 +352,7 @@ const Profile = (props) => {
                         style={{ fontWeight: "bold", color: "#000000" }}
                       >
                         Address :
+                        {data && data.address }
                       </MDBCardText>
                     </MDBCol>
                     <MDBCol sm="8">
@@ -424,7 +425,7 @@ const Profile = (props) => {
                         style={{ fontSize: "1rem" }}
                       >
                         Email-Co:{" "}
-                        {data && data.email && data.company.email && (
+                        {data && data.company && data.company.email && (
                           <a
                             href={`mailto:${data.company.email}`}
                             style={{ textDecoration: "underline" }}
@@ -439,7 +440,7 @@ const Profile = (props) => {
                       >
                         Phone-company:{" "}
                         {data &&
-                          data.phoneNumber &&
+                          data.company &&
                           data.company.phoneNumber && (
                             <a
                               href={`tel:${data.company.phoneNumber}`}
