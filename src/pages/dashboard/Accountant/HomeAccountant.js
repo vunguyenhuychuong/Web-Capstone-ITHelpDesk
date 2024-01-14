@@ -1,8 +1,6 @@
 import {
   ConfirmationNumber,
-  LocalActivity,
   PieChart,
-  SupervisedUserCircle,
 } from "@mui/icons-material";
 import { Grid, Tab, Tabs } from "@mui/material";
 import { Box } from "@mui/system";
@@ -10,8 +8,6 @@ import React from "react";
 import { useState } from "react";
 import LoadingSkeleton from "../../../components/iconify/LoadingSkeleton";
 import ViewAccountant from "./ViewAccountant";
-import PaymentList from "../Payment/PaymentList";
-import ContractListAcountant from "./ContractListAcountant";
 
 const HomeAccountant = () => {
   const [value, setValue] = useState(0);
@@ -87,84 +83,14 @@ const HomeAccountant = () => {
                   </div>
                 }
                 className="custom-tab-label"
-              />
-              <Tab
-                label={
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      textTransform: "none",
-                    }}
-                  >
-                    <LocalActivity sx={{ marginRight: 1, color: "#0099FF" }} />{" "}
-                    List Payment
-                  </div>
-                }
-                className="custom-tab-label"
-              />
-              <Tab
-                label={
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      textTransform: "none",
-                    }}
-                  >
-                    <SupervisedUserCircle
-                      sx={{ marginRight: 1, color: "#0099FF" }}
-                    />{" "}
-                    Resource Management
-                  </div>
-                }
-                className="custom-tab-label"
-              />
+              />          
             </Tabs>
 
             <Box role="tabpanel" hidden={value !== 0}>
               {value === 0 ? <ViewAccountant /> : <LoadingSkeleton />}
             </Box>
-            <Box role="tabpanel" hidden={value !== 1}>
-              {value === 1 ? <ContractListAcountant /> : <LoadingSkeleton />}
-            </Box>
-            <Box role="tabpanel" hidden={value !== 2}>
-              {value === 2 ? <PaymentList /> : <LoadingSkeleton />}
-            </Box>
           </Box>
-        </Grid>
-        {/* <Grid item xs={1}>
-          <FormControl fullWidth sx={{ m: 1, minWidth: 120 }}>
-            <Select
-              labelId="demo-controlled-open-select-label"
-              id="demo-controlled-open-select"
-              open={open}
-              onClose={handleClose}
-              onOpen={handleOpen}
-              value={age}
-              label="Age"
-              onChange={handleChange}
-              startAdornment={
-                <InputAdornment position="start">
-                  <IconButton>
-                    <Settings />
-                  </IconButton>
-                  Customize
-                </InputAdornment>
-              }
-              inputProps={{
-                style: { border: "1px solid white" }, // White fade border
-              }}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid> */}
+        </Grid>      
       </Grid>
     </Grid>
   );
