@@ -30,6 +30,7 @@ import { formatDate } from "../../helpers/FormatDate";
 import {
   approveTicketSolution,
   changePublicSolution,
+  deleteTicketSolution,
   rejectTicketSolution,
   submitApprovalTicketSolution,
 } from "../../../app/api/ticketSolution";
@@ -40,6 +41,7 @@ import UploadComponent from "../../helpers/UploadComponent";
 import { capitalizeWord } from "../../../utils/helper";
 import Gallery from "react-image-gallery";
 import { getManagerList } from "../../../app/api/team";
+import ConfirmDialog from "../../../components/dialog/ConfirmDialog";
 
 const TicketSolutionDetail = () => {
   const [value, setValue] = useState(0);
@@ -58,7 +60,7 @@ const TicketSolutionDetail = () => {
   const [openImageDialog, setOpenImageDialog] = useState(false);
   const [openApprovalDialog, setOpenApprovalDialog] = useState(false);
   const [views, setViews] = useState(0);
-
+  const [open, setOpen] = React.useState(false);
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -73,6 +75,10 @@ const TicketSolutionDetail = () => {
     if (file) {
       setFileName(file.name);
     }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   const fetchDataManagerList = async () => {
@@ -97,7 +103,9 @@ const TicketSolutionDetail = () => {
   };
   useEffect(() => {
     setViews((prevViews) => prevViews + 1);
-    fetchDataManagerList();
+    if (userRole === 3) {
+      fetchDataManagerList();
+    }
   }, []);
 
   useEffect(() => {
@@ -131,6 +139,16 @@ const TicketSolutionDetail = () => {
     }
   };
 
+  const handleDeleteSolution = async (solutionId) => {
+    try {
+      await deleteTicketSolution(solutionId);
+      toast.success("Delete solution successfully");
+      handleBackTicketSolution();
+    } catch (error) {
+      console.log("Error while deleting solution", error);
+    }
+  };
+
   const handleSubmitApproval = async (solutionId, managerId) => {
     try {
       await submitApprovalTicketSolution(solutionId, managerId);
@@ -138,7 +156,7 @@ const TicketSolutionDetail = () => {
       handleApprovalDialogClose();
       refetch();
     } catch (error) {
-      console.log("Error while changing public", error);
+      console.log("Error while submitting approval", error);
     }
   };
 
@@ -214,24 +232,6 @@ const TicketSolutionDetail = () => {
                 sx={{
                   backgroundColor: "#FFFFFF",
                   borderRadius: "5px",
-                }}
-                onClick={() => handleOpenEditTicketSolution()}
-              >
-                Edit
-              </Button>
-              <Button
-                sx={{
-                  backgroundColor: "#FFFFFF",
-                  borderRadius: "5px",
-                }}
-                onClick={() => handleClickChangePublic(solutionId)}
-              >
-                {data.isPublic ? "Private" : "Public"}
-              </Button>
-              <Button
-                sx={{
-                  backgroundColor: "#FFFFFF",
-                  borderRadius: "5px",
                   color: "green",
                 }}
                 onClick={() => handleApproveTicketSolution(solutionId)}
@@ -250,6 +250,43 @@ const TicketSolutionDetail = () => {
               >
                 Reject
               </Button>
+              <Stack
+                sx={{
+                  borderRight: "1px solid #000",
+                  height: "100%",
+                  display:
+                    data?.createdById?.toString() === user.user.id
+                      ? "flex"
+                      : "none",
+                }}
+              />
+              <Button
+                sx={{
+                  backgroundColor: "#FFFFFF",
+                  borderRadius: "5px",
+                  display:
+                    data?.createdById?.toString() === user.user.id
+                      ? "flex"
+                      : "none",
+                }}
+                onClick={() => handleOpenEditTicketSolution()}
+              >
+                Edit
+              </Button>
+              <Button
+                sx={{
+                  backgroundColor: "#FFFFFF",
+                  borderRadius: "5px",
+                  color: "red",
+                  display:
+                    data?.createdById?.toString() === user.user.id
+                      ? "flex"
+                      : "none",
+                }}
+                onClick={() => handleOpenEditTicketSolution()}
+              >
+                Delete
+              </Button>
             </Stack>
           ) : null}
 
@@ -260,6 +297,29 @@ const TicketSolutionDetail = () => {
                   backgroundColor: "#FFFFFF",
                   borderRadius: "5px",
                 }}
+                onClick={() => handleApprovalDialogOpen()}
+              >
+                Submit for Approval
+              </Button>
+              <Stack
+                sx={{
+                  borderRight: "1px solid #000",
+                  height: "100%",
+                  display:
+                    data?.createdById?.toString() === user.user.id
+                      ? "flex"
+                      : "none",
+                }}
+              />
+              <Button
+                sx={{
+                  backgroundColor: "#FFFFFF",
+                  borderRadius: "5px",
+                  display:
+                    data?.createdById?.toString() === user.user.id
+                      ? "flex"
+                      : "none",
+                }}
                 onClick={() => handleOpenEditTicketSolution()}
               >
                 Edit
@@ -268,10 +328,15 @@ const TicketSolutionDetail = () => {
                 sx={{
                   backgroundColor: "#FFFFFF",
                   borderRadius: "5px",
+                  color: "red",
+                  display:
+                    data?.createdById?.toString() === user.user.id
+                      ? "flex"
+                      : "none",
                 }}
-                onClick={() => handleApprovalDialogOpen()}
+                onClick={() => setOpen(true)}
               >
-                Submit for Approval
+                Delete
               </Button>
             </Stack>
           ) : null}
@@ -560,6 +625,13 @@ const TicketSolutionDetail = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <ConfirmDialog
+        content={"Are you sure want to delete this solution?"}
+        open={open}
+        action={() => handleDeleteSolution(solutionId)}
+        handleClose={handleClose}
+      />
     </Grid>
   );
 };

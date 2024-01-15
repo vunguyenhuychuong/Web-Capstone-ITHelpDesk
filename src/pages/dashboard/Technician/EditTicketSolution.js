@@ -197,19 +197,19 @@ const EditTicketSolution = () => {
     setIsSubmitting(true);
     try {
       let attachmentUrls = data.attachmentUrls;
-      if (selectedFiles) {
+      if (selectedFiles.length > 0) {
         const storage = getStorage();
-        const storageRef = ref(storage, "images/" + selectedFiles[0].name);
+        const storageRef = ref(storage, "images/" + selectedFiles[0]?.name);
         await uploadBytes(storageRef, selectedFiles[0]);
         const newAttachmentUrl = await getDownloadURL(storageRef);
         attachmentUrls.push(newAttachmentUrl);
       }
 
-      const isDataValid = validateDate(data.reviewDate, data.expiredDate);
-      if (!isDataValid) {
-        toast.info("Review Date must be earlier than Expired Date.");
-        return;
-      }
+      // const isDataValid = validateDate(data.reviewDate, data.expiredDate);
+      // if (!isDataValid) {
+      //   toast.info("Review Date must be earlier than Expired Date.");
+      //   return;
+      // }
       const formattedReviewDate = moment(data.reviewDate).format(
         "YYYY-MM-DDTHH:mm:ss"
       );
@@ -466,7 +466,7 @@ const EditTicketSolution = () => {
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid
+              {/* <Grid
                 container
                 justifyContent="flex-end"
                 style={{ marginTop: "15px" }}
@@ -541,8 +541,12 @@ const EditTicketSolution = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
-              <Grid container justifyContent="flex-end">
+              </Grid> */}
+              <Grid
+                container
+                justifyContent="flex-end"
+                style={{ marginTop: 15 }}
+              >
                 <Grid item xs={3}>
                   <h2
                     className="align-right"
@@ -623,12 +627,12 @@ const EditTicketSolution = () => {
                 >
                   {isSubmitting ? "Saving..." : "Save"}
                 </button>
-                <button
+                {/* <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
                 >
                   Cancel
-                </button>
+                </button> */}
               </div>
             </MDBCol>
           </MDBRow>

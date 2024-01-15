@@ -26,13 +26,14 @@ const CreateTicketSolution = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth);
   const check = user.user.role;
+  const currentDate = Date.now();
   const [data, setData] = useState({
     title: "",
     content: "",
     categoryId: 1,
     ownerId: 1,
-    reviewDate: "",
-    expiredDate: "",
+    reviewDate: currentDate,
+    expiredDate: currentDate,
     keyword: "",
     internalComments: "",
     isPublic: true,
@@ -133,18 +134,18 @@ const CreateTicketSolution = () => {
       return;
     }
 
-    const isDataValid = validateDate(data.reviewDate, data.expiredDate);
-    if (!isDataValid) {
-      toast.warning(
-        "scheduledStartTime must be earlier than scheduledEndTime.",
-        {
-          autoClose: 2000,
-          hideProgressBar: false,
-          position: toast.POSITION.TOP_CENTER,
-        }
-      );
-      return;
-    }
+    // const isDataValid = validateDate(data.reviewDate, data.expiredDate);
+    // if (!isDataValid) {
+    //   toast.warning(
+    //     "scheduledStartTime must be earlier than scheduledEndTime.",
+    //     {
+    //       autoClose: 2000,
+    //       hideProgressBar: false,
+    //       position: toast.POSITION.TOP_CENTER,
+    //     }
+    //   );
+    //   return;
+    // }
 
     const formattedReviewDate = moment(data.reviewDate).format(
       "YYYY-MM-DDTHH:mm:ss"
@@ -427,7 +428,9 @@ const CreateTicketSolution = () => {
                         onChange={handleInputChange}
                       >
                         {dataUsers
-                          .filter((owner) => owner.id !== "")
+                          .filter(
+                            (owner) => owner.role !== 0 && owner.role !== 1
+                          )
                           .map((owner) => (
                             <option key={owner.id} value={owner.id}>
                               {owner.lastName} {owner.firstName}
@@ -477,14 +480,14 @@ const CreateTicketSolution = () => {
                   onClick={handleSubmitTicket}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Submitting..." : "Save"}
+                  {isSubmitting ? "Submitting..." : "Create"}
                 </button>
-                <button
+                {/* <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
                 >
                   Cancel
-                </button>
+                </button> */}
               </div>
             </MDBCol>
           </MDBRow>

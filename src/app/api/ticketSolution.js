@@ -72,16 +72,16 @@ export async function createTicketSolution(data) {
   }
 }
 
-export async function deleteTicketSolution(solutionIds) {
+export async function deleteTicketSolution(solutionId) {
   const header = getAuthHeader();
   try {
-    const res = await axios.delete(`${baseURL}/solution/${solutionIds}`, {
+    const res = await axios.delete(`${baseURL}/solution/${solutionId}`, {
       headers: {
         Authorization: header,
       },
-      data: {
-        solutionIds: solutionIds,
-      },
+      // data: {
+      //   solutionId: solutionId,
+      // },
     });
     return res.data.result;
   } catch (error) {

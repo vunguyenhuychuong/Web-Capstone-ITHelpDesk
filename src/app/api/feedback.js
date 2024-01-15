@@ -7,7 +7,7 @@ export async function getAllFeedBack(solutionId) {
   const header = getAuthHeader();
   try {
     const res = await axios.get(
-      `${baseURL}/solution/feedback?solutionId=${solutionId}`,
+      `${baseURL}/solution/feedback?solutionId=${solutionId}&page=1&pageSize=10`,
       {
         headers: {
           Authorization: header,
@@ -35,7 +35,6 @@ export async function createFeedBack(data) {
       position: toast.POSITION.TOP_CENTER,
     });
 
-    
     return res.data.result;
   } catch (error) {
     console.log(error);
@@ -118,18 +117,22 @@ export async function getDetailFeedBack(feedbackId) {
   } catch (error) {
     console.log(error);
   }
-};
+}
 
 export async function createLike(solutionId) {
   const header = getAuthHeader();
-  try{
-    const res = await axios.post(`${baseURL}/solution/${solutionId}/like`,{},{
-      headers: {
-        Authorization: header,
-      },
-    });
+  try {
+    const res = await axios.post(
+      `${baseURL}/solution/${solutionId}/like`,
+      {},
+      {
+        headers: {
+          Authorization: header,
+        },
+      }
+    );
     return res.data.result;
-  }catch(error){
+  } catch (error) {
     console.log(error);
     toast.error(error.response.data.responseException.exceptionMessage, {
       autoClose: 2000,
@@ -137,19 +140,23 @@ export async function createLike(solutionId) {
       position: toast.POSITION.TOP_CENTER,
     });
   }
-};
+}
 
 export async function createDisLike(solutionId) {
   const header = getAuthHeader();
-  try{
-    const res = await axios.post(`${baseURL}/solution/${solutionId}/dislike`,{},{
-      headers: {
-        Authorization: header,
-      },
-    });
-    console.log('Response from createDisLike:', res.data);
+  try {
+    const res = await axios.post(
+      `${baseURL}/solution/${solutionId}/dislike`,
+      {},
+      {
+        headers: {
+          Authorization: header,
+        },
+      }
+    );
+    console.log("Response from createDisLike:", res.data);
     return res.data.result;
-  }catch(error){
+  } catch (error) {
     console.log(error);
     toast.error(error.response.data.responseException.exceptionMessage, {
       autoClose: 2000,
@@ -157,4 +164,4 @@ export async function createDisLike(solutionId) {
       position: toast.POSITION.TOP_CENTER,
     });
   }
-};
+}

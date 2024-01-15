@@ -43,10 +43,7 @@ import { useParams } from "react-router-dom";
 import { formatDate } from "../../../helpers/FormatDate";
 import { toast } from "react-toastify";
 import useSolutionTicketData from "../SolutionTicketData";
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+import ConfirmDialog from "../../../../components/dialog/ConfirmDialog";
 
 const CommentSolution = (props) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -89,24 +86,28 @@ const CommentSolution = (props) => {
     isPublic: true,
   });
 
-  const handleDetailFeedBack = async (commentId) => {
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleDetailFeedBack = async (feedback) => {
     try {
-      const feedback = await getDetailFeedBack(commentId);
+      // const feedback = await getDetailFeedBack(commentId);
       if (feedback) {
-        setDataCmt({
-          id: feedback.id || "",
-          userId: feedback.userId || "",
-          solutionId: feedback.solutionId || "",
-          comment: feedback.comment || "",
-          isPublic: feedback.isPublic || "",
-          createdAt: feedback.createdAt || "",
-          modifiedAt: feedback.modifiedAt || "",
-        });
-        setDataCmt({
-          id: 1,
-          userId: 1,
-          solutionId: 1,
-          comment: "",
+        // setDataCmt({
+        //   id: feedback.id ?? "",
+        //   userId: feedback.userId ?? "",
+        //   solutionId: feedback.solutionId ?? "",
+        //   comment: feedback.comment ?? "",
+        //   isPublic: feedback.isPublic ?? "",
+        //   createdAt: feedback.createdAt ?? "",
+        //   modifiedAt: feedback.modifiedAt ?? "",
+        // });
+        setEditComment({
+          id: feedback.id,
+          userId: feedback.userId,
+          solutionId: feedback.solutionId,
+          comment: feedback.comment,
           isPublic: true,
         });
       } else {
@@ -115,7 +116,7 @@ const CommentSolution = (props) => {
     } catch (error) {
       console.error("Error while fetching detail Feed Back:", error);
     } finally {
-      setEditCommentId(commentId);
+      setEditCommentId(feedback.id);
     }
   };
 
@@ -164,14 +165,14 @@ const CommentSolution = (props) => {
     });
   }, [data]);
 
-  const handleEditComment = async (solutionId) => {
+  const handleEditComment = async (commentId) => {
     try {
       const payload = {
         comment: editComment.comment,
         isPublic: editComment.isPublic,
       };
 
-      await editFeedBack(editComment.id, payload);
+      await editFeedBack(commentId, payload);
       fetchDataListFeedBack();
       setEditCommentId(null);
     } catch (error) {
@@ -228,7 +229,7 @@ const CommentSolution = (props) => {
     setIsSubmitting(true);
     try {
       await createFeedBack({
-        solutionId: solutionId,
+        solutionId: Number.parseInt(solutionId),
         comment: dataCmt.comment,
         isPublic: dataCmt.isPublic,
       });
@@ -260,7 +261,7 @@ const CommentSolution = (props) => {
       if (result.dataCmt && result.dataCmt.responseException.exceptionMessage) {
         console.log(result.dataCmt.responseException.exceptionMessage);
       } else {
-        toast.success("Feedback created successfully");
+        toast.success("Feedback deleted successfully");
         fetchDataListFeedBack();
       }
     } catch (error) {
@@ -269,10 +270,6 @@ const CommentSolution = (props) => {
       setIsDeleting(false);
       setOpen(false);
     }
-  };
-
-  const handleClose = () => {
-    setOpen(false);
   };
 
   useEffect(() => {
@@ -396,7 +393,10 @@ const CommentSolution = (props) => {
                       style={{ margin: "10px 0", marginRight: "10px" }}
                     />
                     <Stack alignItems={"flex-start"}>
-                      <IconButton aria-label="Save" onClick={handleEditComment}>
+                      <IconButton
+                        aria-label="Save"
+                        onClick={() => handleEditComment(comment.id)}
+                      >
                         <Save />
                         <span style={{ fontSize: "0.6em" }}>Save</span>
                       </IconButton>
@@ -419,8 +419,7 @@ const CommentSolution = (props) => {
                     <IconButton
                       aria-label="Edit"
                       onClick={() => {
-                        console.log("Editing comment ID:", comment.id);
-                        handleDetailFeedBack(comment.id);
+                        handleDetailFeedBack(comment);
                       }}
                     >
                       <Tooltip title="Edit" arrow>
@@ -507,23 +506,12 @@ const CommentSolution = (props) => {
         </div>
       </div>
 
-      <Dialog
+      <ConfirmDialog
+        content={"Are you sure want to delete this comment?"}
         open={open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        aria-describedby="alert-dialog-slide-description"
-      >
-        <DialogContent>
-          <DialogContentText id="alert-dialog-slide-description">
-            Are you sure want to delete this comment.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDeleteFeedBack}>Yes</Button>
-          <Button onClick={handleClose}>Cancel</Button>
-        </DialogActions>
-      </Dialog>
+        action={handleDeleteFeedBack}
+        handleClose={handleClose}
+      />
     </Stack>
   );
 };
