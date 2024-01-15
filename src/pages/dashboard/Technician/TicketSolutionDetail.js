@@ -494,6 +494,19 @@ const TicketSolutionDetail = () => {
             width={"100%"}
             justifyContent={"space-between"}
           >
+            <Typography fontWeight={"bold"}> Owner:</Typography>
+            <Typography>
+              {" "}
+              {data.owner
+                ? data.owner.firstName + " " + data.owner.lastName
+                : ""}
+            </Typography>
+          </Stack>
+          <Stack
+            direction={"row"}
+            width={"100%"}
+            justifyContent={"space-between"}
+          >
             <Typography fontWeight={"bold"}> Approval Status:</Typography>
             <Typography>
               {" "}
@@ -543,13 +556,15 @@ const TicketSolutionDetail = () => {
           >
             <Typography fontWeight={"bold"}> Created By:</Typography>
             <Stack textAlign={"end"}>
-              <Typography fontWeight={"bold"} color="#3399FF">
+              {/* <Typography fontWeight={"bold"} color="#3399FF">
                 {data.owner && data.owner.role
                   ? capitalizeWord(getRoleName(data.owner.role))
                   : "Unknown Role"}
-              </Typography>
+              </Typography> */}
               <Typography>
-                {data.owner ? formatDate(data.owner.createdAt) : "Unknown Date"}
+                {data.createdBy
+                  ? data.createdBy.firstName + " " + data.createdBy.lastName
+                  : ""}
               </Typography>
             </Stack>
           </Stack>
@@ -559,15 +574,15 @@ const TicketSolutionDetail = () => {
             justifyContent={"space-between"}
             fontWeight={"bold"}
           >
-            <Typography fontWeight={"bold"}>Last Updated By:</Typography>
+            <Typography fontWeight={"bold"}>Last Updated At:</Typography>
             <Stack textAlign={"end"}>
-              <Typography color="#3399FF" fontWeight={"bold"}>
+              {/* <Typography color="#3399FF" fontWeight={"bold"}>
                 {data.owner && data.owner.role
                   ? capitalizeWord(getRoleName(data.owner.role))
                   : "Unknown Role"}
-              </Typography>
+              </Typography> */}
               <Typography>
-                {data.owner ? formatDate(data.modifiedAt) : "Unknown Date"}
+                {data.modifiedAt ? formatDate(data.modifiedAt) : "-"}
               </Typography>
             </Stack>
           </Stack>
