@@ -132,12 +132,14 @@ export async function changePublicSolution(solutionId) {
   }
 }
 
-export async function approveTicketSolution(solutionId) {
+export async function approveTicketSolution(solutionId, duration) {
   const header = getAuthHeader();
   try {
     const res = await axios.patch(
       `${baseURL}/solution/approve?solutionId=${solutionId}`,
-      null,
+      {
+        duration: duration,
+      },
       {
         headers: {
           Authorization: header,

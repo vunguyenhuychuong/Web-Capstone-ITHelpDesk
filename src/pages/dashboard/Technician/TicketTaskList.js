@@ -32,6 +32,7 @@ import {
   TicketStatusOptions,
   getPriorityOption,
 } from "../../helpers/tableComlumn";
+import CircularLoading from "../../../components/iconify/CircularLoading";
 
 const TicketTaskList = () => {
   const [dataListTicketsTask, setDataListTicketsTask] = useState([]);
@@ -176,7 +177,6 @@ const TicketTaskList = () => {
     }
   };
 
-  
   const handleGoBack = () => {
     navigate(`/home/homeTechnician`);
   };
@@ -190,41 +190,41 @@ const TicketTaskList = () => {
     <section style={{ backgroundColor: "#eee" }}>
       <MDBNavbar expand="lg" style={{ backgroundColor: "#fff" }}>
         <MDBContainer fluid>
-        <MDBCol md="12">
-          <MDBRow className="border-box">
-            <MDBCol md="8" className="mt-2">
-              <div className="d-flex align-items-center">
-                <button type="button" className="btn btn-link icon-label">
-                  <ArrowBack
-                    onClick={() => handleGoBack()}
-                    className="arrow-back-icon"
-                  />
-                </button>
+          <MDBCol md="12">
+            <MDBRow className="border-box">
+              <MDBCol md="8" className="mt-2">
+                <div className="d-flex align-items-center">
+                  <button type="button" className="btn btn-link icon-label">
+                    <ArrowBack
+                      onClick={() => handleGoBack()}
+                      className="arrow-back-icon"
+                    />
+                  </button>
 
-                <div
-                  style={{
-                    marginLeft: "40px",
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                >
-                  <h2
+                  <div
                     style={{
-                      fontSize: "30px",
-                      fontWeight: "bold",
-                      marginRight: "10px",
+                      marginLeft: "40px",
+                      display: "flex",
+                      alignItems: "center",
                     }}
                   >
-                    All Task List
-                  </h2>
-                  <span style={{ fontSize: "18px", color: "#888" }}>
-                    The list task available for assistance.
-                  </span>
+                    <h2
+                      style={{
+                        fontSize: "30px",
+                        fontWeight: "bold",
+                        marginRight: "10px",
+                      }}
+                    >
+                      All Task List
+                    </h2>
+                    <span style={{ fontSize: "18px", color: "#888" }}>
+                      The list task available for assistance.
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </MDBCol>
-          </MDBRow>
-        </MDBCol>
+              </MDBCol>
+            </MDBRow>
+          </MDBCol>
         </MDBContainer>
       </MDBNavbar>
       <MDBContainer className="py-5 custom-container">
@@ -246,21 +246,30 @@ const TicketTaskList = () => {
                 <MDBNavbarBrand
                   style={{ fontWeight: "bold", fontSize: "24px" }}
                 >
-                  <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />  <span style={{ color: "#FFFFFF" }}>All Task</span>
+                  <ContentCopy
+                    style={{ marginRight: "20px", color: "#FFFFFF" }}
+                  />{" "}
+                  <span style={{ color: "#FFFFFF" }}>All Task</span>
                 </MDBNavbarBrand>
                 <MDBNavbarNav className="ms-auto manager-navbar-nav">
                   <MDBBtn
                     color="#eee"
-                    style={{ fontWeight: "bold", fontSize: "20px",
-                    color: "#FFFFFF" }}
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "20px",
+                      color: "#FFFFFF",
+                    }}
                     onClick={() => handleOpenCreateTask(ticketId)}
                   >
                     <FaPlus /> Create
                   </MDBBtn>
                   <MDBBtn
                     color="#eee"
-                    style={{ fontWeight: "bold", fontSize: "20px",
-                    color: "#FFFFFF" }}
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "20px",
+                      color: "#FFFFFF",
+                    }}
                     // onClick={() => handleDeleteSelectedSolutions()}
                   >
                     <Delete /> Delete
@@ -315,7 +324,7 @@ const TicketTaskList = () => {
               <MDBTable className="align-middle mb-0" responsive>
                 <MDBTableHead className="bg-light">
                   <tr>
-                    <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th>
+                    {/* <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th> */}
                     <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                       <input
                         type="checkbox"
@@ -351,28 +360,34 @@ const TicketTaskList = () => {
                     >
                       Priority
                     </th>
-                    <th 
+                    <th
                       style={{ fontWeight: "bold", fontSize: "18px" }}
                       onClick={() => handleSortChange("scheduledStartTime")}
-                      >
+                    >
                       Start time
                     </th>
-                    <th 
+                    <th
                       style={{ fontWeight: "bold", fontSize: "18px" }}
                       onClick={() => handleSortChange("scheduledEndTime")}
-                      >
+                    >
                       End time
                     </th>
-                    <th 
+                    <th
                       style={{ fontWeight: "bold", fontSize: "18px" }}
                       onClick={() => handleSortChange("progress")}
-                      >
+                    >
                       Progress
                     </th>
                   </tr>
                 </MDBTableHead>
                 {loading ? (
-                  <CustomizedProgressBars />
+                  <MDBTableBody className="bg-light">
+                    <tr>
+                      <td>
+                        <CircularLoading />
+                      </td>
+                    </tr>
+                  </MDBTableBody>
                 ) : (
                   <MDBTableBody className="bg-light">
                     {dataListTicketsTask.map((TicketTask, index) => {
@@ -385,7 +400,7 @@ const TicketTaskList = () => {
 
                       return (
                         <tr key={index}>
-                          <td>{TicketTask.id}</td>
+                          {/* <td>{TicketTask.id}</td> */}
                           <td>
                             <input
                               type="checkbox"

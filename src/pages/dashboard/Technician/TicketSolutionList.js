@@ -375,7 +375,7 @@ const TicketSolutionList = () => {
                   return (
                     <tr key={index}>
                       {/* <td>{TicketSolution.id}</td> */}
-                      {/* <td>
+                      <td>
                         <input
                           type="checkbox"
                           checked={isSelected}
@@ -383,7 +383,7 @@ const TicketSolutionList = () => {
                             handleSelectSolution(TicketSolution.id)
                           }
                         />
-                      </td> */}
+                      </td>
 
                       <td
                         className="tooltip-cell text-truncate"

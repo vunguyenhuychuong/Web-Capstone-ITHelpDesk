@@ -36,6 +36,7 @@ import {
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import { useSelector } from "react-redux";
 import { formatDate } from "../../helpers/FormatDate";
+import CircularLoading from "../../../components/iconify/CircularLoading";
 
 const IndexTicket = () => {
   const [dataTickets, setDataTickets] = useState([]);
@@ -324,7 +325,13 @@ const IndexTicket = () => {
           </MDBContainer>
         </MDBNavbar>
         {isLoading ? (
-          <CustomizedProgressBars />
+          <MDBTableBody className="bg-light">
+            <tr>
+              <td>
+                <CircularLoading />
+              </td>
+            </tr>
+          </MDBTableBody>
         ) : (
           <MDBTable
             className="align-middle mb-0"
@@ -340,8 +347,8 @@ const IndexTicket = () => {
                     onChange={handleSelectAllTickets}
                   />
                 </th>
-                <th style={{ fontWeight: "bold" }}></th>
-                <th
+
+                {/* <th
                   style={{ fontWeight: "bold" }}
                   className="sortable-header"
                   onClick={() => handleSortChange("id")}
@@ -354,7 +361,7 @@ const IndexTicket = () => {
                     ) : (
                       <ArrowDropUp />
                     ))}
-                </th>
+                </th> */}
                 <th
                   style={{ fontWeight: "bold" }}
                   className="sortable-header"
@@ -448,6 +455,7 @@ const IndexTicket = () => {
                       <ArrowDropUp />
                     ))}
                 </th>
+                <th style={{ fontWeight: "bold" }}></th>
               </tr>
             </MDBTableHead>
             <MDBTableBody className="bg-light">
@@ -466,12 +474,8 @@ const IndexTicket = () => {
                         onChange={() => handleSelectTicket(ticket.id)}
                       />
                     </td>
-                    <td>
-                      <ViewCompact
-                        onClick={() => handleOpenEditTicket(ticket.id)}
-                      />
-                    </td>
-                    <td> {ticket.id}</td>
+
+                    {/* <td> {ticket.id}</td> */}
                     <td
                       className="tooltip-cell"
                       title={`Id:${ticket.id} \nDescription:${
@@ -541,6 +545,11 @@ const IndexTicket = () => {
                       }
                     </td>
                     <td>{formatDate(ticket.dueTime)}</td>
+                    <td>
+                      <ViewCompact
+                        onClick={() => handleOpenEditTicket(ticket.id)}
+                      />
+                    </td>
                   </tr>
                 );
               })}

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Grid, TextField } from "@mui/material";
+import { Button, Grid, Stack, TextField } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
@@ -134,12 +134,14 @@ const EditPayment = () => {
           <MDBRow className="border-box">
             <MDBCol md="5" className="mt-2">
               <div className="d-flex align-items-center">
-                <button type="button" className="btn btn-link icon-label">
-                  <ArrowBack
-                    onClick={handleGoBack}
-                    className="arrow-back-icon"
-                  />
-                </button>
+                <Stack direction={"row"} alignItems={"center"}>
+                  <Button>
+                    <ArrowBack
+                      onClick={handleGoBack}
+                      style={{ color: "#0099FF" }}
+                    />
+                  </Button>
+                </Stack>
 
                 <div
                   style={{
@@ -246,7 +248,7 @@ const EditPayment = () => {
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                          marginTop: "20px"
+                          marginTop: "20px",
                         }}
                       >
                         <span style={{ color: "red" }}>*</span>duration
@@ -381,12 +383,12 @@ const EditPayment = () => {
                 >
                   Save
                 </button>
-                <button
+                {/* <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
                 >
                   Cancel
-                </button>
+                </button> */}
               </div>
             </MDBCol>
           </MDBRow>

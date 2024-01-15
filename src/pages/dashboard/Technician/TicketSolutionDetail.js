@@ -45,7 +45,7 @@ import ConfirmDialog from "../../../components/dialog/ConfirmDialog";
 
 const TicketSolutionDetail = () => {
   const [value, setValue] = useState(0);
-  const [formData, setFormData] = useState({ managerId: "" });
+  const [formData, setFormData] = useState({ managerId: "", duration: 1 });
   const [selectedFile, setSelectedFile] = useState(null);
   const { solutionId } = useParams();
   const navigate = useNavigate();
@@ -59,6 +59,7 @@ const TicketSolutionDetail = () => {
   const [fileName, setFileName] = useState("");
   const [openImageDialog, setOpenImageDialog] = useState(false);
   const [openApprovalDialog, setOpenApprovalDialog] = useState(false);
+  const [openDurationDialog, setOpenDurationDialog] = useState(false);
   const [views, setViews] = useState(0);
   const [open, setOpen] = React.useState(false);
   const handleTabChange = (event, newValue) => {
@@ -68,7 +69,6 @@ const TicketSolutionDetail = () => {
   const handleOpenEditTicketSolution = () => {
     navigate(`/home/editSolution/${solutionId}`);
   };
-
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
@@ -160,10 +160,11 @@ const TicketSolutionDetail = () => {
     }
   };
 
-  const handleApproveTicketSolution = async () => {
+  const handleApproveTicketSolution = async (duration) => {
     try {
-      await approveTicketSolution(solutionId);
+      await approveTicketSolution(solutionId, duration);
       toast.success("Approve Ticket Solution");
+      handleDurationDialogClose();
       refetch();
     } catch (error) {
       console.log("Error while Approve ticket solution", error);
@@ -203,6 +204,14 @@ const TicketSolutionDetail = () => {
   const handleApprovalDialogClose = () => {
     setOpenApprovalDialog(false);
   };
+
+  const handleDurationDialogOpen = () => {
+    setOpenDurationDialog(true);
+  };
+
+  const handleDurationDialogClose = () => {
+    setOpenDurationDialog(false);
+  };
   return (
     <Grid
       container
@@ -234,7 +243,7 @@ const TicketSolutionDetail = () => {
                   borderRadius: "5px",
                   color: "green",
                 }}
-                onClick={() => handleApproveTicketSolution(solutionId)}
+                onClick={() => handleDurationDialogOpen()}
                 disabled={data.isApproved}
               >
                 Approve
@@ -264,10 +273,6 @@ const TicketSolutionDetail = () => {
                 sx={{
                   backgroundColor: "#FFFFFF",
                   borderRadius: "5px",
-                  display:
-                    data?.createdById?.toString() === user.user.id
-                      ? "flex"
-                      : "none",
                 }}
                 onClick={() => handleOpenEditTicketSolution()}
               >
@@ -278,10 +283,6 @@ const TicketSolutionDetail = () => {
                   backgroundColor: "#FFFFFF",
                   borderRadius: "5px",
                   color: "red",
-                  display:
-                    data?.createdById?.toString() === user.user.id
-                      ? "flex"
-                      : "none",
                 }}
                 onClick={() => handleOpenEditTicketSolution()}
               >
@@ -592,6 +593,7 @@ const TicketSolutionDetail = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
       <Dialog
         open={openApprovalDialog}
         onClose={handleApprovalDialogClose}
@@ -621,7 +623,47 @@ const TicketSolutionDetail = () => {
             onClick={() => handleSubmitApproval(solutionId, formData.managerId)}
             color="primary"
           >
-            Save
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={openDurationDialog}
+        onClose={handleDurationDialogClose}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Approve this solution</DialogTitle>
+        <DialogContent>
+          <Typography>Solution will be valid for:</Typography>
+          <Typography color="grey" variant="caption">
+            *1-24 months
+          </Typography>
+          <TextField
+            label="Duration"
+            name="duration"
+            type="number"
+            sx={{ width: "100%", my: 5 }}
+            InputProps={{ inputProps: { min: 1, max: 24 } }}
+            onChange={(e) => {
+              var value = parseInt(e.target.value, 10);
+
+              if (value > 24) e.target.value = 24;
+              if (value < 1) e.target.value = 1;
+              handleInputChange(e);
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDurationDialogClose} color="inherit">
+            Close
+          </Button>
+          <Button
+            onClick={() => handleApproveTicketSolution(formData.duration)}
+            color="primary"
+          >
+            Approve
           </Button>
         </DialogActions>
       </Dialog>

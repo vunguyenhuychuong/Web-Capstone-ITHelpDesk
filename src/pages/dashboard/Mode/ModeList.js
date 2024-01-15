@@ -68,8 +68,8 @@ const ModeList = () => {
       setDataModes(mode);
     } catch (error) {
       console.error(error);
-    }finally {
-      setLoading(false); 
+    } finally {
+      setLoading(false);
     }
   }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection]);
 
@@ -209,7 +209,7 @@ const ModeList = () => {
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
               <span style={{ color: "#FFFFFF" }}>All Mode</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
                 color="#eee"
                 style={{
@@ -277,7 +277,7 @@ const ModeList = () => {
             </MDBNavbarNav>
           </MDBContainer>
         </MDBNavbar>
-        {loading ? ( 
+        {loading ? (
           <Box
             display="flex"
             justifyContent="center"

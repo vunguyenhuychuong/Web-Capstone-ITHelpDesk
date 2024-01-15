@@ -35,6 +35,7 @@ import { useCallback } from "react";
 import PageSizeSelector from "../Pagination/Pagination";
 import { formatDate } from "../../helpers/FormatDate";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
+import CircularLoading from "../../../components/iconify/CircularLoading";
 
 const ServiceList = () => {
   const [dataService, setDataService] = useState([]);
@@ -154,7 +155,7 @@ const ServiceList = () => {
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
               <span style={{ color: "#FFFFFF" }}>All Service</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
                 color="#eee"
                 style={{
@@ -223,7 +224,13 @@ const ServiceList = () => {
           </MDBContainer>
         </MDBNavbar>
         {isLoading ? (
-          <CustomizedProgressBars />
+          <MDBTableBody className="bg-light">
+            <tr>
+              <td>
+                <CircularLoading />
+              </td>
+            </tr>
+          </MDBTableBody>
         ) : (
           <MDBTable
             className="align-middle mb-0"
@@ -298,7 +305,7 @@ const ServiceList = () => {
                   <tr key={index}>
                     <td>
                       <input type="checkbox" />
-                    </td>      
+                    </td>
                     <td>{service.description}</td>
                     <td>{service.type}</td>
                     <td>{formatDate(service.createdAt || "-")}</td>

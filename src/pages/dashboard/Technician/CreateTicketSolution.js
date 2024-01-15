@@ -66,6 +66,26 @@ const CreateTicketSolution = () => {
     fetchDataSolution();
   }, []);
 
+  useEffect(() => {
+    if (dataCategories) {
+      setData((prevData) => ({
+        ...prevData,
+        categoryId: dataCategories[0]?.id,
+      }));
+    }
+  }, [dataCategories]);
+
+  useEffect(() => {
+    if (dataUsers) {
+      setData((prevData) => ({
+        ...prevData,
+        ownerId: dataUsers.filter(
+          (owner) => owner.role !== 0 && owner.role !== 1
+        )[0]?.id,
+      }));
+    }
+  }, [dataUsers]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -185,7 +205,6 @@ const CreateTicketSolution = () => {
         reviewDate: formattedReviewDate,
         expiredDate: formattedExpiredDate,
         keyword: data.keyword,
-        internalComments: data.internalComments,
         isPublic: data.isPublic,
         attachmentUrls: attachmentUrls,
       });

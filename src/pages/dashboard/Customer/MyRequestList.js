@@ -21,6 +21,7 @@ import { formatDate } from "../../helpers/FormatDate";
 import {
   Box,
   FormControl,
+  InputLabel,
   MenuItem,
   Pagination,
   Select,
@@ -36,6 +37,7 @@ import {
 } from "../../helpers/tableComlumn";
 import { getAllCategories } from "../../../app/api/category";
 import { useNavigate } from "react-router-dom";
+import CircularLoading from "../../../components/iconify/CircularLoading";
 
 const MyRequestList = () => {
   const [dataListTicketsCustomer, setDataListTicketsCustomer] = useState([]);
@@ -84,7 +86,7 @@ const MyRequestList = () => {
     sortBy,
     sortDirection,
     userId,
-    ticketStatus
+    ticketStatus,
   ]);
 
   const handleStatusChange = (e) => {
@@ -143,11 +145,11 @@ const MyRequestList = () => {
       <MDBContainer className="py-5 custom-container">
         <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
-            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "16px" }}>
+            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
               <span style={{ color: "#FFFFFF" }}>All My Requests</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
                 color="#eee"
                 style={{
@@ -159,6 +161,40 @@ const MyRequestList = () => {
               >
                 <FaPlus /> New
               </MDBBtn>
+              <div style={{ textAlign: "center" }}>
+                <FormControl
+                  variant="outlined"
+                  style={{
+                    minWidth: 120,
+                    marginRight: 10,
+                    marginTop: 10,
+                    marginLeft: 10,
+                  }}
+                  size="small"
+                >
+                  <InputLabel sx={{ color: "white" }}>
+                    Sort Status Ticket
+                  </InputLabel>
+                  <Select
+                    label="Sort Status Ticket"
+                    value={ticketStatus}
+                    onChange={handleStatusChange}
+                    inputProps={{
+                      name: "sortField",
+                      id: "search-field",
+                    }}
+                    style={{ color: "white" }}
+                  >
+                    <MenuItem value={null}>-</MenuItem>
+                    <MenuItem value={0}>Open</MenuItem>
+                    <MenuItem value={1}>Assign</MenuItem>
+                    <MenuItem value={2}>Progress</MenuItem>
+                    <MenuItem value={3}>Resolved</MenuItem>
+                    <MenuItem value={4}>Closed</MenuItem>
+                    <MenuItem value={5}>Cancelled</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
               <FormControl
                 variant="outlined"
                 style={{
@@ -205,45 +241,6 @@ const MyRequestList = () => {
                 pageSize={pageSize}
                 handleChangePageSize={handleChangePageSize}
               />
-               <div style={{ textAlign: "center" }}>
-                <label
-                  style={{
-                    fontWeight: "bold",
-                    marginTop: "15px",
-                    color: "white",
-                  }}
-                >
-                  Sort Status Ticket:
-                </label>
-                <FormControl
-                  variant="outlined"
-                  style={{
-                    minWidth: 120,
-                    marginRight: 10,
-                    marginTop: 10,
-                    marginLeft: 10,
-                  }}
-                  size="small"
-                >
-                  <Select
-                    value={ticketStatus}
-                    onChange={handleStatusChange}
-                    inputProps={{
-                      name: "sortField",
-                      id: "search-field",
-                    }}
-                    style={{ color: "white" }}
-                  >
-                    <MenuItem value={null}>-</MenuItem>
-                    <MenuItem value={0}>Open</MenuItem>
-                    <MenuItem value={1}>Assign</MenuItem>
-                    <MenuItem value={2}>Progress</MenuItem>
-                    <MenuItem value={3}>Resolved</MenuItem>
-                    <MenuItem value={4}>Closed</MenuItem>
-                    <MenuItem value={5}>Cancelled</MenuItem>
-                  </Select>
-                </FormControl>
-              </div>
             </MDBNavbarNav>
           </MDBContainer>
         </MDBNavbar>
@@ -251,8 +248,8 @@ const MyRequestList = () => {
           <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>Detail</th>
+                {/* <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th> */}
+
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("title")}
@@ -343,10 +340,17 @@ const MyRequestList = () => {
                       ))}
                   </Tooltip>
                 </th>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
               </tr>
             </MDBTableHead>
             {loading ? (
-              <CustomizedProgressBars />
+              <MDBTableBody className="bg-light">
+                <tr>
+                  <td>
+                    <CircularLoading />
+                  </td>
+                </tr>
+              </MDBTableBody>
             ) : (
               <MDBTableBody className="bg-light">
                 {dataListTicketsCustomer.map((Ticket, index) => {
@@ -356,12 +360,7 @@ const MyRequestList = () => {
                   const priorityOption = getPriorityOptionById(Ticket.priority);
                   return (
                     <tr key={index}>
-                      <td>{Ticket.id}</td>
-                      <td>
-                        <ViewCompact
-                          onClick={() => handleOpenDetailTicket(Ticket.id)}
-                        />{" "}
-                      </td>
+                      {/* <td>{Ticket.id}</td> */}
                       <td>{Ticket.title}</td>
                       <td>{getCategoryNameById(Ticket.categoryId)}</td>
                       <td>
@@ -382,6 +381,11 @@ const MyRequestList = () => {
                       </td>
                       <td>{formatDate(Ticket.createdAt)}</td>
                       <td>{formatDate(Ticket.modifiedAt)}</td>
+                      <td>
+                        <ViewCompact
+                          onClick={() => handleOpenDetailTicket(Ticket.id)}
+                        />
+                      </td>
                     </tr>
                   );
                 })}

@@ -21,7 +21,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import useTicketData from "./useTicketData";
 import AssignTicketModal from "./AssignTicketModal";
-import { Avatar, Grid, Tab, Tabs } from "@mui/material";
+import { Avatar, Button, Grid, Stack, Tab, Tabs } from "@mui/material";
 import {
   TicketStatusOptions,
   getGenderById,
@@ -41,7 +41,6 @@ import {
 } from "../../../app/api/ticket";
 import TicketLogList from "../Customer/TicketLogList";
 import TicketTaskList from "../Technician/TicketTaskList";
-
 
 const DetailTicket = () => {
   const { ticketId } = useParams();
@@ -138,7 +137,8 @@ const DetailTicket = () => {
 
   useEffect(() => {
     if (
-      userRole === 2 || userRole === 3 ||
+      userRole === 2 ||
+      userRole === 3 ||
       (userRole === 1 && ticketStatus === 0)
     ) {
       setAllowEdit(true);
@@ -180,40 +180,54 @@ const DetailTicket = () => {
           <MDBCol md="12">
             <MDBRow className="border-box-detail">
               <MDBCol md="1" className="mt-2">
-                <div className="d-flex align-items-center">
-                  <button type="button" className="btn btn-link icon-label">
-                    <ArrowBack onClick={handleGoBack} />
-                  </button>
-                </div>
+                <Stack direction={"row"} alignItems={"center"}>
+                  <Button>
+                    <ArrowBack
+                      onClick={handleGoBack}
+                      style={{ color: "#0099FF" }}
+                    />
+                  </Button>
+                </Stack>
               </MDBCol>
               <MDBCol md="11">
-                <div className="d-flex align-items-center">
+                <Stack
+                  direction={"row"}
+                  spacing={2}
+                  py={1}
+                  alignItems={"center"}
+                >
                   {userRole === 1 && (
                     <>
-                      <button
-                        type="button"
-                        className="btn btn-link narrow-input icon-label mt-2"
+                      <Button
+                        sx={{
+                          backgroundColor: "#FFFFFF",
+                          borderRadius: "5px",
+                        }}
                         onClick={() => handleCancelTicket(ticketId)}
                       >
                         Cancel
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-link narrow-input icon-label mt-2"
+                      </Button>
+                      <Button
+                        sx={{
+                          backgroundColor: "#FFFFFF",
+                          borderRadius: "5px",
+                        }}
                         onClick={() => handleCloseTicket(ticketId)}
                       >
                         Close
-                      </button>
+                      </Button>
                     </>
                   )}
-                  <button
-                    type="button"
-                    className="btn btn-link narrow-input icon-label mt-2"
+                  <Button
+                    sx={{
+                      backgroundColor: "#FFFFFF",
+                      borderRadius: "5px",
+                    }}
                     onClick={() => handleOpenEditTicket(ticketId)}
                     disabled={!allowEdit}
                   >
                     Edit
-                  </button>
+                  </Button>
                   {userRole === 2 || userRole === 3 ? (
                     <select
                       value={selectedStatus}
@@ -257,7 +271,7 @@ const DetailTicket = () => {
                       {editMessage}
                     </div>
                   )}
-                </div>
+                </Stack>
               </MDBCol>
             </MDBRow>
           </MDBCol>
@@ -283,7 +297,7 @@ const DetailTicket = () => {
                     {roleName && roleName.name ? roleName.name : "-"}
                   </span>{" "}
                   <ChatOutlined color="#007bff" /> on:
-                  {formatDate(data.createdAt)} 
+                  {formatDate(data.createdAt)}
                 </span>
               </div>
             </MDBCol>
@@ -314,7 +328,7 @@ const DetailTicket = () => {
                 }
                 className="custom-tab-label"
               />
-               <Tab
+              <Tab
                 label={
                   <div
                     style={{
@@ -343,8 +357,8 @@ const DetailTicket = () => {
                   }
                   className="custom-tab-label"
                 />
-              )} 
-            </Tabs>               
+              )}
+            </Tabs>
             <Box role="tabpanel" hidden={value !== 0}>
               {value === 0 ? (
                 <Details
@@ -360,7 +374,7 @@ const DetailTicket = () => {
             <Box role="tabpanel" hidden={value !== 1}>
               {value === 1 ? <TicketLogList /> : <LoadingSkeleton />}
             </Box>
-            <Box role="tabpanel" hidden={value !== 2 }>
+            <Box role="tabpanel" hidden={value !== 2}>
               {value === 2 ? <TicketTaskList /> : <LoadingSkeleton />}
             </Box>
           </Box>
@@ -478,11 +492,11 @@ const DetailTicket = () => {
                       {data.requester && data.requester.lastName
                         ? `${data.requester.lastName} `
                         : ""}
-                        {data.requester && data.requester.firstName
+                      {data.requester && data.requester.firstName
                         ? `${data.requester.firstName} `
                         : ""}
                       <MessageSharp style={{ color: "#3399FF" }} />{" "}
-                    </p>                  
+                    </p>
                   </>
                 ) : (
                   <p className="text-muted">User Information Not have</p>
@@ -537,9 +551,9 @@ const DetailTicket = () => {
                     UserName
                   </th>
                   <th>
-                  {data.requester && data.requester.username
-                        ? `${data.requester.username} `
-                        : ""}{" "}
+                    {data.requester && data.requester.username
+                      ? `${data.requester.username} `
+                      : ""}{" "}
                   </th>
                 </tr>
                 <tr>
@@ -574,7 +588,7 @@ const DetailTicket = () => {
                       : "-"}
                   </th>
                 </tr>
-                
+
                 <tr>
                   <th
                     style={{

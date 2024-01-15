@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../../../assets/css/createCompany.css";
-import { Button, Grid, Switch } from "@mui/material";
+import { Button, Grid, Stack, Switch } from "@mui/material";
 import { MDBCardImage, MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack, CloudUpload } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -169,12 +169,14 @@ const CreateCompany = (props) => {
           <MDBRow className="border-box">
             <MDBCol md="5" className="mt-2">
               <div className="d-flex align-items-center">
-                <button type="button" className="btn btn-link icon-label">
-                  <ArrowBack
-                    onClick={handleGoBack}
-                    className="arrow-back-icon"
-                  />
-                </button>
+                <Stack direction={"row"} alignItems={"center"}>
+                  <Button>
+                    <ArrowBack
+                      onClick={handleGoBack}
+                      style={{ color: "#0099FF" }}
+                    />
+                  </Button>
+                </Stack>
                 <div
                   style={{
                     marginLeft: "40px",

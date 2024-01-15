@@ -39,6 +39,7 @@ import PageSizeSelector from "../Pagination/Pagination";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import CreateTeam from "./CreateTeam";
 import EditTeam from "./EditTeam";
+import CircularLoading from "../../../components/iconify/CircularLoading";
 
 const Team = () => {
   const [open, setOpen] = React.useState(false);
@@ -266,7 +267,7 @@ const Team = () => {
           </MDBContainer>
         </MDBNavbar>
         {isLoading ? (
-          <CustomizedProgressBars />
+          <CircularLoading />
         ) : (
           <TableContainer component={Paper}>
             <Table arial-label="arial-label">
@@ -364,9 +365,9 @@ const Team = () => {
                           checked={isSelected}
                           onChange={() => handleSelectTeam(team.id)}
                         />
-                      </TableCell>                     
+                      </TableCell>
                       <TableCell component="th" scope="row">
-                       {team.name}
+                        {team.name}
                       </TableCell>
                       <TableCell align="left"> {team.description}</TableCell>
                       <TableCell align="left">{team.location}</TableCell>

@@ -142,10 +142,10 @@ const EditTicketSolution = () => {
           reviewDate: solutionData.reviewDate,
           expiredDate: solutionData.expiredDate,
           keyword: solutionData.keyword,
-          internalComments: solutionData.internalComments,
+          // internalComments: solutionData.internalComments,
           attachmentUrls: solutionData.attachmentUrls,
           isApproved: solutionData.isApproved,
-          isPublic: solutionData.isPublic,
+          // isPublic: solutionData.isPublic,
           createdAt: solutionData.createdAt,
           modifiedAt: solutionData.modifiedAt,
         }));
@@ -577,17 +577,17 @@ const EditTicketSolution = () => {
                     relevant keyword for a solution will improve its search
                     capability, for example, Printer, toner, paper
                   </p>
-                  <h5>Public</h5>
+                  {/* <h5>Public</h5>
                   <Switch
                     checked={data.isPublic}
                     onChange={handlePublicToggle}
                     color="primary"
                     name="isPublic"
                     id="isPublic"
-                  />
+                  /> */}
                 </Grid>
               </Grid>
-              <Grid container justifyContent="flex-end">
+              {/* <Grid container justifyContent="flex-end">
                 <Grid item xs={3}>
                   <h2
                     className="align-right"
@@ -610,7 +610,7 @@ const EditTicketSolution = () => {
                     onChange={handleInputChange}
                   />
                 </Grid>
-              </Grid>
+              </Grid> */}
             </Grid>
           </MDBCol>
         </MDBRow>

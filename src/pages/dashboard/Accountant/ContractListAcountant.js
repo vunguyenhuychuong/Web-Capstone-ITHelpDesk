@@ -29,6 +29,7 @@ import { deleteTicketSolution } from "../../../app/api/ticketSolution";
 import { toast } from "react-toastify";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import { getContractAccountant } from "../../../app/api/contract";
+import CircularLoading from "../../../components/iconify/CircularLoading";
 
 const ContractListAcountant = () => {
   const [dataListContract, setDataListContract] = useState([]);
@@ -153,7 +154,7 @@ const ContractListAcountant = () => {
   useEffect(() => {
     fetchDataListContract();
     setTotalPages(4);
-  }, [ refreshData]);
+  }, [refreshData]);
 
   return (
     <>
@@ -241,10 +242,10 @@ const ContractListAcountant = () => {
           <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr>
-                <th 
+                {/* <th
                   style={{ fontWeight: "bold", fontSize: "18px" }}
                   onClick={() => handleSortChange("id")}
-                  >
+                >
                   Id
                   {sortBy === "id" &&
                     (sortDirection === "asc" ? (
@@ -252,7 +253,7 @@ const ContractListAcountant = () => {
                     ) : (
                       <ArrowDropUp />
                     ))}
-                  </th>
+                </th> */}
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                   <input
                     type="checkbox"
@@ -362,14 +363,20 @@ const ContractListAcountant = () => {
               </tr>
             </MDBTableHead>
             {loading ? (
-              <CustomizedProgressBars />
+              <MDBTableBody className="bg-light">
+                <tr>
+                  <td>
+                    <CircularLoading />
+                  </td>
+                </tr>
+              </MDBTableBody>
             ) : (
               <MDBTableBody className="bg-light">
                 {dataListContract.map((Contract, index) => {
                   const isSelected = selectedContractIds.includes(Contract.id);
                   return (
                     <tr key={index}>
-                      <td>{Contract.id}</td>
+                      {/* <td>{Contract.id}</td> */}
                       <td>
                         <input
                           type="checkbox"
