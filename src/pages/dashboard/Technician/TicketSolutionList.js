@@ -269,16 +269,18 @@ const TicketSolutionList = () => {
           <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr>
-                {/* <th style={{ fontWeight: "bold", fontSize: "18px" }}>
-                  <input
-                    type="checkbox"
-                    checked={
-                      selectedSolutionIds.length ===
-                      dataListTicketsSolution.length
-                    }
-                    onChange={handleSelectAllSolutions}
-                  />
-                </th> */}
+                {userRole === 2 && (
+                  <th style={{ fontWeight: "bold", fontSize: "18px" }}>
+                    <input
+                      type="checkbox"
+                      checked={
+                        selectedSolutionIds.length ===
+                        dataListTicketsSolution.length
+                      }
+                      onChange={handleSelectAllSolutions}
+                    />
+                  </th>
+                )}
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   className="sortable-header"
@@ -375,15 +377,17 @@ const TicketSolutionList = () => {
                   return (
                     <tr key={index}>
                       {/* <td>{TicketSolution.id}</td> */}
-                      <td>
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() =>
-                            handleSelectSolution(TicketSolution.id)
-                          }
-                        />
-                      </td>
+                      {userRole === 2 && (
+                        <td>
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() =>
+                              handleSelectSolution(TicketSolution.id)
+                            }
+                          />
+                        </td>
+                      )}
 
                       <td
                         className="tooltip-cell text-truncate"
