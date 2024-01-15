@@ -263,10 +263,6 @@ const TicketSolutionDetail = () => {
                 sx={{
                   borderRight: "1px solid #000",
                   height: "100%",
-                  display:
-                    data?.createdById?.toString() === user.user.id
-                      ? "flex"
-                      : "none",
                 }}
               />
               <Button
