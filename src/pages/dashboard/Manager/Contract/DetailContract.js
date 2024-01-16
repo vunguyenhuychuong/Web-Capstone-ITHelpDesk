@@ -8,9 +8,7 @@ import { FaFileContract } from "react-icons/fa";
 import {
   ArrowBack,
   ChatOutlined,
-  Newspaper,
   Paid,
-  Receipt,
   ReceiptLong,
 } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
@@ -23,15 +21,11 @@ import { useSelector } from "react-redux";
 import useContractData from "./useContractData";
 import PaymentContract from "./PaymentContract";
 import Details from "./Details";
-import usePaymentData from "./usePaymentData";
-import ContractChildList from "./ContractChildList";
-import ContractRenew from "./ContractRenew";
 import { getStatusContract } from "../../../helpers/tableComlumn";
 
 const DetailContract = () => {
   const { contractId } = useParams();
   const { data, loading, setData } = useContractData(contractId);
-  const { dataPayment, setDataPayment } = usePaymentData(contractId);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [value, setValue] = useState(0);
   const navigate = useNavigate();
@@ -182,35 +176,7 @@ const DetailContract = () => {
                   </div>
                 }
                 className="custom-tab-label"
-              />
-              <Tab
-                label={
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      textTransform: "none",
-                    }}
-                  >
-                    <Receipt sx={{ marginRight: 1 }} /> Child Contract
-                  </div>
-                }
-                className="custom-tab-label"
-              />
-              <Tab
-                label={
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      textTransform: "none",
-                    }}
-                  >
-                    <Newspaper sx={{ marginRight: 1 }} /> Renewal Details
-                  </div>
-                }
-                className="custom-tab-label"
-              />
+              />         
             </Tabs>
             <Box role="tabpanel" hidden={value !== 0}>
               {value === 0 ? (
@@ -228,12 +194,6 @@ const DetailContract = () => {
               ) : (
                 <LoadingSkeleton />
               )}
-            </Box>
-            <Box role="tabpanel" hidden={value !== 2}>
-              {value === 2 ? <ContractChildList /> : <LoadingSkeleton />}
-            </Box>
-            <Box role="tabpanel" hidden={value !== 3}>
-              {value === 3 ? <ContractRenew /> : <LoadingSkeleton />}
             </Box>
           </Box>
         </Grid>

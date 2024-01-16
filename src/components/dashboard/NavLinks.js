@@ -28,16 +28,14 @@ const NavLinks = ({ toggleSidebar }) => {
         link.id === 19 ||
         link.id === 21 ||
         link.id === 17 ||
-        link.id === 23
+        link.id === 29
     );
   } else if (roleUser === 3) {
     filteredLink = links.filter(
       (link) => link.id === 13 || link.id === 10 || link.id === 24
     );
   } else if (roleUser === 4) {
-    filteredLink = links.filter(
-      (link) => link.id === 22 || link.id === 21 || link.id === 23
-    );
+    filteredLink = links.filter((link) => link.id === 22 || link.id === 21);
   }
 
   return (

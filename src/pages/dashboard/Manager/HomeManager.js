@@ -1,8 +1,8 @@
 import {
+  CategoryOutlined,
   ConfirmationNumber,
   Dashboard,
   LocalActivity,
-  Payment,
   ReceiptLong,
   RoomServiceRounded,
   SupervisedUserCircle,
@@ -18,8 +18,8 @@ import IndexTicket from "./IndexTicket";
 import { useParams } from "react-router-dom";
 import TeamMemberList from "../TeamMember/TeamMemberList";
 import ContractList from "../Contract/ContractList";
-import PaymentList from "../Payment/PaymentList";
 import ServiceList from "../ServicePack/ServiceList";
+import CategoryList from "../Category/CategoryList";
 
 const HomeManager = () => {
 
@@ -154,10 +154,10 @@ const HomeManager = () => {
                     textTransform: "none",
                   }}
                 >
-                  <Payment
+                  <RoomServiceRounded
                     sx={{ marginRight: 1, color: "#0099FF" }}
                   />{" "}
-                  Payment
+                  Service
                 </div>
               }
               className="custom-tab-label"
@@ -171,10 +171,10 @@ const HomeManager = () => {
                     textTransform: "none",
                   }}
                 >
-                  <RoomServiceRounded
+                  <CategoryOutlined
                     sx={{ marginRight: 1, color: "#0099FF" }}
                   />{" "}
-                  Service
+                  Category
                 </div>
               }
               className="custom-tab-label"
@@ -197,10 +197,10 @@ const HomeManager = () => {
             {value === 4 ? <ContractList /> : <LoadingSkeleton />}
           </Box>
           <Box role="tabpanel" hidden={value !== 5}>
-            {value === 5 ? <PaymentList /> : <LoadingSkeleton />}
+            {value === 5? <ServiceList /> : <LoadingSkeleton />}
           </Box>
           <Box role="tabpanel" hidden={value !== 6}>
-            {value === 6 ? <ServiceList /> : <LoadingSkeleton />}
+            {value === 6? <CategoryList /> : <LoadingSkeleton />}
           </Box>
         </Box>
       </Grid>

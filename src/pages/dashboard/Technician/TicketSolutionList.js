@@ -59,7 +59,6 @@ const TicketSolutionList = () => {
   const user = useSelector((state) => state.auth);
   const userRole = user.user.role;
   const navigate = useNavigate();
-
   const fetchDataListTicketSolution = useCallback(async () => {
     try {
       let filter = "";
@@ -370,6 +369,7 @@ const TicketSolutionList = () => {
               </MDBTableBody>
             ) : (
               <MDBTableBody className="bg-light">
+                
                 {dataListTicketsSolution.map((TicketSolution, index) => {
                   const isSelected = selectedSolutionIds.includes(
                     TicketSolution.id

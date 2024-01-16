@@ -62,6 +62,7 @@ import TicketAssignAvailableList from './pages/dashboard/Technician/TicketAssign
 import CompanyMemberList from './pages/dashboard/Company Member/CompanyMemberList';
 import CreateCompanyMember from './pages/dashboard/Company Member/CreateCompanyMember';
 import EditCompanyMember from './pages/dashboard/Company Member/EditCompanyMember';
+import CategoryList from './pages/dashboard/Category/CategoryList';
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -83,7 +84,7 @@ function App() {
         >
           <Route index element={<AccessibleTabs1 />} />
           {(hasAdminRole || hasManagerRole) && <Route path='team' element={<Team />} />}
-          {(hasCustomerRole || hasAdminRole || hasManagerRole || hasTechnicianRole) && <Route path='profile' element={<Profile />} />} 
+          {(hasCustomerRole || hasAdminRole || hasManagerRole || hasTechnicianRole || hasAccountantRole) && <Route path='profile' element={<Profile />} />} 
           {hasAdminRole && <Route path='userList' element={<UserList />} />}
           {hasAdminRole && <Route path='createUser' element={<CreateUser />} />}
           {hasAdminRole && <Route path='editUser/:userId' element={<EditUser />} />}
@@ -94,20 +95,20 @@ function App() {
           {(hasAdminRole ) && <Route path='mode' element={<ModeList />} />} 
           {(hasCustomerRole ) && <Route path='customerTicket' element={<IssueList />} />}
           <Route path='ticketService/:ticketId' element={<TicketService />} />
-          <Route path='createTicket' element={<CreateTickets />} />
-          <Route path='editTicket/:ticketId' element={<EditTickets />} />
-          <Route path='editTicketCustomer/:ticketId' element={<EditTicketCustomer />} />
-          <Route path='ticketSolution' element={<TicketSolutionList />} />
+          {(hasCustomerRole || hasManagerRole || hasTechnicianRole) &&<Route path='createTicket' element={<CreateTickets />} />}
+          {(hasCustomerRole || hasManagerRole || hasTechnicianRole) &&<Route path='editTicket/:ticketId' element={<EditTickets />} />}
+          {(hasCustomerRole || hasManagerRole || hasTechnicianRole) &&<Route path='editTicketCustomer/:ticketId' element={<EditTicketCustomer />} />}
+          {(hasCustomerRole || hasManagerRole || hasTechnicianRole) &&<Route path='ticketSolution' element={<TicketSolutionList />} />}
           {(hasTechnicianRole || hasManagerRole) &&<Route path='createSolution' element={<CreateTicketSolution />} />}
           {(hasTechnicianRole || hasManagerRole) &&<Route path='editSolution/:solutionId' element={<EditTicketSolution />} />}
-          <Route path='detailSolution/:solutionId' element={<TicketSolutionDetail />} />
-          <Route path='detailTicket/:ticketId' element={<DetailTicket />} />
+          {(hasCustomerRole || hasManagerRole || hasTechnicianRole) &&<Route path='detailSolution/:solutionId' element={<TicketSolutionDetail />} />}
+          {(hasCustomerRole || hasManagerRole || hasTechnicianRole) &&<Route path='detailTicket/:ticketId' element={<DetailTicket />} />}
           {(hasTechnicianRole) &&<Route path='homeTechnician' element={<HomeTechnician />} />}
-          <Route path='listTicket' element={<IndexTicket />} />
-          <Route path='ticketTask' element={<TicketTaskList />} />
-          <Route path='createTask/:ticketId' element={<CreateTicketTask />} />
-          <Route path='createTask' element={<CreateTicketTaskTc />} />
-          <Route path='editTask/:ticketId' element={<EditTicketTask />} />
+          {(hasCustomerRole || hasManagerRole || hasTechnicianRole) &&<Route path='listTicket' element={<IndexTicket />} />}
+          {(hasCustomerRole || hasManagerRole || hasTechnicianRole) &&<Route path='ticketTask' element={<TicketTaskList />} />}
+          {(hasManagerRole || hasTechnicianRole) &&<Route path='createTask/:ticketId' element={<CreateTicketTask />} />}
+          {(hasManagerRole || hasTechnicianRole) &&<Route path='createTask' element={<CreateTicketTaskTc />} />}
+          {(hasCustomerRole || hasManagerRole || hasTechnicianRole) &&<Route path='editTask/:ticketId' element={<EditTicketTask />} />}
           {(hasManagerRole) && <Route path='dashBoard' element={<ChartManager />} />}
           {(hasManagerRole) && <Route path='companyList' element={<CompanyList />} />}
           {(hasManagerRole) && <Route path='createCompany' element={<CreateCompany />} />}
@@ -129,12 +130,13 @@ function App() {
           {(hasManagerRole || hasAccountantRole) && <Route path='createPayment' element={<CreatePayment />} />}
           {(hasManagerRole || hasAccountantRole) && <Route path='editPayment/:paymentId' element={<EditPayment />} />}
           <Route path='ticketLog/:ticketId' element={<TicketLogList />} />
-          <Route path='teamMember' element={<TeamMemberList />} />
-          <Route path='createTeamMember' element={<CreateTeamMember />} />
-          <Route path='editTeamMember/:teamMemberId' element={<EditTeamMember />} />
-          <Route path='companyMember' element={<CompanyMemberList />} />
+          {(hasManagerRole) &&<Route path='teamMember' element={<TeamMemberList />} />}
+          {(hasManagerRole) &&<Route path='createTeamMember' element={<CreateTeamMember />} />}
+          {(hasManagerRole) &&<Route path='editTeamMember/:teamMemberId' element={<EditTeamMember />} />}
+         <Route path='companyMember' element={<CompanyMemberList />} />
           <Route path='createCompanyMember' element={<CreateCompanyMember />} />
-          <Route path='editCompanyMember/:memberId' element={<EditCompanyMember />} />
+           <Route path='editCompanyMember/:memberId' element={<EditCompanyMember />} />
+          <Route path='categoryList' element={<CategoryList />} />
           </Route>
         <Route path='login' element={<Login />} />
         <Route path='forgot-password' element={<ForgetPassword /> }  />
