@@ -50,9 +50,12 @@ const ChangePassword = ({ onCancel }) => {
         setIsSubmitting(false);
       }
     } else {
-      toast.error(
-        "Passwords do not match or new password is the same as the current password"
-      );
+      setTimeout(() => {
+        toast.error(
+          "Passwords do not match or new password is the same as the current password"
+        );
+        setIsSubmitting(false);
+      }, 3000);
     }
   };
 
