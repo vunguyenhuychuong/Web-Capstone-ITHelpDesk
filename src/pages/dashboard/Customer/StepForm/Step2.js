@@ -9,12 +9,14 @@ import {
   Card,
   Box,
   Button,
+  Stack,
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { useState } from "react";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import { getAllService } from "../../../../app/api/service";
+import { useNavigate } from "react-router-dom";
 
 const Step2 = ({
   data,
@@ -25,6 +27,7 @@ const Step2 = ({
   isSubmitting,
 }) => {
   const [dataService, setDataServices] = useState([]);
+  const navigate = useNavigate();
   const fetchService = async () => {
     try {
       const response = await getAllService();
@@ -83,23 +86,24 @@ const Step2 = ({
         </Box>
       </Card>
 
-      <Box sx={{ flex: "1 1 auto" }}>
+      <Stack sx={{ flexDirection: "row", justifyContent: "center" }}>
         <Button
           color="primary"
           variant="contained"
           onClick={handleSubmitTicket}
-          disabled={isSubmitting}        
+          disabled={isSubmitting}
         >
           Save
         </Button>
         <Button
-          color="secondary"
+          color="inherit"
           variant="contained"
-          style={{ marginLeft: "8px" }}     
+          style={{ marginLeft: "8px" }}
+          onClick={() => navigate(`/home/requestCustomerList`)}
         >
           Cancel
         </Button>
-      </Box>
+      </Stack>
 
       <Dialog
         open={isImagePreviewOpen}

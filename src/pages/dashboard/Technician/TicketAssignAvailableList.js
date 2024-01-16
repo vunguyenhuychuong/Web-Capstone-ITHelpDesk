@@ -82,7 +82,7 @@ const TicketAssignAvailableList = () => {
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
               <span style={{ color: "#FFFFFF" }}>All Ticket Assign</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            {/* <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
                 color="#eee"
                 style={{
@@ -95,7 +95,7 @@ const TicketAssignAvailableList = () => {
                 <FaPlus style={{ color: "#FFFFFF" }} />{" "}
                 <span style={{ color: "#FFFFFF" }}>New</span>
               </MDBBtn>
-            </MDBNavbarNav>
+            </MDBNavbarNav> */}
           </MDBContainer>
         </MDBNavbar>
         <div>
@@ -103,10 +103,9 @@ const TicketAssignAvailableList = () => {
             <MDBTableHead className="bg-light">
               <tr>
                 {/* <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th> */}
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>
+                {/* <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                   <input type="checkbox" />
-                </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
+                </th> */}
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}>
                   Title{""}
                 </th>
@@ -123,6 +122,7 @@ const TicketAssignAvailableList = () => {
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}>
                   Last Update
                 </th>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
               </tr>
             </MDBTableHead>
             {loading ? (
@@ -142,16 +142,9 @@ const TicketAssignAvailableList = () => {
                   return (
                     <tr key={index}>
                       {/* <td>{TicketAssign.id}</td> */}
-                      <td>
+                      {/* <td>
                         <input type="checkbox" />
-                      </td>
-                      <td>
-                        <ViewCompact
-                          onClick={() =>
-                            handleOpenDetailTicketAssign(TicketAssign.id)
-                          }
-                        />{" "}
-                      </td>
+                      </td> */}
                       <td
                         className="tooltip-cell"
                         title={`Id:${TicketAssign.id} \nDescription:${TicketAssign.description}`}
@@ -201,6 +194,13 @@ const TicketAssignAvailableList = () => {
                       </td>
                       <td>{formatDate(TicketAssign.createdAt)}</td>
                       <td>{formatDate(TicketAssign.modifiedAt)}</td>
+                      <td>
+                        <ViewCompact
+                          onClick={() =>
+                            handleOpenDetailTicketAssign(TicketAssign.id)
+                          }
+                        />
+                      </td>
                     </tr>
                   );
                 })}

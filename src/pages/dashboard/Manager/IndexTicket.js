@@ -24,7 +24,14 @@ import {
   Delete,
   ViewCompact,
 } from "@mui/icons-material";
-import { Box, FormControl, MenuItem, Pagination, Select } from "@mui/material";
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Pagination,
+  Select,
+} from "@mui/material";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import PageSizeSelector from "../Pagination/Pagination";
@@ -48,7 +55,7 @@ const IndexTicket = () => {
   const [searchField, setSearchField] = useState("title");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("desc");
-  const [sortBy, setSortBy] = useState("id");
+  const [sortBy, setSortBy] = useState("createdAt");
   const [ticketStatus, setTicketStatus] = useState(null);
   const [selectedTickets, setSelectedTickets] = useState([]);
   const [selectedTicketId, setSelectedTicketId] = useState(null);
@@ -209,33 +216,62 @@ const IndexTicket = () => {
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
-              <span style={{ color: "#FFFFFF" }}>All My Request</span>
+              <span style={{ color: "#FFFFFF" }}>All Tickets</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
                 color="#eee"
                 style={{
                   fontWeight: "bold",
-                  fontSize: "20px",
+                  fontSize: 16,
                   color: "#FFFFFF",
                 }}
                 onClick={handleOpenRequestTicket}
               >
                 <FaPlus /> New
               </MDBBtn>
-              {isUserRole2 && (
-                <MDBBtn
-                  color="eee"
-                  style={{
-                    fontWeight: "bold",
-                    fontSize: "20px",
-                    color: "#FFFFFF",
-                  }}
-                  onClick={handleDeleteSelectedTickets}
+
+              <MDBBtn
+                color="eee"
+                style={{
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  color: "#FFFFFF",
+                }}
+                onClick={handleDeleteSelectedTickets}
+              >
+                <Delete /> Delete
+              </MDBBtn>
+
+              <div style={{ textAlign: "center" }}>
+                <FormControl
+                  variant="outlined"
+                  size="small"
+                  sx={{ color: "white", margin: 1, width: "10vw" }}
                 >
-                  <Delete /> Delete
-                </MDBBtn>
-              )}
+                  <InputLabel sx={{ color: "white" }}>Select Status</InputLabel>
+                  <Select
+                    label={"Select Status"}
+                    value={ticketStatus}
+                    onChange={handleStatusChange}
+                    inputProps={{
+                      name: "sortField",
+                      id: "search-field",
+                    }}
+                    sx={{
+                      color: "white",
+                    }}
+                  >
+                    <MenuItem value={null}>All</MenuItem>
+                    <MenuItem value={0}>Open</MenuItem>
+                    <MenuItem value={1}>Assign</MenuItem>
+                    <MenuItem value={2}>Progress</MenuItem>
+                    <MenuItem value={3}>Resolved</MenuItem>
+                    <MenuItem value={4}>Closed</MenuItem>
+                    <MenuItem value={5}>Cancelled</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
               <FormControl
                 variant="outlined"
                 style={{
@@ -282,45 +318,6 @@ const IndexTicket = () => {
                 pageSize={pageSize}
                 handleChangePageSize={handleChangePageSize}
               />
-              <div style={{ textAlign: "center" }}>
-                <label
-                  style={{
-                    fontWeight: "bold",
-                    marginTop: "15px",
-                    color: "white",
-                  }}
-                >
-                  Sort Status Ticket:
-                </label>
-                <FormControl
-                  variant="outlined"
-                  style={{
-                    minWidth: 120,
-                    marginRight: 10,
-                    marginTop: 10,
-                    marginLeft: 10,
-                  }}
-                  size="small"
-                >
-                  <Select
-                    value={ticketStatus}
-                    onChange={handleStatusChange}
-                    inputProps={{
-                      name: "sortField",
-                      id: "search-field",
-                    }}
-                    style={{ color: "white" }}
-                  >
-                    <MenuItem value={null}>-</MenuItem>
-                    <MenuItem value={0}>Open</MenuItem>
-                    <MenuItem value={1}>Assign</MenuItem>
-                    <MenuItem value={2}>Progress</MenuItem>
-                    <MenuItem value={3}>Resolved</MenuItem>
-                    <MenuItem value={4}>Closed</MenuItem>
-                    <MenuItem value={5}>Cancelled</MenuItem>
-                  </Select>
-                </FormControl>
-              </div>
             </MDBNavbarNav>
           </MDBContainer>
         </MDBNavbar>
@@ -390,19 +387,7 @@ const IndexTicket = () => {
                       <ArrowDropUp />
                     ))}
                 </th>
-                <th
-                  style={{ fontWeight: "bold" }}
-                  className="sortable-header"
-                  onClick={() => handleSortChange("createdAt")}
-                >
-                  Create Date
-                  {sortBy === "createdAt" &&
-                    (sortDirection === "asc" ? (
-                      <ArrowDropDown />
-                    ) : (
-                      <ArrowDropUp />
-                    ))}
-                </th>
+
                 <th
                   style={{ fontWeight: "bold" }}
                   className="sortable-header"
@@ -436,6 +421,19 @@ const IndexTicket = () => {
                 >
                   Status{" "}
                   {sortBy === "ticketStatus" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropDown />
+                    ) : (
+                      <ArrowDropUp />
+                    ))}
+                </th>
+                <th
+                  style={{ fontWeight: "bold" }}
+                  className="sortable-header"
+                  onClick={() => handleSortChange("createdAt")}
+                >
+                  Created Date
+                  {sortBy === "createdAt" &&
                     (sortDirection === "asc" ? (
                       <ArrowDropDown />
                     ) : (
@@ -489,12 +487,21 @@ const IndexTicket = () => {
                     <td>
                       {ticket.requester.lastName} {ticket.requester.firstName}
                     </td>
-                    <td>{formatDate(ticket.createdAt)}</td>
+
                     <td>
                       {ticket.type === "offline" ? (
-                        <Chip label="Offline" size="small" />
+                        <Chip
+                          label="Offline"
+                          size="small"
+                          sx={{ backgroundColor: "#c2c2c2" }}
+                        />
                       ) : (
-                        <Chip label="Online" size="small" variant="outlined" />
+                        <Chip
+                          label="Online"
+                          size="small"
+                          variant="outlined"
+                          sx={{ backgroundColor: "greenyellow" }}
+                        />
                       )}
                     </td>
                     <td>
@@ -544,6 +551,7 @@ const IndexTicket = () => {
                         </span>
                       }
                     </td>
+                    <td>{formatDate(ticket.createdAt)}</td>
                     <td>{formatDate(ticket.dueTime)}</td>
                     <td>
                       <ViewCompact

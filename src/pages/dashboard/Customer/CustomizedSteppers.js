@@ -13,6 +13,8 @@ import { toast } from "react-toastify";
 const steps = ["Fill Request", "Complete And Send"];
 
 export default function CustomizedSteppers({
+  activeStep,
+  setActiveStep,
   data,
   handleInputChange,
   handleFileChange,
@@ -20,9 +22,8 @@ export default function CustomizedSteppers({
   imagePreviewUrl,
   isImagePreviewOpen,
   setIsImagePreviewOpen,
-  isSubmitting
+  isSubmitting,
 }) {
-  const [activeStep, setActiveStep] = React.useState(0);
   const navigate = useNavigate();
   const totalSteps = steps.length;
   const handleNext = () => {
@@ -93,7 +94,7 @@ export default function CustomizedSteppers({
         ))}
       </Stepper>
 
-      {isStep1  && (
+      {isStep1 && (
         <Step1
           data={data}
           handleInputChange={handleInputChange}
@@ -104,10 +105,10 @@ export default function CustomizedSteppers({
         />
       )}
 
-      {isStep2  && (
+      {isStep2 && (
         <Step2
           data={data}
-          handleSubmit={handleSubmitTicket}
+          handleSubmitTicket={handleSubmitTicket}
           imagePreviewUrl={imagePreviewUrl}
           isImagePreviewOpen={isImagePreviewOpen}
           setIsImagePreviewOpen={setIsImagePreviewOpen}
@@ -129,9 +130,13 @@ export default function CustomizedSteppers({
         <Box sx={{ flex: "1 1 auto" }} />
         <Button
           onClick={activeStep === totalSteps - 1 ? handleComplete : handleNext}
+          sx={{
+            display: activeStep === totalSteps - 1 ? "none" : "flex",
+          }}
         >
           {activeStep === totalSteps - 1 ? (
-            <CheckCircle onClick={() => handleGoBack()} />
+            // <CheckCircle onClick={() => handleGoBack()} />
+            <></>
           ) : (
             <FastForward />
           )}

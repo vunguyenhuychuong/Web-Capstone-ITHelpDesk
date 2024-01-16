@@ -747,12 +747,13 @@ const EditContract = () => {
                 >
                   {isSubmitting ? "Submitting..." : "Save"}
                 </button>
-                {/* <button
+                <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
+                  onClick={() => handleGoBack()}
                 >
                   Cancel
-                </button> */}
+                </button>
               </div>
             </MDBCol>
           </MDBRow>

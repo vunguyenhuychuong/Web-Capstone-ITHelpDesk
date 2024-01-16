@@ -21,7 +21,15 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import useTicketData from "./useTicketData";
 import AssignTicketModal from "./AssignTicketModal";
-import { Avatar, Button, Grid, Stack, Tab, Tabs } from "@mui/material";
+import {
+  Avatar,
+  Button,
+  Grid,
+  Stack,
+  Tab,
+  Tabs,
+  Typography,
+} from "@mui/material";
 import {
   TicketStatusOptions,
   getGenderById,
@@ -44,7 +52,12 @@ import TicketTaskList from "../Technician/TicketTaskList";
 
 const DetailTicket = () => {
   const { ticketId } = useParams();
-  const { data, loading, setData } = useTicketData(ticketId);
+  const {
+    data,
+    loading,
+    setData,
+    fetchData: refetch,
+  } = useTicketData(ticketId);
   const [dataCategories, setDataCategories] = useState([]);
   const [dataMode, setDataMode] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -67,6 +80,7 @@ const DetailTicket = () => {
   const [allowEdit, setAllowEdit] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(0);
   const [editMessage, setEditMessage] = useState("");
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const fetchDataManager = async () => {
     try {
@@ -109,9 +123,9 @@ const DetailTicket = () => {
     }
   };
 
-  const handleTicketStatusChange = async () => {
+  const handleTicketStatusChange = async (status) => {
     try {
-      await ChangeStatusTicket(ticketId, selectedStatus);
+      await ChangeStatusTicket(ticketId, status);
     } catch (error) {
       console.log("Error changing ticket status:", error);
     }
@@ -137,15 +151,15 @@ const DetailTicket = () => {
 
   useEffect(() => {
     if (
+      (userRole === 1 && (ticketStatus === 0 || ticketStatus === 1)) ||
       userRole === 2 ||
-      userRole === 3 ||
-      (userRole === 1 && ticketStatus === 0)
+      userRole === 3
     ) {
       setAllowEdit(true);
       setEditMessage("");
     } else {
       setAllowEdit(false);
-      setEditMessage("Not allowed to edit when the ticket status is assigned");
+      // setEditMessage("Not allowed to edit when the ticket status is assigned");
     }
     fetchDataManager();
     setValue(0);
@@ -202,6 +216,7 @@ const DetailTicket = () => {
                         sx={{
                           backgroundColor: "#FFFFFF",
                           borderRadius: "5px",
+                          display: data.ticketStatus > 1 ? "none" : "flex",
                         }}
                         onClick={() => handleCancelTicket(ticketId)}
                       >
@@ -211,6 +226,7 @@ const DetailTicket = () => {
                         sx={{
                           backgroundColor: "#FFFFFF",
                           borderRadius: "5px",
+                          display: data.ticketStatus !== 3 ? "none" : "flex",
                         }}
                         onClick={() => handleCloseTicket(ticketId)}
                       >
@@ -226,9 +242,19 @@ const DetailTicket = () => {
                     onClick={() => handleOpenEditTicket(ticketId)}
                     disabled={!allowEdit}
                   >
-                    Edit
+                    Edit Ticket
                   </Button>
-                  {userRole === 2 || userRole === 3 ? (
+                  <Button
+                    sx={{
+                      backgroundColor: "#FFFFFF",
+                      borderRadius: "5px",
+                    }}
+                    onClick={() => setIsEditDialogOpen(true)}
+                    disabled={!allowEdit}
+                  >
+                    Edit Properties
+                  </Button>
+                  {/* {userRole === 2 || userRole === 3 ? (
                     <select
                       value={selectedStatus}
                       onChange={(e) =>
@@ -243,26 +269,40 @@ const DetailTicket = () => {
                         </option>
                       ))}
                     </select>
-                  ) : null}
-                  {userRole === 2 || userRole === 3 ? (
-                    <button
-                      type="button"
-                      className="btn btn-link narrow-input icon-label mt-2"
-                      onClick={handleTicketStatusChange}
-                    >
-                      Submit Status
-                    </button>
-                  ) : null}
+                  ) : null} */}
+                  {userRole === 2 || userRole === 3
+                    ? TicketStatusOptions.filter(
+                        (status) =>
+                          status.name !== "Close" && status.name !== "Cancelled"
+                      ).map((status) => (
+                        <Button
+                          sx={{
+                            backgroundColor: "#FFFFFF",
+                            borderRadius: "5px",
+                            display: status.displayStatusId.includes(
+                              data.ticketStatus
+                            )
+                              ? "flex"
+                              : "none",
+                          }}
+                          onClick={() => handleTicketStatusChange(status.id)}
+                        >
+                          {status.name}
+                        </Button>
+                      ))
+                    : null}
                   {userRole === 2 ? (
-                    <MDBCol md="2" className="mt-2">
+                    <MDBCol>
                       <div className="d-flex align-items-center">
-                        <button
-                          type="button"
-                          className="btn btn-link narrow-input icon-label"
+                        <Button
+                          sx={{
+                            backgroundColor: "#FFFFFF",
+                            borderRadius: "5px",
+                          }}
                           onClick={handleOpenAssignTicket}
                         >
                           Assign
-                        </button>
+                        </Button>
                       </div>
                     </MDBCol>
                   ) : null}
@@ -289,7 +329,7 @@ const DetailTicket = () => {
               </div>
               <div style={{ display: "flex", flexDirection: "column" }}>
                 <span style={{ marginBottom: "5px", fontSize: "1.5em" }}>
-                  #{data.requesterId} {data.title}
+                  {data.title}
                 </span>
                 <span style={{ fontSize: "0.8em" }}>
                   Created by{" "}
@@ -366,6 +406,9 @@ const DetailTicket = () => {
                   loading={loading || false}
                   dataCategories={dataCategories}
                   dataMode={dataMode}
+                  refetch={refetch}
+                  isEditDialogOpen={isEditDialogOpen}
+                  setIsEditDialogOpen={setIsEditDialogOpen}
                 />
               ) : (
                 <LoadingSkeleton />
@@ -381,7 +424,7 @@ const DetailTicket = () => {
         </Grid>
         <Grid
           item
-          xs={2}
+          xs={3}
           style={{
             paddingBottom: "10px",
             borderLeft: "1px solid #ccc",
@@ -399,110 +442,151 @@ const DetailTicket = () => {
                     color: "#007bff",
                   }}
                 >
-                  More
+                  Other Information
                 </h2>
               </div>
             </MDBCol>
           </MDBRow>
-          <MDBRow className="mb-4 mt-4">
-            <MDBRow className="mb-4">
-              <MDBCol md="12" className="mt-2 text-box">
-                <div className="label-col col-md-4 ">Priority</div>
-                <div className="data-col col-md-8">
-                  <span
-                    className={`badge ${priorityOption.colorClass} rounded-pill`}
-                    style={{ fontSize: priorityOption.fontSize }}
-                  >
-                    {priorityOption.name}
-                  </span>
-                </div>
-              </MDBCol>
-              <MDBCol md="12" className="mt-2 text-box">
-                <div className="label-col col-md-4 ">Stage</div>
-                <div className="data-col col-md-6">
-                  <span style={badgeStyle}>
-                    {icon}
-                    {name}
-                  </span>
-                </div>
-              </MDBCol>
-            </MDBRow>
-          </MDBRow>
-          <MDBRow className="mb-2">
-            <MDBCol md="12" className=" mt-2">
-              {data.assignment ? (
-                <label className="narrow-input description-label">
-                  <AssignmentTurnedIn
-                    style={{ color: "#3399FF", marginLeft: 10, marginLeft: 5 }}
-                  />
-                  Ticket have been Assigned
-                </label>
-              ) : (
-                <label className="narrow-input description-label">
-                  <AssignmentLate
-                    style={{ color: "#FFCC33", marginLeft: 10, marginLeft: 5 }}
-                  />
-                  Ticket not Assigned yet
-                </label>
-              )}
-            </MDBCol>
-            <MDBCol md="12">
-              <ArrowRight />
-              Name:{" "}
-              {data.assignment && data.assignment.technicianFullName
-                ? data.assignment.technicianFullName
-                : "N/A"}
-            </MDBCol>
-            <MDBCol md="12" className=" mt-2">
-              <ArrowRight />
-              Email:{" "}
-              {data.assignment && data.assignment.technicianEmail
-                ? data.assignment.technicianEmail
-                : "N/A"}
-            </MDBCol>
-            <MDBCol md="12" className=" mt-2">
-              <ArrowRight />
-              Phone:{" "}
-              {data.assignment && data.assignment.technicianPhoneNumber
-                ? data.assignment.technicianPhoneNumber
-                : "N/A"}
-            </MDBCol>
-            <MDBCol md="12" className=" mt-2">
-              <ArrowRight />
-              Team:{" "}
-              {data.assignment && data.assignment.teamName
-                ? data.assignment.teamName
-                : "N/A"}
-            </MDBCol>
-          </MDBRow>
-          <MDBRow className="mb-4">
-            <MDBCol
-              md="12"
-              className="d-flex align-items-center mt-2 description-label"
+          <Stack marginY={3} spacing={2}>
+            <Stack
+              direction={"row"}
+              width={"100%"}
+              justifyContent={"space-between"}
+              alignItems={"center"}
             >
-              <Avatar
-                alt="User Avatar"
-                {...stringAvatar(userName)}
-                className="img-avatar"
-              />
-              <div className="ms-3">
-                {data.requester && data.requester.username ? (
-                  <>
-                    <p className="fw-bold mb-1">
+              <Typography fontWeight={"bold"}>Priority:</Typography>
+              <span
+                className={`badge ${priorityOption.colorClass} rounded-pill`}
+                style={{ fontSize: priorityOption.fontSize }}
+              >
+                {priorityOption.name}
+              </span>
+            </Stack>
+            <Stack
+              direction={"row"}
+              width={"100%"}
+              justifyContent={"space-between"}
+              alignItems={"center"}
+            >
+              <Typography fontWeight={"bold"}>Stage:</Typography>
+              <span style={badgeStyle}>
+                {icon}
+                {name}
+              </span>
+            </Stack>
+          </Stack>
+          <Stack marginY={3} spacing={2}>
+            <Stack
+              flexDirection={"row"}
+              justifyContent={"center"}
+              alignItems={"center"}
+              sx={{ border: "solid 1px #c2c2c2", p: 1 }}
+            >
+              {data.assignment ? (
+                <>
+                  <AssignmentTurnedIn
+                    style={{ color: "#3399FF", marginLeft: 10 }}
+                  />
+                  <Typography>Ticket have been assigned</Typography>
+                </>
+              ) : (
+                <>
+                  <AssignmentLate
+                    style={{ color: "#FFCC33", marginLeft: 10 }}
+                  />
+                  <Typography>Ticket not assigned yet</Typography>
+                </>
+              )}
+            </Stack>
+            <Stack
+              flexDirection={"row"}
+              justifyContent={"space-between"}
+              alignItems={"center"}
+            >
+              <Stack flexDirection={"row"} alignItems={"center"}>
+                <ArrowRight />
+                <Typography> Name:</Typography>
+              </Stack>
+              <Typography>
+                {data.assignment && data.assignment.technicianFullName
+                  ? data.assignment.technicianFullName
+                  : "N/A"}
+              </Typography>
+            </Stack>
+            <Stack
+              flexDirection={"row"}
+              justifyContent={"space-between"}
+              alignItems={"center"}
+            >
+              <Stack flexDirection={"row"} alignItems={"center"}>
+                <ArrowRight />
+                <Typography> Email:</Typography>
+              </Stack>
+              <Typography>
+                {data.assignment && data.assignment.technicianEmail
+                  ? data.assignment.technicianEmail
+                  : "N/A"}
+              </Typography>
+            </Stack>
+            <Stack
+              flexDirection={"row"}
+              justifyContent={"space-between"}
+              alignItems={"center"}
+            >
+              <Stack flexDirection={"row"} alignItems={"center"}>
+                <ArrowRight />
+                <Typography> Phone:</Typography>
+              </Stack>
+              <Typography>
+                {data.assignment && data.assignment.technicianPhoneNumber
+                  ? data.assignment.technicianPhoneNumber
+                  : "N/A"}
+              </Typography>
+            </Stack>
+            <Stack
+              flexDirection={"row"}
+              justifyContent={"space-between"}
+              alignItems={"center"}
+            >
+              <Stack flexDirection={"row"} alignItems={"center"}>
+                <ArrowRight />
+                <Typography> Team:</Typography>
+              </Stack>
+              <Typography>
+                {data.assignment && data.assignment.teamName
+                  ? data.assignment.teamName
+                  : "N/A"}
+              </Typography>
+            </Stack>
+          </Stack>
+          <MDBRow className="mb-4">
+            <Stack sx={{ p: 1, border: "solid 1px #c2c2c2" }}>
+              {data.requester && data.requester.username ? (
+                <Stack flexDirection={"row"} justifyContent={"space-between"}>
+                  <Stack flexDirection={"row"} alignItems={"center"}>
+                    <MessageSharp style={{ color: "#3399FF" }} />
+                    <Typography>Requester:</Typography>
+                  </Stack>
+                  <Stack flexDirection={"row"} alignItems={"center"}>
+                    <Typography>
                       {data.requester && data.requester.lastName
                         ? `${data.requester.lastName} `
                         : ""}
                       {data.requester && data.requester.firstName
                         ? `${data.requester.firstName} `
                         : ""}
-                      <MessageSharp style={{ color: "#3399FF" }} />{" "}
-                    </p>
-                  </>
-                ) : (
-                  <p className="text-muted">User Information Not have</p>
-                )}
-              </div>
-            </MDBCol>
+                    </Typography>
+                    <Avatar
+                      alt="User Avatar"
+                      {...stringAvatar(userName)}
+                      className="img-avatar"
+                    />
+                  </Stack>
+                </Stack>
+              ) : (
+                <p className="text-muted">User Information Not have</p>
+              )}
+            </Stack>
             <MDBTable bordered>
               <MDBTableBody>
                 <tr>
@@ -515,7 +599,7 @@ const DetailTicket = () => {
                   >
                     ID
                   </th>
-                  <th>
+                  <th style={{ textAlign: "end" }}>
                     {data.requester && data.requester.id
                       ? data.requester.id
                       : "-"}
@@ -531,7 +615,7 @@ const DetailTicket = () => {
                   >
                     Name
                   </th>
-                  <th>
+                  <th style={{ textAlign: "end" }}>
                     {data.requester && data.requester.lastName
                       ? data.requester.lastName
                       : "-"}{" "}
@@ -550,7 +634,7 @@ const DetailTicket = () => {
                   >
                     UserName
                   </th>
-                  <th>
+                  <th style={{ textAlign: "end" }}>
                     {data.requester && data.requester.username
                       ? `${data.requester.username} `
                       : ""}{" "}
@@ -566,7 +650,7 @@ const DetailTicket = () => {
                   >
                     Phone
                   </th>
-                  <th>
+                  <th style={{ textAlign: "end" }}>
                     {data.requester && data.requester.phoneNumber
                       ? data.requester.phoneNumber
                       : "-"}
@@ -582,7 +666,7 @@ const DetailTicket = () => {
                   >
                     Email
                   </th>
-                  <th>
+                  <th style={{ textAlign: "end" }}>
                     {data.requester && data.requester.email
                       ? data.requester.email
                       : "-"}
@@ -599,7 +683,7 @@ const DetailTicket = () => {
                   >
                     Gender
                   </th>
-                  <th>
+                  <th style={{ textAlign: "end" }}>
                     {data.requester && getGenderById(data.requester.gender)
                       ? getGenderById(data.requester.gender)
                       : "-"}

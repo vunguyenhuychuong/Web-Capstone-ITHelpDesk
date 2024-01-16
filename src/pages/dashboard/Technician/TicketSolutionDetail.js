@@ -396,7 +396,7 @@ const TicketSolutionDetail = () => {
           </Stack> */}
         </Stack>
 
-        {data.attachmentUrls && (
+        {data.attachmentUrls?.length > 0 && (
           <Stack
             width={"100%"}
             alignItems={"center"}

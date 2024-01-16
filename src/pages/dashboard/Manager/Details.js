@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
 import {
+  Box,
   Button,
   Dialog,
   DialogContent,
   DialogTitle,
   Grid,
   IconButton,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableRow,
+  TextField,
   Typography,
 } from "@mui/material";
 import "../../../assets/css/detailTicket.css";
@@ -17,10 +20,7 @@ import { ArrowBack, Cached, Close, CreditScore } from "@mui/icons-material";
 import UploadComponent from "../../helpers/UploadComponent";
 import PropTypes from "prop-types";
 import "../../../assets/css/homeManager.css";
-import {
-  getImpactById,
-  getPriorityOption,
-} from "../../helpers/tableComlumn";
+import { getImpactById, getPriorityOption } from "../../helpers/tableComlumn";
 import { formatDate } from "../../helpers/FormatDate";
 import EditTicketModel from "./EditTicketModel";
 import { UpdateTicketForTechnician } from "../../../app/api/ticket";
@@ -29,16 +29,18 @@ import { Editor } from "primereact/editor";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 
-const Details = ({ data, loading, dataCategories }) => {
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+const Details = ({
+  data,
+  loading,
+  dataCategories,
+  refetch,
+  isEditDialogOpen,
+  setIsEditDialogOpen,
+}) => {
   const [reloadDataFlag, setReloadDataFlag] = useState(false);
   const user = useSelector((state) => state.auth);
   const userRole = user.user.role;
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
-
-  const handleEditClick = () => {
-    setIsEditDialogOpen(true);
-  };
 
   const images =
     data?.attachmentUrls?.map((url, index) => ({
@@ -51,13 +53,14 @@ const Details = ({ data, loading, dataCategories }) => {
     setReloadDataFlag(true);
   };
 
-  const reloadData = () => {
+  const reloadData = async () => {
     try {
-      UpdateTicketForTechnician(data).then(() => {
-        setReloadDataFlag(false);
-      });
+      setReloadDataFlag(true);
+      await UpdateTicketForTechnician(data);
     } catch (error) {
       console.error("Error while reloading data", error);
+    } finally {
+      setReloadDataFlag(false);
     }
   };
 
@@ -72,9 +75,6 @@ const Details = ({ data, loading, dataCategories }) => {
         <Grid item xs={12}>
           <div className="labelContainer">
             <Typography
-              variant="subtitle1"
-              color="textSecondary"
-              className="descriptionLabel"
               style={{
                 fontSize: "1.2em",
                 fontWeight: "bold",
@@ -85,7 +85,7 @@ const Details = ({ data, loading, dataCategories }) => {
             </Typography>
             <ArrowBack className="icon" />
           </div>
-          {/* <TextField
+          <TextField
             id="description"
             name="description"
             multiline
@@ -97,8 +97,8 @@ const Details = ({ data, loading, dataCategories }) => {
             InputProps={{
               style: { fontSize: "1.5em" },
             }}
-          /> */}
-          <Editor
+          />
+          {/* <Editor
             id="description"
             name="description"
             value={data?.description || ""}
@@ -109,68 +109,90 @@ const Details = ({ data, loading, dataCategories }) => {
             //   })
             // }
             style={{ height: "220px" }}
-          />
-          <UploadComponent />
-          <div className="buttonContainer">
-            {data?.attachmentUrls?.length > 0 && (
+          /> */}
+          {/* <UploadComponent /> */}
+          {data.attachmentUrls?.length > 0 && (
+            <Stack
+              width={"100%"}
+              alignItems={"center"}
+              justifyContent={"center"}
+              py={5}
+            >
               <Button
                 variant="contained"
                 className="button"
                 onClick={() => setIsImagePreviewOpen(true)}
+                style={{
+                  backgroundColor: "#007bff",
+                  color: "#fff",
+                  fontWeight: "bold",
+                }}
               >
-                See Image
+                See Attachments
               </Button>
-            )}
-          </div>
+            </Stack>
+          )}
+
           <div className="labelContainer">
+            {" "}
             <Typography
               variant="subtitle1"
               color="textSecondary"
               className="descriptionLabel"
+              style={{
+                fontSize: "1.2em",
+                fontWeight: "bold",
+                color: "#007bff",
+              }}
             >
-              <div
-                className="descriptionLabel"
-                style={{
+              Properties
+            </Typography>
+            <Stack flexDirection={"row"} alignItems={"center"}>
+              <Stack
+                flexDirection={"row"}
+                alignItems={"center"}
+                sx={{
                   cursor: "pointer",
                   color: "blue",
                   fontSize: "1.2em",
                   fontWeight: "bold",
-                  marginBottom: "10px",
                   display: "flex",
                   alignItems: "center",
                 }}
-                onClick={reloadData}
+                onClick={refetch}
               >
-                Properties <Cached />{" "}
-                <span>{reloadDataFlag ? "Reloading..." : "Reload"}</span>
-                {userRole === 3 && (
-                  <CreditScore
-                    style={{
-                      marginLeft: "10px",
-                    }}
-                  />
-                )}
-                {userRole === 3 && (
-                  <span
-                    style={{
-                      cursor: "pointer",
-                      color: "blue",
-                      marginLeft: "10px",
-                    }}
-                    onClick={handleEditClick}
-                  >
-                    Edit
-                  </span>
-                )}
-              </div>
-            </Typography>
+                <Cached />
+                <Typography>
+                  {reloadDataFlag ? "Reloading..." : "Reload"}
+                </Typography>
+              </Stack>
+              {/* {userRole === 3 && (
+                <CreditScore
+                  style={{
+                    marginLeft: "10px",
+                  }}
+                />
+              )}
+              {userRole === 3 && (
+                <span
+                  style={{
+                    cursor: "pointer",
+                    color: "blue",
+                    marginLeft: "10px",
+                  }}
+                  onClick={handleEditClick}
+                >
+                  Edit
+                </span>
+              )} */}
+            </Stack>
           </div>
           <Table>
             <TableBody>
               <TableRow>
                 <TableCell
                   style={{
-                    textAlign: "right",
+                    textAlign: "center",
                     fontWeight: "bold",
                     color: "#007bff",
                     paddingRight: "16px",
@@ -179,14 +201,14 @@ const Details = ({ data, loading, dataCategories }) => {
                 >
                   Requester
                 </TableCell>
-                <TableCell style={{ textAlign: "left" }}>
+                <TableCell style={{ textAlign: "center" }}>
                   {data.requester
                     ? `${data.requester.lastName} ${data.requester.firstName}`
                     : "Manager"}
                 </TableCell>
                 <TableCell
                   style={{
-                    textAlign: "right",
+                    textAlign: "center",
                     fontWeight: "bold",
                     color: "#007bff",
                     paddingRight: "16px",
@@ -195,14 +217,14 @@ const Details = ({ data, loading, dataCategories }) => {
                 >
                   Impact
                 </TableCell>
-                <TableCell style={{ textAlign: "left" }}>
+                <TableCell style={{ textAlign: "center" }}>
                   {getImpactById(data.impact)}
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell
                   style={{
-                    textAlign: "right",
+                    textAlign: "center",
                     fontWeight: "bold",
                     color: "#007bff",
                     paddingRight: "16px",
@@ -211,12 +233,12 @@ const Details = ({ data, loading, dataCategories }) => {
                 >
                   Type
                 </TableCell>
-                <TableCell style={{ textAlign: "left" }}>
+                <TableCell style={{ textAlign: "center" }}>
                   {data && data.type ? data.type : "N/A"}
                 </TableCell>
                 <TableCell
                   style={{
-                    textAlign: "right",
+                    textAlign: "center",
                     fontWeight: "bold",
                     color: "#007bff",
                     paddingRight: "16px",
@@ -225,14 +247,14 @@ const Details = ({ data, loading, dataCategories }) => {
                 >
                   Impact Detail
                 </TableCell>
-                <TableCell style={{ textAlign: "left" }}>
+                <TableCell style={{ textAlign: "center" }}>
                   {data && data.impactDetail ? data.impactDetail : "N/A"}
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell
                   style={{
-                    textAlign: "right",
+                    textAlign: "center",
                     fontWeight: "bold",
                     color: "#007bff",
                     paddingRight: "16px",
@@ -241,14 +263,14 @@ const Details = ({ data, loading, dataCategories }) => {
                 >
                   Mode
                 </TableCell>
-                <TableCell style={{ textAlign: "left" }}>
+                <TableCell style={{ textAlign: "center" }}>
                   {data && data.mode && data.mode.description
                     ? data.mode.description
                     : "Mode N/A"}
                 </TableCell>
                 <TableCell
                   style={{
-                    textAlign: "right",
+                    textAlign: "center",
                     fontWeight: "bold",
                     color: "#007bff",
                     paddingRight: "16px",
@@ -257,14 +279,14 @@ const Details = ({ data, loading, dataCategories }) => {
                 >
                   Priority
                 </TableCell>
-                <TableCell style={{ textAlign: "left" }}>
+                <TableCell style={{ textAlign: "center" }}>
                   {getPriorityOption(data.priority)}
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell
                   style={{
-                    textAlign: "right",
+                    textAlign: "center",
                     fontWeight: "bold",
                     color: "#007bff",
                     paddingRight: "16px",
@@ -273,14 +295,14 @@ const Details = ({ data, loading, dataCategories }) => {
                 >
                   Service
                 </TableCell>
-                <TableCell style={{ textAlign: "left" }}>
+                <TableCell style={{ textAlign: "center" }}>
                   {data && data.service && data.service.description
                     ? data.service.description
                     : "Service N/A"}
                 </TableCell>
                 <TableCell
                   style={{
-                    textAlign: "right",
+                    textAlign: "center",
                     fontWeight: "bold",
                     color: "#007bff",
                     paddingRight: "16px",
@@ -289,7 +311,7 @@ const Details = ({ data, loading, dataCategories }) => {
                 >
                   Category
                 </TableCell>
-                <TableCell style={{ textAlign: "left" }}>
+                <TableCell style={{ textAlign: "center" }}>
                   {dataCategories.find(
                     (category) => category.id === data.categoryId
                   )?.name || "Unknown Priority"}
@@ -298,7 +320,7 @@ const Details = ({ data, loading, dataCategories }) => {
               <TableRow>
                 <TableCell
                   style={{
-                    textAlign: "right",
+                    textAlign: "center",
                     fontWeight: "bold",
                     color: "#007bff",
                     paddingRight: "16px",
@@ -307,12 +329,12 @@ const Details = ({ data, loading, dataCategories }) => {
                 >
                   Location
                 </TableCell>
-                <TableCell style={{ textAlign: "left" }}>
-                {data.address}
+                <TableCell style={{ textAlign: "center" }}>
+                  {data.address}
                 </TableCell>
                 <TableCell
                   style={{
-                    textAlign: "right",
+                    textAlign: "center",
                     fontWeight: "bold",
                     color: "#007bff",
                     paddingRight: "16px",
@@ -321,14 +343,14 @@ const Details = ({ data, loading, dataCategories }) => {
                 >
                   Scheduled Start Time
                 </TableCell>
-                <TableCell style={{ textAlign: "left" }}>
+                <TableCell style={{ textAlign: "center" }}>
                   {formatDate(data.scheduledStartTime)}
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell
                   style={{
-                    textAlign: "right",
+                    textAlign: "center",
                     fontWeight: "bold",
                     color: "#007bff",
                     paddingRight: "16px",
@@ -337,12 +359,12 @@ const Details = ({ data, loading, dataCategories }) => {
                 >
                   Completed Time
                 </TableCell>
-                <TableCell style={{ textAlign: "left" }}>
-                {formatDate(data.completedTime)}
+                <TableCell style={{ textAlign: "center" }}>
+                  {formatDate(data.completedTime)}
                 </TableCell>
                 <TableCell
                   style={{
-                    textAlign: "right",
+                    textAlign: "center",
                     fontWeight: "bold",
                     color: "#007bff",
                     paddingRight: "16px",
@@ -351,15 +373,15 @@ const Details = ({ data, loading, dataCategories }) => {
                 >
                   Scheduled End Time
                 </TableCell>
-                <TableCell style={{ textAlign: "left" }}>
+                <TableCell style={{ textAlign: "center" }}>
                   {formatDate(data.scheduledEndTime)}
                 </TableCell>
               </TableRow>
-             
+
               <TableRow>
                 <TableCell
                   style={{
-                    textAlign: "right",
+                    textAlign: "center",
                     fontWeight: "bold",
                     color: "#007bff",
                     paddingRight: "16px",
@@ -368,12 +390,12 @@ const Details = ({ data, loading, dataCategories }) => {
                 >
                   Created At
                 </TableCell>
-                <TableCell style={{ textAlign: "left" }}>
+                <TableCell style={{ textAlign: "center" }}>
                   {formatDate(data.createdAt)}
                 </TableCell>
                 <TableCell
                   style={{
-                    textAlign: "right",
+                    textAlign: "center",
                     fontWeight: "bold",
                     color: "#007bff",
                     paddingRight: "16px",
@@ -382,7 +404,7 @@ const Details = ({ data, loading, dataCategories }) => {
                 >
                   Modified At
                 </TableCell>
-                <TableCell style={{ textAlign: "left" }}>
+                <TableCell style={{ textAlign: "center" }}>
                   {formatDate(data.modifiedAt)}
                 </TableCell>
               </TableRow>
@@ -393,6 +415,7 @@ const Details = ({ data, loading, dataCategories }) => {
                   ticketId={data.id}
                   data={data}
                   reloadDetailsData={handleReloadData}
+                  refetchDetail={refetch}
                 />
               )}
             </TableBody>

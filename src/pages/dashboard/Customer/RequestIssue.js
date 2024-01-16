@@ -8,6 +8,7 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { createTicketByCustomer } from "../../../app/api/ticket";
 import CustomizedSteppers from "./CustomizedSteppers";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const RequestIssue = () => {
   const [data, setData] = useState({
@@ -20,6 +21,8 @@ const RequestIssue = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
+  const [activeStep, setActiveStep] = React.useState(0);
+  const user = useSelector((store) => store.auth.user);
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -164,6 +167,8 @@ const RequestIssue = () => {
         <MDBRow className="mb-4" style={{ marginTop: "20px" }}>
           <CustomizedSteppers
             data={data}
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
             handleInputChange={handleInputChange}
             handleFileChange={handleFileChange}
             handleSubmitTicket={handleSubmitTicket}
@@ -173,28 +178,30 @@ const RequestIssue = () => {
             isSubmitting={isSubmitting}
           />
         </MDBRow>
-        <MDBCol md="12">
-          <MDBRow className="border-box">
-            <MDBCol md="12" className="mt-2 mb-2">
-              <div className="d-flex justify-content-center align-items-center">
-                <button
-                  type="button"
-                  className="btn btn-primary custom-btn-margin"
-                  onClick={handleSubmitTicket}
-                  disabled={isSubmitting}
-                >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary custom-btn-margin"
-                >
-                  Cancel
-                </button>
-              </div>
-            </MDBCol>
-          </MDBRow>
-        </MDBCol>
+        {/* {activeStep === 1 && (
+          <MDBCol md="12">
+            <MDBRow className="border-box">
+              <MDBCol md="12" className="mt-2 mb-2">
+                <div className="d-flex justify-content-center align-items-center">
+                  <button
+                    type="button"
+                    className="btn btn-primary custom-btn-margin"
+                    onClick={handleSubmitTicket}
+                    disabled={isSubmitting}
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary custom-btn-margin"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </MDBCol>
+            </MDBRow>
+          </MDBCol>
+        )} */}
       </Grid>
     </Grid>
   );
