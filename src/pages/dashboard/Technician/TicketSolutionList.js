@@ -273,8 +273,8 @@ const TicketSolutionList = () => {
                     <input
                       type="checkbox"
                       checked={
-                        selectedSolutionIds.length ===
-                        dataListTicketsSolution.length
+                        selectedSolutionIds?.length ===
+                        dataListTicketsSolution?.length
                       }
                       onChange={handleSelectAllSolutions}
                     />
@@ -369,7 +369,6 @@ const TicketSolutionList = () => {
               </MDBTableBody>
             ) : (
               <MDBTableBody className="bg-light">
-                
                 {dataListTicketsSolution.map((TicketSolution, index) => {
                   const isSelected = selectedSolutionIds.includes(
                     TicketSolution.id
