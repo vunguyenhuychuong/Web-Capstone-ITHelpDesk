@@ -133,9 +133,9 @@ function App() {
           {(hasManagerRole) &&<Route path='teamMember' element={<TeamMemberList />} />}
           {(hasManagerRole) &&<Route path='createTeamMember' element={<CreateTeamMember />} />}
           {(hasManagerRole) &&<Route path='editTeamMember/:teamMemberId' element={<EditTeamMember />} />}
-          {(hasManagerRole) &&<Route path='companyMember' element={<CompanyMemberList />} />}
-           {(hasManagerRole) &&<Route path='createCompanyMember' element={<CreateCompanyMember />} />}
-           {(hasManagerRole) &&<Route path='editCompanyMember/:memberId' element={<EditCompanyMember />} />}
+          {(hasManagerRole || hasAdminRole) &&<Route path='companyMember' element={<CompanyMemberList />} />}
+           {(hasManagerRole || hasAdminRole) &&<Route path='createCompanyMember' element={<CreateCompanyMember />} />}
+           {(hasManagerRole || hasAdminRole) &&<Route path='editCompanyMember/:memberId' element={<EditCompanyMember />} />}
           <Route path='categoryList' element={<CategoryList />} />
           </Route>
         <Route path='login' element={<Login />} />
