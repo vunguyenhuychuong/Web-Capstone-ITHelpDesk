@@ -221,10 +221,13 @@ const TicketSolutionDetail = () => {
         paddingLeft: "10px",
       }}
     >
-      <Grid item xs={9} style={{ paddingRight: "12px" }}>
+      <Grid item xs={9}>
         <Stack
           direction={"row"}
-          sx={{ backgroundColor: "#EEEEEE" }}
+          sx={{
+            backgroundColor: "#EEEEEE",
+            paddingY: 0.75,
+          }}
           spacing={2}
         >
           <Stack direction={"row"} alignItems={"center"}>

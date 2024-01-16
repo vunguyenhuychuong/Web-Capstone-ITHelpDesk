@@ -74,35 +74,48 @@ export default function TicketLogList() {
             dataTicketLog.map((log, index) => (
               <TableRow key={log.timestamp}>
                 <TableCell align="left" style={{ width: "40vw" }}>
-                  <Accordion>
-                    <AccordionSummary
-                      expandIcon={<ExpandMore />}
-                      aria-controls="panel2-content"
-                      id="panel2-header"
-                    >
-                      <Stack
-                        direction={"row"}
-                        spacing={2}
-                        fontWeight={"semibold"}
-                        alignItems={"center"}
+                  {log.entries.length > 1 && log.entries[0].message !== "" ? (
+                    <Accordion>
+                      <AccordionSummary
+                        expandIcon={<ExpandMore />}
+                        aria-controls="panel2-content"
+                        id="panel2-header"
                       >
-                        <ListAlt />
-                        <Typography>
-                          {log.entries.length + " changes"}
-                        </Typography>
-                      </Stack>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                      <Stack spacing={1}>
-                        {log.entries.map((entry) => (
-                          <Typography key={entry.id}>
-                            {entry.message ? <Edit /> : <></>}{" "}
-                            {entry.message ?? ""}
+                        <Stack
+                          direction={"row"}
+                          spacing={2}
+                          fontWeight={"semibold"}
+                          alignItems={"center"}
+                        >
+                          <ListAlt />
+                          <Typography>
+                            {log.entries.length + " changes"}
                           </Typography>
-                        ))}
-                      </Stack>
-                    </AccordionDetails>
-                  </Accordion>
+                        </Stack>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <Stack spacing={1}>
+                          {log.entries.map((entry) => (
+                            <Typography key={entry.id}>
+                              {entry.message ? <Edit /> : <></>}{" "}
+                              {entry.message ?? ""}
+                            </Typography>
+                          ))}
+                        </Stack>
+                      </AccordionDetails>
+                    </Accordion>
+                  ) : (
+                    <Stack
+                      direction={"row"}
+                      spacing={2}
+                      fontWeight={"semibold"}
+                      alignItems={"center"}
+                      px={2}
+                    >
+                      <ListAlt />
+                      <Typography>{log.entries.length + " change"}</Typography>
+                    </Stack>
+                  )}
                 </TableCell>
                 <TableCell align="right" style={{ width: "20vw" }}>
                   {formatDate(log.timestamp)}

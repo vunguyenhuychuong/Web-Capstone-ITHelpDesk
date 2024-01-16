@@ -190,12 +190,13 @@ export async function createTicketByManager(data) {
     });
     return res.data.result;
   } catch (error) {
-    console.log(error.response.data.responseException.exceptionMessage);
-    toast.error(error.response.data.responseException.exceptionMessage, {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
     });
+
+    console.log(error.response.data.responseException.exceptionMessage);
   }
 }
 

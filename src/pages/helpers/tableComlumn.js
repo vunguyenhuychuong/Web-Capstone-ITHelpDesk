@@ -194,7 +194,7 @@ export const TicketStatusOptions = [
   },
   {
     id: 1,
-    displayStatusId: [0, 3],
+    displayStatusId: [0],
     name: "Assigned",
     iconClass: "info-icon",
     icon: <Create style={{ color: "#FF9933" }} />,
@@ -209,7 +209,7 @@ export const TicketStatusOptions = [
   },
   {
     id: 2,
-    displayStatusId: [1],
+    displayStatusId: [1, 3],
     name: "In Progress",
     iconClass: "info-icon",
     icon: <Pending style={{ color: "#339999" }} />,

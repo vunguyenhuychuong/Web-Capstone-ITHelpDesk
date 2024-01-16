@@ -93,7 +93,7 @@ const Step2 = ({
           onClick={handleSubmitTicket}
           disabled={isSubmitting}
         >
-          Save
+          {isSubmitting ? "Creating..." : "Create"}
         </Button>
         <Button
           color="inherit"

@@ -191,17 +191,16 @@ const Details = ({
             <TableBody>
               <TableRow>
                 <TableCell
-                  style={{
+                  sx={{
                     textAlign: "center",
                     fontWeight: "bold",
                     color: "#007bff",
-                    paddingRight: "16px",
                     backgroundColor: "#f2f2f2",
                   }}
                 >
                   Requester
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell style={{ textAlign: "left" }}>
                   {data.requester
                     ? `${data.requester.lastName} ${data.requester.firstName}`
                     : "Manager"}
@@ -211,13 +210,12 @@ const Details = ({
                     textAlign: "center",
                     fontWeight: "bold",
                     color: "#007bff",
-                    paddingRight: "16px",
                     backgroundColor: "#f2f2f2",
                   }}
                 >
                   Impact
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell style={{ textAlign: "left" }}>
                   {getImpactById(data.impact)}
                 </TableCell>
               </TableRow>
@@ -227,13 +225,12 @@ const Details = ({
                     textAlign: "center",
                     fontWeight: "bold",
                     color: "#007bff",
-                    paddingRight: "16px",
                     backgroundColor: "#f2f2f2",
                   }}
                 >
                   Type
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell style={{ textAlign: "left" }}>
                   {data && data.type ? data.type : "N/A"}
                 </TableCell>
                 <TableCell
@@ -247,7 +244,7 @@ const Details = ({
                 >
                   Impact Detail
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell style={{ textAlign: "left" }}>
                   {data && data.impactDetail ? data.impactDetail : "N/A"}
                 </TableCell>
               </TableRow>
@@ -263,10 +260,10 @@ const Details = ({
                 >
                   Mode
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell style={{ textAlign: "left" }}>
                   {data && data.mode && data.mode.description
                     ? data.mode.description
-                    : "Mode N/A"}
+                    : "N/A"}
                 </TableCell>
                 <TableCell
                   style={{
@@ -279,7 +276,7 @@ const Details = ({
                 >
                   Priority
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell style={{ textAlign: "left" }}>
                   {getPriorityOption(data.priority)}
                 </TableCell>
               </TableRow>
@@ -291,11 +288,12 @@ const Details = ({
                     color: "#007bff",
                     paddingRight: "16px",
                     backgroundColor: "#f2f2f2",
+                    minWidth: "180px",
                   }}
                 >
                   Service
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell style={{ textAlign: "left", maxWidth: "300px" }}>
                   {data && data.service && data.service.description
                     ? data.service.description
                     : "Service N/A"}
@@ -307,11 +305,12 @@ const Details = ({
                     color: "#007bff",
                     paddingRight: "16px",
                     backgroundColor: "#f2f2f2",
+                    maxWidth: "200px",
                   }}
                 >
                   Category
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell style={{ textAlign: "left", minWidth: "300px" }}>
                   {dataCategories.find(
                     (category) => category.id === data.categoryId
                   )?.name || "Unknown Priority"}
@@ -329,7 +328,7 @@ const Details = ({
                 >
                   Location
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell style={{ textAlign: "left" }}>
                   {data.address}
                 </TableCell>
                 <TableCell
@@ -343,7 +342,7 @@ const Details = ({
                 >
                   Scheduled Start Time
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell style={{ textAlign: "left" }}>
                   {formatDate(data.scheduledStartTime)}
                 </TableCell>
               </TableRow>
@@ -359,7 +358,7 @@ const Details = ({
                 >
                   Completed Time
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell style={{ textAlign: "left" }}>
                   {formatDate(data.completedTime)}
                 </TableCell>
                 <TableCell
@@ -373,7 +372,7 @@ const Details = ({
                 >
                   Scheduled End Time
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell style={{ textAlign: "left" }}>
                   {formatDate(data.scheduledEndTime)}
                 </TableCell>
               </TableRow>
@@ -390,7 +389,7 @@ const Details = ({
                 >
                   Created At
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell style={{ textAlign: "left" }}>
                   {formatDate(data.createdAt)}
                 </TableCell>
                 <TableCell
@@ -404,24 +403,24 @@ const Details = ({
                 >
                   Modified At
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell style={{ textAlign: "left" }}>
                   {formatDate(data.modifiedAt)}
                 </TableCell>
               </TableRow>
-              {isEditDialogOpen && userRole === 3 && (
-                <EditTicketModel
-                  open={isEditDialogOpen}
-                  onClose={() => setIsEditDialogOpen(false)}
-                  ticketId={data.id}
-                  data={data}
-                  reloadDetailsData={handleReloadData}
-                  refetchDetail={refetch}
-                />
-              )}
             </TableBody>
           </Table>
         </Grid>
       </Grid>
+      {isEditDialogOpen && userRole === 3 && (
+        <EditTicketModel
+          open={isEditDialogOpen}
+          onClose={() => setIsEditDialogOpen(false)}
+          ticketId={data.id}
+          data={data}
+          reloadDetailsData={handleReloadData}
+          refetchDetail={refetch}
+        />
+      )}
       <Dialog
         open={isImagePreviewOpen}
         onClose={() => setIsImagePreviewOpen(false)}

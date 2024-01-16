@@ -6,6 +6,7 @@ import {
   ImpactOptions,
   TypeOptions,
   UrgencyOptions,
+  priorityOptions,
 } from "../../helpers/tableComlumn";
 import { UpdateTicketForTechnician } from "../../../app/api/ticket";
 import moment from "moment";
@@ -24,12 +25,15 @@ const EditTicketModel = ({
     location: data.location,
     impact: data.impact ?? ImpactOptions[0].id,
     impactDetail: data.impactDetail || "",
-    urgency: data.urgency,
-    scheduledStartTime: data.scheduledStartTime ?? Date.now().toString(),
-    scheduledEndTime: data.scheduledEndTime ?? Date.now().toString(),
+    priority: data.priority,
+    scheduledStartTime:
+      data.scheduledStartTime ??
+      moment(Date.now()).format("YYYY-MM-DDTHH:mm:ss"),
+    scheduledEndTime:
+      data.scheduledEndTime ?? moment(Date.now()).format("YYYY-MM-DDTHH:mm:ss"),
     type: data.type ?? TypeOptions[0],
   });
-  console.log("editedData", editedData);
+  console.log("data", data);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [startDate, setStartDate] = useState(moment());
   const [endDate, setEndDate] = useState(moment());
@@ -98,10 +102,10 @@ const EditTicketModel = ({
       return;
     }
 
-    const formattedReviewDate = moment(editedData.startDate).format(
+    const formattedReviewDate = moment(editedData.scheduledStartTime).format(
       "YYYY-MM-DDTHH:mm:ss"
     );
-    const formattedExpiredDate = moment(editedData.endDate).format(
+    const formattedExpiredDate = moment(editedData.scheduledEndTime).format(
       "YYYY-MM-DDTHH:mm:ss"
     );
 
@@ -132,7 +136,7 @@ const EditTicketModel = ({
         <MDBRow className="mb-4">
           <MDBCol className="text-center">
             <h2 style={{ fontWeight: "bold", color: "#3399FF" }}>
-              Edit Ticket
+              Edit Ticket's Properties
             </h2>
           </MDBCol>
         </MDBRow>
@@ -216,6 +220,32 @@ const EditTicketModel = ({
               className="narrow-input"
               style={{ color: "#3399FF", fontWeight: "bold" }}
             >
+              Priority
+            </label>
+          </MDBCol>
+          <MDBCol md="10">
+            <select
+              id="priority"
+              name="priority"
+              className="form-select"
+              value={editedData.priority}
+              onChange={handleInputChange}
+            >
+              {priorityOptions.map((priority) => (
+                <option key={priority.id} value={priority.id}>
+                  {priority.name}
+                </option>
+              ))}
+            </select>
+          </MDBCol>
+        </MDBRow>
+        <MDBRow className="mb-4">
+          <MDBCol md="2" className="text-center mt-2">
+            <label
+              htmlFor="title"
+              className="narrow-input"
+              style={{ color: "#3399FF", fontWeight: "bold" }}
+            >
               Type
             </label>
           </MDBCol>
@@ -243,10 +273,10 @@ const EditTicketModel = ({
               className="narrow-input"
               style={{ color: "#3399FF", fontWeight: "bold" }}
             >
-              Start Time
+              Scheduled Start Time
             </label>
           </MDBCol>
-          <MDBCol md="10">
+          <MDBCol md="10" style={{ width: "auto" }}>
             <LocalizationProvider dateAdapter={AdapterMoment}>
               <DateTimePicker
                 slotProps={{
@@ -269,7 +299,7 @@ const EditTicketModel = ({
               className="narrow-input"
               style={{ color: "#3399FF", fontWeight: "bold" }}
             >
-              End Time
+              Scheduled End Time
             </label>
           </MDBCol>
           <MDBCol md="9">
@@ -282,6 +312,7 @@ const EditTicketModel = ({
                 }}
                 value={endDate}
                 onChange={(newValue) => handleEndDateChange(newValue)}
+                renderInput={(props) => <TextField {...props} />}
               />
             </LocalizationProvider>
           </MDBCol>
@@ -291,15 +322,6 @@ const EditTicketModel = ({
       <DialogActions
         style={{ justifyContent: "center", backgroundColor: "#EEEEEE" }}
       >
-        <Button
-          color="primary"
-          autoFocus
-          style={{ color: "white", backgroundColor: "#007bff" }}
-          onClick={() => handleSaveChanges()}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Submitting..." : "Submit"}
-        </Button>
         <Button
           onClick={onClose}
           color="primary"
@@ -311,6 +333,15 @@ const EditTicketModel = ({
           }}
         >
           Cancel
+        </Button>
+        <Button
+          color="primary"
+          autoFocus
+          style={{ color: "white", backgroundColor: "#007bff" }}
+          onClick={() => handleSaveChanges()}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Submitting..." : "Submit"}
         </Button>
       </DialogActions>
     </Dialog>
