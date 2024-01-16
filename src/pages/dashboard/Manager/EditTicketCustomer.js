@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Dialog, DialogContent, DialogTitle, Grid, IconButton } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  IconButton,
+} from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
@@ -128,7 +134,6 @@ const EditTicketCustomer = () => {
 
     setIsSubmitting(true);
     try {
-
       let attachmentUrls = data.attachmentUrls || [];
       if (selectedFile.length > 0) {
         const storage = getStorage();
@@ -392,6 +397,7 @@ const EditTicketCustomer = () => {
                 <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
+                  onClick={handleGoBack}
                 >
                   Cancel
                 </button>

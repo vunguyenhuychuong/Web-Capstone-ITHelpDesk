@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Dialog, DialogContent, DialogTitle, Grid, IconButton, TextField } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  IconButton,
+  Slider,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
@@ -233,9 +243,9 @@ const EditTicketTask = () => {
       await updateTicketTask(ticketId, {
         title: data.title,
         description: data.description,
-        taskStatus: data.taskStatus,
+        // taskStatus: data.taskStatus,
         teamId: data.teamId,
-        technicianId: data.technicianId,
+        // technicianId: data.technicianId,
         priority: parseInt(data.priority, 10),
         scheduledStartTime: data.scheduledStartTime,
         scheduledEndTime: data.scheduledEndTime,
@@ -270,7 +280,7 @@ const EditTicketTask = () => {
               <div className="d-flex align-items-center">
                 <button type="button" className="btn btn-link icon-label">
                   <ArrowBack
-                    onClick={() => handleGoBack(ticketId)}
+                    onClick={() => handleGoBack(data.ticketId)}
                     className="arrow-back-icon"
                   />
                 </button>
@@ -298,11 +308,14 @@ const EditTicketTask = () => {
                 style={{ marginBottom: "20px" }}
               >
                 <Grid item xs={3}>
-                  <h2 className="align-right" style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}>
+                  <h2
+                    className="align-right"
+                    style={{
+                      fontSize: "20px",
+                      fontWeight: "bold",
+                      textAlign: "right",
+                    }}
+                  >
                     <span style={{ color: "red" }}>*</span>Title
                   </h2>
                 </Grid>
@@ -321,11 +334,14 @@ const EditTicketTask = () => {
                 </Grid>
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right" style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}>
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
                   <span style={{ color: "red" }}>*</span>Description
                 </h2>
               </Grid>
@@ -344,11 +360,16 @@ const EditTicketTask = () => {
                 )}
               </Grid>
               <Grid item xs={3}>
-                <h2 className="align-right" style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}>Attachment</h2>
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
+                  Attachment
+                </h2>
               </Grid>
               <Grid item xs={9}>
                 <input
@@ -359,7 +380,7 @@ const EditTicketTask = () => {
                   onChange={handleFileChange}
                   value={data.attachmentUrls}
                 />
-                 {imagePreviewUrl.length > 0 && (
+                {imagePreviewUrl.length > 0 && (
                   <div
                     className="image-preview"
                     onClick={() => setIsImagePreviewOpen(true)}
@@ -375,14 +396,17 @@ const EditTicketTask = () => {
                 justifyContent="flex-end"
                 style={{ marginBottom: "20px" }}
               >
-                <Grid item xs={6}>
+                {/* <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
+                      <h2
+                        className="align-right"
+                        style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                        }}>
+                        }}
+                      >
                         <span style={{ color: "red" }}>*</span>TechnicianId
                       </h2>
                     </Grid>
@@ -421,16 +445,81 @@ const EditTicketTask = () => {
                       </select>
                     </Grid>
                   </Grid>
-                </Grid>
-
+                </Grid> */}
                 <Grid item xs={6}>
-                  <Grid container alignItems="center">
+                  <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
+                      <h2
+                        className="align-right"
+                        style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                        }}>Priority</h2>
+                        }}
+                      >
+                        Progress
+                      </h2>
+                    </Grid>
+                    <Grid item xs={5}>
+                      {/* <select
+                        id="progress"
+                        name="progress"
+                        className="form-select"
+                        value={data.progress}
+                        onChange={handleInputChange}
+                      >
+                        <option value="">Select Progress</option>{" "}
+                        {Object.keys(Process).map((processId) => (
+                          <option key={processId} value={processId}>
+                            {Process[processId]}
+                          </option>
+                        ))}
+                      </select> */}
+                      <Stack>
+                        <Slider
+                          aria-label="progress"
+                          id="progress"
+                          name="progress"
+                          value={data.progress}
+                          onChange={handleInputChange}
+                          valueLabelDisplay="auto"
+                        />
+                        <TextField
+                          type="number"
+                          aria-label="progress input"
+                          id="progress"
+                          name="progress"
+                          sx={{ width: "100%", my: 5 }}
+                          InputProps={{
+                            inputProps: { min: 0, max: 100 },
+                            endAdornment: <Typography>%</Typography>,
+                          }}
+                          onChange={(e) => {
+                            var value = parseInt(e.target.value, 10);
+
+                            if (value > 100) e.target.value = 100;
+                            if (value < 0) e.target.value = 0;
+                            handleInputChange(e);
+                          }}
+                          value={data.progress}
+                        />
+                      </Stack>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid item xs={6}>
+                  <Grid container alignItems="center">
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Priority
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -456,11 +545,16 @@ const EditTicketTask = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
+                      <h2
+                        className="align-right"
+                        style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                        }}>Schedule startTime</h2>
+                        }}
+                      >
+                        Schedule startTime
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -483,11 +577,16 @@ const EditTicketTask = () => {
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
+                      <h2
+                        className="align-right"
+                        style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                        }}>Schedule endTime</h2>
+                        }}
+                      >
+                        Schedule endTime
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -507,15 +606,20 @@ const EditTicketTask = () => {
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid container justifyContent="flex-end">
+              {/* <Grid container justifyContent="flex-end">
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
-                      <h2 className="align-right" style={{
+                      <h2
+                        className="align-right"
+                        style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                        }}>Task Status</h2>
+                        }}
+                      >
+                        Task Status
+                      </h2>
                     </Grid>
                     <Grid item xs={5}>
                       <select
@@ -536,42 +640,22 @@ const EditTicketTask = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2 className="align-right" style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}>Progress</h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <select
-                        id="progress"
-                        name="progress"
-                        className="form-select"
-                        value={data.progress}
-                        onChange={handleInputChange}
-                      >
-                        <option value="">Select Progress</option>{" "}
-                        {Object.keys(Process).map((processId) => (
-                          <option key={processId} value={processId}>
-                            {Process[processId]}
-                          </option>
-                        ))}
-                      </select>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid container justifyContent="flex-end" style={{marginTop: "15px"}}>
+              </Grid> */}
+              <Grid
+                container
+                justifyContent="flex-end"
+                style={{ marginTop: "15px" }}
+              >
                 <Grid item xs={3}>
-                  <h2 className="align-right" style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",                    
-                        }}>
-                   Note
+                  <h2
+                    className="align-right"
+                    style={{
+                      fontSize: "20px",
+                      fontWeight: "bold",
+                      textAlign: "right",
+                    }}
+                  >
+                    Note
                   </h2>
                 </Grid>
                 <Grid item xs={9}>
@@ -583,7 +667,6 @@ const EditTicketTask = () => {
                     rows="4"
                     value={data.note}
                     onChange={handleInputChange}
-                    
                   />
                 </Grid>
               </Grid>
@@ -601,11 +684,12 @@ const EditTicketTask = () => {
                   onClick={handleSubmitTicket}
                   disabled={isSubmitting}
                 >
-                   {isSubmitting ? 'Submitting...' : 'Save'}
+                  {isSubmitting ? "Submitting..." : "Save"}
                 </button>
                 <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
+                  onClick={() => handleGoBack(data.ticketId)}
                 >
                   Cancel
                 </button>

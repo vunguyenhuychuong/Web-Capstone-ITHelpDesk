@@ -99,13 +99,13 @@ const EditContract = () => {
     let differenceInMilliseconds = end - start;
 
     // Convert the difference from milliseconds to months
-    let differenceInMonths = differenceInMilliseconds / 2.628e+9;
+    let differenceInMonths = differenceInMilliseconds / 2.628e9;
 
     // Round the result to the nearest integer
     differenceInMonths = Math.round(differenceInMonths);
 
     return differenceInMonths;
-  }
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files;
@@ -166,7 +166,10 @@ const EditContract = () => {
           // accountantId: contractData.accountantId,
           attachmentUrls: contractData.attachmentUrls,
           companyId: contractData.companyId,
-          duration: calculateMonthsDifference(contractData.startDate, contractData.endDate)
+          duration: calculateMonthsDifference(
+            contractData.startDate,
+            contractData.endDate
+          ),
         }));
         setDataContractService(contractServiceData);
         setStartDate(moment(contractData.startDate));
@@ -181,7 +184,7 @@ const EditContract = () => {
 
   useEffect(() => {
     fetchDataCreateContract();
-  }, [])
+  }, []);
 
   const validateDate = (startDate, endDate) => {
     if (!startDate || !endDate) {
@@ -257,7 +260,7 @@ const EditContract = () => {
           companyId: updatedData.companyId,
           attachmentUrls: attachmentUrls,
           // status: updatedData.status,
-          serviceIds: dataContractService.map(service => service.id),
+          serviceIds: dataContractService.map((service) => service.id),
         },
         contractId
       );
@@ -451,9 +454,8 @@ const EditContract = () => {
                   </div>
                 )}
               </Grid>
-              
-              <Grid container justifyContent="flex-end">
 
+              <Grid container justifyContent="flex-end">
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
@@ -476,18 +478,10 @@ const EditContract = () => {
                         value={data.duration}
                         onChange={handleInputChange}
                       >
-                        <option  value={3}>
-                          3 months
-                        </option>
-                        <option  value={6}>
-                          6 months
-                        </option>
-                        <option  value={12}>
-                          12 months
-                        </option>
-                        <option  value={24}>
-                          24 months
-                        </option>
+                        <option value={3}>3 months</option>
+                        <option value={6}>6 months</option>
+                        <option value={12}>12 months</option>
+                        <option value={24}>24 months</option>
                       </select>
                     </Grid>
                   </Grid>
@@ -756,6 +750,7 @@ const EditContract = () => {
                 <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
+                  onClick={() => handleGoBack()}
                 >
                   Cancel
                 </button>
@@ -764,7 +759,7 @@ const EditContract = () => {
           </MDBRow>
         </MDBCol>
       </Grid>
-     <Dialog
+      <Dialog
         open={isImagePreviewOpen}
         onClose={() => setIsImagePreviewOpen(false)}
         maxWidth="md"

@@ -34,27 +34,22 @@ const AssignApi = {
   },
 };
 
-
 export async function createAssignTicket(ticketId, data) {
-    const header = getAuthHeader();
-    console.log('Request Payload:', data);
-    try {
-      const res = await axios.post(
-        `${baseURL}/assign/${ticketId}/assign`,
-       data,
-        {
-          headers: {
-            Authorization: header,
-          },
-        }
-      );
-      return res.data;
-    } catch (error) {
-      console.log(error);
-    }
+  const header = getAuthHeader();
+  console.log("Request Payload:", data);
+  try {
+    const res = await axios.post(`${baseURL}/assign/${ticketId}/assign`, data, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-export async function getAllAssigns ()  {
+export async function getAllAssigns() {
   const header = getAuthHeader();
   try {
     const res = await axiosClient.get(`${baseURL}/assign`, {
@@ -71,16 +66,29 @@ export async function getAllAssigns ()  {
 
 export async function getAssignAvailable() {
   const header = getAuthHeader();
-  try{
+  try {
     const res = await axios.get(`${baseURL}/ticket/assign/available`, {
       headers: {
         Authorization: header,
       },
     });
     return res.data.result;
-  }catch(error){
+  } catch (error) {
     console.log(error);
   }
 }
 
+export async function getTicketAssignedTechnician(ticketId) {
+  const header = getAuthHeader();
+  try {
+    const res = await axios.get(`${baseURL}/assign/ticket/${ticketId}`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data.result;
+  } catch (error) {
+    console.log(error);
+  }
+}
 export default AssignApi;

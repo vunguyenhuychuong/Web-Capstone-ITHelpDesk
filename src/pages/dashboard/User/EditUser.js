@@ -6,6 +6,7 @@ import "draft-js/dist/Draft.css";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -13,6 +14,7 @@ import {
   FormGroup,
   Grid,
   IconButton,
+  Stack,
   Switch,
   Tooltip,
 } from "@mui/material";
@@ -257,12 +259,14 @@ const EditUser = () => {
           <MDBRow className="border-box">
             <MDBCol md="5" className="mt-2">
               <div className="d-flex align-items-center">
-                <button type="button" className="btn btn-link icon-label">
-                  <ArrowBack
-                    onClick={handleGoBack}
-                    className="arrow-back-icon"
-                  />
-                </button>
+                <Stack direction={"row"} alignItems={"center"}>
+                  <Button>
+                    <ArrowBack
+                      onClick={handleGoBack}
+                      style={{ color: "#0099FF" }}
+                    />
+                  </Button>
+                </Stack>
 
                 <div
                   style={{
@@ -430,7 +434,7 @@ const EditUser = () => {
                         value={data.phoneNumber}
                         onChange={handleInputChange}
                       />
-                       {fieldErrors.phoneNumber && (
+                      {fieldErrors.phoneNumber && (
                         <div style={{ color: "red" }}>
                           {fieldErrors.phoneNumber}
                         </div>
@@ -546,7 +550,7 @@ const EditUser = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-              </Grid>     
+              </Grid>
             </Grid>
           </MDBCol>
         </MDBRow>

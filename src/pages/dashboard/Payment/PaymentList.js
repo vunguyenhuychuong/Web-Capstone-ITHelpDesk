@@ -11,7 +11,14 @@ import {
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketCustomer.css";
 import PageSizeSelector from "../Pagination/Pagination";
-import { ArrowDropDown, ArrowDropUp, ContentCopy, DeleteForever, ViewCompact } from "@mui/icons-material";
+import {
+  ArrowDropDown,
+  ArrowDropUp,
+  ContentCopy,
+  DeleteForever,
+  Edit,
+  ViewCompact,
+} from "@mui/icons-material";
 import { formatDate } from "../../helpers/FormatDate";
 import { useNavigate } from "react-router-dom";
 import { useCallback } from "react";
@@ -23,6 +30,7 @@ import { deletePaymentById, getAllPayment } from "../../../app/api/payment";
 import { formatCurrency } from "../../helpers/FormatCurrency";
 import Paid from "../../../assets/images/paid.svg";
 import UnPaid from "../../../assets/images/unpaid.svg";
+import CircularLoading from "../../../components/iconify/CircularLoading";
 
 const PaymentList = () => {
   const [dataListPayment, setDataListPayment] = useState([]);
@@ -165,7 +173,7 @@ const PaymentList = () => {
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
               <span style={{ color: "#FFFFFF" }}>All Payments</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
                 color="#eee"
                 style={{
@@ -206,7 +214,7 @@ const PaymentList = () => {
                     name: "searchField",
                     id: "search-field",
                   }}
-                  style={{color: "white"}}
+                  style={{ color: "white" }}
                 >
                   <MenuItem value="contractId">ContractId</MenuItem>
                   <MenuItem value="description">Description</MenuItem>
@@ -246,7 +254,7 @@ const PaymentList = () => {
           <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th>
+                {/* <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th> */}
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                   <input
                     type="checkbox"
@@ -256,20 +264,20 @@ const PaymentList = () => {
                     onChange={handleSelectAllPayments}
                   />
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
+
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
-                  onClick={() => handleSortChange("contractId")}
-                  title="Contract ID"
+                  // onClick={() => handleSortChange("contractId")}
+                  title="Contract Name"
                   className="sortable-header"
                 >
-                  Id
-                  {sortBy === "contractId" &&
+                  Contract Name
+                  {/* {sortBy === "contractId" &&
                     (sortDirection === "asc" ? (
                       <ArrowDropDown />
                     ) : (
                       <ArrowDropUp />
-                    ))}
+                    ))} */}
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
@@ -310,11 +318,11 @@ const PaymentList = () => {
                       <ArrowDropUp />
                     ))}
                 </th>
-                <th 
+                <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("duration")}
                   className="sortable-header"
-                  >
+                >
                   Duration
                   {sortBy === "numberOfTerms" &&
                     (sortDirection === "asc" ? (
@@ -323,24 +331,24 @@ const PaymentList = () => {
                       <ArrowDropUp />
                     ))}
                 </th>
-                <th 
+                <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   className="sortable-header"
-                  >
+                >
                   Amount
                 </th>
-                <th 
+                <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("note")}
                   className="sortable-header"
-                  >
+                >
                   Note
                 </th>
-                <th 
+                <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("isFullyPaid")}
                   className="sortable-header"
-                  >
+                >
                   Fully Paid
                   {sortBy === "isFullyPaid" &&
                     (sortDirection === "asc" ? (
@@ -349,11 +357,11 @@ const PaymentList = () => {
                       <ArrowDropUp />
                     ))}
                 </th>
-                <th 
+                <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("createdAt")}
                   className="sortable-header"
-                  >
+                >
                   Created
                   {sortBy === "createdAt" &&
                     (sortDirection === "asc" ? (
@@ -362,7 +370,7 @@ const PaymentList = () => {
                       <ArrowDropUp />
                     ))}
                 </th>
-                <th 
+                <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("modifiedAt")}
                   className="sortable-header"
@@ -375,17 +383,24 @@ const PaymentList = () => {
                       <ArrowDropUp />
                     ))}
                 </th>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
               </tr>
             </MDBTableHead>
             {loading ? (
-              <CustomizedProgressBars />
+              <MDBTableBody className="bg-light">
+                <tr>
+                  <td>
+                    <CircularLoading />
+                  </td>
+                </tr>
+              </MDBTableBody>
             ) : (
               <MDBTableBody className="bg-light">
                 {dataListPayment.map((Payment, index) => {
                   const isSelected = selectedPaymentIds.includes(Payment.id);
                   return (
                     <tr key={index}>
-                      <td>{Payment.id}</td>
+                      {/* <td>{Payment.id}</td> */}
                       <td>
                         <input
                           type="checkbox"
@@ -393,25 +408,24 @@ const PaymentList = () => {
                           onChange={() => handleSelectPayment(Payment.id)}
                         />
                       </td>
-                      <td>
-                        <ViewCompact
-                          onClick={() => handleOpenDetailPayment(Payment.id)}
-                        />{" "}
-                      </td>
-                      <td>{Payment.contractId}</td>
-                      <td 
+                      <td>{Payment.contract.name}</td>
+                      <td
                         className="tooltip-cell"
                         title={`${Payment.description} `}
-                      >{Payment.description}</td>
+                      >
+                        {Payment.description}
+                      </td>
                       <td>{Payment.numberOfTerms}</td>
                       <td>{formatDate(Payment.firstDateOfPayment)}</td>
                       <td>{Payment.duration}</td>
                       <td>
                         {formatCurrency(Payment.initialPaymentAmount)} VND
                       </td>
-                      <td
-                        title={`${Payment.note}`}
-                      >{Payment.note.length > 15 ? `${Payment.note.slice(0, 15)}...` : Payment.note}</td>
+                      <td title={`${Payment.note}`}>
+                        {Payment.note.length > 15
+                          ? `${Payment.note.slice(0, 15)}...`
+                          : Payment.note}
+                      </td>
                       <td>
                         {Payment.isFullyPaid ? (
                           <>
@@ -435,6 +449,11 @@ const PaymentList = () => {
                       </td>
                       <td>{formatDate(Payment.createdAt)}</td>
                       <td>{formatDate(Payment.modifiedAt)}</td>
+                      <td>
+                        <Edit
+                          onClick={() => handleOpenDetailPayment(Payment.id)}
+                        />
+                      </td>
                     </tr>
                   );
                 })}

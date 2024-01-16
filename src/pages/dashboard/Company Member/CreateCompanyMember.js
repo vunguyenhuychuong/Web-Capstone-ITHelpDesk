@@ -5,17 +5,15 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "draft-js/dist/Draft.css";
 import { useNavigate } from "react-router-dom";
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogTitle,
   Grid,
   IconButton,
-
+  Stack,
 } from "@mui/material";
-import {
-  ArrowBack,
-  Close,
-} from "@mui/icons-material";
+import { ArrowBack, Close } from "@mui/icons-material";
 import { genderOptions } from "../../helpers/tableComlumn";
 import { createCompanyMember } from "../../../app/api/companyMember";
 import Gallery from "react-image-gallery";
@@ -188,7 +186,7 @@ const CreateCompanyMember = () => {
         avatarUrl = await getDownloadURL(storageRef);
       }
       const updatedData = {
-        user:{
+        user: {
           avatarUrl: avatarUrl,
         },
         isCompanyAdmin: data.isCompanyAdmin,
@@ -255,12 +253,14 @@ const CreateCompanyMember = () => {
           <MDBRow className="border-box">
             <MDBCol md="5" className="mt-2">
               <div className="d-flex align-items-center">
-                <button type="button" className="btn btn-link icon-label">
-                  <ArrowBack
-                    onClick={handleGoBack}
-                    className="arrow-back-icon"
-                  />
-                </button>
+                <Stack direction={"row"} alignItems={"center"}>
+                  <Button>
+                    <ArrowBack
+                      onClick={handleGoBack}
+                      style={{ color: "#0099FF" }}
+                    />
+                  </Button>
+                </Stack>
 
                 <div
                   style={{
@@ -406,7 +406,7 @@ const CreateCompanyMember = () => {
 
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
-                  <Grid item xs={6}>
+                    <Grid item xs={6}>
                       <h2
                         className="align-right"
                         style={{
@@ -508,14 +508,14 @@ const CreateCompanyMember = () => {
 
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
-                  <Grid item xs={6}>
+                    <Grid item xs={6}>
                       <h2
                         className="align-right"
                         style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                          marginBottom: "40px"
+                          marginBottom: "40px",
                         }}
                       >
                         <span style={{ color: "red" }}>*</span>phone number
@@ -547,7 +547,7 @@ const CreateCompanyMember = () => {
               >
                 <Grid item xs={6}>
                   <Grid container>
-                  <Grid item xs={6}>
+                    <Grid item xs={6}>
                       <h2
                         className="align-right"
                         style={{
@@ -590,7 +590,7 @@ const CreateCompanyMember = () => {
                       </h2>
                     </Grid>
                     <Grid item xs={6}>
-                    <select
+                      <select
                         id="isCompanyAdmin"
                         name="isCompanyAdmin"
                         className="form-select-custom"
@@ -614,7 +614,7 @@ const CreateCompanyMember = () => {
               >
                 <Grid item xs={6}>
                   <Grid container>
-                  <Grid item xs={6}>
+                    <Grid item xs={6}>
                       <h2
                         className="align-right"
                         style={{
@@ -649,10 +649,8 @@ const CreateCompanyMember = () => {
 
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
-                    <Grid item xs={6}>
-                    </Grid>
-                    <Grid item xs={6}>
-                    </Grid>
+                    <Grid item xs={6}></Grid>
+                    <Grid item xs={6}></Grid>
                   </Grid>
                 </Grid>
               </Grid>
@@ -675,6 +673,7 @@ const CreateCompanyMember = () => {
                 <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
+                  onClick={handleGoBack}
                 >
                   Cancel
                 </button>

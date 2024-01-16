@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import "../../../assets/css/ticketSolution.css";
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogTitle,
   Grid,
   IconButton,
+  Stack,
   Switch,
   TextField,
 } from "@mui/material";
@@ -48,7 +50,8 @@ const EditTicketSolution = () => {
     createdAt: "",
     modifiedAt: "",
   });
-  const [selectedFile, setSelectedFile] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [previewImages, setPreviewImages] = useState([]);
   const [reviewDate, setReviewDate] = useState(moment());
   const [dataUsers, setDataUsers] = useState([]);
   const [expiredDate, setExpiredDate] = useState(moment());
@@ -85,15 +88,9 @@ const EditTicketSolution = () => {
     }));
   };
 
-  const images = data.attachmentUrls.map((url, index) => ({
-    original: url,
-    thumbnail: url,
-    description: `Attachment Preview ${index + 1}`,
-  }));
-
   const handleFileChange = (e) => {
     const file = e.target.files;
-    setSelectedFile([...file]);
+    setSelectedFiles([...file]);
 
     const promises = [];
     const previewUrls = [];
@@ -116,7 +113,6 @@ const EditTicketSolution = () => {
     Promise.all(promises).then(() => {
       setImagePreviewUrl(previewUrls);
     });
-
     setIsImagePreviewOpen(true);
   };
 
@@ -146,10 +142,10 @@ const EditTicketSolution = () => {
           reviewDate: solutionData.reviewDate,
           expiredDate: solutionData.expiredDate,
           keyword: solutionData.keyword,
-          internalComments: solutionData.internalComments,
+          // internalComments: solutionData.internalComments,
           attachmentUrls: solutionData.attachmentUrls,
           isApproved: solutionData.isApproved,
-          isPublic: solutionData.isPublic,
+          // isPublic: solutionData.isPublic,
           createdAt: solutionData.createdAt,
           modifiedAt: solutionData.modifiedAt,
         }));
@@ -161,9 +157,26 @@ const EditTicketSolution = () => {
     fetchDataSolution();
   }, [solutionId]);
 
+  useEffect(() => {
+    try {
+      const previewUrls =
+        imagePreviewUrl.length > 0 ? imagePreviewUrl : data.attachmentUrls;
+      if (previewUrls && previewUrls.length > 0) {
+        const images = previewUrls.map((url, index) => ({
+          original: url,
+          thumbnail: url,
+          description: `Attachment Preview ${index + 1}`,
+        }));
+        setPreviewImages(images);
+      }
+    } catch (error) {
+      console.log("Error", error);
+    }
+  }, [imagePreviewUrl, data]);
+
   const validateDate = (reviewDate, expiredDate) => {
     if (!reviewDate || !expiredDate) {
-      return false; 
+      return false;
     }
     return moment(reviewDate).isBefore(expiredDate);
   };
@@ -184,28 +197,25 @@ const EditTicketSolution = () => {
     setIsSubmitting(true);
     try {
       let attachmentUrls = data.attachmentUrls;
-      if (selectedFile) {
+      if (selectedFiles.length > 0) {
         const storage = getStorage();
-        const storageRef = ref(storage, "images/" + selectedFile.name);
-        await uploadBytes(storageRef, selectedFile);
-        attachmentUrls = await getDownloadURL(storageRef);
+        const storageRef = ref(storage, "images/" + selectedFiles[0]?.name);
+        await uploadBytes(storageRef, selectedFiles[0]);
+        const newAttachmentUrl = await getDownloadURL(storageRef);
+        attachmentUrls.push(newAttachmentUrl);
       }
 
-      const isDataValid = validateDate(
-        data.scheduledStartTime,
-        data.scheduledEndTime
-      );
-      if (!isDataValid) {
-        toast.info("Review Date must be earlier than Expired Date.");
-        return;
-      }
+      // const isDataValid = validateDate(data.reviewDate, data.expiredDate);
+      // if (!isDataValid) {
+      //   toast.info("Review Date must be earlier than Expired Date.");
+      //   return;
+      // }
       const formattedReviewDate = moment(data.reviewDate).format(
         "YYYY-MM-DDTHH:mm:ss"
       );
       const formattedExpiredDate = moment(data.expiredDate).format(
         "YYYY-MM-DDTHH:mm:ss"
       );
-
       const updatedData = {
         ...data,
         attachmentUrls: attachmentUrls,
@@ -216,6 +226,8 @@ const EditTicketSolution = () => {
       await editTicketSolution(solutionId, data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -251,12 +263,14 @@ const EditTicketSolution = () => {
           <MDBRow className="border-box">
             <MDBCol md="5" className="mt-2">
               <div className="d-flex align-items-center">
-                <button type="button" className="btn btn-link icon-label">
-                  <ArrowBack
-                    onClick={handleGoBack}
-                    className="arrow-back-icon"
-                  />
-                </button>
+                <Stack direction={"row"} alignItems={"center"}>
+                  <Button>
+                    <ArrowBack
+                      onClick={handleGoBack}
+                      style={{ color: "#0099FF" }}
+                    />
+                  </Button>
+                </Stack>
 
                 <div
                   style={{
@@ -368,11 +382,11 @@ const EditTicketSolution = () => {
                   onChange={handleFileChange}
                 />
                 <div style={{ marginBottom: "10px" }}>
-                  {data.attachmentUrls
+                  {data?.attachmentUrls
                     ? data.attachmentUrls.name
                     : "No file selected"}
                 </div>
-                {data.attachmentUrls.length > 0 && (
+                {data?.attachmentUrls.length > 0 && (
                   <div
                     className="image-preview"
                     onClick={() => setIsImagePreviewOpen(true)}
@@ -452,7 +466,11 @@ const EditTicketSolution = () => {
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid container justifyContent="flex-end" style={{marginTop: "15px"}}>
+              {/* <Grid
+                container
+                justifyContent="flex-end"
+                style={{ marginTop: "15px" }}
+              >
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
@@ -482,12 +500,12 @@ const EditTicketSolution = () => {
                           renderInput={(props) => <TextField {...props} />}
                         />
                       </LocalizationProvider>
+                      <DateValidation
+                        className="text-center"
+                        reviewDate={data.reviewDate}
+                        expiredDate={data.expiredDate}
+                      />
                     </Grid>
-                    <DateValidation
-                      className="text-center"
-                      reviewDate={data.reviewDate}
-                      expiredDate={data.expiredDate}
-                    />
                   </Grid>
                 </Grid>
 
@@ -523,8 +541,12 @@ const EditTicketSolution = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
-              <Grid container justifyContent="flex-end">
+              </Grid> */}
+              <Grid
+                container
+                justifyContent="flex-end"
+                style={{ marginTop: 15 }}
+              >
                 <Grid item xs={3}>
                   <h2
                     className="align-right"
@@ -555,17 +577,17 @@ const EditTicketSolution = () => {
                     relevant keyword for a solution will improve its search
                     capability, for example, Printer, toner, paper
                   </p>
-                  <h5>Public</h5>
+                  {/* <h5>Public</h5>
                   <Switch
                     checked={data.isPublic}
                     onChange={handlePublicToggle}
                     color="primary"
                     name="isPublic"
                     id="isPublic"
-                  />
+                  /> */}
                 </Grid>
               </Grid>
-              <Grid container justifyContent="flex-end">
+              {/* <Grid container justifyContent="flex-end">
                 <Grid item xs={3}>
                   <h2
                     className="align-right"
@@ -588,7 +610,7 @@ const EditTicketSolution = () => {
                     onChange={handleInputChange}
                   />
                 </Grid>
-              </Grid>
+              </Grid> */}
             </Grid>
           </MDBCol>
         </MDBRow>
@@ -608,6 +630,7 @@ const EditTicketSolution = () => {
                 <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
+                  onClick={handleGoBack}
                 >
                   Cancel
                 </button>
@@ -634,7 +657,7 @@ const EditTicketSolution = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <Gallery items={images} />
+          <Gallery items={previewImages} />
         </DialogContent>
       </Dialog>
     </Grid>

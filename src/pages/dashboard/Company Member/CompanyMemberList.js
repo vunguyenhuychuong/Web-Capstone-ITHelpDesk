@@ -30,6 +30,7 @@ import {
   getAllMemberCompany,
 } from "../../../app/api/companyMember";
 import EditCompanyMember from "./EditCompanyMember";
+import CircularLoading from "../../../components/iconify/CircularLoading";
 
 const CompanyMemberList = () => {
   const [dataCompanyMembers, setDataCompanyMembers] = useState([]);
@@ -182,7 +183,7 @@ const CompanyMemberList = () => {
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
               <span style={{ color: "#FFFFFF" }}> All Company Member</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
                 color="#eee"
                 style={{
@@ -253,7 +254,13 @@ const CompanyMemberList = () => {
           </MDBContainer>
         </MDBNavbar>
         {isLoading ? (
-          <CustomizedProgressBars />
+          <MDBTableBody className="bg-light">
+            <tr>
+              <td>
+                <CircularLoading />
+              </td>
+            </tr>
+          </MDBTableBody>
         ) : (
           <>
             <MDBTable
@@ -272,8 +279,8 @@ const CompanyMemberList = () => {
                       onChange={handleSelectAllCompanyMembers}
                     />
                   </th>
-                  <th style={{ fontWeight: "bold" }}>Edit</th>
-                  <th
+
+                  {/* <th
                     style={{ fontWeight: "bold" }}
                     className="sortable-header"
                     onClick={() => handleSortChange("memberId")}
@@ -286,7 +293,7 @@ const CompanyMemberList = () => {
                       ) : (
                         <ArrowDropUp />
                       ))}
-                  </th>
+                  </th> */}
                   <th
                     style={{ fontWeight: "bold" }}
                     className="sortable-header"
@@ -349,6 +356,7 @@ const CompanyMemberList = () => {
                         <ArrowDropUp />
                       ))}
                   </th>
+                  <th style={{ fontWeight: "bold" }}>Edit</th>
                 </tr>
               </MDBTableHead>
               <MDBTableBody className="bg-light">
@@ -367,14 +375,8 @@ const CompanyMemberList = () => {
                           }
                         />
                       </td>
-                      <td>
-                        <Edit
-                          onClick={() =>
-                            handleOpenEditCompanyMember(companyMember.id)
-                          }
-                        />
-                      </td>
-                      <td>{companyMember.memberId}</td>
+
+                      {/* <td>{companyMember.memberId}</td> */}
                       <td>
                         {companyMember.member.lastName}{" "}
                         {companyMember.member.firstName}
@@ -387,6 +389,13 @@ const CompanyMemberList = () => {
                       </td>
                       <td>{formatDate(companyMember.createdAt || "-")}</td>
                       <td>{formatDate(companyMember.modifiedAt || "-")}</td>
+                      <td>
+                        <Edit
+                          onClick={() =>
+                            handleOpenEditCompanyMember(companyMember.id)
+                          }
+                        />
+                      </td>
                     </tr>
                   );
                 })}

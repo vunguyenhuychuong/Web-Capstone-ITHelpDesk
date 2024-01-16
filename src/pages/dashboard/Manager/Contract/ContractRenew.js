@@ -20,6 +20,7 @@ import { getContractRenew } from "../../../../app/api/contract";
 import CustomizedProgressBars from "../../../../components/iconify/LinearProccessing";
 import { formatCurrency } from "../../../helpers/FormatCurrency";
 import CreateRenewContract from "./CreateRenewContract";
+import CircularLoading from "../../../../components/iconify/CircularLoading";
 
 const ContractRenew = () => {
   const [dataListContractRenew, setDataListContractRenew] = useState([]);
@@ -88,7 +89,7 @@ const ContractRenew = () => {
           <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th>
+                {/* <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th> */}
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}>
                   Description
                 </th>
@@ -110,13 +111,19 @@ const ContractRenew = () => {
               </tr>
             </MDBTableHead>
             {loading ? (
-              <CustomizedProgressBars />
+              <MDBTableBody className="bg-light">
+                <tr>
+                  <td>
+                    <CircularLoading />
+                  </td>
+                </tr>
+              </MDBTableBody>
             ) : (
               <MDBTableBody className="bg-light">
                 {dataListContractRenew.map((ContractChild, index) => {
                   return (
                     <tr key={index}>
-                      <td>{ContractChild.id}</td>
+                      {/* <td>{ContractChild.id}</td> */}
                       <td>{ContractChild.description}</td>
                       <td>{formatDate(ContractChild.fromDate)}</td>
                       <td>{formatDate(ContractChild.toDate)}</td>
@@ -129,10 +136,8 @@ const ContractRenew = () => {
               </MDBTableBody>
             )}
           </MDBTable>
-          
 
-
-          {dataListContractRenew.length === 0 && !loading  && (
+          {dataListContractRenew.length === 0 && !loading && (
             <Card style={{ height: "450px", width: "100%" }}>
               <CardContent style={{ marginRight: "10px" }}>
                 <div

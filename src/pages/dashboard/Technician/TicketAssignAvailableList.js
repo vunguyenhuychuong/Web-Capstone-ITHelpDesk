@@ -17,12 +17,16 @@ import { Card, CardContent } from "@mui/material";
 import { FaPlus } from "react-icons/fa";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import CloseTicket from "../../../assets/images/NoTicketSolution.jpg";
-import { ChangeStatusTicket, getTicketAssignAvailable } from "../../../app/api/ticket";
+import {
+  ChangeStatusTicket,
+  getTicketAssignAvailable,
+} from "../../../app/api/ticket";
 import {
   TicketStatusOptions,
   getImpactById,
   getPriorityOption,
 } from "../../helpers/tableComlumn";
+import CircularLoading from "../../../components/iconify/CircularLoading";
 
 const TicketAssignAvailableList = () => {
   const [dataListTicketsAssign, setDataListTicketsAssign] = useState([]);
@@ -43,7 +47,6 @@ const TicketAssignAvailableList = () => {
       setLoading(false);
     }
   };
-
 
   const handleTicketStatusChange = useCallback(async (ticketId, newStatus) => {
     try {
@@ -79,7 +82,7 @@ const TicketAssignAvailableList = () => {
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
               <span style={{ color: "#FFFFFF" }}>All Ticket Assign</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            {/* <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
                 color="#eee"
                 style={{
@@ -92,18 +95,17 @@ const TicketAssignAvailableList = () => {
                 <FaPlus style={{ color: "#FFFFFF" }} />{" "}
                 <span style={{ color: "#FFFFFF" }}>New</span>
               </MDBBtn>
-            </MDBNavbarNav>
+            </MDBNavbarNav> */}
           </MDBContainer>
         </MDBNavbar>
         <div>
           <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>
+                {/* <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th> */}
+                {/* <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                   <input type="checkbox" />
-                </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
+                </th> */}
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}>
                   Title{""}
                 </th>
@@ -120,10 +122,17 @@ const TicketAssignAvailableList = () => {
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}>
                   Last Update
                 </th>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
               </tr>
             </MDBTableHead>
             {loading ? (
-              <CustomizedProgressBars />
+              <MDBTableBody className="bg-light">
+                <tr>
+                  <td>
+                    <CircularLoading />
+                  </td>
+                </tr>
+              </MDBTableBody>
             ) : (
               <MDBTableBody className="bg-light">
                 {dataListTicketsAssign.map((TicketAssign, index) => {
@@ -132,17 +141,10 @@ const TicketAssignAvailableList = () => {
                   );
                   return (
                     <tr key={index}>
-                      <td>{TicketAssign.id}</td>
-                      <td>
+                      {/* <td>{TicketAssign.id}</td> */}
+                      {/* <td>
                         <input type="checkbox" />
-                      </td>
-                      <td>
-                        <ViewCompact
-                          onClick={() =>
-                            handleOpenDetailTicketAssign(TicketAssign.id)
-                          }
-                        />{" "}
-                      </td>
+                      </td> */}
                       <td
                         className="tooltip-cell"
                         title={`Id:${TicketAssign.id} \nDescription:${TicketAssign.description}`}
@@ -154,44 +156,51 @@ const TicketAssignAvailableList = () => {
                       <td>{getPriorityOption(TicketAssign.priority)}</td>
                       <td>{getImpactById(TicketAssign.impact)}</td>
                       <td>
-                      {
-                        <span
-                          onMouseDown={(e) => e.stopPropagation()}
-                          onClick={handleDropdownClick}
-                          style={ticketStatusOption.badgeStyle}
-                        >
-                          {isDropdownVisible ? (
-                            <select
-                              value={TicketAssign.ticketStatus}
-                              onChange={(e) =>
-                                handleTicketStatusChange(
-                                  TicketAssign.id,
-                                  parseInt(e.target.value)
-                                )
-                              }
-                              onBlur={() => setDropdownVisible(false)}
-                            >
-                              {TicketStatusOptions.map((option) => (
-                                <option
-                                  key={option.id}
-                                  value={option.id}
-                                  className={option.iconClass}
-                                >
-                                  {option.icon} {option.name}
-                                </option>
-                              ))}
-                            </select>
-                          ) : (
-                            <>
-                              {ticketStatusOption.icon}
-                              {ticketStatusOption.name}
-                            </>
-                          )}
-                        </span>
-                      }
-                    </td>
+                        {
+                          <span
+                            onMouseDown={(e) => e.stopPropagation()}
+                            onClick={handleDropdownClick}
+                            style={ticketStatusOption.badgeStyle}
+                          >
+                            {isDropdownVisible ? (
+                              <select
+                                value={TicketAssign.ticketStatus}
+                                onChange={(e) =>
+                                  handleTicketStatusChange(
+                                    TicketAssign.id,
+                                    parseInt(e.target.value)
+                                  )
+                                }
+                                onBlur={() => setDropdownVisible(false)}
+                              >
+                                {TicketStatusOptions.map((option) => (
+                                  <option
+                                    key={option.id}
+                                    value={option.id}
+                                    className={option.iconClass}
+                                  >
+                                    {option.icon} {option.name}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              <>
+                                {ticketStatusOption.icon}
+                                {ticketStatusOption.name}
+                              </>
+                            )}
+                          </span>
+                        }
+                      </td>
                       <td>{formatDate(TicketAssign.createdAt)}</td>
                       <td>{formatDate(TicketAssign.modifiedAt)}</td>
+                      <td>
+                        <ViewCompact
+                          onClick={() =>
+                            handleOpenDetailTicketAssign(TicketAssign.id)
+                          }
+                        />
+                      </td>
                     </tr>
                   );
                 })}

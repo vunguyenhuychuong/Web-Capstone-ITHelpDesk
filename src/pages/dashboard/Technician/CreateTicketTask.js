@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogTitle,
   Grid,
   IconButton,
+  Slider,
+  Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack, Close } from "@mui/icons-material";
@@ -39,7 +43,7 @@ const CreateTicketTask = () => {
     priority: 1,
     scheduledStartTime: "",
     scheduledEndTime: "",
-    progress: 1,
+    progress: 0,
     attachmentUrls: [],
   });
   const [dataTeam, setDataTeam] = useState([]);
@@ -94,15 +98,16 @@ const CreateTicketTask = () => {
   const handleTeamChange = async (event) => {
     const selectedTeamId = event.target.value;
     setSelectedTeamId(selectedTeamId);
-  
+
     try {
       const technicians = await AssignApi.getTechnician(selectedTeamId);
-      const newDefaultTechnicianId  = technicians.length > 0 ? technicians[0].id : null;
+      const newDefaultTechnicianId =
+        technicians.length > 0 ? technicians[0].id : null;
 
-      setDefaultTechnicianId(newDefaultTechnicianId );
+      setDefaultTechnicianId(newDefaultTechnicianId);
       setData((prevData) => ({
         ...prevData,
-        technicianId: newDefaultTechnicianId ,
+        technicianId: newDefaultTechnicianId,
       }));
       setDataTechnician(technicians);
     } catch (error) {
@@ -242,8 +247,8 @@ const CreateTicketTask = () => {
         ticketId: data.ticketId,
         title: data.title,
         description: data.description,
-        taskStatus: parseInt(data.taskStatus),
-        technicianId: parseInt(data.technicianId),
+        // taskStatus: parseInt(data.taskStatus),
+        // technicianId: parseInt(data.technicianId),
         priority: parseInt(data.priority, 10),
         scheduledStartTime: data.scheduledStartTime,
         scheduledEndTime: data.scheduledEndTime,
@@ -275,12 +280,14 @@ const CreateTicketTask = () => {
           <MDBRow className="border-box">
             <MDBCol md="5" className="mt-2">
               <div className="d-flex align-items-center">
-                <button type="button" className="btn btn-link icon-label">
-                  <ArrowBack
-                    onClick={() => handleGoBack(ticketId)}
-                    className="arrow-back-icon"
-                  />
-                </button>
+                <Stack direction={"row"} alignItems={"center"}>
+                  <Button>
+                    <ArrowBack
+                      onClick={() => handleGoBack(data.ticketId)}
+                      style={{ color: "#0099FF" }}
+                    />
+                  </Button>
+                </Stack>
 
                 <div
                   style={{
@@ -316,16 +323,15 @@ const CreateTicketTask = () => {
               justifyContent: "space-between",
             }}
           >
-            <Grid container justifyContent="flex-end">
-              {" "}
+            <Grid container justifyContent="flex-start">
               <Grid
                 container
-                justifyContent="flex-end"
+                justifyContent="flex-start"
                 style={{ marginBottom: "20px" }}
               >
-                <Grid item xs={6}>
+                <Grid item xs={12}>
                   <Grid container>
-                    <Grid item xs={6}>
+                    <Grid item xs={3}>
                       <h2
                         className="align-right"
                         style={{
@@ -340,7 +346,7 @@ const CreateTicketTask = () => {
                         Title
                       </h2>
                     </Grid>
-                    <Grid item xs={5}>
+                    <Grid item xs={9}>
                       <input
                         type="text"
                         name="title"
@@ -356,7 +362,7 @@ const CreateTicketTask = () => {
                   </Grid>
                 </Grid>
 
-                <Grid item xs={6}>
+                {/* <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
                       <h2
@@ -383,7 +389,7 @@ const CreateTicketTask = () => {
                       />
                     </Grid>
                   </Grid>
-                </Grid>
+                </Grid> */}
               </Grid>
               <Grid item xs={3}>
                 <h2
@@ -430,7 +436,6 @@ const CreateTicketTask = () => {
                   className="form-control input-field"
                   id="attachmentUrl"
                   onChange={handleFileChange}
-
                 />
                 {imagePreviewUrl.length > 0 && (
                   <div
@@ -448,7 +453,7 @@ const CreateTicketTask = () => {
                 justifyContent="flex-end"
                 style={{ marginBottom: "20px" }}
               >
-                <Grid item xs={6}>
+                {/* <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
                       <h2
@@ -495,8 +500,68 @@ const CreateTicketTask = () => {
                       </select>
                     </Grid>
                   </Grid>
-                </Grid>
+                </Grid> */}
+                <Grid item xs={6}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          marginBottom: "25px",
+                        }}
+                      >
+                        Progress
+                      </h2>
+                    </Grid>
+                    <Grid item xs={5}>
+                      {/* <select
+                        id="progress"
+                        name="progress"
+                        className="form-select-custom"
+                        value={data.progress}
+                        onChange={handleInputChange}
+                      >
+                        <option value="">Select Progress</option>{" "}
+                        {Object.keys(Process).map((processId) => (
+                          <option key={processId} value={processId}>
+                            {Process[processId]}
+                          </option>
+                        ))}
+                      </select> */}
+                      <Stack>
+                        <Slider
+                          aria-label="progress"
+                          id="progress"
+                          name="progress"
+                          value={data.progress}
+                          onChange={handleInputChange}
+                          valueLabelDisplay="auto"
+                        />
+                        <TextField
+                          type="number"
+                          aria-label="progress input"
+                          id="progress"
+                          name="progress"
+                          sx={{ width: "100%", my: 5 }}
+                          InputProps={{
+                            inputProps: { min: 0, max: 100 },
+                            endAdornment: <Typography>%</Typography>,
+                          }}
+                          onChange={(e) => {
+                            var value = parseInt(e.target.value, 10);
 
+                            if (value > 100) e.target.value = 100;
+                            if (value < 0) e.target.value = 0;
+                            handleInputChange(e);
+                          }}
+                          value={data.progress}
+                        />
+                      </Stack>
+                    </Grid>
+                  </Grid>
+                </Grid>
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
@@ -543,7 +608,7 @@ const CreateTicketTask = () => {
                           marginBottom: "25px",
                         }}
                       >
-                        Schedule startTime
+                        Schedule Start Time
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
@@ -575,7 +640,7 @@ const CreateTicketTask = () => {
                           marginBottom: "25px",
                         }}
                       >
-                        Schedule endTime
+                        Schedule End Time
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
@@ -597,7 +662,7 @@ const CreateTicketTask = () => {
                 </Grid>
               </Grid>
               <Grid container justifyContent="flex-end">
-                <Grid item xs={6}>
+                {/* <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
                       <h2
@@ -629,39 +694,7 @@ const CreateTicketTask = () => {
                       </select>
                     </Grid>
                   </Grid>
-                </Grid>
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          marginBottom: "25px",
-                        }}
-                      >
-                        Progress
-                      </h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <select
-                        id="progress"
-                        name="progress"
-                        className="form-select-custom"
-                        value={data.progress}
-                        onChange={handleInputChange}
-                      >
-                        <option value="">Select Progress</option>{" "}
-                        {Object.keys(Process).map((processId) => (
-                          <option key={processId} value={processId}>
-                            {Process[processId]}
-                          </option>
-                        ))}
-                      </select>
-                    </Grid>
-                  </Grid>
-                </Grid>
+                </Grid> */}
               </Grid>
             </Grid>
           </MDBCol>
@@ -682,6 +715,7 @@ const CreateTicketTask = () => {
                 <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
+                  onClick={() => handleGoBack(data.ticketId)}
                 >
                   Cancel
                 </button>

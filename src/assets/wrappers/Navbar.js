@@ -1,11 +1,11 @@
-import styled from 'styled-components'
+import styled from "styled-components";
 
 const Wrapper = styled.nav`
   height: var(--nav-height);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 0px 0px rgba(0, 0, 0, 0.1);
+
   .logo {
     display: flex;
     align-items: center;
@@ -14,19 +14,27 @@ const Wrapper = styled.nav`
     display: flex;
     width: 90vw;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
   }
-   .avatar {
+  .nav-between {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: 0.75rem;
+    box-shadow: 0 1px 0px 0px rgba(0, 0, 0, 0.1);
+  }
+  .avatar {
     width: 45px;
     height: 45px;
-    margin-right: 10px; 
-    margin-left: -10px; 
+    margin-right: 10px;
+    margin-left: -10px;
   }
   .toggle-btn {
     background: transparent;
     border-color: transparent;
     font-size: 1.75rem;
-    color: #0099FF;
+    color: #0099ff;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -42,11 +50,11 @@ const Wrapper = styled.nav`
     gap: 0 0.5rem;
     position: relative;
     box-shadow: var(--shadow-2);
-    background-color: var(--primary-500); 
-    color: #fff; 
-    border: none; 
-    padding: 0.5rem 1rem; 
-    border-radius: 5px; 
+    background-color: var(--primary-500);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
     cursor: pointer;
   }
 
@@ -79,11 +87,12 @@ const Wrapper = styled.nav`
   }
   .icons-wrapper {
     display: flex;
-    gap: 0.5rem; 
+    gap: 0.5rem;
   }
   @media (min-width: 992px) {
     position: sticky;
     top: 0;
+    z-index: 0;
 
     .nav-center {
       width: 90%;
@@ -95,5 +104,5 @@ const Wrapper = styled.nav`
       display: block;
     }
   }
-`
-export default Wrapper
+`;
+export default Wrapper;

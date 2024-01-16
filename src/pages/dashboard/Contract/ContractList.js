@@ -170,7 +170,7 @@ const ContractList = () => {
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
               <span style={{ color: "#FFFFFF" }}>All Contracts</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
                 color="#eee"
                 style={{
@@ -247,11 +247,11 @@ const ContractList = () => {
           <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr>
-                <th 
+                {/* <th
                   style={{ fontWeight: "bold", fontSize: "18px" }}
                   onClick={() => handleSortChange("id")}
                   className="sortable-header"
-                  >
+                >
                   Id
                   {sortBy === "id" &&
                     (sortDirection === "asc" ? (
@@ -259,7 +259,7 @@ const ContractList = () => {
                     ) : (
                       <ArrowDropUp />
                     ))}
-                  </th>
+                </th> */}
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                   <input
                     type="checkbox"
@@ -269,7 +269,6 @@ const ContractList = () => {
                     onChange={handleSelectAllSolutions}
                   />
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("name")}
@@ -373,6 +372,7 @@ const ContractList = () => {
                       <ArrowDropUp />
                     ))}
                 </th>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
               </tr>
             </MDBTableHead>
             {loading ? (
@@ -383,7 +383,7 @@ const ContractList = () => {
                   const isSelected = selectedContractIds.includes(Contract.id);
                   return (
                     <tr key={index}>
-                      <td>{Contract.id}</td>
+                      {/* <td>{Contract.id}</td> */}
                       <td>
                         <input
                           type="checkbox"
@@ -391,15 +391,13 @@ const ContractList = () => {
                           onChange={() => handleSelectSolution(Contract.id)}
                         />
                       </td>
-                      <td>
-                        <ViewCompact
-                          onClick={() => handleOpenDetailContract(Contract.id)}
-                        />{" "}
-                      </td>
                       <td
-                         className="tooltip-cell"
-                         title={`Name Contract: ${Contract.name}\nDescription: ${Contract.description}`}
-                         onClick={() => handleOpenDetailContract(Contract.id)}>{Contract.name}</td>
+                        className="tooltip-cell"
+                        title={`Name Contract: ${Contract.name}\nDescription: ${Contract.description}`}
+                        onClick={() => handleOpenDetailContract(Contract.id)}
+                      >
+                        {Contract.name}
+                      </td>
                       <td>
                         {Contract.isApproved ? (
                           <>
@@ -435,6 +433,11 @@ const ContractList = () => {
                       <td>{formatDate(Contract.endDate)}</td>
                       <td>{formatDate(Contract.createdAt)}</td>
                       <td>{formatDate(Contract.modifiedAt)}</td>
+                      <td>
+                        <ViewCompact
+                          onClick={() => handleOpenDetailContract(Contract.id)}
+                        />
+                      </td>
                     </tr>
                   );
                 })}

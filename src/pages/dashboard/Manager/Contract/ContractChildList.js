@@ -10,22 +10,16 @@ import {
 } from "mdb-react-ui-kit";
 import React, { useEffect, useState } from "react";
 import "../../../../assets/css/ticketCustomer.css";
-import {
-  ContentCopy,
-  DeleteForever,
-} from "@mui/icons-material";
+import { ContentCopy, DeleteForever } from "@mui/icons-material";
 import { formatDate } from "../../../helpers/FormatDate";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-} from "@mui/material";
+import { Card, CardContent } from "@mui/material";
 import { FaPlus } from "react-icons/fa";
 import CloseTicket from "../../../../assets/images/NoContractChild.jpg";
 import { getContractChild } from "../../../../app/api/contract";
 import CustomizedProgressBars from "../../../../components/iconify/LinearProccessing";
 import { formatCurrency } from "../../../helpers/FormatCurrency";
-
+import CircularLoading from "../../../../components/iconify/CircularLoading";
 
 const ContractChildList = () => {
   const [dataListContractChild, setDataListContractChild] = useState([]);
@@ -82,7 +76,6 @@ const ContractChildList = () => {
                   fontSize: "20px",
                   color: "#FFFFFF",
                 }}
-               
               >
                 <DeleteForever style={{ color: "#FFFFFF" }} />{" "}
                 <span style={{ color: "#FFFFFF" }}>Delete</span>
@@ -117,7 +110,13 @@ const ContractChildList = () => {
               </tr>
             </MDBTableHead>
             {loading ? (
-              <CustomizedProgressBars />
+              <MDBTableBody className="bg-light">
+                <tr>
+                  <td>
+                    <CircularLoading />
+                  </td>
+                </tr>
+              </MDBTableBody>
             ) : (
               <MDBTableBody className="bg-light">
                 {dataListContractChild.map((ContractChild, index) => {

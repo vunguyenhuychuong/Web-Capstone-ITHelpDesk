@@ -1,5 +1,7 @@
 import {
-  MDBBtn,MDBContainer, MDBNavbar,
+  MDBBtn,
+  MDBContainer,
+  MDBNavbar,
   MDBNavbarBrand,
   MDBNavbarNav,
   MDBTable,
@@ -8,11 +10,27 @@ import {
 } from "mdb-react-ui-kit";
 import React, { useCallback, useState } from "react";
 import {
-  ArrowDropDown,ArrowDropUp,ContentCopy,Delete,Female,Lock,LockOpen,Male,ViewCompact,
+  ArrowDropDown,
+  ArrowDropUp,
+  ContentCopy,
+  Delete,
+  Female,
+  Lock,
+  LockOpen,
+  Male,
+  ViewCompact,
 } from "@mui/icons-material";
 import { useEffect } from "react";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import { Avatar,CircularProgress,FormControl,MenuItem,Pagination,Select,Tooltip } from "@mui/material";
+import {
+  Avatar,
+  CircularProgress,
+  FormControl,
+  MenuItem,
+  Pagination,
+  Select,
+  Tooltip,
+} from "@mui/material";
 import { toast } from "react-toastify";
 import { formatDate } from "../../helpers/FormatDate";
 import PageSizeSelector from "../Pagination/Pagination";
@@ -160,7 +178,7 @@ const UserList = () => {
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
               <span style={{ color: "#FFFFFF" }}>All User</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
                 color="#eee"
                 style={{
@@ -183,7 +201,7 @@ const UserList = () => {
                 }}
                 data-mdb-toggle="tooltip"
                 title="Delete Selected Users"
-                onClick={handleDeleteSelectedUsers} 
+                onClick={handleDeleteSelectedUsers}
               >
                 <Delete /> Delete
               </MDBBtn>
@@ -247,7 +265,6 @@ const UserList = () => {
                   onChange={handleSelectAllUsers}
                 />
               </th>
-              <th></th>
               <th
                 style={{ fontWeight: "bold" }}
                 className="sortable-header"
@@ -352,7 +369,8 @@ const UserList = () => {
                       <ArrowDropUp />
                     ))}
                 </Tooltip>
-              </th>
+              </th>{" "}
+              <th></th>
             </tr>
           </MDBTableHead>
           <MDBTableBody className="bg-light">
@@ -372,11 +390,7 @@ const UserList = () => {
                       onChange={() => handleSelectUser(user.id)}
                     />
                   </td>
-                  <td>
-                    <ViewCompact
-                      onClick={() => handleOpenDetailCustomer(user.id)}
-                    />
-                  </td>
+
                   <td>
                     <div className="d-flex">
                       <div style={{ flex: "3" }}>
@@ -453,6 +467,11 @@ const UserList = () => {
                   </td>
                   <td>{formatDate(user.createdAt || "-")}</td>
                   <td>{formatDate(user.modifiedAt || "-")}</td>
+                  <td>
+                    <ViewCompact
+                      onClick={() => handleOpenDetailCustomer(user.id)}
+                    />
+                  </td>
                 </tr>
               ))
             )}

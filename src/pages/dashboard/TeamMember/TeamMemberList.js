@@ -21,6 +21,7 @@ import { Box } from "@mui/system";
 import { getAllTeamMember } from "../../../app/api/teamMember";
 import { useNavigate } from "react-router-dom";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
+import CircularLoading from "../../../components/iconify/CircularLoading";
 
 const TeamMemberList = () => {
   const [dataTeamMembers, setDataTeamMembers] = useState([]);
@@ -147,21 +148,29 @@ const TeamMemberList = () => {
       >
         <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
-            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "16px" }}>
+            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
               <span style={{ color: "#FFFFFF" }}> All TeamMember</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  color: "#FFFFFF",
+                }}
                 onClick={() => handleOpenCreateTeamMember()}
               >
                 <FaPlus /> New
               </MDBBtn>
               <MDBBtn
                 color="eee"
-                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  color: "#FFFFFF",
+                }}
                 onClick={handleDeleteSelectedTeamMember}
               >
                 <Delete /> Delete
@@ -213,7 +222,13 @@ const TeamMemberList = () => {
           </MDBContainer>
         </MDBNavbar>
         {isLoading ? (
-          <CustomizedProgressBars />
+          <MDBTableBody className="bg-light">
+            <tr>
+              <td>
+                <CircularLoading />
+              </td>
+            </tr>
+          </MDBTableBody>
         ) : (
           <>
             <MDBTable
@@ -233,7 +248,7 @@ const TeamMemberList = () => {
                     />
                   </th>
                   <th style={{ fontWeight: "bold" }}>Edit</th>
-                  <th style={{ fontWeight: "bold" }}>ID</th>
+                  {/* <th style={{ fontWeight: "bold" }}>ID</th> */}
                   <th style={{ fontWeight: "bold" }}>Member ID</th>
                   <th style={{ fontWeight: "bold" }}>Expertises</th>
                   <th style={{ fontWeight: "bold" }}>Create Time</th>
@@ -261,7 +276,7 @@ const TeamMemberList = () => {
                           }
                         />
                       </td>
-                      <td>{teamMember.id}</td>
+                      {/* <td>{teamMember.id}</td> */}
                       <td>{teamMember.memberId}</td>
                       <td>{teamMember.expertises}</td>
                       <td>{formatDate(teamMember.createdAt || "-")}</td>

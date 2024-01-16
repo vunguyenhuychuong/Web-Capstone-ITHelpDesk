@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Dialog, DialogContent, DialogTitle, Grid, IconButton } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  IconButton,
+  Stack,
+} from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -18,13 +26,14 @@ const CreateTicketSolution = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth);
   const check = user.user.role;
+  const currentDate = Date.now();
   const [data, setData] = useState({
     title: "",
     content: "",
     categoryId: 1,
     ownerId: 1,
-    reviewDate: "",
-    expiredDate: "",
+    reviewDate: currentDate,
+    expiredDate: currentDate,
     keyword: "",
     internalComments: "",
     isPublic: true,
@@ -56,6 +65,26 @@ const CreateTicketSolution = () => {
   useEffect(() => {
     fetchDataSolution();
   }, []);
+
+  useEffect(() => {
+    if (dataCategories) {
+      setData((prevData) => ({
+        ...prevData,
+        categoryId: dataCategories[0]?.id,
+      }));
+    }
+  }, [dataCategories]);
+
+  useEffect(() => {
+    if (dataUsers) {
+      setData((prevData) => ({
+        ...prevData,
+        ownerId: dataUsers.filter(
+          (owner) => owner.role !== 0 && owner.role !== 1
+        )[0]?.id,
+      }));
+    }
+  }, [dataUsers]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -103,7 +132,7 @@ const CreateTicketSolution = () => {
 
   const validateDate = (reviewDate, expiredDate) => {
     if (!reviewDate || !expiredDate) {
-      return false; 
+      return false;
     }
     return moment(reviewDate).isBefore(expiredDate);
   };
@@ -125,31 +154,31 @@ const CreateTicketSolution = () => {
       return;
     }
 
-    const isDataValid = validateDate(data.reviewDate, data.expiredDate);
-      if (!isDataValid) {
-        toast.warning(
-          "scheduledStartTime must be earlier than scheduledEndTime.",
-          {
-            autoClose: 2000,
-            hideProgressBar: false,
-            position: toast.POSITION.TOP_CENTER,
-          }
-        );
-        return;
-      }
+    // const isDataValid = validateDate(data.reviewDate, data.expiredDate);
+    // if (!isDataValid) {
+    //   toast.warning(
+    //     "scheduledStartTime must be earlier than scheduledEndTime.",
+    //     {
+    //       autoClose: 2000,
+    //       hideProgressBar: false,
+    //       position: toast.POSITION.TOP_CENTER,
+    //     }
+    //   );
+    //   return;
+    // }
 
-      const formattedReviewDate = moment(data.reviewDate).format(
-        "YYYY-MM-DDTHH:mm:ss"
-      );
-      const formattedExpiredDate = moment(data.expiredDate).format(
-        "YYYY-MM-DDTHH:mm:ss"
-      );
+    const formattedReviewDate = moment(data.reviewDate).format(
+      "YYYY-MM-DDTHH:mm:ss"
+    );
+    const formattedExpiredDate = moment(data.expiredDate).format(
+      "YYYY-MM-DDTHH:mm:ss"
+    );
     setIsSubmitting(true);
     try {
       let attachmentUrls = data.attachmentUrls || [];
       if (selectedFile.length > 0) {
         const storage = getStorage();
-        
+
         for (let i = 0; i < selectedFile.length; i++) {
           const file = selectedFile[i];
           const storageRef = ref(storage, `images/${file.name}`);
@@ -176,7 +205,6 @@ const CreateTicketSolution = () => {
         reviewDate: formattedReviewDate,
         expiredDate: formattedExpiredDate,
         keyword: data.keyword,
-        internalComments: data.internalComments,
         isPublic: data.isPublic,
         attachmentUrls: attachmentUrls,
       });
@@ -185,7 +213,7 @@ const CreateTicketSolution = () => {
       } else if (check === 2) {
         navigate(`/home/homeManager`);
       } else {
-        console.warn('Unhandled user role:', check);
+        console.warn("Unhandled user role:", check);
       }
     } catch (error) {
       console.error(error);
@@ -213,7 +241,7 @@ const CreateTicketSolution = () => {
     } else if (check === 3) {
       navigate(`/home/homeTechnician`);
     } else {
-      console.warn('Unhandled user role:', check);
+      console.warn("Unhandled user role:", check);
     }
   };
 
@@ -231,12 +259,14 @@ const CreateTicketSolution = () => {
           <MDBRow className="border-box">
             <MDBCol md="5" className="mt-2">
               <div className="d-flex align-items-center">
-                <button type="button" className="btn btn-link icon-label">
-                  <ArrowBack
-                    onClick={handleGoBack}
-                    className="arrow-back-icon"
-                  />
-                </button>
+                <Stack direction={"row"} alignItems={"center"}>
+                  <Button>
+                    <ArrowBack
+                      onClick={handleGoBack}
+                      style={{ color: "#0099FF" }}
+                    />
+                  </Button>
+                </Stack>
                 <div
                   style={{
                     marginLeft: "40px",
@@ -342,7 +372,7 @@ const CreateTicketSolution = () => {
                   className="form-control input-field"
                   id="attachmentUrl"
                   onChange={handleFileChange}
-                  multiple  
+                  multiple
                 />
                 {imagePreviewUrl.length > 0 && (
                   <div
@@ -417,7 +447,9 @@ const CreateTicketSolution = () => {
                         onChange={handleInputChange}
                       >
                         {dataUsers
-                          .filter((owner) => owner.id !== "")
+                          .filter(
+                            (owner) => owner.role !== 0 && owner.role !== 1
+                          )
                           .map((owner) => (
                             <option key={owner.id} value={owner.id}>
                               {owner.lastName} {owner.firstName}
@@ -467,11 +499,12 @@ const CreateTicketSolution = () => {
                   onClick={handleSubmitTicket}
                   disabled={isSubmitting}
                 >
-                   {isSubmitting ? 'Submitting...' : 'Save'}
+                  {isSubmitting ? "Submitting..." : "Create"}
                 </button>
                 <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
+                  onClick={handleGoBack}
                 >
                   Cancel
                 </button>

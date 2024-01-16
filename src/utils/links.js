@@ -18,16 +18,41 @@ import {
 } from "@mui/icons-material";
 
 const links = [
+  { id: 6, text: "Home", path: "main", icon: <FaAd /> },
+  { id: 7, text: "Home", path: "mains", icon: <Home /> },
+  {
+    id: 19,
+    text: "Home Manager",
+    path: "homeManager",
+    icon: <Home />,
+  },
+  {
+    id: 20,
+    text: "Home Admin",
+    path: "homeAdmin",
+    icon: <Home />,
+  },
+  {
+    id: 22,
+    text: "Home Accountant",
+    path: "homeAccountant",
+    icon: <Home />,
+  },
+  {
+    id: 10,
+    text: "Home",
+    path: "homeTechnician",
+    icon: <Home />,
+  },
   { id: 1, text: "service", path: "service", icon: <DesignServices /> },
   { id: 2, text: "team", path: "team", icon: <Group /> },
   { id: 3, text: "mode", path: "mode", icon: <ModeComment /> },
   { id: 4, text: "profile", path: "profile", icon: <ImProfile /> },
   { id: 5, text: "userList", path: "userList", icon: <FolderShared /> },
-  { id: 6, text: "Home", path: "main", icon: <FaAd /> },
-  { id: 7, text: "Home", path: "mains", icon: <Home /> },
+
   { id: 8, text: "menu", path: "menu", icon: <Menu /> },
   { id: 9, text: "categories", path: "categories", icon: <Category /> },
-  { id: 17, text: "List Ticket", path: "listTicket", icon: <FaTicketAlt /> },
+  { id: 17, text: "Ticket List", path: "listTicket", icon: <FaTicketAlt /> },
   {
     id: 11,
     text: "Customer Ticket",
@@ -43,7 +68,7 @@ const links = [
   },
   {
     id: 14,
-    text: "List Task",
+    text: "Task List",
     path: "ticketTask",
     icon: <Details />,
   },
@@ -57,61 +82,37 @@ const links = [
     id: 16,
     text: "Company",
     path: "companyList",
-    icon: <Business />
-  },
-  {
-    id: 10,
-    text: "Home",
-    path: "homeTechnician",
-    icon: <Home />
+    icon: <Business />,
   },
   {
     id: 18,
     text: "My Request list",
     path: "requestCustomerList",
-    icon: <IosShare />
-  },
-  {
-    id: 19,
-    text: "Home Manager",
-    path: "homeManager",
-    icon: <Home />
-  },
-  {
-    id: 20,
-    text: "Home Admin",
-    path: "homeAdmin",
-    icon: <Home />
+    icon: <IosShare />,
   },
   {
     id: 21,
     text: "Contract",
     path: "contractList",
-    icon: <ReceiptLong />
-  },
-  {
-    id: 22,
-    text: "Home Accountant",
-    path: "homeAccountant",
-    icon: <Home />
+    icon: <ReceiptLong />,
   },
   {
     id: 23,
     text: "Payment",
     path: "paymentList",
-    icon: <Payment />
+    icon: <Payment />,
   },
   {
     id: 24,
     text: "Ticket Assign",
     path: "ticketAssign",
-    icon: <Assessment />
+    icon: <Assessment />,
   },
   {
     id: 28,
     text: "Company Member",
     path: "companyMember",
-    icon: <Assessment />
+    icon: <Assessment />,
   },
   {
     id: 29,

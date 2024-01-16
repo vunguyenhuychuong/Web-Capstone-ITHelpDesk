@@ -25,6 +25,7 @@ import {
 import { toast } from "react-toastify";
 import { formatDate } from "../../helpers/FormatDate";
 import { truncateUrl } from "../../helpers/FormatText";
+import CircularLoading from "../../../components/iconify/CircularLoading";
 
 const CompanyList = () => {
   const [dataListCompany, setDataListCompany] = useState([]);
@@ -181,19 +182,28 @@ const CompanyList = () => {
         <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
-              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />  <span style={{ color: "#FFFFFF" }}>All Company</span>
+              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
+              <span style={{ color: "#FFFFFF" }}>All Company</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  color: "#FFFFFF",
+                }}
                 onClick={() => handleOpenCreateCompany()}
               >
                 <FaPlus /> Create
               </MDBBtn>
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  color: "#FFFFFF",
+                }}
                 onClick={() => handleDeleteSelectedCompany()}
               >
                 <Delete /> Delete
@@ -249,7 +259,7 @@ const CompanyList = () => {
           <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th>
+                {/* <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th> */}
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                   <input
                     type="checkbox"
@@ -294,14 +304,20 @@ const CompanyList = () => {
               </tr>
             </MDBTableHead>
             {loading ? (
-              <CustomizedProgressBars />
+              <MDBTableBody className="bg-light">
+                <tr>
+                  <td>
+                    <CircularLoading />
+                  </td>
+                </tr>
+              </MDBTableBody>
             ) : (
               <MDBTableBody className="bg-light">
                 {dataListCompany.map((company, index) => {
                   const isSelected = selectedCompanyIds.includes(company.id);
                   return (
                     <tr key={index}>
-                      <td>{company.id}</td>
+                      {/* <td>{company.id}</td> */}
                       <td>
                         <input
                           type="checkbox"
