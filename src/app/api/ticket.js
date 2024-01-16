@@ -63,6 +63,7 @@ export async function getTicketByUserIdPagination(
       },
       params: params,
     });
+    console.log(res.data.result)
     return res.data.result;
   } catch (error) {
     console.log(error);

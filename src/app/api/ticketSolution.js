@@ -26,7 +26,8 @@ export async function getAllTicketSolutions(
       },
       params: params,
     });
-    return res.data.result;
+    console.log(res.data.result)
+    return res.data.result.data;
   } catch (error) {
     console.log(error);
     return [];
