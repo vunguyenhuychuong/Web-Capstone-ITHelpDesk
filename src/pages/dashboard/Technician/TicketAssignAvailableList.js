@@ -13,12 +13,13 @@ import "../../../assets/css/ticketCustomer.css";
 import { ContentCopy, ViewCompact } from "@mui/icons-material";
 import { formatDate } from "../../helpers/FormatDate";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent } from "@mui/material";
+import { Box, Card, CardContent, Pagination } from "@mui/material";
 import { FaPlus } from "react-icons/fa";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import CloseTicket from "../../../assets/images/NoTicketSolution.jpg";
 import {
   ChangeStatusTicket,
+  getAssignTicket,
   getTicketAssignAvailable,
 } from "../../../app/api/ticket";
 import {
@@ -33,7 +34,40 @@ const TicketAssignAvailableList = () => {
   const [refreshData, setRefreshData] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isDropdownVisible, setDropdownVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [searchField, setSearchField] = useState("title");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortDirection, setSortDirection] = useState("desc");
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
+
+  const handleChangePage = (event, value) => {
+    setCurrentPage(value);
+  };
+  const fetchAssignTicket = useCallback(async () => {
+    try {
+      let filter = "";
+      if (searchQuery) {
+        filter = `title="${encodeURIComponent(searchQuery)}"`;
+      }
+      const res = await getAssignTicket(
+        searchField,
+        searchQuery,
+        currentPage,
+        pageSize,
+        sortBy,
+        sortDirection
+      );
+      setDataListTicketsAssign(res?.data);
+      setTotalPages(res?.totalPage);
+      setLoading(false);
+    } catch (error) {
+      console.log("Error while fetching data", error);
+      setLoading(false);
+    }
+  }, [currentPage, pageSize, searchQuery, sortBy, sortDirection]);
 
   const fetchDataListTicketSolution = async () => {
     try {
@@ -70,8 +104,8 @@ const TicketAssignAvailableList = () => {
   };
 
   useEffect(() => {
-    fetchDataListTicketSolution();
-  }, [refreshData]);
+    fetchAssignTicket();
+  }, [fetchAssignTicket]);
 
   return (
     <>
@@ -240,6 +274,13 @@ const TicketAssignAvailableList = () => {
           )}
         </div>
       </MDBContainer>
+      <Box display="flex" justifyContent="center" my={2}>
+        <Pagination
+          count={totalPages}
+          page={currentPage}
+          onChange={handleChangePage}
+        />
+      </Box>
     </>
   );
 };

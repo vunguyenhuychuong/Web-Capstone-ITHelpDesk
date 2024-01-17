@@ -126,9 +126,9 @@ const PaymentContract = ({ dataPayment }) => {
   const handleDetailPayment = async (paymentId) => {
     try {
       // const res = await getPaymentById(paymentId);
-      const term = await getPaymentTerm(paymentId);
+      // const term = await getPaymentTerm(paymentId);
       // setDataPaymentDetail(res);
-      setDataPaymentTerm(term);
+      // setDataPaymentTerm(term);
       // setSelectedPaymentForEdit(res);
     } catch (error) {
       console.log(error);
@@ -364,7 +364,7 @@ const PaymentContract = ({ dataPayment }) => {
           item
           className="justify-content-center d-flex w-100 border p-5 mt-5"
         >
-          {payment ? (
+          {payment?.contract ? (
             <>
               <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="caption table">

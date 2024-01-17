@@ -68,7 +68,7 @@ const TeamMemberList = () => {
   };
 
   const handleSelectAllTeamMembers = () => {
-    if (selectedTeamMembers.length === dataTeamMembers.length) {
+    if (selectedTeamMembers?.length === dataTeamMembers?.length) {
       setSelectedTeamMember([]);
     } else {
       setSelectedTeamMember(dataTeamMembers.map((mode) => mode.id));
@@ -81,7 +81,7 @@ const TeamMemberList = () => {
 
   const handleDeleteSelectedTeamMember = async (id) => {
     try {
-      if (selectedTeamMembers.length === 0) {
+      if (selectedTeamMembers?.length === 0) {
         return;
       }
       const deletePromises = selectedTeamMembers.map(async (teamId) => {
@@ -256,7 +256,7 @@ const TeamMemberList = () => {
                 </tr>
               </MDBTableHead>
               <MDBTableBody className="bg-light">
-                {dataTeamMembers.map((teamMember, index) => {
+                {dataTeamMembers?.map((teamMember, index) => {
                   const isSelected = selectedTeamMembers.includes(
                     teamMember.id
                   );

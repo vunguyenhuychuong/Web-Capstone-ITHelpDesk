@@ -85,7 +85,7 @@ export async function createCompanyMember(data) {
         Authorization: header,
       },
     });
-    toast.success(res.data.result.message, {
+    toast.success(res.data.result, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -108,7 +108,7 @@ export async function updateCompanyMember(data, memberId) {
         Authorization: header,
       },
     });
-    toast.success(res.data.result.message, {
+    toast.success(res.data.result, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -144,7 +144,7 @@ export async function deleteCompanyMember(memberId) {
         Authorization: header,
       },
     });
-    toast.success(res.data.result.message, {
+    toast.success(res.data.result, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,

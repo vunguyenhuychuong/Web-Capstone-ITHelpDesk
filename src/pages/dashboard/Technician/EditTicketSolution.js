@@ -120,8 +120,8 @@ const EditTicketSolution = () => {
     try {
       const fetchCategories = await getDataCategories();
       const fetchUsers = await getDataUser();
-      setDataCategories(fetchCategories?.data);
-      setDataUsers(fetchUsers?.data);
+      setDataCategories(fetchCategories);
+      setDataUsers(fetchUsers);
     } catch (error) {
       console.log("Error while fetching data", error);
     } finally {

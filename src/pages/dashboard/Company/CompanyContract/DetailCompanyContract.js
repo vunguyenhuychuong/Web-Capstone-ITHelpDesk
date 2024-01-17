@@ -37,6 +37,7 @@ import AssignTicketModal from "../../Manager/AssignTicketModal";
 import useContractData from "../../Manager/Contract/useContractData";
 import ContractInDetail from "./ContractInDetail";
 import PaymentContract from "../../Manager/Contract/PaymentContract";
+import CompanyContractPayment from "./CompanyContractPayment";
 
 const DetailCompanyContract = () => {
   const { contractId } = useParams();
@@ -217,7 +218,7 @@ const DetailCompanyContract = () => {
                 }
                 className="custom-tab-label"
               />
-              {/* <Tab
+              <Tab
                 label={
                   <div
                     style={{
@@ -230,7 +231,7 @@ const DetailCompanyContract = () => {
                   </div>
                 }
                 className="custom-tab-label"
-              /> */}
+              />
             </Tabs>
             <Box role="tabpanel" hidden={value !== 0}>
               {value === 0 ? (
@@ -239,16 +240,16 @@ const DetailCompanyContract = () => {
                 <LoadingSkeleton />
               )}
             </Box>
-            {/* <Box role="tabpanel" hidden={value !== 1}>
+            <Box role="tabpanel" hidden={value !== 1}>
               {value === 1 ? (
-                <PaymentContract
+                <CompanyContractPayment
                   dataPayment={data}
                   loading={loading || false}
                 />
               ) : (
                 <LoadingSkeleton />
               )}
-            </Box> */}
+            </Box>
           </Box>
         </Grid>
       </Grid>

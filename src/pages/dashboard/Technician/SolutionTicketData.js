@@ -15,7 +15,7 @@ const useSolutionTicketData = (solutionId) => {
       const solutionTicketData = await getTicketSolutionById(solutionId);
       const categoryData = await getDataCategories();
       setData(solutionTicketData);
-      setDataCategories(categoryData?.data);
+      setDataCategories(categoryData);
     } catch (error) {
       console.error("Error fetching ticket data: ", error);
       setError(error);

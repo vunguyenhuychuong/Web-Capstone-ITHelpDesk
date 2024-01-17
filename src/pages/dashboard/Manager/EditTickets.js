@@ -111,8 +111,8 @@ const EditTickets = () => {
       const fetchCategories = await getDataCategories();
       const fetchUsers = await getCustomerList();
       const fetchModes = await ModeApi.getMode();
-      setDataCategories(fetchCategories?.data);
-      setDataUser(fetchUsers?.data);
+      setDataCategories(fetchCategories);
+      setDataUser(fetchUsers);
       setDataMode(fetchModes?.data);
     } catch (error) {
       console.log("Error while fetching data", error);

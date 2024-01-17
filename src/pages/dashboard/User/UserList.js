@@ -66,7 +66,7 @@ const UserList = () => {
         sortBy,
         sortDirection
       );
-      setDataUsers(response?.data);
+      setDataUsers(response);
       setTotalPages(response?.totalPage);
       setLoading(false);
     } catch (error) {

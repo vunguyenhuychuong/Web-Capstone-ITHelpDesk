@@ -220,6 +220,19 @@ const DetailTicket = () => {
                 >
                   {userRole === 1 && (
                     <>
+                      {data.ticketStatus === 0 ||
+                        (data.ticketStatus === 1 && (
+                          <Button
+                            sx={{
+                              backgroundColor: "#FFFFFF",
+                              borderRadius: "5px",
+                            }}
+                            onClick={() => handleOpenEditTicket(ticketId)}
+                            disabled={!allowEdit}
+                          >
+                            Edit Ticket
+                          </Button>
+                        ))}
                       <Button
                         sx={{
                           backgroundColor: "#FFFFFF",
@@ -719,6 +732,7 @@ const DetailTicket = () => {
         open={dialogOpen}
         onClose={handleCloseAssignTicket}
         ticketId={ticketId}
+        refetch={refetch}
       />
     </section>
   );

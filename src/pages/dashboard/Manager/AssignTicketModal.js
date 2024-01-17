@@ -15,7 +15,7 @@ import { getAllTeams } from "../../../app/api/team";
 import { toast } from "react-toastify";
 import { AssignmentTurnedIn } from "@mui/icons-material";
 
-const AssignTicketModal = ({ open, onClose, ticketId }) => {
+const AssignTicketModal = ({ open, onClose, ticketId, refetch }) => {
   const [formData, setFormData] = useState({
     technicianId: "",
     teamId: "",
@@ -85,6 +85,8 @@ const AssignTicketModal = ({ open, onClose, ticketId }) => {
     try {
       await createAssignTicket(ticketId, formData);
       toast.success(`Assigned ticket ${ticketId} successfully`);
+      // window.location.reload();
+      refetch();
     } catch (error) {
       console.log("Error while assigning ticket", error);
     }

@@ -139,7 +139,7 @@ const ContractList = () => {
     }
   };
 
-  const handleOpenCreateTicketSolution = () => {
+  const handleOpenCreateContract = () => {
     navigate("/home/createContract");
   };
 
@@ -187,11 +187,11 @@ const ContractList = () => {
                   fontSize: "18px",
                   color: "#FFFFFF",
                 }}
-                onClick={() => handleOpenCreateTicketSolution()}
+                onClick={() => handleOpenCreateContract()}
               >
                 <FaPlus /> New
               </MDBBtn>
-              <MDBBtn
+              {/* <MDBBtn
                 color="#eee"
                 style={{
                   fontWeight: "bold",
@@ -201,7 +201,7 @@ const ContractList = () => {
                 onClick={() => handleDeleteSelectedSolutions()}
               >
                 <DeleteForever /> Delete
-              </MDBBtn>
+              </MDBBtn> */}
 
               <FormControl
                 variant="outlined"

@@ -311,7 +311,7 @@ const Details = ({
                   Category
                 </TableCell>
                 <TableCell style={{ textAlign: "left", minWidth: "300px" }}>
-                  {dataCategories.find(
+                  {dataCategories?.find(
                     (category) => category.id === data.categoryId
                   )?.name || "Unknown Priority"}
                 </TableCell>

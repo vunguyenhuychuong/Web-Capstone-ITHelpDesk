@@ -10,7 +10,7 @@ export function formatPrice(price) {
   }
 
   // Format the price using Intl.NumberFormat with VND currency
-  const formattedPrice = new Intl.NumberFormat("vi-VN", {
+  const formattedPrice = new Intl.NumberFormat("en-US", {
     maximumSignificantDigits: 3,
   }).format(price);
 

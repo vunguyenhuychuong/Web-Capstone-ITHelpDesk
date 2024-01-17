@@ -100,14 +100,14 @@ const CreateTickets = () => {
       const fetchCategories = await getDataCategories();
       const fetchUsers = await getCustomerList();
       const fetchModes = await ModeApi.getMode();
-      setDataCategories(fetchCategories?.data);
+      setDataCategories(fetchCategories);
       if (fetchCategories.length > 0) {
         setData((prevData) => ({
           ...prevData,
           categoryId: fetchCategories[0]?.id,
         }));
       }
-      setDataUser(fetchUsers?.data);
+      setDataUser(fetchUsers);
       setDataMode(fetchModes?.data);
       if (fetchModes.length > 0) {
         setData((prevData) => ({
@@ -235,7 +235,7 @@ const CreateTickets = () => {
   useEffect(() => {
     setData((prevData) => ({
       ...prevData,
-      requesterId: dataUser.length > 0 ? dataUser[0].id : 1,
+      requesterId: dataUser?.length > 0 ? dataUser[0].id : 1,
     }));
   }, [dataUser]);
 
@@ -449,7 +449,7 @@ const CreateTickets = () => {
                         value={data.requesterId}
                         onChange={handleInputChange}
                       >
-                        {dataUser.map((user) => (
+                        {dataUser?.map((user) => (
                           <option key={user.id} value={user.id}>
                             {user.lastName} {user.firstName}
                           </option>
@@ -579,7 +579,7 @@ const CreateTickets = () => {
                         onChange={handleInputChange}
                       >
                         {dataCategories
-                          .filter((category) => category.id !== "")
+                          ?.filter((category) => category.id !== "")
                           .map((category) => (
                             <option key={category.id} value={category.id}>
                               {category.name}

@@ -74,7 +74,7 @@ export default function TicketLogList() {
             dataTicketLog.map((log, index) => (
               <TableRow key={log.timestamp}>
                 <TableCell align="left" style={{ width: "40vw" }}>
-                  {log.entries.length > 1 && log.entries[0].message !== "" ? (
+                  {log.entries[0].message && log.entries[0].message !== "" ? (
                     <Accordion>
                       <AccordionSummary
                         expandIcon={<ExpandMore />}
@@ -112,8 +112,7 @@ export default function TicketLogList() {
                       alignItems={"center"}
                       px={2}
                     >
-                      <ListAlt />
-                      <Typography>{log.entries.length + " change"}</Typography>
+                      <Typography>{""}</Typography>
                     </Stack>
                   )}
                 </TableCell>

@@ -4,7 +4,6 @@ import axiosClient from "./axiosClient";
 import { baseURL } from "./link";
 import { toast } from "react-toastify";
 
-
 export async function getAllCategories() {
   const header = getAuthHeader();
   try {
@@ -58,7 +57,7 @@ export async function createCategory(data) {
         Authorization: header,
       },
     });
-    toast.success(res.data.result.message, {
+    toast.success(res.data.result, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -82,7 +81,7 @@ export async function updateCategory(data, categoryId) {
         Authorization: header,
       },
     });
-    toast.success(res.data.result.message, {
+    toast.success(res.data.result, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -106,7 +105,7 @@ export async function deleteCategory(categoryId) {
         Authorization: header,
       },
     });
-    toast.success(res.data.result.message, {
+    toast.success(res.data.result, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -123,19 +122,19 @@ export async function deleteCategory(categoryId) {
 }
 
 export async function getCategoryDetail(categoryId) {
-    const header = getAuthHeader();
-    try {
-      const result = await axios.get(`${baseURL}/category/${categoryId}`, {
-        headers: {
-          Authorization: header,
-        },
-      });
-      return result.data.result;
-    } catch (error) {
-      console.log(error);
-    }
+  const header = getAuthHeader();
+  try {
+    const result = await axios.get(`${baseURL}/category/${categoryId}`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return result.data.result;
+  } catch (error) {
+    console.log(error);
   }
-  
+}
+
 export async function getDataCategories() {
   const header = getAuthHeader();
   try {

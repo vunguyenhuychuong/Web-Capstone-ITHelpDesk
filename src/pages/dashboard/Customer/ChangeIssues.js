@@ -33,7 +33,7 @@ const ChangeIssues = ({ onClose, ticketId }) => {
   const fetchCategory = async () => {
     try {
       const fetchCategories = await CategoryApi.getAllCategories();
-      setDataCategories(fetchCategories.data);
+      setDataCategories(fetchCategories?.data);
     } catch (error) {
       console.log("Error while fetching data", error);
     } finally {

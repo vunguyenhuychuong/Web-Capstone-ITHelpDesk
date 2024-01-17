@@ -34,10 +34,17 @@ import PaymentContract from "./PaymentContract";
 import Details from "./Details";
 import { getStatusContract } from "../../../helpers/tableComlumn";
 import ReactImageGallery from "react-image-gallery";
+import ConfirmDialog from "../../../../components/dialog/ConfirmDialog";
+import { deleteContract } from "../../../../app/api/contract";
 
 const DetailContract = () => {
   const { contractId } = useParams();
-  const { data, loading, setData } = useContractData(contractId);
+  const {
+    data,
+    loading,
+    setData,
+    fetchData: refetch,
+  } = useContractData(contractId);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [value, setValue] = useState(0);
   const [previewImages, setPreviewImages] = useState([]);
@@ -45,6 +52,7 @@ const DetailContract = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth);
   const userRole = user.user.role;
+  const [openConfirm, setOpenConfirm] = React.useState(false);
 
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
@@ -54,10 +62,22 @@ const DetailContract = () => {
     navigate(`/home/editContract/${contractId}`);
   };
 
+  const handleDeleteContract = async (contractId) => {
+    try {
+      await deleteContract(contractId);
+      // await refetch();
+      handleCloseConfirm();
+      handleGoBack();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const handleCloseAssignTicket = () => {
     setDialogOpen(false);
   };
-
+  const handleCloseConfirm = () => {
+    setOpenConfirm(false);
+  };
   const handleOpenImagePreview = () => {
     setIsImagePreviewOpen(true);
   };
@@ -138,6 +158,17 @@ const DetailContract = () => {
               onClick={() => handleOpenEditTicket(contractId)}
             >
               Edit
+            </Button>
+
+            <Button
+              color="error"
+              sx={{
+                backgroundColor: "#FFFFFF",
+                borderRadius: "5px",
+              }}
+              onClick={() => setOpenConfirm(true)}
+            >
+              Delete
             </Button>
           </Stack>
 
@@ -273,6 +304,12 @@ const DetailContract = () => {
         open={dialogOpen}
         onClose={handleCloseAssignTicket}
         ticketId={contractId}
+      />
+      <ConfirmDialog
+        content={"Are you sure want to delete this contract?"}
+        open={openConfirm}
+        action={() => handleDeleteContract(contractId)}
+        handleClose={handleCloseConfirm}
       />
     </>
   );

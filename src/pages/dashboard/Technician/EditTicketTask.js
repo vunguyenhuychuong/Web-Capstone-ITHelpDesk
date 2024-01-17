@@ -24,6 +24,7 @@ import AssignApi from "../../../app/api/assign";
 import Process, {
   TicketStatusOptions,
   priorityOption,
+  ticketTaskStatus,
 } from "../../helpers/tableComlumn";
 import {
   getTicketTaskById,
@@ -259,7 +260,7 @@ const EditTicketTask = () => {
         note: data.note,
       });
       if (res) {
-        handleGoBack();
+        handleGoBack(data.ticketId);
       }
     } catch (error) {
       console.error(error);
@@ -590,13 +591,13 @@ const EditTicketTask = () => {
                         value={data.taskStatus}
                         onChange={handleInputChange}
                       >
-                        {TicketStatusOptions.filter(
-                          (status) => status.id !== ""
-                        ).map((status) => (
-                          <option key={status.id} value={status.id}>
-                            {status.name}
-                          </option>
-                        ))}
+                        {ticketTaskStatus
+                          .filter((status) => status.id !== "")
+                          .map((status) => (
+                            <option key={status.id} value={status.id}>
+                              {status.name}
+                            </option>
+                          ))}
                       </select>
                     </Grid>
                   </Grid>
