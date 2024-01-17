@@ -72,7 +72,8 @@ const MyRequestList = () => {
         userId,
         ticketStatus
       );
-      setDataListTicketsCustomer(response);
+      setDataListTicketsCustomer(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.log(error);
     } finally {
@@ -137,7 +138,6 @@ const MyRequestList = () => {
   useEffect(() => {
     fetchDataListTicketCustomer();
     fetchAllCategories();
-    setTotalPages(4);
   }, [fetchDataListTicketCustomer]);
 
   return (

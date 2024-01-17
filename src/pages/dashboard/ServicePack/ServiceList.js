@@ -57,7 +57,7 @@ const ServiceList = () => {
       if (searchQuery) {
         filter = `title="${encodeURIComponent(searchQuery)}"`;
       }
-      const service = await getAllServices(
+      const response = await getAllServices(
         searchField,
         searchQuery,
         currentPage,
@@ -65,7 +65,8 @@ const ServiceList = () => {
         sortBy,
         sortDirection
       );
-      setDataService(service);
+      setDataService(response?.data);
+      setTotalPages(response?.totalPage);
       setIsLoading(false);
     } catch (error) {
       console.error(error);
@@ -140,7 +141,6 @@ const ServiceList = () => {
 
   useEffect(() => {
     fetchAllService();
-    setTotalPages(3);
   }, [fetchAllService]);
 
   return (

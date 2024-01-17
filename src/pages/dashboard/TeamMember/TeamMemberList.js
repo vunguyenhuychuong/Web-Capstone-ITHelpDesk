@@ -43,7 +43,7 @@ const TeamMemberList = () => {
         filter = `title="${encodeURIComponent(searchQuery)}"`;
       }
 
-      const mode = await getAllTeamMember(
+      const response = await getAllTeamMember(
         searchField,
         searchQuery,
         currentPage,
@@ -51,7 +51,8 @@ const TeamMemberList = () => {
         sortBy,
         sortDirection
       );
-      setDataTeamMembers(mode);
+      setDataTeamMembers(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.error(error);
     }
@@ -136,7 +137,6 @@ const TeamMemberList = () => {
 
   useEffect(() => {
     fetchAllTeamMember();
-    setTotalPages(4);
     setIsLoading(false);
   }, [fetchAllTeamMember]);
 

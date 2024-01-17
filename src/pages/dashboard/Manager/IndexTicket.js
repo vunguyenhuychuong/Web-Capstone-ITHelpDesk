@@ -80,7 +80,8 @@ const IndexTicket = () => {
         sortDirection,
         ticketStatus
       );
-      setDataTickets(res);
+      setDataTickets(res?.data);
+      setTotalPages(res?.totalPage);
       setIsLoading(false);
     } catch (error) {
       console.log("Error while fetching data", error);
@@ -206,7 +207,6 @@ const IndexTicket = () => {
   useEffect(() => {
     fetchAllTicket();
     fetchAllCategories();
-    setTotalPages(4);
   }, [fetchAllTicket]);
 
   return (

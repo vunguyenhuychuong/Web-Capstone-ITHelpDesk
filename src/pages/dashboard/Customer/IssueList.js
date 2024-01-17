@@ -10,7 +10,10 @@ import {
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketCustomer.css";
 import { getTicketByUserId } from "../../../app/api/ticket";
-import { TicketStatusOptions, getPriorityBadge } from "../../helpers/tableComlumn";
+import {
+  TicketStatusOptions,
+  getPriorityBadge,
+} from "../../helpers/tableComlumn";
 import CategoryApi from "../../../app/api/category";
 import { ContentCopy, Edit } from "@mui/icons-material";
 import { useSelector } from "react-redux";
@@ -20,7 +23,6 @@ import PageSizeSelector from "../Pagination/Pagination";
 import { useCallback } from "react";
 import { Box, FormControl, MenuItem, Pagination, Select } from "@mui/material";
 import { FaSearch } from "react-icons/fa";
-
 
 const IssueList = () => {
   const [dataListTickets, setDataListTickets] = useState([]);
@@ -35,21 +37,25 @@ const IssueList = () => {
   const userId = user.user.id;
   console.log(userId);
 
-  const fetchDataListTicket = useCallback(async (userId) => {
-    try {
-      const response = await getTicketByUserId(
-        searchField,
-        searchQuery,
-        userId,
-        currentPage,
-        pageSize
+  const fetchDataListTicket = useCallback(
+    async (userId) => {
+      try {
+        const response = await getTicketByUserId(
+          searchField,
+          searchQuery,
+          userId,
+          currentPage,
+          pageSize
         );
-      setDataListTickets(response);
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
-  }, [searchField,searchQuery, currentPage, pageSize]);
+        setDataListTickets(response?.data);
+        setTotalPages(response?.totalPage);
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [searchField, searchQuery, currentPage, pageSize]
+  );
 
   const handleChangePage = (event, value) => {
     setCurrentPage(value);
@@ -89,66 +95,65 @@ const IssueList = () => {
   useEffect(() => {
     fetchDataListTicket(userId);
     fetchCategoriesList();
-    setTotalPages(4);
   }, [userId, fetchDataListTicket]);
 
   return (
     <section style={{ backgroundColor: "#eee" }}>
       <MDBContainer className="py-5 custom-container">
-      <MDBNavbar expand="lg" light bgColor="inherit">
-            <MDBContainer fluid>
-              <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
-                <ContentCopy style={{ marginRight: "20px" }} /> All Ticket Request
-              </MDBNavbarBrand>
-              <MDBNavbarNav className="ms-auto manager-navbar-nav">
-                <FormControl
-                  variant="outlined"
-                  style={{
-                    minWidth: 120,
-                    marginRight: 10,
-                    marginTop: 10,
-                    marginLeft: 10,
+        <MDBNavbar expand="lg" light bgColor="inherit">
+          <MDBContainer fluid>
+            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
+              <ContentCopy style={{ marginRight: "20px" }} /> All Ticket Request
+            </MDBNavbarBrand>
+            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+              <FormControl
+                variant="outlined"
+                style={{
+                  minWidth: 120,
+                  marginRight: 10,
+                  marginTop: 10,
+                  marginLeft: 10,
+                }}
+                size="small"
+              >
+                <Select
+                  value={searchField}
+                  onChange={(e) => setSearchField(e.target.value)}
+                  inputProps={{
+                    name: "searchField",
+                    id: "search-field",
                   }}
-                  size="small"
                 >
-                  <Select
-                    value={searchField}
-                    onChange={(e) => setSearchField(e.target.value)}
-                    inputProps={{
-                      name: "searchField",
-                      id: "search-field",
-                    }}
-                  >
-                    <MenuItem value="requesterId">RequesterId</MenuItem>
-                    <MenuItem value="title">Title</MenuItem>
-                    <MenuItem value="description">Description</MenuItem>
-                    <MenuItem value="categoryId">Category</MenuItem>
-                    <MenuItem value="impact">impact</MenuItem>
-                    <MenuItem value="ticketStatus">ticketStatus</MenuItem>
-                  </Select>
-                </FormControl>
-                <div className="input-wrapper">
-                  <FaSearch id="search-icon" />
-                  <input
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        fetchDataListTicket();
-                      }
-                    }}
-                    className="input-search"
-                    placeholder="Type to search..."
-                  />
-                </div>
-                <PageSizeSelector
-                  pageSize={pageSize}
-                  handleChangePageSize={handleChangePageSize}
+                  <MenuItem value="requesterId">RequesterId</MenuItem>
+                  <MenuItem value="title">Title</MenuItem>
+                  <MenuItem value="description">Description</MenuItem>
+                  <MenuItem value="categoryId">Category</MenuItem>
+                  <MenuItem value="impact">impact</MenuItem>
+                  <MenuItem value="ticketStatus">ticketStatus</MenuItem>
+                </Select>
+              </FormControl>
+              <div className="input-wrapper">
+                <FaSearch id="search-icon" />
+                <input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      fetchDataListTicket();
+                    }
+                  }}
+                  className="input-search"
+                  placeholder="Type to search..."
                 />
-              </MDBNavbarNav>
-            </MDBContainer>
-          </MDBNavbar>
+              </div>
+              <PageSizeSelector
+                pageSize={pageSize}
+                handleChangePageSize={handleChangePageSize}
+              />
+            </MDBNavbarNav>
+          </MDBContainer>
+        </MDBNavbar>
         <MDBTable className="align-middle mb-0" responsive>
           <MDBTableHead className="bg-light">
             <tr>
@@ -162,9 +167,7 @@ const IssueList = () => {
               <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                 Create Time
               </th>
-              <th style={{ fontWeight: "bold", fontSize: "18px" }}>
-                Status
-              </th>
+              <th style={{ fontWeight: "bold", fontSize: "18px" }}>Status</th>
             </tr>
           </MDBTableHead>
           <MDBTableBody className="bg-light">

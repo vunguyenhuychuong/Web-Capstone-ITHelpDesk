@@ -59,7 +59,8 @@ const ContractList = () => {
         sortBy,
         sortDirection
       );
-      setDataListContract(response);
+      setDataListContract(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.log(error);
     } finally {
@@ -158,7 +159,6 @@ const ContractList = () => {
 
   useEffect(() => {
     fetchDataListContract();
-    setTotalPages(4);
   }, [fetchDataListContract, refreshData]);
 
   return (

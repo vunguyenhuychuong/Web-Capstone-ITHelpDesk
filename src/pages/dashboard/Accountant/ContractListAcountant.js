@@ -49,7 +49,8 @@ const ContractListAcountant = () => {
     try {
       setLoading(true);
       const response = await getContractAccountant();
-      setDataListContract(response);
+      setDataListContract(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.log(error);
     } finally {
@@ -153,7 +154,6 @@ const ContractListAcountant = () => {
 
   useEffect(() => {
     fetchDataListContract();
-    setTotalPages(4);
   }, [refreshData]);
 
   return (

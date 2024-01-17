@@ -55,7 +55,7 @@ const CategoryList = () => {
         filter = `title="${encodeURIComponent(searchQuery)}"`;
       }
 
-      const category = await getCategoriesAll(
+      const response = await getCategoriesAll(
         searchField,
         searchQuery,
         currentPage,
@@ -63,7 +63,8 @@ const CategoryList = () => {
         sortBy,
         sortDirection
       );
-      setDataCategory(category);
+      setDataCategory(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.error(error);
     } finally {
@@ -181,7 +182,6 @@ const CategoryList = () => {
 
   useEffect(() => {
     fetchAllCategory();
-    setTotalPages(4);
   }, [fetchAllCategory]);
 
   return (

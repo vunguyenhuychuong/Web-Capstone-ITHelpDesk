@@ -74,8 +74,8 @@ const TicketSolutionList = () => {
         sortBy,
         sortDirection
       );
-      setDataListTicketsSolution(response.data);
-      setTotalPages(response.totalPage);
+      setDataListTicketsSolution(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.log(error);
     } finally {

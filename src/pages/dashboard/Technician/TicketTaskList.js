@@ -69,7 +69,8 @@ const TicketTaskList = () => {
         sortDirection,
         ticketId
       );
-      setDataListTicketsTask(response);
+      setDataListTicketsTask(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.log(error);
     } finally {
@@ -169,7 +170,6 @@ const TicketTaskList = () => {
 
   useEffect(() => {
     fetchDataListTicketTask();
-    setTotalPages(4);
   }, [fetchDataListTicketTask, refreshData]);
 
   return (
