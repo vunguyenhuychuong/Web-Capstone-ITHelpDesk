@@ -8,7 +8,7 @@ export async function getAllContract(
   searchQuery,
   page = 1,
   pageSize = 5,
-  sortBy = "id",
+  sortBy = "name",
   sortDirection = "asc"
 ) {
   const header = getAuthHeader();
@@ -51,14 +51,14 @@ export async function getAllContracts() {
 //
 export async function getContractById(contractId) {
   const header = getAuthHeader();
-  try{
+  try {
     const res = await axios.get(`${baseURL}/contract/${contractId}`, {
       headers: {
         Authorization: header,
       },
     });
     return res.data.result;
-  }catch(error){
+  } catch (error) {
     console.log(error);
   }
 }
@@ -127,6 +127,20 @@ export async function getContractCompanyByCompanyId(companyId) {
   }
 }
 
+export async function getContractCompany() {
+  const header = getAuthHeader();
+  try {
+    const res = await axios.get(`${baseURL}/contract/company`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data.result;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 // Get ContractId
 
 // Create Contract
@@ -138,7 +152,7 @@ export async function createContract(data) {
         Authorization: header,
       },
     });
-    toast.success(res.data.result, {
+    toast.success(res.data.result.message, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -146,7 +160,7 @@ export async function createContract(data) {
     return res.data.result;
   } catch (error) {
     console.log(error.response.data.responseException.exceptionMessage);
-    toast.error(error.response.data.responseException.exceptionMessage, {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -163,7 +177,7 @@ export async function updateContract(data, contractId) {
         Authorization: header,
       },
     });
-    toast.success(res.data.result, {
+    toast.success(res.data.result.message, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -171,7 +185,7 @@ export async function updateContract(data, contractId) {
     return res.data.result;
   } catch (error) {
     console.log(error.response.data.responseException.exceptionMessage);
-    toast.error(error.response.data.responseException.exceptionMessage, {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -191,7 +205,7 @@ export async function deleteContract(contractId) {
     return res.data.result;
   } catch (error) {
     console.log(error.response.data.responseException.exceptionMessage);
-    toast.error(error.response.data.responseException.exceptionMessage, {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -212,7 +226,7 @@ export async function updateContractReNew(data, contractId) {
         },
       }
     );
-    toast.success(res.data.result, {
+    toast.success(res.data.result.message, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -220,7 +234,7 @@ export async function updateContractReNew(data, contractId) {
     return res.data.result;
   } catch (error) {
     console.log(error);
-    toast.error(error.response.data.responseException.exceptionMessage, {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -254,49 +268,52 @@ export async function getAllAccountList() {
   } catch (error) {
     console.log(error);
   }
-};
+}
 
 export async function getAllCompanyList() {
   const header = getAuthHeader();
-  try{
+  try {
     const res = await axios.get(`${baseURL}/company/all`, {
       headers: {
         Authorization: header,
       },
     });
     return res.data.result;
-  }catch(error){
+  } catch (error) {
     console.log(error);
   }
-};
+}
 
 export async function getAllContractSelect() {
   const header = getAuthHeader();
-  try{
+  try {
     const res = await axios.get(`${baseURL}/contract/all`, {
       headers: {
         Authorization: header,
       },
     });
     return res.data.result;
-  }catch(error){
+  } catch (error) {
     console.log(error);
   }
-};
+}
 
 export async function getContractService(contractId) {
   const header = getAuthHeader();
-  try{
-    const res = await axios.get(`${baseURL}/contract/services?contractId=${contractId}`, {
-      headers: {
-        Authorization: header,
-      },
-    });
+  try {
+    const res = await axios.get(
+      `${baseURL}/contract/services?contractId=${contractId}`,
+      {
+        headers: {
+          Authorization: header,
+        },
+      }
+    );
     return res.data.result;
-  }catch(error){
+  } catch (error) {
     console.log(error);
   }
-};
+}
 
 export async function getPaymentContract(contractId) {
   const header = getAuthHeader();
@@ -322,7 +339,7 @@ export async function getPaymentContract(contractId) {
   }
 }
 
-export async function PostPaymentContract (payload) {
+export async function PostPaymentContract(payload) {
   const header = getAuthHeader();
   try {
     const res = await axios.post(`${baseURL}/payment`, payload, {
@@ -332,14 +349,14 @@ export async function PostPaymentContract (payload) {
     });
 
     console.log(res.data.result);
-    toast.success(res.data.result, {
+    toast.success(res.data.result.message, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
     });
   } catch (error) {
     console.error(error);
-    toast.error(error.response.data.responseException.exceptionMessage, {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -347,7 +364,7 @@ export async function PostPaymentContract (payload) {
   }
 }
 
-export async function PutPaymentContract (id, payload) {
+export async function PutPaymentContract(id, payload) {
   const header = getAuthHeader();
   try {
     const res = await axios.put(`${baseURL}/payment/${id}`, payload, {
@@ -357,14 +374,14 @@ export async function PutPaymentContract (id, payload) {
     });
 
     console.log(res.data.result);
-    toast.success(res.data.result, {
+    toast.success(res.data.result.message, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
     });
   } catch (error) {
     console.error(error);
-    toast.error(error.response.data.responseException.exceptionMessage, {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -372,19 +389,19 @@ export async function PutPaymentContract (id, payload) {
   }
 }
 
-export async function getAllAccountant () {
+export async function getAllAccountant() {
   const header = getAuthHeader();
-  try{
+  try {
     const res = await axios.get(`${baseURL}/user/list/accountants`, {
       headers: {
         Authorization: header,
       },
     });
     return res.data.result;
-  }catch(error){
+  } catch (error) {
     console.log(error);
   }
-};
+}
 
 export async function createContractService(contractId, selectedService) {
   const header = getAuthHeader();
@@ -400,46 +417,52 @@ export async function createContractService(contractId, selectedService) {
     );
     return res.data.result;
   } catch (error) {
-    toast.error(error.response.data.responseException.exceptionMessage, {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
-    });    
-    throw error; 
+    });
+    throw error;
   }
 }
 
 export async function getServiceSelect(contractId) {
   const header = getAuthHeader();
-  try{
-    const res = await axios.get(`${baseURL}/contract/services/select?contractId=${contractId}`, {
-      headers: {
-        Authorization: header,
-      },
-    });
+  try {
+    const res = await axios.get(
+      `${baseURL}/contract/services/select?contractId=${contractId}`,
+      {
+        headers: {
+          Authorization: header,
+        },
+      }
+    );
     return res.data.result;
-  }catch(error){
+  } catch (error) {
     console.log(error);
   }
-};
+}
 
 export async function deleteContractService(serviceId) {
   const header = getAuthHeader();
-  try{
-    const res = await axios.delete(`${baseURL}/contract/services/${serviceId}`, {
-      headers: {
-        Authorization: header,
-      },
-    });
+  try {
+    const res = await axios.delete(
+      `${baseURL}/contract/services/${serviceId}`,
+      {
+        headers: {
+          Authorization: header,
+        },
+      }
+    );
     toast.success("Contract services deleted successfully", {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
     });
     return res.data.result;
-  }catch(error){
+  } catch (error) {
     console.log(error.response.data.responseException.exceptionMessage);
-    toast.error(error.response.data.responseException.exceptionMessage, {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,

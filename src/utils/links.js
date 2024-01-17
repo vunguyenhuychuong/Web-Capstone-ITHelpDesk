@@ -118,7 +118,13 @@ const links = [
     id: 29,
     text: "Category",
     path: "categoryList",
-    icon: <CategoryOutlined />
+    icon: <CategoryOutlined />,
+  },
+  {
+    id: 30,
+    text: "Company Contract",
+    path: "companyContractList",
+    icon: <ReceiptLong />,
   },
 ];
 

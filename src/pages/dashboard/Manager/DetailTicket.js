@@ -86,7 +86,7 @@ const DetailTicket = () => {
     try {
       const fetchCategories = await CategoryApi.getAllCategories();
       const fetchModes = await ModeApi.getMode();
-      setDataCategories(fetchCategories);
+      setDataCategories(fetchCategories?.data);
       setDataMode(fetchModes);
     } catch (error) {
       console.log("Error while fetching data", error);

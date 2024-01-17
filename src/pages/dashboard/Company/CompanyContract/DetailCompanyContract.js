@@ -12,7 +12,7 @@ import {
   ReceiptLong,
 } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
-import AssignTicketModal from "../AssignTicketModal";
+
 import {
   Button,
   Chip,
@@ -25,17 +25,20 @@ import {
   Tab,
   Tabs,
 } from "@mui/material";
-import { formatDate } from "../../../helpers/FormatDate";
-import { Box } from "@mui/system";
-import LoadingSkeleton from "../../../../components/iconify/LoadingSkeleton";
-import { useSelector } from "react-redux";
-import useContractData from "./useContractData";
-import PaymentContract from "./PaymentContract";
-import Details from "./Details";
-import { getStatusContract } from "../../../helpers/tableComlumn";
-import ReactImageGallery from "react-image-gallery";
 
-const DetailContract = () => {
+import { Box } from "@mui/system";
+
+import { useSelector } from "react-redux";
+import ReactImageGallery from "react-image-gallery";
+import { getStatusContract } from "../../../helpers/tableComlumn";
+import { formatDate } from "../../../helpers/FormatDate";
+import LoadingSkeleton from "../../../../components/iconify/LoadingSkeleton";
+import AssignTicketModal from "../../Manager/AssignTicketModal";
+import useContractData from "../../Manager/Contract/useContractData";
+import ContractInDetail from "./ContractInDetail";
+import PaymentContract from "../../Manager/Contract/PaymentContract";
+
+const DetailCompanyContract = () => {
   const { contractId } = useParams();
   const { data, loading, setData } = useContractData(contractId);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -66,11 +69,7 @@ const DetailContract = () => {
     setIsImagePreviewOpen(false);
   };
   const handleGoBack = () => {
-    if (userRole === 2) {
-      navigate(`/home/contractList`);
-    } else if (userRole === 4) {
-      navigate(`/home/contractList`);
-    }
+    navigate(`/home/companyContractList`);
   };
   useEffect(() => {
     try {
@@ -130,7 +129,7 @@ const DetailContract = () => {
               <ArrowBack />
             </Button>
 
-            <Button
+            {/* <Button
               sx={{
                 backgroundColor: "#FFFFFF",
                 borderRadius: "5px",
@@ -138,7 +137,7 @@ const DetailContract = () => {
               onClick={() => handleOpenEditTicket(contractId)}
             >
               Edit
-            </Button>
+            </Button> */}
           </Stack>
 
           <MDBRow className="mb-2">
@@ -218,7 +217,7 @@ const DetailContract = () => {
                 }
                 className="custom-tab-label"
               />
-              <Tab
+              {/* <Tab
                 label={
                   <div
                     style={{
@@ -231,16 +230,16 @@ const DetailContract = () => {
                   </div>
                 }
                 className="custom-tab-label"
-              />
+              /> */}
             </Tabs>
             <Box role="tabpanel" hidden={value !== 0}>
               {value === 0 ? (
-                <Details data={data} loading={loading || false} />
+                <ContractInDetail data={data} loading={loading || false} />
               ) : (
                 <LoadingSkeleton />
               )}
             </Box>
-            <Box role="tabpanel" hidden={value !== 1}>
+            {/* <Box role="tabpanel" hidden={value !== 1}>
               {value === 1 ? (
                 <PaymentContract
                   dataPayment={data}
@@ -249,7 +248,7 @@ const DetailContract = () => {
               ) : (
                 <LoadingSkeleton />
               )}
-            </Box>
+            </Box> */}
           </Box>
         </Grid>
       </Grid>
@@ -278,4 +277,4 @@ const DetailContract = () => {
   );
 };
 
-export default DetailContract;
+export default DetailCompanyContract;

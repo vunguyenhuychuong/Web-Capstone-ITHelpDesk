@@ -100,15 +100,15 @@ const CreateTickets = () => {
       const fetchCategories = await getDataCategories();
       const fetchUsers = await getCustomerList();
       const fetchModes = await ModeApi.getMode();
-      setDataCategories(fetchCategories);
+      setDataCategories(fetchCategories?.data);
       if (fetchCategories.length > 0) {
         setData((prevData) => ({
           ...prevData,
           categoryId: fetchCategories[0]?.id,
         }));
       }
-      setDataUser(fetchUsers);
-      setDataMode(fetchModes);
+      setDataUser(fetchUsers?.data);
+      setDataMode(fetchModes?.data);
       if (fetchModes.length > 0) {
         setData((prevData) => ({
           ...prevData,

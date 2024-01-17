@@ -9,19 +9,15 @@ import {
   MDBTableHead,
 } from "mdb-react-ui-kit";
 import React, { useCallback, useEffect, useState } from "react";
-import "../../../assets/css/ticketCustomer.css";
-import PageSizeSelector from "../Pagination/Pagination";
+import PageSizeSelector from "../../Pagination/Pagination";
 import {
   ArrowDropDown,
   ArrowDropUp,
   ContentCopy,
   DeleteForever,
-  Lock,
-  LockOpen,
-  Square,
   ViewCompact,
 } from "@mui/icons-material";
-import { formatDate } from "../../helpers/FormatDate";
+
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -32,14 +28,17 @@ import {
   Select,
 } from "@mui/material";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import { deleteTicketSolution } from "../../../app/api/ticketSolution";
 import { toast } from "react-toastify";
-import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
-import { getAllContract } from "../../../app/api/contract";
-import { getStatusContract } from "../../helpers/tableComlumn";
-import CircularLoading from "../../../components/iconify/CircularLoading";
+import {
+  getContractCompany,
+  getContractCompanyByCompanyId,
+} from "../../../../app/api/contract";
+import CircularLoading from "../../../../components/iconify/CircularLoading";
+import { getStatusContract } from "../../../helpers/tableComlumn";
+import { formatDate } from "../../../helpers/FormatDate";
+import { useSelector } from "react-redux";
 
-const ContractList = () => {
+const CompanyContractList = () => {
   const [dataListContract, setDataListContract] = useState([]);
   const [selectedContractIds, setSelectedContractIds] = useState([]);
   const [refreshData, setRefreshData] = useState(false);
@@ -51,23 +50,13 @@ const ContractList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
   const [sortBy, setSortBy] = useState("name");
+  const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
 
   const fetchDataListContract = useCallback(async () => {
     try {
-      let filter = "";
-      if (searchQuery) {
-        filter = `title="${encodeURIComponent(searchQuery)}"`;
-      }
       setLoading(true);
-      const response = await getAllContract(
-        searchField,
-        searchQuery,
-        currentPage,
-        pageSize,
-        sortBy,
-        sortDirection
-      );
+      const response = await getContractCompany();
       setDataListContract(response?.data);
       setTotalPages(response?.totalPage);
     } catch (error) {
@@ -75,7 +64,7 @@ const ContractList = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection]);
+  }, []);
 
   const handleSelectSolution = (contractId) => {
     if (selectedContractIds.includes(contractId)) {
@@ -88,54 +77,10 @@ const ContractList = () => {
   };
 
   const handleSelectAllSolutions = () => {
-    if (selectedContractIds.length === dataListContract.length) {
+    if (selectedContractIds?.length === dataListContract?.length) {
       setSelectedContractIds([]);
     } else {
       setSelectedContractIds(dataListContract.map((solution) => solution.id));
-    }
-  };
-
-  const handleDeleteSelectedSolutions = (id) => {
-    try {
-      if (selectedContractIds.length === 0) {
-        console.log("No selected solutions to delete.");
-        return;
-      }
-      let currentIndex = 0;
-      const deleteNextSolution = () => {
-        if (currentIndex < selectedContractIds.length) {
-          const contractId = selectedContractIds[currentIndex];
-          deleteTicketSolution(contractId)
-            .then(() => {
-              console.log(
-                `Solution with ID ${contractId} deleted successfully`
-              );
-              currentIndex++;
-              deleteNextSolution();
-            })
-            .catch((error) => {
-              console.error(
-                `Error deleting solution with ID ${contractId}: `,
-                error
-              );
-              toast.error(
-                `Error deleting solution with ID ${contractId}: `,
-                error
-              );
-            });
-        } else {
-          setSelectedContractIds([]);
-          toast.success("Selected solutions deleted successfully");
-          setRefreshData((prev) => !prev);
-        }
-      };
-
-      deleteNextSolution();
-    } catch (error) {
-      console.error("Failed to delete selected solutions: ", error);
-      toast.error(
-        "Failed to delete selected solutions, Please try again later"
-      );
     }
   };
 
@@ -144,7 +89,7 @@ const ContractList = () => {
   };
 
   const handleOpenDetailContract = (contractId) => {
-    navigate(`/home/detailContract/${contractId}`);
+    navigate(`/home/detailCompanyContract/${contractId}`);
   };
 
   const handleChangePage = (event, value) => {
@@ -177,32 +122,9 @@ const ContractList = () => {
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
-              <span style={{ color: "#FFFFFF" }}>All Contracts</span>
+              <span style={{ color: "#FFFFFF" }}>All Company Contracts</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
-              <MDBBtn
-                color="#eee"
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "18px",
-                  color: "#FFFFFF",
-                }}
-                onClick={() => handleOpenCreateTicketSolution()}
-              >
-                <FaPlus /> New
-              </MDBBtn>
-              <MDBBtn
-                color="#eee"
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "18px",
-                  color: "#FFFFFF",
-                }}
-                onClick={() => handleDeleteSelectedSolutions()}
-              >
-                <DeleteForever /> Delete
-              </MDBBtn>
-
               <FormControl
                 variant="outlined"
                 style={{
@@ -226,8 +148,8 @@ const ContractList = () => {
                   <MenuItem value="name">Name</MenuItem>
                   <MenuItem value="description">Description</MenuItem>
                   {/* <MenuItem value="value">Value</MenuItem>
-                  <MenuItem value="status">Status</MenuItem>
-                  <MenuItem value="startDate">StartDate</MenuItem> */}
+                    <MenuItem value="status">Status</MenuItem>
+                    <MenuItem value="startDate">StartDate</MenuItem> */}
                 </Select>
               </FormControl>
               <div className="input-wrapper">
@@ -257,23 +179,23 @@ const ContractList = () => {
             <MDBTableHead className="bg-light">
               <tr>
                 {/* <th
-                  style={{ fontWeight: "bold", fontSize: "18px" }}
-                  onClick={() => handleSortChange("id")}
-                  className="sortable-header"
-                >
-                  Id
-                  {sortBy === "id" &&
-                    (sortDirection === "asc" ? (
-                      <ArrowDropDown />
-                    ) : (
-                      <ArrowDropUp />
-                    ))}
-                </th> */}
+                    style={{ fontWeight: "bold", fontSize: "18px" }}
+                    onClick={() => handleSortChange("id")}
+                    className="sortable-header"
+                  >
+                    Id
+                    {sortBy === "id" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </th> */}
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                   <input
                     type="checkbox"
                     checked={
-                      selectedContractIds.length === dataListContract.length
+                      selectedContractIds?.length === dataListContract?.length
                     }
                     onChange={handleSelectAllSolutions}
                   />
@@ -292,17 +214,17 @@ const ContractList = () => {
                     ))}
                 </th>
                 {/* <th
-                  style={{ fontWeight: "bold", fontSize: "14px" }}
-                  onClick={() => handleSortChange("description")}
-                >
-                  Description
-                  {sortBy === "description" &&
-                    (sortDirection === "asc" ? (
-                      <ArrowDropDown />
-                    ) : (
-                      <ArrowDropUp />
-                    ))}
-                </th> */}
+                    style={{ fontWeight: "bold", fontSize: "14px" }}
+                    onClick={() => handleSortChange("description")}
+                  >
+                    Description
+                    {sortBy === "description" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </th> */}
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("value")}
@@ -317,18 +239,18 @@ const ContractList = () => {
                     ))}
                 </th>
                 {/* <th
-                  style={{ fontWeight: "bold", fontSize: "14px" }}
-                  onClick={() => handleSortChange("status")}
-                  className="sortable-header"
-                >
-                  Visible
-                  {sortBy === "status" &&
-                    (sortDirection === "asc" ? (
-                      <ArrowDropDown />
-                    ) : (
-                      <ArrowDropUp />
-                    ))}
-                </th> */}
+                    style={{ fontWeight: "bold", fontSize: "14px" }}
+                    onClick={() => handleSortChange("status")}
+                    className="sortable-header"
+                  >
+                    Visible
+                    {sortBy === "status" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </th> */}
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("startDate")}
@@ -424,20 +346,20 @@ const ContractList = () => {
                         />
                       </td>
                       {/* <td>
-                        {Contract.isPublic ? (
-                          <>
-                            <LockOpen
-                              className="square-icon"
-                              style={{ color: "green" }}
-                            />{" "}
-                            <span>Public</span>
-                          </>
-                        ) : (
-                          <>
-                            <Lock className="square-icon" /> Private
-                          </>
-                        )}
-                      </td> */}
+                          {Contract.isPublic ? (
+                            <>
+                              <LockOpen
+                                className="square-icon"
+                                style={{ color: "green" }}
+                              />{" "}
+                              <span>Public</span>
+                            </>
+                          ) : (
+                            <>
+                              <Lock className="square-icon" /> Private
+                            </>
+                          )}
+                        </td> */}
                       <td>{formatDate(Contract.startDate)}</td>
                       <td>{formatDate(Contract.endDate)}</td>
                       <td>{formatDate(Contract.createdAt)}</td>
@@ -466,4 +388,4 @@ const ContractList = () => {
   );
 };
 
-export default ContractList;
+export default CompanyContractList;

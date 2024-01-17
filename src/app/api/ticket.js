@@ -140,7 +140,7 @@ export async function createTicketByCustomer(data, navigate) {
         Authorization: header,
       },
     });
-    toast.success(res.data.result, {
+    toast.success(res.data.result.message, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -183,7 +183,7 @@ export async function createTicketByManager(data) {
         Authorization: header,
       },
     });
-    toast.success(res.data.result, {
+    toast.success(res.data.result.message, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -232,7 +232,7 @@ export async function editTicketByManager(ticketId, data) {
         Authorization: header,
       },
     });
-    toast.success(res.data.result, {
+    toast.success(res.data.result.message, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -277,7 +277,7 @@ export async function ChangeStatusTicket(ticketId, newStatus) {
         },
       }
     );
-    toast.success(res.data.result, {
+    toast.success(res.data.result.message.message, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -305,7 +305,7 @@ export async function UpdateTicketForTechnician(ticketId, data) {
         },
       }
     );
-    toast.success(res.data.result, {
+    toast.success(res.data.result.message, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -348,7 +348,7 @@ export async function CancelTicketUser(ticketId) {
         },
       }
     );
-    toast.success(res.data.result, {
+    toast.success(res.data.result.message, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -377,7 +377,7 @@ export async function CloseTicketUser(ticketId) {
         },
       }
     );
-    toast.success(res.data.result, {
+    toast.success(res.data.result.message, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,

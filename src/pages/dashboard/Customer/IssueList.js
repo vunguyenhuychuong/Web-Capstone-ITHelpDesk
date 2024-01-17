@@ -70,7 +70,7 @@ const IssueList = () => {
   const fetchCategoriesList = async () => {
     try {
       const fetchCategories = await CategoryApi.getAllCategories();
-      setDataCategories(fetchCategories);
+      setDataCategories(fetchCategories?.data);
     } catch (error) {
       console.log("Error while fetching data", error);
     }

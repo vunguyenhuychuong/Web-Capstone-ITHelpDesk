@@ -97,7 +97,7 @@ const MyRequestList = () => {
   const fetchAllCategories = async () => {
     try {
       const res = await getAllCategories();
-      setDataCategories(res);
+      setDataCategories(res.data);
     } catch (error) {
       console.log("Error while fetching data", error);
     }

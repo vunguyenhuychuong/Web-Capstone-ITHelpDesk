@@ -54,8 +54,8 @@ const CreateTicketSolution = () => {
     try {
       const fetchCategories = await getDataCategories();
       const fetchUsers = await getDataUser();
-      setDataCategories(fetchCategories);
-      setDataUsers(fetchUsers);
+      setDataCategories(fetchCategories?.data);
+      setDataUsers(fetchUsers?.data);
     } catch (error) {
       console.log("Error while fetching data", error);
     } finally {

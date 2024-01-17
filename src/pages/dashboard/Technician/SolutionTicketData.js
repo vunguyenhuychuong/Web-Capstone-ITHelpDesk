@@ -15,7 +15,7 @@ const useSolutionTicketData = (solutionId) => {
       const solutionTicketData = await getTicketSolutionById(solutionId);
       const categoryData = await getDataCategories();
       setData(solutionTicketData);
-      setDataCategories(categoryData);
+      setDataCategories(categoryData?.data);
     } catch (error) {
       console.error("Error fetching ticket data: ", error);
       setError(error);
@@ -26,13 +26,13 @@ const useSolutionTicketData = (solutionId) => {
 
   useEffect(() => {
     fetchData();
-  }, [solutionId , fetchData ]);
+  }, [solutionId, fetchData]);
 
   const refetch = () => {
     fetchData();
   };
 
-  return { loading, data, dataCategories, error, refetch }; 
+  return { loading, data, dataCategories, error, refetch };
 };
 
 export default useSolutionTicketData;

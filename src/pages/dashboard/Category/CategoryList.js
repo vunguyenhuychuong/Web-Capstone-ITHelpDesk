@@ -33,6 +33,7 @@ import CustomizedProgressBars from "../../../components/iconify/LinearProccessin
 import { deleteCategory, getCategoriesAll } from "../../../app/api/category";
 import EditCategory from "./EditCategory";
 import CreateCategory from "./CreateCategory";
+import CircularLoading from "../../../components/iconify/CircularLoading";
 
 const CategoryList = () => {
   const [dataCategory, setDataCategory] = useState([]);
@@ -266,7 +267,13 @@ const CategoryList = () => {
           </MDBContainer>
         </MDBNavbar>
         {isLoading ? (
-          <CustomizedProgressBars />
+          <MDBTableBody className="bg-light">
+            <tr>
+              <td>
+                <CircularLoading />
+              </td>
+            </tr>
+          </MDBTableBody>
         ) : (
           <>
             <MDBTable
