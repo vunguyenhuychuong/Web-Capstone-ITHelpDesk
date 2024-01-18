@@ -98,54 +98,59 @@ const TicketSolutionList = () => {
       setSelectedSolutionIds([]);
     } else {
       setSelectedSolutionIds(
-        dataListTicketsSolution.map((solution) => solution.id)
+        dataListTicketsSolution?.map((solution) => solution.id)
       );
     }
   };
 
   const handleDeleteSelectedSolutions = (id) => {
-    try {
-      if (selectedSolutionIds.length === 0) {
-        return;
-      }
-
-      let currentIndex = 0;
-
-      const deleteNextSolution = () => {
-        if (currentIndex < selectedSolutionIds.length) {
-          const solutionId = selectedSolutionIds[currentIndex];
-
-          deleteTicketSolution(solutionId)
-            .then(() => {
-              console.log(
-                `Solution with ID ${solutionId} deleted successfully`
-              );
-              currentIndex++;
-              deleteNextSolution();
-            })
-            .catch((error) => {
-              console.error(
-                `Error deleting solution with ID ${solutionId}: `,
-                error
-              );
-              toast.error(
-                `Error deleting solution with ID ${solutionId}: `,
-                error
-              );
-            });
-        } else {
-          setSelectedSolutionIds([]);
-          toast.success("Selected solutions deleted successfully");
-          setRefreshData((prev) => !prev);
+    const shouldDelete = window.confirm(
+      "Are you sure want to delete selected solutions"
+    );
+    if (shouldDelete) {
+      try {
+        if (selectedSolutionIds.length === 0) {
+          return;
         }
-      };
 
-      deleteNextSolution();
-    } catch (error) {
-      console.error("Failed to delete selected solutions: ", error);
-      toast.error(
-        "Failed to delete selected solutions, Please try again later"
-      );
+        let currentIndex = 0;
+
+        const deleteNextSolution = () => {
+          if (currentIndex < selectedSolutionIds.length) {
+            const solutionId = selectedSolutionIds[currentIndex];
+
+            deleteTicketSolution(solutionId)
+              .then(() => {
+                console.log(
+                  `Solution with ID ${solutionId} deleted successfully`
+                );
+                currentIndex++;
+                deleteNextSolution();
+              })
+              .catch((error) => {
+                console.error(
+                  `Error deleting solution with ID ${solutionId}: `,
+                  error
+                );
+                toast.error(
+                  `Error deleting solution with ID ${solutionId}: `,
+                  error
+                );
+              });
+          } else {
+            setSelectedSolutionIds([]);
+            toast.success("Selected solutions deleted successfully");
+            setRefreshData((prev) => !prev);
+          }
+        };
+
+        deleteNextSolution();
+      } catch (error) {
+        console.error("Failed to delete selected solutions: ", error);
+        toast.error(
+          "Failed to delete selected solutions, Please try again later"
+        );
+      }
     }
   };
 
@@ -369,7 +374,7 @@ const TicketSolutionList = () => {
               </MDBTableBody>
             ) : (
               <MDBTableBody className="bg-light">
-                {dataListTicketsSolution.map((TicketSolution, index) => {
+                {dataListTicketsSolution?.map((TicketSolution, index) => {
                   const isSelected = selectedSolutionIds.includes(
                     TicketSolution.id
                   );

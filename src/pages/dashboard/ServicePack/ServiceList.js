@@ -36,9 +36,11 @@ import PageSizeSelector from "../Pagination/Pagination";
 import { formatDate } from "../../helpers/FormatDate";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import CircularLoading from "../../../components/iconify/CircularLoading";
+import { getAllCategories } from "../../../app/api/category";
 
 const ServiceList = () => {
   const [dataService, setDataService] = useState([]);
+  const [dataCategories, setDataCategories] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogEdit, setDialogEdit] = useState(false);
   const [selectService, setSelectService] = useState(null);
@@ -50,6 +52,15 @@ const ServiceList = () => {
   const [sortDirection, setSortDirection] = useState("asc");
   const [sortBy, setSortBy] = useState("id");
   const [isLoading, setIsLoading] = useState(true);
+
+  const fetchAllCategories = async () => {
+    try {
+      const res = await getAllCategories();
+      setDataCategories(res?.data);
+    } catch (error) {
+      console.log("Error while fetching data", error);
+    }
+  };
 
   const fetchAllService = useCallback(async () => {
     try {
@@ -75,6 +86,7 @@ const ServiceList = () => {
   }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection]);
 
   useEffect(() => {
+    fetchAllCategories();
     fetchAllService();
   }, [fetchAllService]);
 
@@ -117,6 +129,11 @@ const ServiceList = () => {
 
   const handleCloseEdit = () => {
     setDialogEdit(false);
+  };
+
+  const getCategoryById = (id) => {
+    const category = dataCategories.find((cate) => cate.id === id);
+    return category;
   };
 
   const onDeleteService = async (id) => {
@@ -259,10 +276,10 @@ const ServiceList = () => {
                 <th
                   style={{ fontWeight: "bold" }}
                   className="sortable-header"
-                  onClick={() => handleSortChange("type")}
+                  onClick={() => handleSortChange("categoryId")}
                 >
-                  Type
-                  {sortBy === "type" &&
+                  Category
+                  {sortBy === "categoryId" &&
                     (sortDirection === "asc" ? (
                       <ArrowDropDown />
                     ) : (
@@ -300,14 +317,14 @@ const ServiceList = () => {
               </tr>
             </MDBTableHead>
             <MDBTableBody className="bg-light">
-              {dataService.map((service, index) => {
+              {dataService?.map((service, index) => {
                 return (
                   <tr key={index}>
                     <td>
                       <input type="checkbox" />
                     </td>
                     <td>{service.description}</td>
-                    <td>{service.type}</td>
+                    <td>{getCategoryById(service.categoryId).name}</td>
                     <td>{formatDate(service.createdAt || "-")}</td>
                     <td>{formatDate(service.modifiedAt || "-")}</td>
                     <td onClick={() => handleEditClick(service.id)}>
@@ -333,11 +350,18 @@ const ServiceList = () => {
         </Box>
       </MDBContainer>
       <Dialog open={dialogOpen} onClose={handleCloseService}>
-        <CreateService onClose={handleCloseService} />
+        <CreateService
+          onClose={handleCloseService}
+          dataCategories={dataCategories}
+        />
       </Dialog>
 
       <Dialog open={dialogEdit} onClose={handleCloseEdit}>
-        <EditService onClose={handleCloseEdit} serviceId={selectService} />
+        <EditService
+          onClose={handleCloseEdit}
+          serviceId={selectService}
+          dataCategories={dataCategories}
+        />
       </Dialog>
     </>
   );

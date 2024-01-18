@@ -9,7 +9,6 @@ import {
 import "../../../../assets/css/homeManager.css";
 import { formatDate } from "../../../helpers/FormatDate";
 
-
 const TeamRecentChart = ({ dataSummary }) => {
   return (
     <Table>
@@ -21,7 +20,7 @@ const TeamRecentChart = ({ dataSummary }) => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {dataSummary.map((team, index) => (
+        {dataSummary?.map((team, index) => (
           <TableRow key={index} className="hoverCell">
             <TableCell>{team.name}</TableCell>
             <TableCell>{team.location}</TableCell>

@@ -31,6 +31,7 @@ import {
 } from "../../../app/api/companyMember";
 import EditCompanyMember from "./EditCompanyMember";
 import CircularLoading from "../../../components/iconify/CircularLoading";
+import { getAuthHeader } from "../../../app/api/auth";
 
 const CompanyMemberList = () => {
   const [dataCompanyMembers, setDataCompanyMembers] = useState([]);
@@ -47,6 +48,8 @@ const CompanyMemberList = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedCompanyMemberId, setSelectedCompanyMemberId] = useState(null);
   const navigate = useNavigate();
+  const header = getAuthHeader();
+
   const fetchAllCompanyMember = useCallback(async () => {
     try {
       let filter = "";
@@ -83,10 +86,10 @@ const CompanyMemberList = () => {
   };
 
   const handleSelectAllCompanyMembers = () => {
-    if (selectedTeamMembers.length === dataCompanyMembers.length) {
+    if (selectedTeamMembers?.length === dataCompanyMembers?.length) {
       setSelectedTeamMember([]);
     } else {
-      setSelectedTeamMember(dataCompanyMembers.map((mode) => mode.id));
+      setSelectedTeamMember(dataCompanyMembers?.map((mode) => mode.id));
     }
   };
 
@@ -116,44 +119,51 @@ const CompanyMemberList = () => {
   };
 
   const handleDeleteSelectedCompanyMember = async (id) => {
-    try {
-      if (selectedTeamMembers.length === 0) {
-        return;
-      }
-      const deletePromises = selectedTeamMembers.map(async (memberId) => {
-        try {
-          const res = await Promise.resolve(deleteCompanyMember(memberId));
-          if (res.isError) {
+    const shouldDelete = window.confirm(
+      "Are you sure want to delete selected company members"
+    );
+    if (shouldDelete) {
+      try {
+        if (selectedTeamMembers.length === 0) {
+          return;
+        }
+        const deletePromises = selectedTeamMembers.map(async (memberId) => {
+          try {
+            const res = await Promise.resolve(deleteCompanyMember(memberId));
+            if (res.isError) {
+              throw new Error(
+                `Error deleting company member with ID ${memberId}: ${res.message}`
+              );
+            }
+            return memberId;
+          } catch (error) {
             throw new Error(
-              `Error deleting team member with ID ${memberId}: ${res.message}`
+              `Error deleting company member with ID ${memberId}: ${error.message}`
             );
           }
-          return memberId;
-        } catch (error) {
-          throw new Error(
-            `Error deleting team member with ID ${memberId}: ${error.message}`
-          );
-        }
-      });
+        });
 
-      const results = await Promise.allSettled(deletePromises);
+        const results = await Promise.allSettled(deletePromises);
 
-      const successfulDeletes = [];
-      results.forEach((result) => {
-        if (result.status === "fulfilled") {
-          successfulDeletes.push(result.value);
-        } else {
-          toast.error(result.reason.message);
-        }
-      });
-      const updateModes = dataCompanyMembers.filter(
-        (mode) => !successfulDeletes.includes(mode.id)
-      );
-      setDataCompanyMembers(updateModes);
-      setSelectTeam([]);
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to delete selected modes, Please try again later");
+        const successfulDeletes = [];
+        results.forEach((result) => {
+          if (result.status === "fulfilled") {
+            successfulDeletes.push(result.value);
+          } else {
+            toast.error(result.reason.message);
+          }
+        });
+        const updateModes = dataCompanyMembers.filter(
+          (mode) => !successfulDeletes.includes(mode.id)
+        );
+        setDataCompanyMembers(updateModes);
+        setSelectTeam([]);
+      } catch (error) {
+        console.error(error);
+        toast.error(
+          "Failed to delete selected company members, Please try again later"
+        );
+      }
     }
   };
 
@@ -181,7 +191,7 @@ const CompanyMemberList = () => {
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
-              <span style={{ color: "#FFFFFF" }}> All Company Member</span>
+              <span style={{ color: "#FFFFFF" }}> All Company Members</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
@@ -274,7 +284,8 @@ const CompanyMemberList = () => {
                     <input
                       type="checkbox"
                       checked={
-                        selectedTeamMembers.length === dataCompanyMembers.length
+                        selectedTeamMembers?.length ===
+                        dataCompanyMembers?.length
                       }
                       onChange={handleSelectAllCompanyMembers}
                     />
@@ -360,7 +371,7 @@ const CompanyMemberList = () => {
                 </tr>
               </MDBTableHead>
               <MDBTableBody className="bg-light">
-                {dataCompanyMembers.map((companyMember, index) => {
+                {dataCompanyMembers?.map((companyMember, index) => {
                   const isSelected = selectedTeamMembers.includes(
                     companyMember.id
                   );

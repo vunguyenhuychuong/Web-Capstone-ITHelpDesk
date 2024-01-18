@@ -25,6 +25,7 @@ import {
   ContentCopy,
   Delete,
   Edit,
+  ViewCompact,
 } from "@mui/icons-material";
 import {
   MDBBtn,
@@ -40,8 +41,10 @@ import CustomizedProgressBars from "../../../components/iconify/LinearProccessin
 import CreateTeam from "./CreateTeam";
 import EditTeam from "./EditTeam";
 import CircularLoading from "../../../components/iconify/CircularLoading";
+import { useNavigate } from "react-router-dom";
 
 const Team = () => {
+  const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [openAdd, setOpenAdd] = React.useState(false);
   const [teams, setTeams] = useState([]);
@@ -117,18 +120,22 @@ const Team = () => {
     setOpen(true);
   };
 
+  const handleOpenTeamDetail = async (teamId) => {
+    navigate(`/home/teamDetail/${teamId}`);
+  };
+
   const onDeleteTeam = async (id) => {
     const shouldDelete = window.confirm(
-      "Are you sure want to delete this team"
+      "Are you sure want to delete this team?"
     );
     if (shouldDelete) {
       try {
         const result = await DeleteDataTeam(id);
         fetchDataTeam();
         if (result.isError === false) {
-          toast.success("Delete successful");
+          toast.success("Delete team successfully");
         } else {
-          toast.error("Delete fail");
+          toast.error("Delete team failed");
         }
       } catch (error) {
         console.log(error);
@@ -145,13 +152,51 @@ const Team = () => {
   };
 
   const handleSelectAllTeams = () => {
-    if (selectedTeams.length === teams.length) {
+    if (selectedTeams?.length === teams?.length) {
       setSelectedTeams([]);
     } else {
-      setSelectedTeams(teams.map((team) => team.id));
+      setSelectedTeams(teams?.map((team) => team.id));
     }
   };
+  const handleDeleteSelectedTeams = (id) => {
+    const shouldDelete = window.confirm(
+      "Are you sure want to delete selected teams"
+    );
+    if (shouldDelete) {
+      try {
+        if (selectedTeams?.length === 0) {
+          return;
+        }
+        let currentIndex = 0;
 
+        const deleteNextSolution = () => {
+          if (currentIndex < selectedTeams?.length) {
+            const teamId = selectedTeams[currentIndex];
+
+            DeleteDataTeam(teamId)
+              .then(() => {
+                console.log(`Team with ID ${teamId} deleted successfully`);
+                currentIndex++;
+                deleteNextSolution();
+              })
+              .catch((error) => {
+                console.error(`Error deleting team with ID ${teamId}: `, error);
+                toast.error(`Error deleting team with ID ${teamId}: `, error);
+              });
+          } else {
+            setSelectTeam([]);
+            toast.success("Selected teams deleted successfully");
+            fetchDataTeam();
+          }
+        };
+
+        deleteNextSolution();
+      } catch (error) {
+        console.error("Failed to delete selected teams: ", error);
+        toast.error("Failed to delete selected teams, Please try again later");
+      }
+    }
+  };
   useEffect(() => {
     fetchDataTeam();
   }, [fetchDataTeam]);
@@ -193,9 +238,9 @@ const Team = () => {
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
-              <span style={{ color: "#FFFFFF" }}>All Team</span>
+              <span style={{ color: "#FFFFFF" }}>All Teams</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
                 color="#eee"
                 style={{
@@ -208,6 +253,7 @@ const Team = () => {
                 <FaPlus /> New
               </MDBBtn>
               <MDBBtn
+                onClick={handleDeleteSelectedTeams}
                 color="eee"
                 style={{
                   fontWeight: "bold",
@@ -275,7 +321,7 @@ const Team = () => {
                 <TableRow>
                   <TableCell style={{ paddingLeft: "16px" }} padding="checkbox">
                     <Checkbox
-                      checked={selectedTeams.length === teams.length}
+                      checked={selectedTeams?.length === teams?.length}
                       onChange={handleSelectAllTeams}
                     />
                   </TableCell>
@@ -334,17 +380,19 @@ const Team = () => {
                       fontWeight: "bold",
                       cursor: "pointer",
                     }}
-                  >
-                    Edit
-                  </TableCell>
+                  ></TableCell>
                   <TableCell
                     style={{
                       fontWeight: "bold",
                       cursor: "pointer",
                     }}
-                  >
-                    Delete
-                  </TableCell>
+                  ></TableCell>
+                  <TableCell
+                    style={{
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                    }}
+                  ></TableCell>
                   <TableCell>
                     <Typography
                       variant="subtitle1"
@@ -355,7 +403,7 @@ const Team = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {teams.map((team) => {
+                {teams?.map((team) => {
                   const isSelected = selectedTeams.includes(team.id);
                   return (
                     <TableRow key={team.id}>
@@ -372,13 +420,20 @@ const Team = () => {
                       <TableCell align="left"> {team.description}</TableCell>
                       <TableCell align="left">{team.location}</TableCell>
                       <TableCell component="th" scope="row">
+                        <IconButton
+                          onClick={() => handleOpenTeamDetail(team.id)}
+                        >
+                          <ViewCompact />
+                        </IconButton>
+                      </TableCell>
+                      <TableCell component="th" scope="row">
                         <IconButton onClick={() => handleEditClick(team.id)}>
                           <Edit />
                         </IconButton>
                       </TableCell>
                       <TableCell component="th" scope="row">
                         <IconButton onClick={() => onDeleteTeam(team.id)}>
-                          <Delete />
+                          <Delete color="error" />
                         </IconButton>
                       </TableCell>
                     </TableRow>

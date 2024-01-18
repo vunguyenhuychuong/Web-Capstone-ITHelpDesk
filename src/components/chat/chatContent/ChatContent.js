@@ -4,9 +4,12 @@ import "./chatContent.css";
 import Avatar from "../chatList/Avatar";
 import ChatItem from "./ChatItem";
 
-
-const ChatContent = ({ selectedConversation, messages,sendMessage,setNewMessages }) => {
-
+const ChatContent = ({
+  selectedConversation,
+  messages,
+  sendMessage,
+  setNewMessages,
+}) => {
   console.log("Selected Conversation in ChatContent:", selectedConversation);
 
   if (!selectedConversation) {
@@ -25,6 +28,7 @@ const ChatContent = ({ selectedConversation, messages,sendMessage,setNewMessages
           <div className="current-chatting-user">
             <Avatar
               isOnline="active"
+              map
               image="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTA78Na63ws7B7EAWYgTr9BxhX_Z8oLa1nvOA&usqp=CAU"
             />
             <p>Tim Hover</p>
@@ -41,7 +45,7 @@ const ChatContent = ({ selectedConversation, messages,sendMessage,setNewMessages
       </div>
       <div className="content__body">
         <div className="chat__items">
-          {messages.map((message, index) => (
+          {messages?.map((message, index) => (
             <ChatItem
               animationDelay={index + 2}
               key={message.key}
@@ -63,7 +67,11 @@ const ChatContent = ({ selectedConversation, messages,sendMessage,setNewMessages
             placeholder="Type a message here"
             onChange={(e) => setNewMessages(e.target.value)}
           />
-          <button className="btnSendMsg" id="sendMsgBtn" onClick={() => sendMessage()}>
+          <button
+            className="btnSendMsg"
+            id="sendMsgBtn"
+            onClick={() => sendMessage()}
+          >
             <i className="fa fa-paper-plane"></i>
           </button>
         </div>

@@ -62,6 +62,8 @@ import EditCompanyMember from "./pages/dashboard/Company Member/EditCompanyMembe
 import CategoryList from "./pages/dashboard/Category/CategoryList";
 import CompanyContractList from "./pages/dashboard/Company/CompanyContract/CompanyContracList";
 import DetailCompanyContract from "./pages/dashboard/Company/CompanyContract/DetailCompanyContract";
+import CompanyDetail from "./pages/dashboard/Company/CompanyDetail";
+import TeamDetail from "./pages/dashboard/Team/TeamDetail";
 
 function App() {
   const data = JSON.parse(sessionStorage.getItem("profile"));
@@ -79,6 +81,9 @@ function App() {
           <Route index element={<AccessibleTabs1 />} />
           {(hasAdminRole || hasManagerRole) && (
             <Route path="team" element={<Team />} />
+          )}
+          {(hasAdminRole || hasManagerRole) && (
+            <Route path="teamDetail/:teamId" element={<TeamDetail />} />
           )}
           {(hasCustomerRole ||
             hasAdminRole ||
@@ -234,7 +239,12 @@ function App() {
               element={<EditTeamMember />}
             />
           )}
-
+          {hasManagerRole && (
+            <Route
+              path="companyDetail/:companyId"
+              element={<CompanyDetail />}
+            />
+          )}
           {hasCustomerRole && (
             <Route
               path="companyContractList"

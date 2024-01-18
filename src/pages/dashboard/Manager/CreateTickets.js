@@ -166,7 +166,7 @@ const CreateTickets = () => {
     setIsPeriodic((prevIsPeriodic) => !prevIsPeriodic);
   };
 
-  const images = imagePreviewUrl.map((url, index) => ({
+  const images = imagePreviewUrl?.map((url, index) => ({
     original: url,
     thumbnail: url,
     description: `Attachment Preview ${index + 1}`,
@@ -546,7 +546,7 @@ const CreateTickets = () => {
                       >
                         {dataMode
                           .filter((mode) => mode.id !== "")
-                          .map((mode) => (
+                          ?.map((mode) => (
                             <option key={mode.id} value={mode.id}>
                               {mode.name}
                             </option>
@@ -580,7 +580,7 @@ const CreateTickets = () => {
                       >
                         {dataCategories
                           ?.filter((category) => category.id !== "")
-                          .map((category) => (
+                          ?.map((category) => (
                             <option key={category.id} value={category.id}>
                               {category.name}
                             </option>
@@ -615,7 +615,7 @@ const CreateTickets = () => {
                       >
                         {dataServices
                           .filter((service) => service.id !== "")
-                          .map((service) => (
+                          ?.map((service) => (
                             <option key={service.id} value={service.id}>
                               {service.description}
                             </option>
@@ -645,7 +645,7 @@ const CreateTickets = () => {
                         className="form-select-custom"
                         onChange={handleInputChange}
                       >
-                        {priorityOption.map((priorityItem) => (
+                        {priorityOption?.map((priorityItem) => (
                           <option
                             key={priorityItem.id}
                             value={parseInt(priorityItem.id, 10)}
@@ -686,7 +686,7 @@ const CreateTickets = () => {
                         value={data.teamId}
                         onChange={handleInputChange}
                       >
-                        {dataTeams.map((team) => (
+                        {dataTeams?.map((team) => (
                           <option key={team.id} value={team.id}>
                             {team.name}
                           </option>
@@ -718,7 +718,7 @@ const CreateTickets = () => {
                         onChange={handleInputChange}
                         disabled={data.teamId === "" ? true : false}
                       >
-                        {dataTechnicians.map((technician) => (
+                        {dataTechnicians?.map((technician) => (
                           <option key={technician.id} value={technician.id}>
                             {technician.firstName} {technician.lastName}
                           </option>
@@ -760,7 +760,7 @@ const CreateTickets = () => {
                         value={data.impact}
                         onChange={handleInputChange}
                       >
-                        {ImpactOptions.map((impact) => (
+                        {ImpactOptions?.map((impact) => (
                           <option key={impact.id} value={impact.id}>
                             {impact.name}
                           </option>
@@ -790,7 +790,7 @@ const CreateTickets = () => {
                         className="form-select-custom"
                         onChange={handleInputChange}
                       >
-                        {TypeOptions.map((type) => (
+                        {TypeOptions?.map((type) => (
                           <option key={type.id} value={parseInt(type.id, 10)}>
                             {type.name}
                           </option>

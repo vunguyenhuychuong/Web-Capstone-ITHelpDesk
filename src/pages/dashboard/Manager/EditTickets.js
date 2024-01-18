@@ -151,7 +151,7 @@ const EditTickets = () => {
     }
   };
 
-  const images = data.attachmentUrls.map((url, index) => ({
+  const images = data.attachmentUrls?.map((url, index) => ({
     original: url,
     thumbnail: url,
     description: `Attachment Preview ${index + 1}`,
@@ -241,6 +241,8 @@ const EditTickets = () => {
           categoryId: ticketData.categoryId,
           attachmentUrls: ticketData.attachmentUrls,
         }));
+        setScheduledStartTime(moment(ticketData.scheduledStartTime));
+        setScheduledEndTime(moment(ticketData.scheduledEndTime));
       } catch (error) {
         console.error("Error fetching ticket data: ", error);
       }
@@ -258,8 +260,6 @@ const EditTickets = () => {
     fetchData();
     fetchTicketData();
     fetchDataManager();
-    handleScheduledStartTimeChange(moment(Date.now()));
-    handleScheduledEndTimeChange(moment(Date.now()));
   }, []);
 
   useEffect(() => {
@@ -464,7 +464,7 @@ const EditTickets = () => {
                         value={data.requesterId}
                         onChange={handleInputChange}
                       >
-                        {dataUser.map((user) => (
+                        {dataUser?.map((user) => (
                           <option key={user.id} value={user.id}>
                             {user.lastName} {user.firstName}
                           </option>
@@ -591,7 +591,7 @@ const EditTickets = () => {
                       >
                         {dataMode
                           .filter((mode) => mode.id !== "")
-                          .map((mode) => (
+                          ?.map((mode) => (
                             <option key={mode.id} value={mode.id}>
                               {mode.name}
                             </option>
@@ -625,7 +625,7 @@ const EditTickets = () => {
                       >
                         {dataCategories
                           .filter((category) => category.id !== "")
-                          .map((category) => (
+                          ?.map((category) => (
                             <option key={category.id} value={category.id}>
                               {category.name}
                             </option>
@@ -660,7 +660,7 @@ const EditTickets = () => {
                       >
                         {UrgencyOptions.filter(
                           (urgency) => urgency.id !== ""
-                        ).map((urgency) => (
+                        )?.map((urgency) => (
                           <option key={urgency.id} value={urgency.id}>
                             {urgency.name}
                           </option>
@@ -690,7 +690,7 @@ const EditTickets = () => {
                         className="form-select-custom"
                         onChange={handleInputChange}
                       >
-                        {priorityOption.map((priorityItem) => (
+                        {priorityOption?.map((priorityItem) => (
                           <option
                             key={priorityItem.id}
                             value={parseInt(priorityItem.id, 10)}
@@ -724,7 +724,7 @@ const EditTickets = () => {
                         value={data.serviceId}
                         onChange={handleInputChange}
                       >
-                        {categoryServices.map((service) => (
+                        {categoryServices?.map((service) => (
                           <option key={service.id} value={service.id}>
                             {service.description}
                           </option>
@@ -761,7 +761,7 @@ const EditTickets = () => {
                         value={data.ticketStatus}
                         onChange={handleInputChange}
                       >
-                        {TicketStatusOptions.map((ticketStatus) => (
+                        {TicketStatusOptions?.map((ticketStatus) => (
                           <option key={ticketStatus.id} value={ticketStatus.id}>
                             {ticketStatus.name}
                           </option>
@@ -798,7 +798,7 @@ const EditTickets = () => {
                           value={data.impact}
                           onChange={handleInputChange}
                         >
-                          {ImpactOptions.map((impact) => (
+                          {ImpactOptions?.map((impact) => (
                             <option key={impact.id} value={impact.id}>
                               {impact.name}
                             </option>
@@ -828,7 +828,7 @@ const EditTickets = () => {
                           className="form-select-custom"
                           onChange={handleInputChange}
                         >
-                          {TypeOptions.map((type) => (
+                          {TypeOptions?.map((type) => (
                             <option key={type.id} value={parseInt(type.id, 10)}>
                               {type.name}
                             </option>
@@ -866,7 +866,7 @@ const EditTickets = () => {
                           value={data.city}
                           onChange={handleCityChange}
                         >
-                          {dataLocation.map((city) => (
+                          {dataLocation?.map((city) => (
                             <option key={city.code} value={city.code}>
                               {city.name}
                             </option>
@@ -897,7 +897,7 @@ const EditTickets = () => {
                           value={data.district}
                           onChange={handleDistrictChange}
                         >
-                          {districts.map((district) => (
+                          {districts?.map((district) => (
                             <option key={district.code} value={district.code}>
                               {district.name}
                             </option>
@@ -935,7 +935,7 @@ const EditTickets = () => {
                           value={data.ward}
                           onChange={handleInputChange}
                         >
-                          {wards.map((ward) => (
+                          {wards?.map((ward) => (
                             <option key={ward.code} value={ward.code}>
                               {ward.name}
                             </option>

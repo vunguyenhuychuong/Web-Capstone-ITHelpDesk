@@ -71,7 +71,7 @@ export default function TicketLogList() {
         </TableHead>
         <TableBody>
           {dataTicketLog && dataTicketLog.length > 0 ? (
-            dataTicketLog.map((log, index) => (
+            dataTicketLog?.map((log, index) => (
               <TableRow key={log.timestamp}>
                 <TableCell align="left" style={{ width: "40vw" }}>
                   {log.entries[0].message && log.entries[0].message !== "" ? (
@@ -95,7 +95,7 @@ export default function TicketLogList() {
                       </AccordionSummary>
                       <AccordionDetails>
                         <Stack spacing={1}>
-                          {log.entries.map((entry) => (
+                          {log.entries?.map((entry) => (
                             <Typography key={entry.id}>
                               {entry.message ? <Edit /> : <></>}{" "}
                               {entry.message ?? ""}

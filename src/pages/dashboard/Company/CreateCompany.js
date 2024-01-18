@@ -19,10 +19,10 @@ const CreateCompany = (props) => {
     email: "",
     website: "",
     companyAddress: "",
-    logoUrl: "",
+    logoUrl: "https://cdn-icons-png.flaticon.com/512/1630/1630842.png",
     fieldOfBusiness: "",
     isActive: true,
-    customerAdminId: null,
+    // customerAdminId: null,
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -73,8 +73,13 @@ const CreateCompany = (props) => {
     setData((prevData) => ({ ...prevData, [name]: parsedValue }));
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      setData((prev) => ({ ...prev, logoUrl: e.target.result }));
+    };
+    reader.readAsDataURL(file);
     setSelectedFile(file);
   };
 
@@ -132,7 +137,7 @@ const CreateCompany = (props) => {
         logoUrl: logoUrl,
         fieldOfBusiness: data.fieldOfBusiness,
         isActive: data.isActive,
-        customerAdminId: data.customerAdminId,
+        // customerAdminId: data.customerAdminId,
       });
       if (
         response.data.isError &&
@@ -203,20 +208,21 @@ const CreateCompany = (props) => {
         </MDBCol>
         <Grid container className="card-image-section">
           <Grid item xs={3}>
-            <div className="image-container">
+            <Stack alignItems={"center"} padding={5} spacing={2}>
               {data && data.logoUrl ? (
                 <MDBCardImage
                   src={data.logoUrl}
                   alt="logoUrl"
                   className=" card-image"
+                  style={{ width: 300, height: "auto" }}
                   fluid
                 />
               ) : (
                 <MDBCardImage
-                  src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
+                  src="https://cdn-icons-png.flaticon.com/512/1630/1630842.png"
                   alt="logoUrl"
                   className=" card-image"
-                  style={{ width: "150px", height: "auto" }}
+                  style={{ width: 300, height: "auto" }}
                   fluid
                 />
               )}
@@ -227,13 +233,22 @@ const CreateCompany = (props) => {
                 className="file-upload-button input-field file-input"
               >
                 Upload Image
-                <VisuallyHidden
+                <input
                   type="file"
+                  name="file"
+                  className="form-control input-field"
                   onChange={handleFileChange}
-                  {...props}
+                  style={{
+                    clipPath: "inset(50%)",
+                    overflow: "hidden",
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    whiteSpace: "nowrap",
+                  }}
                 />
               </Button>
-            </div>
+            </Stack>
           </Grid>
           <Grid item xs={9}>
             <Grid container justifyContent="flex-end">
@@ -282,7 +297,7 @@ const CreateCompany = (props) => {
                     textAlign: "right",
                   }}
                 >
-                  <span style={{ color: "red" }}>*</span>Company Address
+                  <span style={{ color: "red" }}>*</span>Default Address
                 </h2>
               </Grid>
               <Grid item xs={9}>
@@ -398,61 +413,6 @@ const CreateCompany = (props) => {
                           textAlign: "right",
                         }}
                       >
-                        field Business
-                      </h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <input
-                        type="text"
-                        name="fieldOfBusiness"
-                        className="form-control input-field"
-                        id="fieldOfBusiness"
-                        value={data.fieldOfBusiness}
-                        onChange={handleInputChange}
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        Customer Admin
-                      </h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <input
-                        type="number"
-                        name="customerAdminId"
-                        className="form-control input-field"
-                        id="customerAdminId"
-                        value={data.customerAdminId}
-                        onChange={handleInputChange}
-                        disabled
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid container justifyContent="flex-end">
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
                         Website
                       </h2>
                     </Grid>
@@ -468,6 +428,34 @@ const CreateCompany = (props) => {
                     </Grid>
                   </Grid>
                 </Grid>
+                <Grid item xs={6}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Business Field
+                      </h2>
+                    </Grid>
+                    <Grid item xs={5}>
+                      <input
+                        type="text"
+                        name="fieldOfBusiness"
+                        className="form-control input-field"
+                        id="fieldOfBusiness"
+                        value={data.fieldOfBusiness}
+                        onChange={handleInputChange}
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid container justifyContent="flex-start">
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
@@ -509,7 +497,7 @@ const CreateCompany = (props) => {
                 onClick={handleSubmitTicket}
                 disabled={isSubmitting}
               >
-                Save
+                {isSubmitting ? "Submitting..." : "Create"}
               </button>
               <button
                 type="button"

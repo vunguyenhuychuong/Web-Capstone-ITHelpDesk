@@ -14,13 +14,13 @@ const TeamUpdatedChart = ({ dataSummary }) => {
     <Table>
       <TableHead>
         <TableRow style={{ fontWeight: "bold", color: "black" }}>
-        <TableCell className="boldText">Name</TableCell>
+          <TableCell className="boldText">Name</TableCell>
           <TableCell className="boldText">Location</TableCell>
           <TableCell className="boldText">Modified At</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
-        {dataSummary.map((team, index) => (
+        {dataSummary?.map((team, index) => (
           <TableRow key={index} className="hoverCell">
             <TableCell>{team.name}</TableCell>
             <TableCell>{team.location}</TableCell>

@@ -84,52 +84,61 @@ const PaymentList = () => {
     if (selectedPaymentIds.length === dataListPayment.length) {
       setSelectedPaymentIds([]);
     } else {
-      setSelectedPaymentIds(dataListPayment.map((solution) => solution.id));
+      setSelectedPaymentIds(dataListPayment?.map((solution) => solution.id));
     }
   };
 
   const handleDeleteSelectedPayments = (id) => {
-    try {
-      console.log("Deleting selected payments...");
+    const shouldDelete = window.confirm(
+      "Are you sure want to delete selected payments"
+    );
+    if (shouldDelete) {
+      try {
+        console.log("Deleting selected payments...");
 
-      if (selectedPaymentIds.length === 0) {
-        console.log("No selected payments to delete.");
-        return;
-      }
-
-      let currentIndex = 0;
-
-      const deleteNextSolution = () => {
-        if (currentIndex < selectedPaymentIds.length) {
-          const paymentId = selectedPaymentIds[currentIndex];
-
-          deletePaymentById(paymentId)
-            .then(() => {
-              console.log(`Payment with ID ${paymentId} deleted successfully`);
-              currentIndex++;
-              deleteNextSolution();
-            })
-            .catch((error) => {
-              console.error(
-                `Error deleting Payment with ID ${paymentId}: `,
-                error
-              );
-              toast.error(
-                `Error deleting Payment with ID ${paymentId}: `,
-                error
-              );
-            });
-        } else {
-          setSelectedPaymentIds([]);
-          toast.success("Selected Payment deleted successfully");
-          setRefreshData((prev) => !prev);
+        if (selectedPaymentIds.length === 0) {
+          console.log("No selected payments to delete.");
+          return;
         }
-      };
 
-      deleteNextSolution();
-    } catch (error) {
-      console.error("Failed to delete selected Payments: ", error);
-      toast.error("Failed to delete selected Payments, Please try again later");
+        let currentIndex = 0;
+
+        const deleteNextSolution = () => {
+          if (currentIndex < selectedPaymentIds.length) {
+            const paymentId = selectedPaymentIds[currentIndex];
+
+            deletePaymentById(paymentId)
+              .then(() => {
+                console.log(
+                  `Payment with ID ${paymentId} deleted successfully`
+                );
+                currentIndex++;
+                deleteNextSolution();
+              })
+              .catch((error) => {
+                console.error(
+                  `Error deleting Payment with ID ${paymentId}: `,
+                  error
+                );
+                toast.error(
+                  `Error deleting Payment with ID ${paymentId}: `,
+                  error
+                );
+              });
+          } else {
+            setSelectedPaymentIds([]);
+            toast.success("Selected Payment deleted successfully");
+            setRefreshData((prev) => !prev);
+          }
+        };
+
+        deleteNextSolution();
+      } catch (error) {
+        console.error("Failed to delete selected Payments: ", error);
+        toast.error(
+          "Failed to delete selected Payments, Please try again later"
+        );
+      }
     }
   };
 
@@ -396,7 +405,7 @@ const PaymentList = () => {
               </MDBTableBody>
             ) : (
               <MDBTableBody className="bg-light">
-                {dataListPayment.map((Payment, index) => {
+                {dataListPayment?.map((Payment, index) => {
                   const isSelected = selectedPaymentIds.includes(Payment.id);
                   return (
                     <tr key={index}>

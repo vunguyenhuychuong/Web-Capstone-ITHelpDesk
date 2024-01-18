@@ -353,7 +353,7 @@ const MyRequestList = () => {
               </MDBTableBody>
             ) : (
               <MDBTableBody className="bg-light">
-                {dataListTicketsCustomer.map((Ticket, index) => {
+                {dataListTicketsCustomer?.map((Ticket, index) => {
                   const ticketStatusOption = TicketStatusOptions.find(
                     (option) => option.id === Ticket.ticketStatus
                   );

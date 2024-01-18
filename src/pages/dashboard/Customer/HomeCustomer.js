@@ -7,11 +7,7 @@ import {
   MDBRow,
 } from "mdb-react-ui-kit";
 import React from "react";
-import {
-  Lightbulb,
-  Notifications,
-  Warning,
-} from "@mui/icons-material";
+import { Lightbulb, Notifications, Warning } from "@mui/icons-material";
 import "../../../assets/css/profile.css";
 import "../../../assets/css/ticketCustomer.css";
 import { Card, CardContent, Grid } from "@mui/material";
@@ -27,12 +23,10 @@ import { formatTicketDate } from "../../helpers/FormatAMPM";
 import MyTask from "../../../assets/images/MyTask.jpg";
 import { getSummaryCustomer } from "../../../app/api/dashboard";
 
-
 const HomeCustomer = () => {
   const navigate = useNavigate();
   const [dataListTicket, setDataListTicket] = useState([]);
   const [dataSummary, setDataSummary] = useState([]);
-
 
   const handleOpenRequestTicket = (e) => {
     navigate(`/home/createRequest`);
@@ -49,10 +43,10 @@ const HomeCustomer = () => {
   useEffect(() => {
     const fetchDataTicketByUserId = async () => {
       try {
-       const response = await GetTicketUserAvailable();
-       const summaryCustomer = await getSummaryCustomer();
-       setDataListTicket(response);
-       setDataSummary(summaryCustomer);
+        const response = await GetTicketUserAvailable();
+        const summaryCustomer = await getSummaryCustomer();
+        setDataListTicket(response);
+        setDataSummary(summaryCustomer);
       } catch (error) {
         console.log(error);
       }
@@ -102,9 +96,12 @@ const HomeCustomer = () => {
                       I am looking for
                       <div style={{ fontSize: "18px" }}>Solutions</div>
                     </MDBCardText>
-                    <MDBBtn className="custom-blue-btn"
+                    <MDBBtn
+                      className="custom-blue-btn"
                       onClick={handleOpenSolutionTicket}
-                    >View Solution</MDBBtn>
+                    >
+                      View Solution
+                    </MDBBtn>
                   </MDBCol>
                 </div>
               </MDBCard>
@@ -151,71 +148,75 @@ const HomeCustomer = () => {
           </Grid>
           <Grid item xs={12}>
             <Card style={{ height: "300px", overflowY: "auto" }}>
-            <CardContent>
-              {dataListTicket && dataListTicket.length > 0 ? (
-                dataListTicket.map((ticket, index) => (
-                  <div
-                    key={index}
-                    style={{ display: "flex", flexDirection: "column" }}
-                  >
-                    <div style={{ display: "flex" }}>
-                      <p style={{ marginRight: "8px", fontSize: "20px" }}>
-                        #{ticket.id} -
-                      </p>
-                      <p style={{ fontSize: "20px" }}>{ticket.title}</p>
-                    </div>
+              <CardContent>
+                {dataListTicket && dataListTicket.length > 0 ? (
+                  dataListTicket?.map((ticket, index) => (
                     <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                      }}
+                      key={index}
+                      style={{ display: "flex", flexDirection: "column" }}
                     >
-                      <div>
-                        <p style={{ fontSize: "20px" }}>
-                          Description: {ticket.description || "No Description"}
+                      <div style={{ display: "flex" }}>
+                        <p style={{ marginRight: "8px", fontSize: "20px" }}>
+                          #{ticket.id} -
                         </p>
+                        <p style={{ fontSize: "20px" }}>{ticket.title}</p>
                       </div>
-                      <div>
-                        <p style={{ fontWeight: "bold", fontSize: "20px" }}>
-                          Create Time: {formatTicketDate(ticket.createdAt)}
-                        </p>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <div>
+                          <p style={{ fontSize: "20px" }}>
+                            Description:{" "}
+                            {ticket.description || "No Description"}
+                          </p>
+                        </div>
+                        <div>
+                          <p style={{ fontWeight: "bold", fontSize: "20px" }}>
+                            Create Time: {formatTicketDate(ticket.createdAt)}
+                          </p>
+                        </div>
                       </div>
+                      <hr />
                     </div>
-                    <hr />
-                  </div>
-                ))
-              ) : (
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    marginTop: "100px",
-                  }}
-                >
-                  <img
-                    src={MyTask}
-                    alt="No Pending"
-                    style={{ maxWidth: "350px", maxHeight: "220px" }}
-                  />
-                  <p
+                  ))
+                ) : (
+                  <div
                     style={{
-                      marginTop: "10px",
-                      fontSize: "16px",
-                      color: "#666",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      marginTop: "100px",
                     }}
                   >
-                    There are no tasks in this view
-                  </p>
-                </div>
-              )}
-            </CardContent>
+                    <img
+                      src={MyTask}
+                      alt="No Pending"
+                      style={{ maxWidth: "350px", maxHeight: "220px" }}
+                    />
+                    <p
+                      style={{
+                        marginTop: "10px",
+                        fontSize: "16px",
+                        color: "#666",
+                      }}
+                    >
+                      There are no tasks in this view
+                    </p>
+                  </div>
+                )}
+              </CardContent>
             </Card>
           </Grid>
         </Grid>
-        <Grid container  item xs={4}>
+        <Grid container item xs={4}>
           <Grid item xs={6}>
-            <Card className="dashboard-card" style={{ height: "150px", marginRight: "15px" }}>
+            <Card
+              className="dashboard-card"
+              style={{ height: "150px", marginRight: "15px" }}
+            >
               <CardContent>
                 <div
                   style={{
@@ -223,7 +224,7 @@ const HomeCustomer = () => {
                     flexDirection: "column",
                     justifyContent: "center",
                     alignItems: "center",
-                    marginTop: "10px"
+                    marginTop: "10px",
                   }}
                 >
                   <img
@@ -245,7 +246,10 @@ const HomeCustomer = () => {
             </Card>
           </Grid>
           <Grid item xs={6}>
-            <Card className="dashboard-card" style={{ height: "150px", marginLeft: "20px" }}>
+            <Card
+              className="dashboard-card"
+              style={{ height: "150px", marginLeft: "20px" }}
+            >
               <CardContent>
                 <div
                   style={{
@@ -275,7 +279,10 @@ const HomeCustomer = () => {
             </Card>
           </Grid>
           <Grid item xs={6}>
-            <Card className="dashboard-card" style={{ height: "150px", marginRight: "15px" }}>
+            <Card
+              className="dashboard-card"
+              style={{ height: "150px", marginRight: "15px" }}
+            >
               <CardContent>
                 <div
                   style={{
@@ -305,7 +312,10 @@ const HomeCustomer = () => {
             </Card>
           </Grid>
           <Grid item xs={6}>
-            <Card className="dashboard-card" style={{ height: "150px", marginLeft: "20px" }}>
+            <Card
+              className="dashboard-card"
+              style={{ height: "150px", marginLeft: "20px" }}
+            >
               <CardContent style={{ marginRight: "10px" }}>
                 <div
                   style={{
@@ -336,7 +346,6 @@ const HomeCustomer = () => {
           </Grid>
         </Grid>
       </Grid>
-
     </section>
   );
 };
