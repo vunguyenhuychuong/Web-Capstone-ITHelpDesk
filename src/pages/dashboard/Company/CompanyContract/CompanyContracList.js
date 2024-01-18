@@ -8,30 +8,37 @@ import {
   MDBTableBody,
   MDBTableHead,
 } from "mdb-react-ui-kit";
-import React, { useEffect, useState } from "react";
-import "../../../assets/css/ticketCustomer.css";
-import PageSizeSelector from "../Pagination/Pagination";
+import React, { useCallback, useEffect, useState } from "react";
+import PageSizeSelector from "../../Pagination/Pagination";
 import {
   ArrowDropDown,
   ArrowDropUp,
   ContentCopy,
   DeleteForever,
-  Lock,
-  LockOpen,
-  Square,
   ViewCompact,
 } from "@mui/icons-material";
-import { formatDate } from "../../helpers/FormatDate";
-import { useNavigate } from "react-router-dom";
-import { Box, FormControl, MenuItem, Pagination, Select } from "@mui/material";
-import { FaPlus, FaSearch } from "react-icons/fa";
-import { deleteTicketSolution } from "../../../app/api/ticketSolution";
-import { toast } from "react-toastify";
-import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
-import { getContractAccountant } from "../../../app/api/contract";
-import CircularLoading from "../../../components/iconify/CircularLoading";
 
-const ContractListAcountant = () => {
+import { useNavigate } from "react-router-dom";
+import {
+  Box,
+  Chip,
+  FormControl,
+  MenuItem,
+  Pagination,
+  Select,
+} from "@mui/material";
+import { FaPlus, FaSearch } from "react-icons/fa";
+import { toast } from "react-toastify";
+import {
+  getContractCompany,
+  getContractCompanyByCompanyId,
+} from "../../../../app/api/contract";
+import CircularLoading from "../../../../components/iconify/CircularLoading";
+import { getStatusContract } from "../../../helpers/tableComlumn";
+import { formatDate } from "../../../helpers/FormatDate";
+import { useSelector } from "react-redux";
+
+const CompanyContractList = () => {
   const [dataListContract, setDataListContract] = useState([]);
   const [selectedContractIds, setSelectedContractIds] = useState([]);
   const [refreshData, setRefreshData] = useState(false);
@@ -42,13 +49,14 @@ const ContractListAcountant = () => {
   const [searchField, setSearchField] = useState("name");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
-  const [sortBy, setSortBy] = useState("id");
+  const [sortBy, setSortBy] = useState("name");
+  const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
 
-  const fetchDataListContract = async () => {
+  const fetchDataListContract = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await getContractAccountant();
+      const response = await getContractCompany();
       setDataListContract(response?.data);
       setTotalPages(response?.totalPage);
     } catch (error) {
@@ -56,7 +64,7 @@ const ContractListAcountant = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const handleSelectSolution = (contractId) => {
     if (selectedContractIds.includes(contractId)) {
@@ -69,59 +77,10 @@ const ContractListAcountant = () => {
   };
 
   const handleSelectAllSolutions = () => {
-    if (selectedContractIds.length === dataListContract.length) {
+    if (selectedContractIds?.length === dataListContract?.length) {
       setSelectedContractIds([]);
     } else {
       setSelectedContractIds(dataListContract.map((solution) => solution.id));
-    }
-  };
-
-  const handleDeleteSelectedSolutions = (id) => {
-    try {
-      console.log("Deleting selected solutions...");
-
-      if (selectedContractIds.length === 0) {
-        console.log("No selected solutions to delete.");
-        return;
-      }
-
-      let currentIndex = 0;
-
-      const deleteNextSolution = () => {
-        if (currentIndex < selectedContractIds.length) {
-          const contractId = selectedContractIds[currentIndex];
-
-          deleteTicketSolution(contractId)
-            .then(() => {
-              console.log(
-                `Solution with ID ${contractId} deleted successfully`
-              );
-              currentIndex++;
-              deleteNextSolution();
-            })
-            .catch((error) => {
-              console.error(
-                `Error deleting solution with ID ${contractId}: `,
-                error
-              );
-              toast.error(
-                `Error deleting solution with ID ${contractId}: `,
-                error
-              );
-            });
-        } else {
-          setSelectedContractIds([]);
-          toast.success("Selected solutions deleted successfully");
-          setRefreshData((prev) => !prev);
-        }
-      };
-
-      deleteNextSolution();
-    } catch (error) {
-      console.error("Failed to delete selected solutions: ", error);
-      toast.error(
-        "Failed to delete selected solutions, Please try again later"
-      );
     }
   };
 
@@ -130,7 +89,7 @@ const ContractListAcountant = () => {
   };
 
   const handleOpenDetailContract = (contractId) => {
-    navigate(`/home/detailContract/${contractId}`);
+    navigate(`/home/detailCompanyContract/${contractId}`);
   };
 
   const handleChangePage = (event, value) => {
@@ -154,7 +113,7 @@ const ContractListAcountant = () => {
 
   useEffect(() => {
     fetchDataListContract();
-  }, [refreshData]);
+  }, [fetchDataListContract, refreshData]);
 
   return (
     <>
@@ -163,32 +122,9 @@ const ContractListAcountant = () => {
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
-              <span style={{ color: "#FFFFFF" }}>All Contracts Accountant</span>
+              <span style={{ color: "#FFFFFF" }}>All Company Contracts</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
-              <MDBBtn
-                color="#eee"
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "18px",
-                  color: "#FFFFFF",
-                }}
-                onClick={() => handleOpenCreateTicketSolution()}
-              >
-                <FaPlus /> New
-              </MDBBtn>
-              <MDBBtn
-                color="#eee"
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "18px",
-                  color: "#FFFFFF",
-                }}
-                onClick={() => handleDeleteSelectedSolutions()}
-              >
-                <DeleteForever /> Delete
-              </MDBBtn>
-
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <FormControl
                 variant="outlined"
                 style={{
@@ -208,12 +144,12 @@ const ContractListAcountant = () => {
                   }}
                   style={{ color: "white" }}
                 >
-                  <MenuItem value="id">ID</MenuItem>
+                  {/* <MenuItem value="id">ID</MenuItem> */}
                   <MenuItem value="name">Name</MenuItem>
                   <MenuItem value="description">Description</MenuItem>
-                  <MenuItem value="value">Value</MenuItem>
-                  <MenuItem value="status">Status</MenuItem>
-                  <MenuItem value="startDate">StartDate</MenuItem>
+                  {/* <MenuItem value="value">Value</MenuItem>
+                    <MenuItem value="status">Status</MenuItem>
+                    <MenuItem value="startDate">StartDate</MenuItem> */}
                 </Select>
               </FormControl>
               <div className="input-wrapper">
@@ -221,7 +157,7 @@ const ContractListAcountant = () => {
                 <input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => {
+                  onBeforeInput={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
                       fetchDataListContract();
@@ -243,30 +179,31 @@ const ContractListAcountant = () => {
             <MDBTableHead className="bg-light">
               <tr>
                 {/* <th
-                  style={{ fontWeight: "bold", fontSize: "18px" }}
-                  onClick={() => handleSortChange("id")}
-                >
-                  Id
-                  {sortBy === "id" &&
-                    (sortDirection === "asc" ? (
-                      <ArrowDropDown />
-                    ) : (
-                      <ArrowDropUp />
-                    ))}
-                </th> */}
+                    style={{ fontWeight: "bold", fontSize: "18px" }}
+                    onClick={() => handleSortChange("id")}
+                    className="sortable-header"
+                  >
+                    Id
+                    {sortBy === "id" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </th> */}
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                   <input
                     type="checkbox"
                     checked={
-                      selectedContractIds.length === dataListContract.length
+                      selectedContractIds?.length === dataListContract?.length
                     }
                     onChange={handleSelectAllSolutions}
                   />
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("name")}
+                  className="sortable-header"
                 >
                   Name
                   {sortBy === "name" &&
@@ -276,21 +213,22 @@ const ContractListAcountant = () => {
                       <ArrowDropUp />
                     ))}
                 </th>
-                <th
-                  style={{ fontWeight: "bold", fontSize: "14px" }}
-                  onClick={() => handleSortChange("description")}
-                >
-                  Description
-                  {sortBy === "description" &&
-                    (sortDirection === "asc" ? (
-                      <ArrowDropDown />
-                    ) : (
-                      <ArrowDropUp />
-                    ))}
-                </th>
+                {/* <th
+                    style={{ fontWeight: "bold", fontSize: "14px" }}
+                    onClick={() => handleSortChange("description")}
+                  >
+                    Description
+                    {sortBy === "description" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </th> */}
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("value")}
+                  className="sortable-header"
                 >
                   Status
                   {sortBy === "value" &&
@@ -300,21 +238,23 @@ const ContractListAcountant = () => {
                       <ArrowDropUp />
                     ))}
                 </th>
-                <th
-                  style={{ fontWeight: "bold", fontSize: "14px" }}
-                  onClick={() => handleSortChange("status")}
-                >
-                  Visible
-                  {sortBy === "status" &&
-                    (sortDirection === "asc" ? (
-                      <ArrowDropDown />
-                    ) : (
-                      <ArrowDropUp />
-                    ))}
-                </th>
+                {/* <th
+                    style={{ fontWeight: "bold", fontSize: "14px" }}
+                    onClick={() => handleSortChange("status")}
+                    className="sortable-header"
+                  >
+                    Visible
+                    {sortBy === "status" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </th> */}
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("startDate")}
+                  className="sortable-header"
                 >
                   Start Date
                   {sortBy === "startDate" &&
@@ -327,6 +267,7 @@ const ContractListAcountant = () => {
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("endDate")}
+                  className="sortable-header"
                 >
                   End Date
                   {sortBy === "endDate" &&
@@ -339,6 +280,7 @@ const ContractListAcountant = () => {
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("createdAt")}
+                  className="sortable-header"
                 >
                   Created At
                   {sortBy === "createdAt" &&
@@ -351,6 +293,7 @@ const ContractListAcountant = () => {
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("modifiedAt")}
+                  className="sortable-header"
                 >
                   Last Update
                   {sortBy === "modifiedAt" &&
@@ -360,6 +303,7 @@ const ContractListAcountant = () => {
                       <ArrowDropUp />
                     ))}
                 </th>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
               </tr>
             </MDBTableHead>
             {loading ? (
@@ -384,48 +328,47 @@ const ContractListAcountant = () => {
                           onChange={() => handleSelectSolution(Contract.id)}
                         />
                       </td>
-                      <td>
-                        <ViewCompact
-                          onClick={() => handleOpenDetailContract(Contract.id)}
-                        />{" "}
-                      </td>
-                      <td>{Contract.name}</td>
-                      <td>{Contract.description}</td>
-                      <td>
-                        {Contract.isApproved ? (
-                          <>
-                            <Square
-                              className="square-icon"
-                              style={{ color: "green" }}
-                            />
-                            <span>Approved</span>
-                          </>
-                        ) : (
-                          <>
-                            <Square className="square-icon" />
-                            <span>Not Approved</span>
-                          </>
-                        )}
+                      <td
+                        className="tooltip-cell"
+                        title={`Name Contract: ${Contract.name}\nDescription: ${Contract.description}`}
+                        onClick={() => handleOpenDetailContract(Contract.id)}
+                      >
+                        {Contract.name}
                       </td>
                       <td>
-                        {Contract.isPublic ? (
-                          <>
-                            <LockOpen
-                              className="square-icon"
-                              style={{ color: "green" }}
-                            />{" "}
-                            <span>Public</span>
-                          </>
-                        ) : (
-                          <>
-                            <Lock className="square-icon" /> Private
-                          </>
-                        )}
+                        <Chip
+                          label={getStatusContract(Contract.status)?.name}
+                          sx={{
+                            color: "white",
+                            backgroundColor: getStatusContract(Contract.status)
+                              ?.color,
+                          }}
+                        />
                       </td>
+                      {/* <td>
+                          {Contract.isPublic ? (
+                            <>
+                              <LockOpen
+                                className="square-icon"
+                                style={{ color: "green" }}
+                              />{" "}
+                              <span>Public</span>
+                            </>
+                          ) : (
+                            <>
+                              <Lock className="square-icon" /> Private
+                            </>
+                          )}
+                        </td> */}
                       <td>{formatDate(Contract.startDate)}</td>
                       <td>{formatDate(Contract.endDate)}</td>
                       <td>{formatDate(Contract.createdAt)}</td>
                       <td>{formatDate(Contract.modifiedAt)}</td>
+                      <td>
+                        <ViewCompact
+                          onClick={() => handleOpenDetailContract(Contract.id)}
+                        />
+                      </td>
                     </tr>
                   );
                 })}
@@ -445,4 +388,4 @@ const ContractListAcountant = () => {
   );
 };
 
-export default ContractListAcountant;
+export default CompanyContractList;

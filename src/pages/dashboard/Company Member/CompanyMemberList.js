@@ -54,7 +54,7 @@ const CompanyMemberList = () => {
         filter = `title="${encodeURIComponent(searchQuery)}"`;
       }
 
-      const companyMember = await getAllMemberCompany(
+      const response = await getAllMemberCompany(
         searchField,
         searchQuery,
         currentPage,
@@ -62,7 +62,8 @@ const CompanyMemberList = () => {
         sortBy,
         sortDirection
       );
-      setDataCompanyMembers(companyMember);
+      setDataCompanyMembers(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.error(error);
     } finally {
@@ -168,7 +169,6 @@ const CompanyMemberList = () => {
 
   useEffect(() => {
     fetchAllCompanyMember();
-    setTotalPages(4);
   }, [fetchAllCompanyMember]);
 
   return (

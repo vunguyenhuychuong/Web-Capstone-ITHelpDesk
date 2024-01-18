@@ -190,12 +190,13 @@ export async function createTicketByManager(data) {
     });
     return res.data.result;
   } catch (error) {
-    console.log(error.response.data.responseException.exceptionMessage);
-    toast.error(error.response.data.responseException.exceptionMessage, {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
     });
+
+    console.log(error.response.data.responseException.exceptionMessage);
   }
 }
 
@@ -335,6 +336,38 @@ export async function GetTicketUserAvailable() {
   }
 }
 
+export async function getAssignTicket(
+  searchField,
+  searchQuery,
+  page = 1,
+  pageSize = 5,
+  sortBy = "createdAt",
+  sortDirection = "desc",
+  ticketStatus
+) {
+  const header = getAuthHeader();
+  try {
+    let filter = `${searchField}.contains("${searchQuery}")`;
+    const params = {
+      filter: filter,
+      page: page,
+      pageSize: pageSize,
+      sort: `${sortBy} ${sortDirection}`,
+      ticketStatus: ticketStatus,
+    };
+    const res = await axios.get(`${baseURL}/ticket/assign`, {
+      headers: {
+        Authorization: header,
+      },
+      params: params,
+    });
+    return res.data.result;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}
+
 export async function CancelTicketUser(ticketId) {
   const header = getAuthHeader();
   try {
@@ -385,7 +418,7 @@ export async function CloseTicketUser(ticketId) {
   } catch (error) {
     console.log(error);
     console.log(error.response.data.responseException.exceptionMessage);
-    toast.error(error.response.data.responseException.exceptionMessage, {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,

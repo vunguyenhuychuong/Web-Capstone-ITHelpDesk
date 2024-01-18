@@ -194,7 +194,7 @@ export const TicketStatusOptions = [
   },
   {
     id: 1,
-    displayStatusId: [0, 3],
+    displayStatusId: [0],
     name: "Assigned",
     iconClass: "info-icon",
     icon: <Create style={{ color: "#FF9933" }} />,
@@ -209,7 +209,7 @@ export const TicketStatusOptions = [
   },
   {
     id: 2,
-    displayStatusId: [1],
+    displayStatusId: [1, 3],
     name: "In Progress",
     iconClass: "info-icon",
     icon: <Pending style={{ color: "#339999" }} />,
@@ -267,6 +267,13 @@ export const TicketStatusOptions = [
       alignItems: "center",
     },
   },
+];
+
+export const ticketTaskStatus = [
+  { id: 0, name: "New", color: "#ffcc00" },
+  { id: 1, name: "In Progress", color: "#007BFF" },
+  { id: 2, name: "Completed", color: "#33cc33" },
+  { id: 3, name: "Cancelled", color: "#ff0000" },
 ];
 
 export const getPriorityBadge = (priorityId) => {
@@ -332,15 +339,15 @@ export const numberOfDuration = [
 ];
 
 export const statusContract = [
-  { id: 0, name: "Pending" },
-  { id: 1, name: "Active" },
-  { id: 2, name: "Inactive" },
-  { id: 3, name: "Expired" },
+  { id: 0, name: "Pending", color: "#ffcc00" },
+  { id: 1, name: "Active", color: "#33cc33" },
+  { id: 2, name: "Inactive", color: "#ff0000" },
+  { id: 3, name: "Expired", color: "#808080" },
 ];
 
 export const getStatusContract = (statusId) => {
   const status = statusContract.find((option) => option.id === statusId);
-  return status ? status.name : "Unknown Status";
+  return status ? status : null;
 };
 
 export const getNameFromCode = (code, array) => {

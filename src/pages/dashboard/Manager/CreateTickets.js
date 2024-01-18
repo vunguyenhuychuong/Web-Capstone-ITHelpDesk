@@ -55,8 +55,8 @@ const CreateTickets = () => {
     type: "Offline",
     categoryId: 1,
     attachmentUrls: [],
-    scheduledStartTime: "",
-    scheduledEndTime: "",
+    scheduledStartTime: moment(Date.now()).format("YYYY-MM-DDTHH:mm:ss"),
+    scheduledEndTime: moment(Date.now()).format("YYYY-MM-DDTHH:mm:ss"),
     technicianId: "",
     teamId: "",
   });
@@ -108,7 +108,7 @@ const CreateTickets = () => {
         }));
       }
       setDataUser(fetchUsers);
-      setDataMode(fetchModes);
+      setDataMode(fetchModes?.data);
       if (fetchModes.length > 0) {
         setData((prevData) => ({
           ...prevData,
@@ -235,7 +235,7 @@ const CreateTickets = () => {
   useEffect(() => {
     setData((prevData) => ({
       ...prevData,
-      requesterId: dataUser.length > 0 ? dataUser[0].id : 1,
+      requesterId: dataUser?.length > 0 ? dataUser[0].id : 1,
     }));
   }, [dataUser]);
 
@@ -305,7 +305,7 @@ const CreateTickets = () => {
         attachmentUrls: attachmentUrls,
       };
       setData(updatedData);
-      await createTicketByManager({
+      const res = await createTicketByManager({
         requesterId: data.requesterId,
         title: data.title,
         description: data.description,
@@ -322,7 +322,9 @@ const CreateTickets = () => {
         technicianId: data.technicianId,
         teamId: data.teamId,
       });
-      handleGoBack();
+      if (res) {
+        handleGoBack();
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -447,7 +449,7 @@ const CreateTickets = () => {
                         value={data.requesterId}
                         onChange={handleInputChange}
                       >
-                        {dataUser.map((user) => (
+                        {dataUser?.map((user) => (
                           <option key={user.id} value={user.id}>
                             {user.lastName} {user.firstName}
                           </option>
@@ -531,7 +533,7 @@ const CreateTickets = () => {
                           textAlign: "right",
                         }}
                       >
-                        <span style={{ color: "red" }}>*</span>Mode Id
+                        <span style={{ color: "red" }}>*</span>Mode
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
@@ -577,7 +579,7 @@ const CreateTickets = () => {
                         onChange={handleInputChange}
                       >
                         {dataCategories
-                          .filter((category) => category.id !== "")
+                          ?.filter((category) => category.id !== "")
                           .map((category) => (
                             <option key={category.id} value={category.id}>
                               {category.name}

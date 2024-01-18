@@ -31,7 +31,6 @@ import { formatDate } from "../../../helpers/FormatDate";
 import { formatCurrency } from "../../../helpers/FormatCurrency";
 import { useState } from "react";
 import {
-  createContractService,
   deleteContractService,
   getContractService,
   getServiceSelect,
@@ -40,7 +39,6 @@ import {
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import UploadComponent from "./UploadComponent";
 import {
   ControlPoint,
   Delete,
@@ -50,7 +48,7 @@ import {
 import MyTask from "../../../../assets/images/NoService.jpg";
 import { toast } from "react-toastify";
 
-const Details = ({ data, loading, error }) => {
+const ContractInDetail = ({ data, loading, error }) => {
   const { contractId } = useParams();
   const [dataContractService, setDataContractService] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
@@ -58,7 +56,7 @@ const Details = ({ data, loading, error }) => {
   const [dataSelectedService, setDataSelectedService] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
   const [serviceToAdd, setServiceToAdd] = useState([]);
-  Details.propTypes = {
+  ContractInDetail.propTypes = {
     data: PropTypes.object,
     loading: PropTypes.bool.isRequired,
   };
@@ -427,7 +425,6 @@ const Details = ({ data, loading, error }) => {
               </TableRow> */}
             </TableBody>
           </Table>
-          {/* <UploadComponent attachmentUrls={data.attachmentUrls} /> */}
 
           {dataContractService.length === 0 && (
             <Typography variant="subtitle1" style={{ margin: "20px" }}>
@@ -735,7 +732,7 @@ const Details = ({ data, loading, error }) => {
                     },
                   }}
                   pageSizeOptions={[5]}
-                  checkboxSelection
+                  //   checkboxSelection
                   disableRowSelectionOnClick
                   onSelectionModelChange={(newSelection) => {
                     const selectedRows = newSelection.map((selectedId) => {
@@ -824,4 +821,4 @@ const Details = ({ data, loading, error }) => {
   );
 };
 
-export default Details;
+export default ContractInDetail;

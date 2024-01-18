@@ -43,7 +43,7 @@ const TeamMemberList = () => {
         filter = `title="${encodeURIComponent(searchQuery)}"`;
       }
 
-      const mode = await getAllTeamMember(
+      const response = await getAllTeamMember(
         searchField,
         searchQuery,
         currentPage,
@@ -51,7 +51,8 @@ const TeamMemberList = () => {
         sortBy,
         sortDirection
       );
-      setDataTeamMembers(mode);
+      setDataTeamMembers(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.error(error);
     }
@@ -67,7 +68,7 @@ const TeamMemberList = () => {
   };
 
   const handleSelectAllTeamMembers = () => {
-    if (selectedTeamMembers.length === dataTeamMembers.length) {
+    if (selectedTeamMembers?.length === dataTeamMembers?.length) {
       setSelectedTeamMember([]);
     } else {
       setSelectedTeamMember(dataTeamMembers.map((mode) => mode.id));
@@ -80,7 +81,7 @@ const TeamMemberList = () => {
 
   const handleDeleteSelectedTeamMember = async (id) => {
     try {
-      if (selectedTeamMembers.length === 0) {
+      if (selectedTeamMembers?.length === 0) {
         return;
       }
       const deletePromises = selectedTeamMembers.map(async (teamId) => {
@@ -136,7 +137,6 @@ const TeamMemberList = () => {
 
   useEffect(() => {
     fetchAllTeamMember();
-    setTotalPages(4);
     setIsLoading(false);
   }, [fetchAllTeamMember]);
 
@@ -256,7 +256,7 @@ const TeamMemberList = () => {
                 </tr>
               </MDBTableHead>
               <MDBTableBody className="bg-light">
-                {dataTeamMembers.map((teamMember, index) => {
+                {dataTeamMembers?.map((teamMember, index) => {
                   const isSelected = selectedTeamMembers.includes(
                     teamMember.id
                   );

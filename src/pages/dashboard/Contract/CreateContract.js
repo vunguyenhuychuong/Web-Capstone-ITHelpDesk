@@ -32,7 +32,11 @@ import {
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import { getAllService } from "../../../app/api/service";
+import { DatePicker } from "@mui/x-date-pickers";
+import { convertPriceToNumber, formatPrice } from "../../../utils/helper";
 
+const currentDate = new Date();
+currentDate.setHours(0, 0, 0, 0);
 const CreateContract = () => {
   const navigate = useNavigate();
   const [dataParentContract, setDataParentContract] = useState([]);
@@ -43,8 +47,8 @@ const CreateContract = () => {
     contractNumber: "",
     name: "",
     description: "",
-    value: 1000,
-    startDate: "",  
+    value: formatPrice(10000),
+    startDate: moment(currentDate).format("YYYY-MM-DDTHH:mm:ss"),
     endDate: "",
     parentContractId: null,
     // accountantId: 1,
@@ -104,7 +108,10 @@ const CreateContract = () => {
   };
 
   const handleStartDateChange = (newDate) => {
-    const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
+    const newDateWithHours = new Date(newDate).setHours(0, 0, 0, 0);
+    const formattedDate = moment(newDateWithHours).format(
+      "YYYY-MM-DDTHH:mm:ss"
+    );
     setStartDate(newDate);
     setData((prevInputs) => ({
       ...prevInputs,
@@ -123,7 +130,6 @@ const CreateContract = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
     if (
       name === "parentContractId" ||
       name === "accountantId" ||
@@ -132,14 +138,29 @@ const CreateContract = () => {
       const selectedValue = parseInt(value, 10);
       setData((prevData) => ({ ...prevData, [name]: selectedValue }));
     } else if (name === "value") {
-      const numericValue = parseInt(value);
-      if (numericValue >= 10000 && numericValue <= 99999999) {
-        setData((prevData) => ({ ...prevData, [name]: numericValue }));
-        setFieldErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+      if (value !== "") {
+        var numericValue = value.replace(/[^0-9]/g, "");
+
+        if (numericValue > 0) {
+          setData((prevData) => ({
+            ...prevData,
+            [name]: formatPrice(numericValue),
+          }));
+          setFieldErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+        } else {
+          setData((prevData) => ({
+            ...prevData,
+            [name]: formatPrice(numericValue),
+          }));
+          // setFieldErrors((prevErrors) => ({
+          //   ...prevErrors,
+          //   [name]: "Value must be between 10000 and 99999999",
+          // }));
+        }
       } else {
-        setFieldErrors((prevErrors) => ({
-          ...prevErrors,
-          [name]: "Value must be between 10000 and 99999999",
+        setData((prevData) => ({
+          ...prevData,
+          [name]: formatPrice(0),
         }));
       }
     } else {
@@ -191,16 +212,16 @@ const CreateContract = () => {
     } = event;
     setData((prevInputs) => ({
       ...prevInputs,
-      serviceIds: typeof value === 'string' ? value.split(',') : value,
+      serviceIds: typeof value === "string" ? value.split(",") : value,
     }));
-  }
+  };
 
   const mapServiceDescriptionToId = () => {
-    const serviceIds = data.serviceIds.map(service => {
-      return dataServiceList.find(d => d.description === service).id;
-    })
+    const serviceIds = data.serviceIds.map((service) => {
+      return dataServiceList.find((d) => d.description === service).id;
+    });
     return serviceIds;
-  }
+  };
 
   const handleSubmitContract = async (e) => {
     e.preventDefault();
@@ -230,7 +251,7 @@ const CreateContract = () => {
     //   return;
     // }
 
-    const formattedReviewDate = moment(data.startDate).format(
+    const formattedStartDate = moment(data.startDate).format(
       "YYYY-MM-DDTHH:mm:ss"
     );
     const formattedExpiredDate = moment(data.endDate).format(
@@ -240,12 +261,12 @@ const CreateContract = () => {
     setIsSubmitting(true);
     mapServiceDescriptionToId();
     try {
-      let attachmentUrls = data.attachmentUrls || []; 
+      let attachmentUrls = data.attachmentUrls || [];
       if (selectedFile.length > 0) {
         const storage = getStorage();
         const promises = [];
 
-        for(let i = 0; i < selectedFile.length; i++) {
+        for (let i = 0; i < selectedFile.length; i++) {
           const file = selectedFile[i];
           const storageRef = ref(storage, `images/${file.name}`);
           await uploadBytes(storageRef, file);
@@ -258,24 +279,26 @@ const CreateContract = () => {
       const updatedData = {
         ...data,
         attachmentUrls: attachmentUrls,
-        startDate: formattedReviewDate,
-        endDate: formattedExpiredDate,
+        startDate: formattedStartDate,
+        // endDate: formattedExpiredDate,
       };
 
       setData(updatedData);
-      await createContract({
+      const res = await createContract({
         contractNumber: data.contractNumber,
         name: data.name,
         description: data.description,
-        value: data.value,
-        startDate: formattedReviewDate,
-        endDate: formattedExpiredDate,
+        value: convertPriceToNumber(data.value),
+        startDate: formattedStartDate,
+        // endDate: formattedExpiredDate,
         companyId: data.companyId,
         attachmentUrls: attachmentUrls,
         duration: data.duration,
         serviceIds: mapServiceDescriptionToId(),
       });
-      navigate("/home/contractList")
+      if (res) {
+        navigate("/home/contractList");
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -369,7 +392,9 @@ const CreateContract = () => {
                   onChange={handleInputChange}
                 />
                 {fieldErrors.contractNumber && (
-                  <div style={{ color: "red" }}>{fieldErrors.contractNumber}</div>
+                  <div style={{ color: "red" }}>
+                    {fieldErrors.contractNumber}
+                  </div>
                 )}
               </Grid>
               <Grid item xs={3}>
@@ -444,7 +469,7 @@ const CreateContract = () => {
                   multiple
                   onChange={handleFileChange}
                 />
-                {imagePreviewUrl && (
+                {imagePreviewUrl.length > 0 && (
                   <div
                     className="image-preview"
                     onClick={() => setIsImagePreviewOpen(true)}
@@ -468,8 +493,10 @@ const CreateContract = () => {
                 </h2>
               </Grid>
               <Grid item xs={9}>
-                <FormControl style={{width: '100%'}}>
-                  <InputLabel id="demo-multiple-checkbox-label">Services</InputLabel>
+                <FormControl style={{ width: "100%" }}>
+                  <InputLabel id="demo-multiple-checkbox-label">
+                    Services
+                  </InputLabel>
                   <Select
                     labelId="demo-multiple-checkbox-label"
                     id="demo-multiple-checkbox"
@@ -477,14 +504,21 @@ const CreateContract = () => {
                     value={data.serviceIds}
                     onChange={handleServiceListChange}
                     input={<OutlinedInput label="Services" />}
-                    renderValue={(selected) => selected.join(', ')}
+                    renderValue={(selected) => selected.join(", ")}
                     MenuProps={MenuProps}
-                    className={{width: '100%'}}
+                    className={{ width: "100%" }}
                   >
                     {dataServiceList.map((name) => (
                       <MenuItem key={name.id} value={name.description}>
-                        <Checkbox checked={data.serviceIds.indexOf(name.description) > -1} />
-                        <ListItemText primary={name.description} className="text-wrap" />
+                        <Checkbox
+                          checked={
+                            data.serviceIds.indexOf(name.description) > -1
+                          }
+                        />
+                        <ListItemText
+                          primary={name.description}
+                          className="text-wrap"
+                        />
                       </MenuItem>
                     ))}
                   </Select>
@@ -495,7 +529,6 @@ const CreateContract = () => {
                 justifyContent="flex-end"
                 style={{ marginBottom: "20px", marginTop: "20px" }}
               >
-
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
@@ -518,24 +551,14 @@ const CreateContract = () => {
                         value={data.duration}
                         onChange={handleInputChange}
                       >
-                        <option  value={3}>
-                          3 months
-                        </option>
-                        <option  value={6}>
-                          6 months
-                        </option>
-                        <option  value={12}>
-                          12 months
-                        </option>
-                        <option  value={24}>
-                          24 months
-                        </option>
+                        <option value={3}>3 months</option>
+                        <option value={6}>6 months</option>
+                        <option value={12}>12 months</option>
+                        <option value={24}>24 months</option>
                       </select>
                     </Grid>
                   </Grid>
                 </Grid>
-
-
 
                 <Grid item xs={6}>
                   <Grid container>
@@ -622,7 +645,7 @@ const CreateContract = () => {
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <DateTimePicker
+                        <DatePicker
                           slotProps={{
                             textField: {
                               helperText: `${startDate}`,
@@ -754,7 +777,7 @@ const CreateContract = () => {
                   onClick={handleSubmitContract}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Submitting..." : "Save"}
+                  {isSubmitting ? "Submitting..." : "Create"}
                 </button>
                 <button
                   type="button"

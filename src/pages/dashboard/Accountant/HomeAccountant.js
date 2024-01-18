@@ -1,13 +1,11 @@
-import {
-  ConfirmationNumber,
-  PieChart,
-} from "@mui/icons-material";
+import { ConfirmationNumber, PieChart } from "@mui/icons-material";
 import { Grid, Tab, Tabs } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
 import { useState } from "react";
 import LoadingSkeleton from "../../../components/iconify/LoadingSkeleton";
 import ViewAccountant from "./ViewAccountant";
+import ContractList from "../Contract/ContractList";
 
 const HomeAccountant = () => {
   const [value, setValue] = useState(0);
@@ -83,14 +81,17 @@ const HomeAccountant = () => {
                   </div>
                 }
                 className="custom-tab-label"
-              />          
+              />
             </Tabs>
 
             <Box role="tabpanel" hidden={value !== 0}>
               {value === 0 ? <ViewAccountant /> : <LoadingSkeleton />}
             </Box>
+            <Box role="tabpanel" hidden={value !== 1}>
+              {value === 1 ? <ContractList /> : <LoadingSkeleton />}
+            </Box>
           </Box>
-        </Grid>      
+        </Grid>
       </Grid>
     </Grid>
   );

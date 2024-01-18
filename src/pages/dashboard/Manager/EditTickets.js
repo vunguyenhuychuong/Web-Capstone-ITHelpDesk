@@ -113,7 +113,7 @@ const EditTickets = () => {
       const fetchModes = await ModeApi.getMode();
       setDataCategories(fetchCategories);
       setDataUser(fetchUsers);
-      setDataMode(fetchModes);
+      setDataMode(fetchModes?.data);
     } catch (error) {
       console.log("Error while fetching data", error);
     } finally {
@@ -230,8 +230,12 @@ const EditTickets = () => {
           // city: ticketData.city,
           // isPeriodic: ticketData.isPeriodic,
           impactDetail: ticketData.impactDetail,
-          scheduledStartTime: ticketData.scheduledStartTime,
-          scheduledEndTime: ticketData.scheduledEndTime,
+          scheduledStartTime:
+            ticketData.scheduledStartTime ??
+            moment(Date.now()).format("YYYY-MM-DDTHH:mm:ss"),
+          scheduledEndTime:
+            ticketData.scheduledEndTime ??
+            moment(Date.now()).format("YYYY-MM-DDTHH:mm:ss"),
           // dueTime: ticketData.dueTime,
           // completedTime: ticketData.completedTime,
           categoryId: ticketData.categoryId,
@@ -344,6 +348,9 @@ const EditTickets = () => {
       // } else {
       //   toast.success("Ticket updated successfully");
       // }
+      if (res) {
+        handleGoBack();
+      }
     } catch (error) {
       console.log("error", error);
       if (error.response && error.response.status === 400) {
@@ -571,7 +578,7 @@ const EditTickets = () => {
                           textAlign: "right",
                         }}
                       >
-                        <span style={{ color: "red" }}>*</span>Mode Id
+                        <span style={{ color: "red" }}>*</span>Mode
                       </h2>
                     </Grid>
                     <Grid item xs={5}>

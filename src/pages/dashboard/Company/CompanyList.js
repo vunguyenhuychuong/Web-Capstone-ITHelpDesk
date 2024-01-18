@@ -69,7 +69,8 @@ const CompanyList = () => {
         sortBy,
         sortDirection
       );
-      setDataListCompany(response);
+      setDataListCompany(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.log(error);
     } finally {
@@ -173,7 +174,6 @@ const CompanyList = () => {
 
   useEffect(() => {
     fetchDataListTicketTask();
-    setTotalPages(4);
   }, [fetchDataListTicketTask, refreshData]);
 
   return (

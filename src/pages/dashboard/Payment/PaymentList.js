@@ -61,7 +61,8 @@ const PaymentList = () => {
         sortBy,
         sortDirection
       );
-      setDataListPayment(response);
+      setDataListPayment(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.log(error);
     } finally {
@@ -161,7 +162,6 @@ const PaymentList = () => {
 
   useEffect(() => {
     fetchDataListPayment();
-    setTotalPages(4);
   }, [fetchDataListPayment, refreshData]);
 
   return (

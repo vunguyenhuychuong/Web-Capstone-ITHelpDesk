@@ -29,7 +29,6 @@ const useContractData = (contractId) => {
       isActive: true,
       dateOfBirth: "",
       gender: 0,
-
     },
     company: {
       companyName: "",
@@ -45,38 +44,31 @@ const useContractData = (contractId) => {
       customerAdmin: "",
       createdAt: "",
       modifiedAt: "",
-      deletedAt: ""
+      deletedAt: "",
     },
   });
+  const fetchData = async () => {
+    try {
+      const contractData = await getContractById(contractId);
+
+      setData({
+        ...contractData,
+      });
+    } catch (error) {
+      console.error("Error fetching contract data: ", error);
+
+      setError(error);
+    }
+  };
 
   useEffect(() => {
-    let isMounted = true;
-    const fetchData = async () => {
-      try {
-        const contractData = await getContractById(contractId);
-        if (isMounted) {
-          setData({
-            ...contractData,
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching contract data: ", error);
-        if(isMounted){
-            setError(error);
-        }
-      }
-    };
-
     fetchData();
-    return () => {
-        isMounted = false;
-      };
-    }, [contractId]);
-  
-    if (error) {
-      return { error }; // Return error separately
-    }
-    return { data }; // Return data separately
+  }, []);
+
+  if (error) {
+    return { error }; // Return error separately
+  }
+  return { data, fetchData }; // Return data separately
 };
 
 export default useContractData;

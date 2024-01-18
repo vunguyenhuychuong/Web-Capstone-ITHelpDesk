@@ -33,6 +33,7 @@ import CustomizedProgressBars from "../../../components/iconify/LinearProccessin
 import { deleteCategory, getCategoriesAll } from "../../../app/api/category";
 import EditCategory from "./EditCategory";
 import CreateCategory from "./CreateCategory";
+import CircularLoading from "../../../components/iconify/CircularLoading";
 
 const CategoryList = () => {
   const [dataCategory, setDataCategory] = useState([]);
@@ -55,7 +56,7 @@ const CategoryList = () => {
         filter = `title="${encodeURIComponent(searchQuery)}"`;
       }
 
-      const category = await getCategoriesAll(
+      const response = await getCategoriesAll(
         searchField,
         searchQuery,
         currentPage,
@@ -63,7 +64,8 @@ const CategoryList = () => {
         sortBy,
         sortDirection
       );
-      setDataCategory(category);
+      setDataCategory(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.error(error);
     } finally {
@@ -181,7 +183,6 @@ const CategoryList = () => {
 
   useEffect(() => {
     fetchAllCategory();
-    setTotalPages(4);
   }, [fetchAllCategory]);
 
   return (
@@ -266,7 +267,13 @@ const CategoryList = () => {
           </MDBContainer>
         </MDBNavbar>
         {isLoading ? (
-          <CustomizedProgressBars />
+          <MDBTableBody className="bg-light">
+            <tr>
+              <td>
+                <CircularLoading />
+              </td>
+            </tr>
+          </MDBTableBody>
         ) : (
           <>
             <MDBTable

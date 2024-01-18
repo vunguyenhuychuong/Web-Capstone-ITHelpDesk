@@ -77,7 +77,7 @@ export async function createTicketTask(data) {
         Authorization: header,
       },
     });
-    toast.success(res.data.result, {
+    toast.success(res.data.result.message, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -109,8 +109,7 @@ export async function updateTicketTask(taskId, data) {
         position: toast.POSITION.BOTTOM_RIGHT,
       });
     } else {
-      toast.error("An error occurred while processing the request."
-      , {
+      toast.error("An error occurred while processing the request.", {
         autoClose: 1000,
         hideProgressBar: false,
         position: toast.POSITION.TOP_CENTER,

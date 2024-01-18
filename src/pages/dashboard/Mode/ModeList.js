@@ -57,7 +57,7 @@ const ModeList = () => {
         filter = `title="${encodeURIComponent(searchQuery)}"`;
       }
       setLoading(true);
-      const mode = await getDataMode(
+      const response = await getDataMode(
         searchField,
         searchQuery,
         currentPage,
@@ -65,7 +65,8 @@ const ModeList = () => {
         sortBy,
         sortDirection
       );
-      setDataModes(mode);
+      setDataModes(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.error(error);
     } finally {
@@ -194,7 +195,6 @@ const ModeList = () => {
 
   useEffect(() => {
     fetchAllMode();
-    setTotalPages(4);
   }, [fetchAllMode]);
 
   return (

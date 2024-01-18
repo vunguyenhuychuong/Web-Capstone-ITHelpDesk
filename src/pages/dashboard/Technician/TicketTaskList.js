@@ -24,7 +24,14 @@ import {
 import { formatDate } from "../../helpers/FormatDate";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCallback } from "react";
-import { Box, FormControl, MenuItem, Pagination, Select } from "@mui/material";
+import {
+  Box,
+  Chip,
+  FormControl,
+  MenuItem,
+  Pagination,
+  Select,
+} from "@mui/material";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import {
@@ -34,6 +41,7 @@ import {
 import {
   TicketStatusOptions,
   getPriorityOption,
+  ticketTaskStatus,
 } from "../../helpers/tableComlumn";
 import CircularLoading from "../../../components/iconify/CircularLoading";
 import { toast } from "react-toastify";
@@ -69,7 +77,8 @@ const TicketTaskList = () => {
         sortDirection,
         ticketId
       );
-      setDataListTicketsTask(response);
+      setDataListTicketsTask(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.log(error);
     } finally {
@@ -169,7 +178,6 @@ const TicketTaskList = () => {
 
   useEffect(() => {
     fetchDataListTicketTask();
-    setTotalPages(4);
   }, [fetchDataListTicketTask, refreshData]);
 
   return (
@@ -379,7 +387,7 @@ const TicketTaskList = () => {
                       const isSelected = selectedtaskIds.includes(
                         TicketTask.id
                       );
-                      const ticketStatusOption = TicketStatusOptions.find(
+                      const taskStatus = ticketTaskStatus.find(
                         (option) => option.id === TicketTask.taskStatus
                       );
 
@@ -395,11 +403,14 @@ const TicketTaskList = () => {
                           </td>
                           <td>{TicketTask.title}</td>
                           <td>
-                            {ticketStatusOption ? (
-                              <span style={ticketStatusOption.badgeStyle}>
-                                {ticketStatusOption.icon}
-                                {ticketStatusOption.name}
-                              </span>
+                            {taskStatus ? (
+                              <Chip
+                                label={taskStatus.name}
+                                sx={{
+                                  backgroundColor: taskStatus.color,
+                                  color: "white",
+                                }}
+                              />
                             ) : (
                               "Unknown Status"
                             )}

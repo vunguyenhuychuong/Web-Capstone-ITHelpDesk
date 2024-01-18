@@ -3,7 +3,6 @@ import { getAuthHeader } from "./auth";
 import { baseURL } from "./link";
 import { toast } from "react-toastify";
 
-
 export async function getAllDepartmentSelect(companyId) {
   try {
     const header = getAuthHeader();
@@ -19,7 +18,7 @@ export async function getAllDepartmentSelect(companyId) {
   } catch (error) {
     console.log(error);
   }
-};
+}
 
 export async function getAllDepartmentList(
   searchField,
@@ -80,7 +79,7 @@ export async function createDepartment(data, companyId) {
         },
       }
     );
-    toast.success(res.data.result.message, {
+    toast.success(res.data.result, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -108,7 +107,7 @@ export async function updateDepartment(data, companyId) {
         },
       }
     );
-    toast.success(res.data.result.message, {
+    toast.success(res.data.result, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -122,29 +121,31 @@ export async function updateDepartment(data, companyId) {
       position: toast.POSITION.TOP_CENTER,
     });
   }
-};
+}
 
 export async function deleteDepartment(companyId) {
-    try {
-      const header = getAuthHeader();
-      const res = await axios.delete(`${baseURL}/company/department/${companyId}`, {
+  try {
+    const header = getAuthHeader();
+    const res = await axios.delete(
+      `${baseURL}/company/department/${companyId}`,
+      {
         headers: {
           Authorization: header,
         },
-      });
-      toast.success(res.data.result.message, {
-        autoClose: 2000,
-        hideProgressBar: false,
-        position: toast.POSITION.TOP_CENTER,
-      });
-      return res.data.result;
-    } catch (error) {
-      console.log(error);
-      toast.error(error.response.data.responseException.exceptionMessage, {
-        autoClose: 2000,
-        hideProgressBar: false,
-        position: toast.POSITION.TOP_CENTER,
-      });
-    }
-  };
-  
+      }
+    );
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+    return res.data.result;
+  } catch (error) {
+    console.log(error);
+    toast.error(error.response.data.responseException.exceptionMessage, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+  }
+}

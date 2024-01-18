@@ -12,7 +12,7 @@ import {
   ReceiptLong,
 } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
-import AssignTicketModal from "../AssignTicketModal";
+
 import {
   Button,
   Chip,
@@ -25,26 +25,23 @@ import {
   Tab,
   Tabs,
 } from "@mui/material";
-import { formatDate } from "../../../helpers/FormatDate";
-import { Box } from "@mui/system";
-import LoadingSkeleton from "../../../../components/iconify/LoadingSkeleton";
-import { useSelector } from "react-redux";
-import useContractData from "./useContractData";
-import PaymentContract from "./PaymentContract";
-import Details from "./Details";
-import { getStatusContract } from "../../../helpers/tableComlumn";
-import ReactImageGallery from "react-image-gallery";
-import ConfirmDialog from "../../../../components/dialog/ConfirmDialog";
-import { deleteContract } from "../../../../app/api/contract";
 
-const DetailContract = () => {
+import { Box } from "@mui/system";
+
+import { useSelector } from "react-redux";
+import ReactImageGallery from "react-image-gallery";
+import { getStatusContract } from "../../../helpers/tableComlumn";
+import { formatDate } from "../../../helpers/FormatDate";
+import LoadingSkeleton from "../../../../components/iconify/LoadingSkeleton";
+import AssignTicketModal from "../../Manager/AssignTicketModal";
+import useContractData from "../../Manager/Contract/useContractData";
+import ContractInDetail from "./ContractInDetail";
+import PaymentContract from "../../Manager/Contract/PaymentContract";
+import CompanyContractPayment from "./CompanyContractPayment";
+
+const DetailCompanyContract = () => {
   const { contractId } = useParams();
-  const {
-    data,
-    loading,
-    setData,
-    fetchData: refetch,
-  } = useContractData(contractId);
+  const { data, loading, setData } = useContractData(contractId);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [value, setValue] = useState(0);
   const [previewImages, setPreviewImages] = useState([]);
@@ -52,7 +49,6 @@ const DetailContract = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth);
   const userRole = user.user.role;
-  const [openConfirm, setOpenConfirm] = React.useState(false);
 
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
@@ -62,22 +58,10 @@ const DetailContract = () => {
     navigate(`/home/editContract/${contractId}`);
   };
 
-  const handleDeleteContract = async (contractId) => {
-    try {
-      await deleteContract(contractId);
-      // await refetch();
-      handleCloseConfirm();
-      handleGoBack();
-    } catch (error) {
-      console.log(error);
-    }
-  };
   const handleCloseAssignTicket = () => {
     setDialogOpen(false);
   };
-  const handleCloseConfirm = () => {
-    setOpenConfirm(false);
-  };
+
   const handleOpenImagePreview = () => {
     setIsImagePreviewOpen(true);
   };
@@ -86,11 +70,7 @@ const DetailContract = () => {
     setIsImagePreviewOpen(false);
   };
   const handleGoBack = () => {
-    if (userRole === 2) {
-      navigate(`/home/contractList`);
-    } else if (userRole === 4) {
-      navigate(`/home/contractList`);
-    }
+    navigate(`/home/companyContractList`);
   };
   useEffect(() => {
     try {
@@ -150,7 +130,7 @@ const DetailContract = () => {
               <ArrowBack />
             </Button>
 
-            <Button
+            {/* <Button
               sx={{
                 backgroundColor: "#FFFFFF",
                 borderRadius: "5px",
@@ -158,18 +138,7 @@ const DetailContract = () => {
               onClick={() => handleOpenEditTicket(contractId)}
             >
               Edit
-            </Button>
-
-            <Button
-              color="error"
-              sx={{
-                backgroundColor: "#FFFFFF",
-                borderRadius: "5px",
-              }}
-              onClick={() => setOpenConfirm(true)}
-            >
-              Delete
-            </Button>
+            </Button> */}
           </Stack>
 
           <MDBRow className="mb-2">
@@ -266,14 +235,14 @@ const DetailContract = () => {
             </Tabs>
             <Box role="tabpanel" hidden={value !== 0}>
               {value === 0 ? (
-                <Details data={data} loading={loading || false} />
+                <ContractInDetail data={data} loading={loading || false} />
               ) : (
                 <LoadingSkeleton />
               )}
             </Box>
             <Box role="tabpanel" hidden={value !== 1}>
               {value === 1 ? (
-                <PaymentContract
+                <CompanyContractPayment
                   dataPayment={data}
                   loading={loading || false}
                 />
@@ -305,14 +274,8 @@ const DetailContract = () => {
         onClose={handleCloseAssignTicket}
         ticketId={contractId}
       />
-      <ConfirmDialog
-        content={"Are you sure want to delete this contract?"}
-        open={openConfirm}
-        action={() => handleDeleteContract(contractId)}
-        handleClose={handleCloseConfirm}
-      />
     </>
   );
 };
 
-export default DetailContract;
+export default DetailCompanyContract;

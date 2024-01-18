@@ -26,13 +26,13 @@ const useSolutionTicketData = (solutionId) => {
 
   useEffect(() => {
     fetchData();
-  }, [solutionId , fetchData ]);
+  }, [solutionId, fetchData]);
 
   const refetch = () => {
     fetchData();
   };
 
-  return { loading, data, dataCategories, error, refetch }; 
+  return { loading, data, dataCategories, error, refetch };
 };
 
 export default useSolutionTicketData;

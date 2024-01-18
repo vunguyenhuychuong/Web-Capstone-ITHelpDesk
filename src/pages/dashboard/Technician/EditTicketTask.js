@@ -24,6 +24,7 @@ import AssignApi from "../../../app/api/assign";
 import Process, {
   TicketStatusOptions,
   priorityOption,
+  ticketTaskStatus,
 } from "../../helpers/tableComlumn";
 import {
   getTicketTaskById,
@@ -120,6 +121,7 @@ const EditTicketTask = () => {
           ...prevData,
           id: taskData.id,
           ticketId: taskData.ticketId,
+          taskStatus: taskData.taskStatus,
           createById: taskData.createById,
           technicianId: taskData.technicianId,
           title: taskData.title,
@@ -127,8 +129,12 @@ const EditTicketTask = () => {
           teamId: taskData.teamId,
           note: taskData.note,
           priority: taskData.priority,
-          scheduledStartTime: taskData.scheduledStartTime,
-          scheduledEndTime: taskData.scheduledEndTime,
+          scheduledStartTime:
+            taskData.scheduledStartTime ??
+            moment(Date.now()).format("YYYY-MM-DDTHH:mm:ss"),
+          scheduledEndTime:
+            taskData.scheduledEndTime ??
+            moment(Date.now()).format("YYYY-MM-DDTHH:mm:ss"),
           createdAt: taskData.createdAt,
           modifiedAt: taskData.modifiedAt,
         }));
@@ -240,10 +246,10 @@ const EditTicketTask = () => {
       };
 
       setData(updatedData);
-      await updateTicketTask(ticketId, {
+      const res = await updateTicketTask(ticketId, {
         title: data.title,
         description: data.description,
-        // taskStatus: data.taskStatus,
+        taskStatus: data.taskStatus,
         teamId: data.teamId,
         // technicianId: data.technicianId,
         priority: parseInt(data.priority, 10),
@@ -253,6 +259,9 @@ const EditTicketTask = () => {
         attachmentUrls: data.attachmentUrls,
         note: data.note,
       });
+      if (res) {
+        handleGoBack(data.ticketId);
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -484,25 +493,6 @@ const EditTicketTask = () => {
                           onChange={handleInputChange}
                           valueLabelDisplay="auto"
                         />
-                        <TextField
-                          type="number"
-                          aria-label="progress input"
-                          id="progress"
-                          name="progress"
-                          sx={{ width: "100%", my: 5 }}
-                          InputProps={{
-                            inputProps: { min: 0, max: 100 },
-                            endAdornment: <Typography>%</Typography>,
-                          }}
-                          onChange={(e) => {
-                            var value = parseInt(e.target.value, 10);
-
-                            if (value > 100) e.target.value = 100;
-                            if (value < 0) e.target.value = 0;
-                            handleInputChange(e);
-                          }}
-                          value={data.progress}
-                        />
                       </Stack>
                     </Grid>
                   </Grid>
@@ -534,6 +524,78 @@ const EditTicketTask = () => {
                           .map((priority) => (
                             <option key={priority.id} value={priority.id}>
                               {priority.name}
+                            </option>
+                          ))}
+                      </select>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid container justifyContent="flex-end" sx={{ pb: 4 }}>
+                <Grid item xs={6}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        {""}
+                      </h2>
+                    </Grid>
+                    <Grid item xs={5}>
+                      <TextField
+                        type="number"
+                        aria-label="progress input"
+                        id="progress"
+                        name="progress"
+                        sx={{ width: "100%" }}
+                        InputProps={{
+                          inputProps: { min: 0, max: 100 },
+                          endAdornment: <Typography>%</Typography>,
+                        }}
+                        onChange={(e) => {
+                          var value = parseInt(e.target.value, 10);
+
+                          if (value > 100) e.target.value = 100;
+                          if (value < 0) e.target.value = 0;
+                          handleInputChange(e);
+                        }}
+                        value={data.progress}
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid item xs={6}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Task Status
+                      </h2>
+                    </Grid>
+                    <Grid item xs={5}>
+                      <select
+                        id="taskStatus"
+                        name="taskStatus"
+                        className="form-select"
+                        value={data.taskStatus}
+                        onChange={handleInputChange}
+                      >
+                        {ticketTaskStatus
+                          .filter((status) => status.id !== "")
+                          .map((status) => (
+                            <option key={status.id} value={status.id}>
+                              {status.name}
                             </option>
                           ))}
                       </select>
@@ -606,41 +668,6 @@ const EditTicketTask = () => {
                   </Grid>
                 </Grid>
               </Grid>
-              {/* <Grid container justifyContent="flex-end">
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        Task Status
-                      </h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <select
-                        id="taskStatus"
-                        name="taskStatus"
-                        className="form-select"
-                        value={data.taskStatus}
-                        onChange={handleInputChange}
-                      >
-                        {TicketStatusOptions.filter(
-                          (status) => status.id !== ""
-                        ).map((status) => (
-                          <option key={status.id} value={status.id}>
-                            {status.name}
-                          </option>
-                        ))}
-                      </select>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid> */}
               <Grid
                 container
                 justifyContent="flex-end"

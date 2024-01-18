@@ -15,7 +15,7 @@ export async function getAllCompanyMember(companyId) {
   } catch (error) {
     console.log(error);
   }
-};
+}
 
 export async function getAllMemberCompany(
   searchField,
@@ -23,7 +23,7 @@ export async function getAllMemberCompany(
   page = 1,
   pageSize = 5,
   sortBy = "id",
-  sortDirection = "asc",
+  sortDirection = "asc"
 ) {
   try {
     let filter = `${searchField}.contains("${searchQuery}")`;
@@ -44,7 +44,7 @@ export async function getAllMemberCompany(
     console.log(error);
     return [];
   }
-};
+}
 
 export async function getCompanyMemberSelect(companyId) {
   try {
@@ -60,7 +60,7 @@ export async function getCompanyMemberSelect(companyId) {
   } catch (error) {
     console.log(error);
   }
-};
+}
 
 export async function getCompanyMemberAdmin(companyId) {
   try {
@@ -85,7 +85,7 @@ export async function createCompanyMember(data) {
         Authorization: header,
       },
     });
-    toast.success(res.data.result.message, {
+    toast.success(res.data.result, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -93,7 +93,7 @@ export async function createCompanyMember(data) {
     return res.data.result;
   } catch (error) {
     console.log(error);
-    toast.error(error.response.data.responseException.exceptionMessage, {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -101,68 +101,9 @@ export async function createCompanyMember(data) {
   }
 }
 
-export async function updateCompanyMember(data,memberId ) {
+export async function updateCompanyMember(data, memberId) {
   try {
     const res = await axios.put(`${baseURL}/company/member/${memberId}`, data, {
-      headers: {
-        Authorization: header,
-      },
-    });
-    toast.success(res.data.result.message, {
-      autoClose: 2000,
-      hideProgressBar: false,
-      position: toast.POSITION.TOP_CENTER,
-    });
-    return res.data.result;
-  } catch (error) {
-    console.log(error);
-    toast.error(error.response.data.responseException.exceptionMessage, {
-      autoClose: 2000,
-      hideProgressBar: false,
-      position: toast.POSITION.TOP_CENTER,
-    });
-  }
-};
-
-export async function getCompanyMemberById(memberId) {
-  try{
-    const res = await axios.get(`${baseURL}/company/member/${memberId}`, {
-      headers: {
-        Authorization: header,
-      },
-    });
-    return res.data.result;
-  }catch(error) {
-    console.log(error);
-  }
-};
-
-export async function deleteCompanyMember(memberId) {
-  try {
-    const res = await axios.delete(`${baseURL}/company/member/${memberId}`, {
-      headers: {
-        Authorization: header,
-      },
-    });
-    toast.success(res.data.result.message, {
-      autoClose: 2000,
-      hideProgressBar: false,
-      position: toast.POSITION.TOP_CENTER,
-    });
-    return res.data.result;
-  } catch (error) {
-    console.log(error);
-    toast.error(error.response.data.responseException.exceptionMessage, {
-      autoClose: 2000,
-      hideProgressBar: false,
-      position: toast.POSITION.TOP_CENTER,
-    });
-  }
-};
-
-export async function forgotPassword(email) {
-  try{
-    const res = await axios.post(`${baseURL}/auth/reset-password?email=${email}`,{
       headers: {
         Authorization: header,
       },
@@ -173,9 +114,71 @@ export async function forgotPassword(email) {
       position: toast.POSITION.TOP_CENTER,
     });
     return res.data.result;
-  }catch(error){
+  } catch (error) {
     console.log(error);
-    toast.error(error.response.data.responseException.exceptionMessage, {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+  }
+}
+
+export async function getCompanyMemberById(memberId) {
+  try {
+    const res = await axios.get(`${baseURL}/company/member/${memberId}`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data.result;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function deleteCompanyMember(memberId) {
+  try {
+    const res = await axios.delete(`${baseURL}/company/member/${memberId}`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+    return res.data.result;
+  } catch (error) {
+    console.log(error);
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+  }
+}
+
+export async function forgotPassword(email) {
+  try {
+    const res = await axios.post(
+      `${baseURL}/auth/reset-password?email=${email}`,
+      {
+        headers: {
+          Authorization: header,
+        },
+      }
+    );
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+    return res.data.result;
+  } catch (error) {
+    console.log(error);
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,

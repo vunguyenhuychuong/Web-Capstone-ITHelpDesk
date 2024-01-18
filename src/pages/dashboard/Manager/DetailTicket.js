@@ -86,7 +86,7 @@ const DetailTicket = () => {
     try {
       const fetchCategories = await CategoryApi.getAllCategories();
       const fetchModes = await ModeApi.getMode();
-      setDataCategories(fetchCategories);
+      setDataCategories(fetchCategories?.data);
       setDataMode(fetchModes);
     } catch (error) {
       console.log("Error while fetching data", error);
@@ -97,9 +97,10 @@ const DetailTicket = () => {
   const handleCancelTicket = async (ticketId) => {
     try {
       await CancelTicketUser(ticketId);
-      navigate("/home/requestCustomerList");
     } catch (error) {
       console.log(error);
+    } finally {
+      refetch();
     }
   };
 
@@ -108,6 +109,8 @@ const DetailTicket = () => {
       await CloseTicketUser(ticketId);
     } catch (error) {
       console.log(error);
+    } finally {
+      refetch();
     }
   };
 
@@ -116,7 +119,7 @@ const DetailTicket = () => {
   };
 
   const handleOpenEditTicket = (ticketId) => {
-    if (userRole === 1 && ticketStatus === 0) {
+    if (userRole === 1 && (ticketStatus === 0 || ticketStatus === 1)) {
       navigate(`/home/editTicketCustomer/${ticketId}`);
     } else if (userRole === 2 || userRole === 3) {
       navigate(`/home/editTicket/${ticketId}`);
@@ -128,6 +131,8 @@ const DetailTicket = () => {
       await ChangeStatusTicket(ticketId, status);
     } catch (error) {
       console.log("Error changing ticket status:", error);
+    } finally {
+      refetch();
     }
   };
 
@@ -143,7 +148,7 @@ const DetailTicket = () => {
     if (userRole === 2) {
       navigate(`/home/homeManager?tab=1`);
     } else if (userRole === 3) {
-      navigate(`/home/homeTechnician?tab=1`);
+      navigate(`/home/ticketAssign`);
     } else if (userRole === 1) {
       navigate(`/home/requestCustomerList`);
     }
@@ -192,7 +197,10 @@ const DetailTicket = () => {
           }}
         >
           <MDBCol md="12">
-            <MDBRow className="border-box-detail">
+            <MDBRow
+              className="border-box-detail"
+              style={{ paddingTop: 4.5, paddingBottom: 4.5 }}
+            >
               <MDBCol md="1" className="mt-2">
                 <Stack direction={"row"} alignItems={"center"}>
                   <Button>
@@ -212,6 +220,19 @@ const DetailTicket = () => {
                 >
                   {userRole === 1 && (
                     <>
+                      {data.ticketStatus === 0 ||
+                        (data.ticketStatus === 1 && (
+                          <Button
+                            sx={{
+                              backgroundColor: "#FFFFFF",
+                              borderRadius: "5px",
+                            }}
+                            onClick={() => handleOpenEditTicket(ticketId)}
+                            disabled={!allowEdit}
+                          >
+                            Edit Ticket
+                          </Button>
+                        ))}
                       <Button
                         sx={{
                           backgroundColor: "#FFFFFF",
@@ -234,26 +255,30 @@ const DetailTicket = () => {
                       </Button>
                     </>
                   )}
-                  <Button
-                    sx={{
-                      backgroundColor: "#FFFFFF",
-                      borderRadius: "5px",
-                    }}
-                    onClick={() => handleOpenEditTicket(ticketId)}
-                    disabled={!allowEdit}
-                  >
-                    Edit Ticket
-                  </Button>
-                  <Button
-                    sx={{
-                      backgroundColor: "#FFFFFF",
-                      borderRadius: "5px",
-                    }}
-                    onClick={() => setIsEditDialogOpen(true)}
-                    disabled={!allowEdit}
-                  >
-                    Edit Properties
-                  </Button>
+                  {userRole === 2 && (
+                    <Button
+                      sx={{
+                        backgroundColor: "#FFFFFF",
+                        borderRadius: "5px",
+                      }}
+                      onClick={() => handleOpenEditTicket(ticketId)}
+                      disabled={!allowEdit}
+                    >
+                      Edit Ticket
+                    </Button>
+                  )}
+                  {userRole === 3 && (
+                    <Button
+                      sx={{
+                        backgroundColor: "#FFFFFF",
+                        borderRadius: "5px",
+                      }}
+                      onClick={() => setIsEditDialogOpen(true)}
+                      disabled={!allowEdit}
+                    >
+                      Edit Properties
+                    </Button>
+                  )}
                   {/* {userRole === 2 || userRole === 3 ? (
                     <select
                       value={selectedStatus}
@@ -291,7 +316,9 @@ const DetailTicket = () => {
                         </Button>
                       ))
                     : null}
-                  {userRole === 2 ? (
+                  {userRole === 3 &&
+                  data.ticketStatus !== 4 &&
+                  data.ticketStatus !== 5 ? (
                     <MDBCol>
                       <div className="d-flex align-items-center">
                         <Button
@@ -505,7 +532,7 @@ const DetailTicket = () => {
             >
               <Stack flexDirection={"row"} alignItems={"center"}>
                 <ArrowRight />
-                <Typography> Name:</Typography>
+                <Typography fontWeight={"bold"}> Name:</Typography>
               </Stack>
               <Typography>
                 {data.assignment && data.assignment.technicianFullName
@@ -520,7 +547,7 @@ const DetailTicket = () => {
             >
               <Stack flexDirection={"row"} alignItems={"center"}>
                 <ArrowRight />
-                <Typography> Email:</Typography>
+                <Typography fontWeight={"bold"}> Email:</Typography>
               </Stack>
               <Typography>
                 {data.assignment && data.assignment.technicianEmail
@@ -535,7 +562,7 @@ const DetailTicket = () => {
             >
               <Stack flexDirection={"row"} alignItems={"center"}>
                 <ArrowRight />
-                <Typography> Phone:</Typography>
+                <Typography fontWeight={"bold"}> Phone:</Typography>
               </Stack>
               <Typography>
                 {data.assignment && data.assignment.technicianPhoneNumber
@@ -550,7 +577,7 @@ const DetailTicket = () => {
             >
               <Stack flexDirection={"row"} alignItems={"center"}>
                 <ArrowRight />
-                <Typography> Team:</Typography>
+                <Typography fontWeight={"bold"}> Team:</Typography>
               </Stack>
               <Typography>
                 {data.assignment && data.assignment.teamName
@@ -565,7 +592,7 @@ const DetailTicket = () => {
                 <Stack flexDirection={"row"} justifyContent={"space-between"}>
                   <Stack flexDirection={"row"} alignItems={"center"}>
                     <MessageSharp style={{ color: "#3399FF" }} />
-                    <Typography>Requester:</Typography>
+                    <Typography fontWeight={"bold"}>Requester:</Typography>
                   </Stack>
                   <Stack flexDirection={"row"} alignItems={"center"}>
                     <Typography>
@@ -595,11 +622,12 @@ const DetailTicket = () => {
                       fontWeight: "bold",
                       fontSize: "16px",
                       color: "#007bff",
+                      textAlign: "center",
                     }}
                   >
                     ID
                   </th>
-                  <th style={{ textAlign: "end" }}>
+                  <th style={{ textAlign: "start" }}>
                     {data.requester && data.requester.id
                       ? data.requester.id
                       : "-"}
@@ -611,11 +639,12 @@ const DetailTicket = () => {
                       fontWeight: "bold",
                       fontSize: "16px",
                       color: "#007bff",
+                      textAlign: "center",
                     }}
                   >
                     Name
                   </th>
-                  <th style={{ textAlign: "end" }}>
+                  <th style={{ textAlign: "start" }}>
                     {data.requester && data.requester.lastName
                       ? data.requester.lastName
                       : "-"}{" "}
@@ -630,11 +659,12 @@ const DetailTicket = () => {
                       fontWeight: "bold",
                       fontSize: "16px",
                       color: "#007bff",
+                      textAlign: "center",
                     }}
                   >
                     UserName
                   </th>
-                  <th style={{ textAlign: "end" }}>
+                  <th style={{ textAlign: "start" }}>
                     {data.requester && data.requester.username
                       ? `${data.requester.username} `
                       : ""}{" "}
@@ -646,11 +676,12 @@ const DetailTicket = () => {
                       fontWeight: "bold",
                       fontSize: "16px",
                       color: "#007bff",
+                      textAlign: "center",
                     }}
                   >
                     Phone
                   </th>
-                  <th style={{ textAlign: "end" }}>
+                  <th style={{ textAlign: "start" }}>
                     {data.requester && data.requester.phoneNumber
                       ? data.requester.phoneNumber
                       : "-"}
@@ -662,11 +693,12 @@ const DetailTicket = () => {
                       fontWeight: "bold",
                       fontSize: "16px",
                       color: "#007bff",
+                      textAlign: "center",
                     }}
                   >
                     Email
                   </th>
-                  <th style={{ textAlign: "end" }}>
+                  <th style={{ textAlign: "start" }}>
                     {data.requester && data.requester.email
                       ? data.requester.email
                       : "-"}
@@ -679,11 +711,12 @@ const DetailTicket = () => {
                       fontWeight: "bold",
                       fontSize: "16px",
                       color: "#007bff",
+                      textAlign: "center",
                     }}
                   >
                     Gender
                   </th>
-                  <th style={{ textAlign: "end" }}>
+                  <th style={{ textAlign: "start" }}>
                     {data.requester && getGenderById(data.requester.gender)
                       ? getGenderById(data.requester.gender)
                       : "-"}
@@ -699,6 +732,7 @@ const DetailTicket = () => {
         open={dialogOpen}
         onClose={handleCloseAssignTicket}
         ticketId={ticketId}
+        refetch={refetch}
       />
     </section>
   );

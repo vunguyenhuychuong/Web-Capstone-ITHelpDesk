@@ -41,8 +41,8 @@ const CreateTicketTask = () => {
     taskStatus: 1,
     technicianId: 1,
     priority: 1,
-    scheduledStartTime: "",
-    scheduledEndTime: "",
+    scheduledStartTime: Date.now().toString(),
+    scheduledEndTime: Date.now().toString(),
     progress: 0,
     attachmentUrls: [],
   });
@@ -243,7 +243,7 @@ const CreateTicketTask = () => {
         technicianId: parseInt(defaultTechnicianId),
       };
       setData(updatedData);
-      await createTicketTask({
+      const res = await createTicketTask({
         ticketId: data.ticketId,
         title: data.title,
         description: data.description,
@@ -255,6 +255,9 @@ const CreateTicketTask = () => {
         progress: parseInt(data.progress),
         attachmentUrls: data.attachmentUrls,
       });
+      if (res) {
+        handleGoBack();
+      }
     } catch (error) {
       console.error(error);
     } finally {

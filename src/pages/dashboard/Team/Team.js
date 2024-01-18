@@ -87,7 +87,7 @@ const Team = () => {
       if (searchQuery) {
         filter = `title="${encodeURIComponent(searchQuery)}"`;
       }
-      const TeamList = await getAllTeam(
+      const response = await getAllTeam(
         searchField,
         searchQuery,
         currentPage,
@@ -95,7 +95,8 @@ const Team = () => {
         sortBy,
         sortDirection
       );
-      setTeams(TeamList);
+      setTeams(response?.data);
+      setTotalPages(response?.totalPage);
       setIsLoading(false);
     } catch (error) {
       console.log("Error while fetching data", error);
@@ -153,7 +154,6 @@ const Team = () => {
 
   useEffect(() => {
     fetchDataTeam();
-    setTotalPages(4);
   }, [fetchDataTeam]);
 
   const handleChangePageSize = (event) => {

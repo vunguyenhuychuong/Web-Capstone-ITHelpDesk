@@ -72,7 +72,8 @@ const MyRequestList = () => {
         userId,
         ticketStatus
       );
-      setDataListTicketsCustomer(response);
+      setDataListTicketsCustomer(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.log(error);
     } finally {
@@ -96,7 +97,7 @@ const MyRequestList = () => {
   const fetchAllCategories = async () => {
     try {
       const res = await getAllCategories();
-      setDataCategories(res);
+      setDataCategories(res?.data);
     } catch (error) {
       console.log("Error while fetching data", error);
     }
@@ -137,7 +138,6 @@ const MyRequestList = () => {
   useEffect(() => {
     fetchDataListTicketCustomer();
     fetchAllCategories();
-    setTotalPages(4);
   }, [fetchDataListTicketCustomer]);
 
   return (

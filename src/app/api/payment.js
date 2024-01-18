@@ -31,11 +31,11 @@ export async function getAllPayment(
     console.log(error);
     return [];
   }
-};
+}
 
 export async function getAllPayments() {
   const header = getAuthHeader();
-  try{
+  try {
     const res = await axios.get(`${baseURL}/payment/all`, {
       headers: {
         Authorization: header,
@@ -43,7 +43,7 @@ export async function getAllPayments() {
     });
     console.log(res);
     return res.data.result;
-  }catch(error){
+  } catch (error) {
     console.log(error);
   }
 }
@@ -116,7 +116,7 @@ export async function updatePaymentById(paymentId, data) {
     });
     return res.data.result;
   } catch (error) {
-    toast.error(error.response.data.responseException.exceptionMessage, {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -133,8 +133,18 @@ export async function deletePaymentById(paymentId) {
         Authorization: header,
       },
     });
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     return res.data.result;
   } catch (error) {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     console.log(error);
   }
 }
@@ -154,7 +164,7 @@ export async function getPaymentTerm(paymentId) {
   } catch (error) {
     console.log(error);
   }
-};
+}
 
 export async function createPaymentTerm(paymentId, data) {
   const header = getAuthHeader();
@@ -185,7 +195,7 @@ export async function deletePaymentTerm(paymentId) {
     });
     return res.data.result;
   } catch (error) {
-    toast.error(error.response.data.responseException.exceptionMessage, {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,

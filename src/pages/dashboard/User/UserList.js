@@ -58,7 +58,7 @@ const UserList = () => {
         filter = `title="${encodeURIComponent(searchQuery)}"`;
       }
 
-      const mode = await getAllUser(
+      const response = await getAllUser(
         searchField,
         searchQuery,
         currentPage,
@@ -66,7 +66,8 @@ const UserList = () => {
         sortBy,
         sortDirection
       );
-      setDataUsers(mode);
+      setDataUsers(response);
+      setTotalPages(response?.totalPage);
       setLoading(false);
     } catch (error) {
       console.error(error);
@@ -163,7 +164,6 @@ const UserList = () => {
 
   useEffect(() => {
     fetchDataUser();
-    setTotalPages(4);
   }, [fetchDataUser]);
 
   return (

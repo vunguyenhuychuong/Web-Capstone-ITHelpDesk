@@ -64,7 +64,7 @@ export async function createTicketSolution(data) {
     return res.data.result;
   } catch (error) {
     console.log(error.response.data.responseException.exceptionMessage.title);
-    toast.error(error.response.data.responseException.exceptionMessage, {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
@@ -106,7 +106,7 @@ export async function editTicketSolution(solutionId, data) {
     return res.data.result;
   } catch (error) {
     console.log("Error edit solution", error);
-    toast.error(error.response.data.responseException.exceptionMessage, {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
