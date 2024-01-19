@@ -283,7 +283,7 @@ const TicketSolutionDetail = () => {
                   borderRadius: "5px",
                   color: "red",
                 }}
-                onClick={() => handleOpenEditTicketSolution()}
+                onClick={() => setOpen(true)}
               >
                 Delete
               </Button>

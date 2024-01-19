@@ -1,4 +1,4 @@
-import logoAvatar from "../../assets/images/icon.png";
+import logoAvatar from "../../assets/images/Logo.png";
 import "../../assets/css/Logo.css";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";

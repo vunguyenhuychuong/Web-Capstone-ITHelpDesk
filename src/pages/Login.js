@@ -18,7 +18,7 @@ import {
 import { setUser, setError, clearError } from "../features/user/authSlice";
 import { LoginUser } from "../app/api";
 import LoginPage from "../assets/images/loginpage.png";
-import logoAvatar from "../assets/images/icon.png";
+import logoAvatar from "../assets/images/Logo.png";
 import { toast } from "react-toastify";
 
 function Login() {
@@ -174,7 +174,7 @@ function Login() {
                 variant="h5"
                 sx={{ fontWeight: "bold", fontSize: "24px" }}
               >
-                Login Page
+                Login
               </Typography>
               <Box component="form" noValidate sx={{ mt: 1 }}>
                 <TextField
