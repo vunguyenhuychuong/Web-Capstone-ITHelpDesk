@@ -90,7 +90,7 @@ const CreateUser = () => {
     };
     fetchDataCreateUser();
   }, []);
-  
+
   useEffect(() => {
     if (data.companyId) {
       fetchDepartmentsByCompany(data.companyId);
@@ -123,7 +123,7 @@ const CreateUser = () => {
       }));
     }
   }, [dataDepartment]);
-  
+
   const images = imagePreviewUrl.map((url, index) => ({
     original: url,
     thumbnail: url,
@@ -148,22 +148,23 @@ const CreateUser = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-  
+
     setData((prevData) => ({
       ...prevData,
       [name]: name === "gender" ? parseInt(value, 10) : value,
       companyDetail: {
         ...prevData.companyDetail,
-        [name]: name === "isCompanyAdmin" ? value === "true" : parseInt(value, 10),
+        [name]:
+          name === "isCompanyAdmin" ? value === "true" : parseInt(value, 10),
       },
     }));
-  
+
     if (name === "role") {
       handleRoleChangeLogic(value);
     }
-  
+
     setFieldErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-  
+
     if (name === "email") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(value)) {
@@ -173,32 +174,32 @@ const CreateUser = () => {
         }));
       }
     }
-  
+
     if (name === "username" && value.length < 6) {
       setFieldErrors((prevErrors) => ({
         ...prevErrors,
         username: "Username must be at least 6 characters",
       }));
     }
-  
+
     if (name === "firstName" && value.length < 2) {
       setFieldErrors((prevErrors) => ({
         ...prevErrors,
         firstName: "First Name must be at least 2 characters",
       }));
     }
-  
+
     if (name === "lastName" && value.length < 2) {
       setFieldErrors((prevErrors) => ({
         ...prevErrors,
         lastName: "Last Name must be at least 2 characters",
       }));
     }
-  
+
     if (name === "companyId") {
       fetchDepartmentsByCompany(parseInt(value, 10));
     }
-  
+
     if (name === "phoneNumber") {
       const phoneRegex = /^\d{10}$/;
       if (!phoneRegex.test(value)) {
@@ -261,7 +262,7 @@ const CreateUser = () => {
         companyDetail: {
           companyId: companyId,
           companyAddressId: companyAddressId,
-          isCompanyAdmin: data.companyDetail.isCompanyAdmin,
+          // isCompanyAdmin: data.companyDetail.isCompanyAdmin,
         },
       };
       setData(updatedData);
@@ -276,9 +277,9 @@ const CreateUser = () => {
 
   const handleRoleChangeLogic = (selectedRoleId) => {
     const roleId = parseInt(selectedRoleId, 10);
-  
+
     console.log("Selected Role ID:", roleId);
-  
+
     if (roleId === 1) {
       setData((prevData) => ({
         ...prevData,
@@ -291,7 +292,6 @@ const CreateUser = () => {
       }));
     }
   };
-  
 
   const handleGoBack = () => {
     const isFormFilled =
@@ -616,7 +616,7 @@ const CreateUser = () => {
 
               <Grid
                 container
-                justifyContent="flex-end"
+                justifyContent="flex-start"
                 style={{ marginBottom: "20px" }}
               >
                 <Grid item xs={6}>
@@ -650,116 +650,121 @@ const CreateUser = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-                {data.role === 1 && (
-                <Grid item xs={6}>
-                  <Grid container alignItems="center">
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                          marginBottom: "20px",
-                        }}
-                      >
-                        <span style={{ color: "red" }}>*</span>CompanyAdmin
-                      </h2>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <select
-                        id="isCompanyAdmin"
-                        name="isCompanyAdmin"
-                        className="form-select-custom"
-                        value={data.isCompanyAdmin}
-                        onChange={(e) =>
-                          handleIsCompanyAdminChange(e.target.value === "true")
-                        }
-                      >
-                        <option value="true">True</option>
-                        <option value="false">False</option>
-                      </select>
+                {/* {data.role === 1 && (
+                  <Grid item xs={6}>
+                    <Grid container alignItems="center">
+                      <Grid item xs={6}>
+                        <h2
+                          className="align-right"
+                          style={{
+                            fontSize: "20px",
+                            fontWeight: "bold",
+                            textAlign: "right",
+                            marginBottom: "20px",
+                          }}
+                        >
+                          <span style={{ color: "red" }}>*</span>CompanyAdmin
+                        </h2>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <select
+                          id="isCompanyAdmin"
+                          name="isCompanyAdmin"
+                          className="form-select-custom"
+                          value={data.isCompanyAdmin}
+                          onChange={(e) =>
+                            handleIsCompanyAdminChange(
+                              e.target.value === "true"
+                            )
+                          }
+                        >
+                          <option value="true">True</option>
+                          <option value="false">False</option>
+                        </select>
+                      </Grid>
                     </Grid>
                   </Grid>
-                </Grid>
-                 )}
+                )} */}
               </Grid>
               {data.role === 1 && (
-              <Grid
-                container
-                justifyContent="flex-end"
-                style={{ marginBottom: "20px" }}
-              >
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        <span style={{ color: "red" }}>*</span>Company
-                      </h2>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <select
-                        id="companyId"
-                        name="companyId"
-                        className="form-select-custom"
-                        value={data.companyId}
-                        onChange={handleInputChange}
-                      >
-                        {dataCompany
-                          .filter((company) => company.id !== "")
-                          .map((company) => (
-                            <option key={company.id} value={company.id}>
-                              {company.companyName}
-                            </option>
-                          ))}
-                      </select>
-                    </Grid>
-                  </Grid>
-                </Grid>
-
-                <Grid item xs={6}>
-                  <Grid container alignItems="center">
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                          marginBottom: "40px",
-                        }}
-                      >
-                        Brand Address
-                      </h2>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <select
-                        id="companyAddressId"
-                        name="companyAddressId"
-                        className="form-select-custom"
-                        value={data.companyAddressId}
-                        onChange={handleInputChange}
-                      >
-                        {dataDepartment &&
-                          dataDepartment
-                            .filter((department) => department.id !== "")
-                            .map((department) => (
-                              <option key={department.id} value={department.id}>
-                                {department.address}
+                <Grid
+                  container
+                  justifyContent="flex-end"
+                  style={{ marginBottom: "20px" }}
+                >
+                  <Grid item xs={6}>
+                    <Grid container>
+                      <Grid item xs={6}>
+                        <h2
+                          className="align-right"
+                          style={{
+                            fontSize: "20px",
+                            fontWeight: "bold",
+                            textAlign: "right",
+                          }}
+                        >
+                          <span style={{ color: "red" }}>*</span>Company
+                        </h2>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <select
+                          id="companyId"
+                          name="companyId"
+                          className="form-select-custom"
+                          value={data.companyId}
+                          onChange={handleInputChange}
+                        >
+                          {dataCompany
+                            .filter((company) => company.id !== "")
+                            .map((company) => (
+                              <option key={company.id} value={company.id}>
+                                {company.companyName}
                               </option>
                             ))}
-                      </select>
+                        </select>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+
+                  <Grid item xs={6}>
+                    <Grid container alignItems="center">
+                      <Grid item xs={6}>
+                        <h2
+                          className="align-right"
+                          style={{
+                            fontSize: "20px",
+                            fontWeight: "bold",
+                            textAlign: "right",
+                            marginBottom: "40px",
+                          }}
+                        >
+                          Brand Address
+                        </h2>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <select
+                          id="companyAddressId"
+                          name="companyAddressId"
+                          className="form-select-custom"
+                          value={data.companyAddressId}
+                          onChange={handleInputChange}
+                        >
+                          {dataDepartment &&
+                            dataDepartment
+                              .filter((department) => department.id !== "")
+                              .map((department) => (
+                                <option
+                                  key={department.id}
+                                  value={department.id}
+                                >
+                                  {department.address}
+                                </option>
+                              ))}
+                        </select>
+                      </Grid>
                     </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
               )}
             </Grid>
           </MDBCol>

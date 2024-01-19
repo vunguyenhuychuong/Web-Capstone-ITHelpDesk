@@ -48,7 +48,7 @@ const links = [
   { id: 2, text: "team", path: "team", icon: <Group /> },
   { id: 3, text: "mode", path: "mode", icon: <ModeComment /> },
   { id: 4, text: "profile", path: "profile", icon: <ImProfile /> },
-  { id: 5, text: "userList", path: "userList", icon: <FolderShared /> },
+  { id: 5, text: "User List", path: "userList", icon: <FolderShared /> },
 
   { id: 8, text: "menu", path: "menu", icon: <Menu /> },
   { id: 9, text: "categories", path: "categories", icon: <Category /> },

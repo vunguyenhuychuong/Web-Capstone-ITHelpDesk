@@ -150,26 +150,30 @@ const DetailContract = () => {
               <ArrowBack />
             </Button>
 
-            <Button
-              sx={{
-                backgroundColor: "#FFFFFF",
-                borderRadius: "5px",
-              }}
-              onClick={() => handleOpenEditTicket(contractId)}
-            >
-              Edit
-            </Button>
+            {data.status !== 1 && (
+              <>
+                <Button
+                  sx={{
+                    backgroundColor: "#FFFFFF",
+                    borderRadius: "5px",
+                  }}
+                  onClick={() => handleOpenEditTicket(contractId)}
+                >
+                  Edit
+                </Button>
 
-            <Button
-              color="error"
-              sx={{
-                backgroundColor: "#FFFFFF",
-                borderRadius: "5px",
-              }}
-              onClick={() => setOpenConfirm(true)}
-            >
-              Delete
-            </Button>
+                <Button
+                  color="error"
+                  sx={{
+                    backgroundColor: "#FFFFFF",
+                    borderRadius: "5px",
+                  }}
+                  onClick={() => setOpenConfirm(true)}
+                >
+                  Delete
+                </Button>
+              </>
+            )}
           </Stack>
 
           <MDBRow className="mb-2">

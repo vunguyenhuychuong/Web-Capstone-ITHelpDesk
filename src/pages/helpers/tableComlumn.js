@@ -69,6 +69,13 @@ export const genderOptions = [
   { id: 1, name: "Female" },
 ];
 
+export const positionOptions = [
+  { id: 0, name: "Nhân Viên" },
+  { id: 1, name: "Kế Toán" },
+  { id: 2, name: "Quản Lý" },
+  { id: 3, name: "Trưởng Phòng" },
+];
+
 export const getGenderById = (id) => {
   const gender = genderOptions.find((option) => option.id === id);
   return gender ? gender.name : "Unknown Gender";

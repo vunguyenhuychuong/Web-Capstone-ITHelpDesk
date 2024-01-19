@@ -6,7 +6,7 @@ import "draft-js/dist/Draft.css";
 import { toast } from "react-toastify";
 import { createService } from "../../../app/api/service";
 
-const CreateService = ({ onClose, dataCategories }) => {
+const CreateService = ({ onClose, dataCategories, refetch }) => {
   const [data, setData] = useState({
     description: "",
     categoryId: dataCategories[0].id,
@@ -56,10 +56,10 @@ const CreateService = ({ onClose, dataCategories }) => {
           autoClose: 1000,
           hideProgressBar: false,
         });
+        refetch();
       }
     } catch (error) {
       console.log(error);
-      setIsSubmitting(false);
     } finally {
       setIsSubmitting(false);
       onClose();
@@ -74,50 +74,50 @@ const CreateService = ({ onClose, dataCategories }) => {
             <h2>Submit a New Service</h2>
           </MDBCol>
         </MDBRow>
-        <form method="post" onSubmit={handleSubmitService}>
-          <MDBRow className="mb-4">
-            <MDBCol md="2" className="text-center mt-2 mb-4">
-              <label htmlFor="title" className="narrow-input">
-                <span style={{ color: "red" }}>*</span>Category
-              </label>
-            </MDBCol>
-            <MDBCol md="10">
-              <select
-                id="categoryId"
-                name="categoryId"
-                className="form-select"
-                onChange={handleInputChange}
-              >
-                {dataCategories.map((cate) => (
-                  <option key={cate.id} value={cate.id}>
-                    {cate.name}
-                  </option>
-                ))}
-              </select>
-              {fieldErrors.type && (
-                <div style={{ color: "red" }}>{fieldErrors.categoryId}</div>
-              )}
-            </MDBCol>
-            <MDBCol md="2" className="text-center mt-2 mb-4">
-              <label htmlFor="requesterId" className="narrow-input">
-                <span style={{ color: "red" }}>*</span>Description
-              </label>
-            </MDBCol>
-            <MDBCol md="10">
-              <input
-                id="description"
-                type="text"
-                name="description"
-                className="form-control"
-                value={data.description}
-                onChange={handleInputChange}
-              />
-              {fieldErrors.description && (
-                <div style={{ color: "red" }}>{fieldErrors.description}</div>
-              )}
-            </MDBCol>
 
-            {/* <MDBCol md="2" className="text-center mt-2">
+        <MDBRow className="mb-4">
+          <MDBCol md="2" className="text-center mt-2 mb-4">
+            <label htmlFor="title" className="narrow-input">
+              <span style={{ color: "red" }}>*</span>Category
+            </label>
+          </MDBCol>
+          <MDBCol md="10">
+            <select
+              id="categoryId"
+              name="categoryId"
+              className="form-select"
+              onChange={handleInputChange}
+            >
+              {dataCategories.map((cate) => (
+                <option key={cate.id} value={cate.id}>
+                  {cate.name}
+                </option>
+              ))}
+            </select>
+            {fieldErrors.type && (
+              <div style={{ color: "red" }}>{fieldErrors.categoryId}</div>
+            )}
+          </MDBCol>
+          <MDBCol md="2" className="text-center mt-2 mb-4">
+            <label htmlFor="requesterId" className="narrow-input">
+              <span style={{ color: "red" }}>*</span>Description
+            </label>
+          </MDBCol>
+          <MDBCol md="10">
+            <input
+              id="description"
+              type="text"
+              name="description"
+              className="form-control"
+              value={data.description}
+              onChange={handleInputChange}
+            />
+            {fieldErrors.description && (
+              <div style={{ color: "red" }}>{fieldErrors.description}</div>
+            )}
+          </MDBCol>
+
+          {/* <MDBCol md="2" className="text-center mt-2">
               <label htmlFor="title" className="narrow-input">
                 <span style={{ color: "red" }}>*</span>Amount
               </label>
@@ -135,24 +135,24 @@ const CreateService = ({ onClose, dataCategories }) => {
                 <div style={{ color: 'red' }}>{fieldErrors.amount}</div>
               )}
             </MDBCol> */}
-          </MDBRow>
-          <MDBRow className="mb-4">
-            <MDBCol md="2"></MDBCol>
-            <MDBCol md="10" className="text-end">
-              <MDBBtn
-                small="true"
-                color="primary"
-                type="submit"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Submitting..." : "Submit"}
-              </MDBBtn>
-              <MDBBtn color="danger" className="ms-2" onClick={onClose}>
-                Cancel
-              </MDBBtn>
-            </MDBCol>
-          </MDBRow>
-        </form>
+        </MDBRow>
+        <MDBRow className="mb-4">
+          <MDBCol md="2"></MDBCol>
+          <MDBCol md="10" className="text-end">
+            <MDBBtn
+              small="true"
+              color="primary"
+              type="submit"
+              disabled={isSubmitting}
+              onClick={handleSubmitService}
+            >
+              {isSubmitting ? "Submitting..." : "Submit"}
+            </MDBBtn>
+            <MDBBtn color="danger" className="ms-2" onClick={onClose}>
+              Cancel
+            </MDBBtn>
+          </MDBCol>
+        </MDBRow>
       </MDBContainer>
     </section>
   );

@@ -55,9 +55,10 @@ const EditTicketTask = () => {
   const [dataTechnician, setDataTechnician] = useState([]);
   const [selectedTeamId, setSelectedTeamId] = useState("");
   const [selectedTechnicianId, setSelectedTechnicianId] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
+  const [imagePreview, setImagePreview] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [scheduledStartTime, setScheduledStartTime] = useState(moment());
   const [scheduledEndTime, setScheduledEndTime] = useState(moment());
@@ -107,18 +108,13 @@ const EditTicketTask = () => {
     }
   };
 
-  const images = data.attachmentUrls.map((url, index) => ({
-    original: url,
-    thumbnail: url,
-    description: `Attachment Preview ${index + 1}`,
-  }));
-
   useEffect(() => {
     const fetchTaskData = async () => {
       try {
         const taskData = await getTicketTaskById(ticketId);
         setData((prevData) => ({
           ...prevData,
+          attachmentUrls: taskData.attachmentUrls,
           id: taskData.id,
           ticketId: taskData.ticketId,
           taskStatus: taskData.taskStatus,
@@ -129,6 +125,7 @@ const EditTicketTask = () => {
           teamId: taskData.teamId,
           note: taskData.note,
           priority: taskData.priority,
+          progress: taskData.progress,
           scheduledStartTime:
             taskData.scheduledStartTime ??
             moment(Date.now()).format("YYYY-MM-DDTHH:mm:ss"),
@@ -138,6 +135,12 @@ const EditTicketTask = () => {
           createdAt: taskData.createdAt,
           modifiedAt: taskData.modifiedAt,
         }));
+        handleScheduledStartTimeChange(
+          moment(taskData.scheduledStartTime) ?? moment(Date.now())
+        );
+        handleScheduledEndTimeChange(
+          moment(taskData.scheduledEndTime) ?? moment(Date.now())
+        );
       } catch (error) {
         console.log(error);
       }
@@ -169,20 +172,34 @@ const EditTicketTask = () => {
       [name]: "",
     }));
   };
-
+  console.log("data", data);
   const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    setSelectedFile(file);
+    const file = e.target.files;
+    setSelectedFile([...file]);
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreviewUrl(reader.result);
-    };
-    if (file) {
-      reader.readAsDataURL(file);
-    } else {
-      setImagePreviewUrl(null);
+    const promises = [];
+    const previewUrls = [];
+
+    for (let i = 0; i < file.length; i++) {
+      const currentFile = file[i];
+      const reader = new FileReader();
+
+      promises.push(
+        new Promise((resolve) => {
+          reader.onloadend = () => {
+            previewUrls.push(reader.result);
+            resolve();
+          };
+          reader.readAsDataURL(currentFile);
+        })
+      );
     }
+
+    Promise.all(promises).then(() => {
+      setImagePreviewUrl(previewUrls);
+    });
+
+    setIsImagePreviewOpen(true);
   };
 
   const closeImagePreview = () => {
@@ -197,10 +214,9 @@ const EditTicketTask = () => {
   };
 
   const handleSubmitTicket = async (e) => {
-    e.preventDefault();
     const errors = {};
     if (!data.title) {
-      errors.title = "Title Ticket is required";
+      errors.title = "Title ticket task is required";
     }
 
     if (!data.description) {
@@ -208,17 +224,23 @@ const EditTicketTask = () => {
     }
 
     if (Object.keys(errors).length > 0) {
+      console.log("errer");
       setFieldErrors(errors);
       return;
     }
     setIsSubmitting(true);
     try {
-      let attachmentUrls = data.attachmentUrls;
-      if (selectedFile) {
+      let attachmentUrls = [];
+      if (selectedFile?.length > 0) {
         const storage = getStorage();
-        const storageRef = ref(storage, "images/" + selectedFile.name);
-        await uploadBytes(storageRef, selectedFile);
-        attachmentUrls = await getDownloadURL(storageRef);
+        for (let i = 0; i < selectedFile?.length; i++) {
+          const file = selectedFile[i];
+          const storageRef = ref(storage, `images/${file.name}`);
+          await uploadBytes(storageRef, file);
+
+          const downloadURL = await getDownloadURL(storageRef);
+          attachmentUrls.push(downloadURL);
+        }
       }
 
       const isDataValid = validateDate(
@@ -237,26 +259,17 @@ const EditTicketTask = () => {
         "YYYY-MM-DDTHH:mm:ss"
       );
 
-      const updatedData = {
-        ...data,
-        attachmentUrls: attachmentUrls,
-        scheduledStartTime: formattedScheduledStartTime,
-        scheduledEndTime: formattedScheduledEndTime,
-        technicianId: selectedTechnicianId,
-      };
-
-      setData(updatedData);
       const res = await updateTicketTask(ticketId, {
         title: data.title,
         description: data.description,
         taskStatus: data.taskStatus,
-        teamId: data.teamId,
+        // teamId: data.teamId,
         // technicianId: data.technicianId,
         priority: parseInt(data.priority, 10),
-        scheduledStartTime: data.scheduledStartTime,
-        scheduledEndTime: data.scheduledEndTime,
+        scheduledStartTime: formattedScheduledStartTime,
+        scheduledEndTime: formattedScheduledEndTime,
         progress: data.progress,
-        attachmentUrls: data.attachmentUrls,
+        attachmentUrls: attachmentUrls,
         note: data.note,
       });
       if (res) {
@@ -268,7 +281,22 @@ const EditTicketTask = () => {
       setIsSubmitting(false);
     }
   };
-
+  useEffect(() => {
+    try {
+      const previewUrls =
+        imagePreviewUrl.length > 0 ? imagePreviewUrl : data?.attachmentUrls;
+      if (previewUrls && previewUrls.length > 0) {
+        const images = previewUrls.map((url, index) => ({
+          original: url,
+          thumbnail: url,
+          description: `Attachment Preview ${index + 1}`,
+        }));
+        setImagePreview(images);
+      }
+    } catch (error) {
+      console.log("Error", error);
+    }
+  }, [data, imagePreviewUrl]);
   const handleGoBack = (ticketId) => {
     navigate(`/home/detailTicket/${ticketId}`);
   };
@@ -386,10 +414,10 @@ const EditTicketTask = () => {
                   name="file"
                   className="form-control input-field"
                   id="attachmentUrls"
+                  multiple
                   onChange={handleFileChange}
-                  value={data.attachmentUrls}
                 />
-                {imagePreviewUrl.length > 0 && (
+                {imagePreview.length > 0 && (
                   <div
                     className="image-preview"
                     onClick={() => setIsImagePreviewOpen(true)}
@@ -744,7 +772,7 @@ const EditTicketTask = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <Gallery items={images} />
+          <Gallery items={imagePreview} />
         </DialogContent>
       </Dialog>
     </Grid>

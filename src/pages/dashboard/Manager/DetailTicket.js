@@ -317,6 +317,7 @@ const DetailTicket = () => {
                       ))
                     : null}
                   {userRole === 2 &&
+                  data.ticketStatus !== 3 &&
                   data.ticketStatus !== 4 &&
                   data.ticketStatus !== 5 ? (
                     <MDBCol>

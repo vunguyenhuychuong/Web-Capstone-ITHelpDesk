@@ -256,7 +256,7 @@ const CreateTicketTask = () => {
         attachmentUrls: data.attachmentUrls,
       });
       if (res) {
-        handleGoBack();
+        handleGoBack(data.ticketId);
       }
     } catch (error) {
       console.error(error);

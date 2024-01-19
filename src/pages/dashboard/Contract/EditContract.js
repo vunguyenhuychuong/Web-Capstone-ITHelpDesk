@@ -721,6 +721,7 @@ const EditContract = () => {
                               helperText: `${startDate}`,
                             },
                           }}
+                          disablePast
                           value={startDate}
                           onChange={(newValue) =>
                             handleStartDateChange(newValue)

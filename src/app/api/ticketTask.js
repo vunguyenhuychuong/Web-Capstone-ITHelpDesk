@@ -77,7 +77,7 @@ export async function createTicketTask(data) {
         Authorization: header,
       },
     });
-    toast.success(res.data.result.message, {
+    toast.success(res.data.result, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,
