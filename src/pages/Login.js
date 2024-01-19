@@ -18,7 +18,7 @@ import {
 import { setUser, setError, clearError } from "../features/user/authSlice";
 import { LoginUser } from "../app/api";
 import LoginPage from "../assets/images/loginpage.png";
-import logoAvatar from "../assets/images/Logo.png";
+import logoAvatar from "../assets/images/icon.png";
 import { toast } from "react-toastify";
 
 function Login() {

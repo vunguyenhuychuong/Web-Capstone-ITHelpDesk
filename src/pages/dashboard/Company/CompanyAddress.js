@@ -57,6 +57,7 @@ const CompanyAddress = ({ data, refetch }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [selectedAddressIds, setSelectedAddressIds] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [editedAddressId, setEditedAddressId] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dataAddress, setDataAddress] = useState([]);
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -147,7 +148,7 @@ const CompanyAddress = ({ data, refetch }) => {
         return;
       }
       if (isEditing) {
-        await updateCompanyAddress(editedData, dataAddress.id);
+        await updateCompanyAddress(editedData, editedAddressId);
       } else {
         const res = await createCompanyAddress(editedData, data.id);
         if (res) {
@@ -156,7 +157,7 @@ const CompanyAddress = ({ data, refetch }) => {
       }
       fetchCompanyAddressList();
     } catch (error) {
-      console.error("Error deleting company address:", error);
+      console.error("Error submit company address:", error);
     } finally {
       handleCloseConfirm();
       setIsSubmitting(false);
@@ -165,14 +166,14 @@ const CompanyAddress = ({ data, refetch }) => {
 
   const handleDeleteAddress = async (addressId) => {
     const shouldDelete = window.confirm(
-      "Are you sure want to delete this address?"
+      "Are you sure want to remove this address?"
     );
     if (shouldDelete) {
       try {
         await deleteCompanyAddress(addressId);
         fetchCompanyAddressList();
       } catch (error) {
-        console.error("Error deleting company address:", error);
+        console.error("Error removing company address:", error);
       } finally {
         handleCloseConfirm();
       }
@@ -304,13 +305,13 @@ const CompanyAddress = ({ data, refetch }) => {
               color="error"
               onClick={() => setOpenConfirm(true)}
             >
-              Delete
+              Remove
             </Button>
           </Stack>
           <Stack
             style={{
               minWidth: 500,
-              width: "40vw",
+              width: "100%",
               marginBottom: "10px",
               border: "1px solid #000",
             }}
@@ -423,6 +424,7 @@ const CompanyAddress = ({ data, refetch }) => {
                       >
                         <IconButton
                           onClick={() => {
+                            setEditedAddressId(address.id);
                             setEditedData({
                               address: address.address,
                               phoneNumber: address.phoneNumber,
@@ -488,19 +490,21 @@ const CompanyAddress = ({ data, refetch }) => {
             <DialogContent>
               <DialogContentText id="alert-dialog-slide-description">
                 <Stack spacing={2}>
-                  <Stack
-                    direction="row"
-                    spacing={2}
-                    alignItems={"center"}
-                    justifyContent={"space-between"}
-                  >
-                    <Typography variant="h6">Address:</Typography>
-                    <TextField
-                      onChange={handleInputChange}
-                      name={"address"}
-                      value={editedData.address}
-                    />
-                  </Stack>
+                  {!isEditing && (
+                    <Stack
+                      direction="row"
+                      spacing={2}
+                      alignItems={"center"}
+                      justifyContent={"space-between"}
+                    >
+                      <Typography variant="h6">Address:</Typography>
+                      <TextField
+                        onChange={handleInputChange}
+                        name={"address"}
+                        value={editedData.address}
+                      />
+                    </Stack>
+                  )}
                   {fieldErrors.address && (
                     <div style={{ color: "red" }}>{fieldErrors.address}</div>
                   )}

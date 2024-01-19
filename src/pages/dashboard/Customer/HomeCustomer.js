@@ -16,8 +16,6 @@ import { GetTicketUserAvailable } from "../../../app/api/ticket";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import HoldTicket from "../../../assets/images/holding ticket.png";
-import Logo from "../../../assets/images/Logo.png";
-import background from "../../../assets/images/background.jpg";
 import AwaitTicket from "../../../assets/images/await ticket.png";
 import PendingTicket from "../../../assets/images/pending ticket.png";
 import CloseTicket from "../../../assets/images/close ticket.png";
