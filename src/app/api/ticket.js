@@ -183,7 +183,7 @@ export async function createTicketByManager(data) {
         Authorization: header,
       },
     });
-    toast.success(res.data.result, {
+    toast.success(res.data.result.message, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,

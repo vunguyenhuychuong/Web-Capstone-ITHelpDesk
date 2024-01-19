@@ -36,12 +36,12 @@ const NotificationList = ({
     fetchData();
   }, [fetchDataListNotification]);
 
-  const handleMarkAsRead = async (notificationId) =>{
-    try{
+  const handleMarkAsRead = async (notificationId) => {
+    try {
       const result = await ReadNotification(notificationId);
-      console.log('Mark as read result:', result);
-    }catch(error){
-      console.log('Error marking notification as read:', error);
+      console.log("Mark as read result:", result);
+    } catch (error) {
+      console.log("Error marking notification as read:", error);
     }
   };
 
@@ -74,7 +74,7 @@ const NotificationList = ({
       ) : (
         <Paper elevation={3}>
           <List>
-            {notifications.map((notification) => (
+            {notifications?.map((notification) => (
               <ListItem key={notification.id}>
                 <ListItemText
                   primary={notification.title}
@@ -99,9 +99,10 @@ const NotificationList = ({
                   }
                 />
                 {!readNotifications.includes(notification.id) && (
-                  <IconButton
-                  >
-                    <DoneAll onClick={() => handleMarkAsRead(notification.id)}/>
+                  <IconButton>
+                    <DoneAll
+                      onClick={() => handleMarkAsRead(notification.id)}
+                    />
                   </IconButton>
                 )}
               </ListItem>

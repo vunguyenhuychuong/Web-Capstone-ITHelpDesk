@@ -6,18 +6,18 @@ import "draft-js/dist/Draft.css";
 import { toast } from "react-toastify";
 import { createService } from "../../../app/api/service";
 
-const CreateService = ({ onClose }) => {
+const CreateService = ({ onClose, dataCategories }) => {
   const [data, setData] = useState({
     description: "",
-    type: "",
-    amount: "",
+    categoryId: dataCategories[0].id,
+    // amount: "",
   });
-
+  console.log("data", data);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
-    type: "",
+    categoryId: "",
     description: "",
-    amount: "",
+    // amount: "",
   });
 
   const handleInputChange = (e) => {
@@ -33,41 +33,36 @@ const CreateService = ({ onClose }) => {
   };
 
   const handleSubmitService = async (e) => {
-    e.preventDefault();
-
     const errors = {};
 
-    if(!data.type) {
-      errors.type = "Type is required";
+    if (!data.categoryId) {
+      errors.type = "Category is required";
     }
 
-    if(!data.description) {
+    if (!data.description) {
       errors.description = "Description required";
     }
-
-    if (!data.amount) {
-      errors.amount = "Amount required";
-    } else if (!/^\d+(,\d{3})*(\.\d{0,2})?$/.test(data.amount.replace(/,/g, ''))) {
-      errors.amount = "Invalid amount format. Please enter a valid numeric value.";
-    }
-
-    if(Object.keys(errors).length > 0) {
+    console.log("errors", errors);
+    if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await createService(data);
-      setIsSubmitting(false);
-      toast.success("Create Service successful", {
-        autoClose: 1000,
-        hideProgressBar: false,
-      });
-      onClose();
+      const res = await createService(data);
+      if (res) {
+        toast.success("Create service successfully", {
+          autoClose: 1000,
+          hideProgressBar: false,
+        });
+      }
     } catch (error) {
       console.log(error);
       setIsSubmitting(false);
+    } finally {
+      setIsSubmitting(false);
+      onClose();
     }
   };
 
@@ -83,20 +78,24 @@ const CreateService = ({ onClose }) => {
           <MDBRow className="mb-4">
             <MDBCol md="2" className="text-center mt-2 mb-4">
               <label htmlFor="title" className="narrow-input">
-                <span style={{ color: "red" }}>*</span>Type
+                <span style={{ color: "red" }}>*</span>Category
               </label>
             </MDBCol>
             <MDBCol md="10">
-              <input
-                id="type"
-                type="text"
-                name="type"
-                className="form-control"
-                value={data.type}
+              <select
+                id="categoryId"
+                name="categoryId"
+                className="form-select"
                 onChange={handleInputChange}
-              />
+              >
+                {dataCategories.map((cate) => (
+                  <option key={cate.id} value={cate.id}>
+                    {cate.name}
+                  </option>
+                ))}
+              </select>
               {fieldErrors.type && (
-                <div style={{ color: 'red' }}>{fieldErrors.type}</div>
+                <div style={{ color: "red" }}>{fieldErrors.categoryId}</div>
               )}
             </MDBCol>
             <MDBCol md="2" className="text-center mt-2 mb-4">
@@ -114,11 +113,11 @@ const CreateService = ({ onClose }) => {
                 onChange={handleInputChange}
               />
               {fieldErrors.description && (
-                <div style={{ color: 'red' }}>{fieldErrors.description}</div>
+                <div style={{ color: "red" }}>{fieldErrors.description}</div>
               )}
             </MDBCol>
 
-            <MDBCol md="2" className="text-center mt-2">
+            {/* <MDBCol md="2" className="text-center mt-2">
               <label htmlFor="title" className="narrow-input">
                 <span style={{ color: "red" }}>*</span>Amount
               </label>
@@ -135,7 +134,7 @@ const CreateService = ({ onClose }) => {
               {fieldErrors.amount && (
                 <div style={{ color: 'red' }}>{fieldErrors.amount}</div>
               )}
-            </MDBCol>
+            </MDBCol> */}
           </MDBRow>
           <MDBRow className="mb-4">
             <MDBCol md="2"></MDBCol>

@@ -222,7 +222,7 @@ const CreateTicketSolution = () => {
     }
   };
 
-  const images = imagePreviewUrl.map((url, index) => ({
+  const images = imagePreviewUrl?.map((url, index) => ({
     original: url,
     thumbnail: url,
     description: `Attachment Preview ${index + 1}`,
@@ -414,7 +414,7 @@ const CreateTicketSolution = () => {
                       >
                         {dataCategories
                           .filter((category) => category.id !== "")
-                          .map((category) => (
+                          ?.map((category) => (
                             <option key={category.id} value={category.id}>
                               {category.name}
                             </option>
@@ -450,7 +450,7 @@ const CreateTicketSolution = () => {
                           .filter(
                             (owner) => owner.role !== 0 && owner.role !== 1
                           )
-                          .map((owner) => (
+                          ?.map((owner) => (
                             <option key={owner.id} value={owner.id}>
                               {owner.lastName} {owner.firstName}
                             </option>

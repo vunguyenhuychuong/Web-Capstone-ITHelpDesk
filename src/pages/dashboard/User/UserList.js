@@ -66,7 +66,7 @@ const UserList = () => {
         sortBy,
         sortDirection
       );
-      setDataUsers(response);
+      setDataUsers(response?.data);
       setTotalPages(response?.totalPage);
       setLoading(false);
     } catch (error) {
@@ -88,7 +88,7 @@ const UserList = () => {
     if (selectedUsers.length === dataUsers.length) {
       setSelectedUsers([]);
     } else {
-      setSelectedUsers(dataUsers.map((mode) => mode.id));
+      setSelectedUsers(dataUsers?.map((mode) => mode.id));
     }
   };
 
@@ -106,45 +106,50 @@ const UserList = () => {
   };
 
   const handleDeleteSelectedUsers = async (id) => {
-    try {
-      if (selectedUsers.length === 0) {
-        toast.warning("Please select at least one user to delete.");
-        return;
-      }
-      const deletePromises = selectedUsers.map(async (userId) => {
-        try {
-          const res = await Promise.resolve(DeleteDataUser(userId));
-          if (res.isError) {
+    const shouldDelete = window.confirm(
+      "Are you sure want to delete selected users"
+    );
+    if (shouldDelete) {
+      try {
+        if (selectedUsers.length === 0) {
+          toast.warning("Please select at least one user to delete.");
+          return;
+        }
+        const deletePromises = selectedUsers.map(async (userId) => {
+          try {
+            const res = await Promise.resolve(DeleteDataUser(userId));
+            if (res.isError) {
+              throw new Error(
+                `Error deleting user with ID ${userId}: ${res.message}`
+              );
+            }
+            return userId;
+          } catch (error) {
             throw new Error(
-              `Error deleting user with ID ${userId}: ${res.message}`
+              `Error deleting user with ID ${userId}: ${error.message}`
             );
           }
-          return userId;
-        } catch (error) {
-          throw new Error(
-            `Error deleting user with ID ${userId}: ${error.message}`
-          );
-        }
-      });
+        });
 
-      const results = await Promise.allSettled(deletePromises);
+        const results = await Promise.allSettled(deletePromises);
 
-      const successfulDeletes = [];
-      results.forEach((result) => {
-        if (result.status === "fulfilled") {
-          successfulDeletes.push(result.value);
-        } else {
-          toast.error(result.reason.message);
-        }
-      });
-      const updateUsers = dataUsers.filter(
-        (user) => !successfulDeletes.includes(user.id)
-      );
-      setDataUsers(updateUsers);
-      setSelectedUsers([]);
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to delete selected users, Please try again later");
+        const successfulDeletes = [];
+        results.forEach((result) => {
+          if (result.status === "fulfilled") {
+            successfulDeletes.push(result.value);
+          } else {
+            toast.error(result.reason.message);
+          }
+        });
+        const updateUsers = dataUsers.filter(
+          (user) => !successfulDeletes.includes(user.id)
+        );
+        setDataUsers(updateUsers);
+        setSelectedUsers([]);
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to delete selected users, Please try again later");
+      }
     }
   };
 
@@ -176,7 +181,7 @@ const UserList = () => {
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
-              <span style={{ color: "#FFFFFF" }}>All User</span>
+              <span style={{ color: "#FFFFFF" }}>All Users</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
@@ -381,7 +386,7 @@ const UserList = () => {
                 </td>
               </tr>
             ) : (
-              dataUsers.map((user, index) => (
+              dataUsers?.map((user, index) => (
                 <tr key={index}>
                   <td>
                     <input

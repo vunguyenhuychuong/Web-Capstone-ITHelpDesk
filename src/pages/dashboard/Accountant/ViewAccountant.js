@@ -15,12 +15,7 @@ import {
 import { Card, CardContent, Grid } from "@mui/material";
 import "../../../assets/css/MyView.css";
 import React, { useEffect, useState } from "react";
-import {
-  MDBCardBody,
-  MDBCardText,
-  MDBCol,
-  MDBRow,
-} from "mdb-react-ui-kit";
+import { MDBCardBody, MDBCardText, MDBCol, MDBRow } from "mdb-react-ui-kit";
 import NoPending from "../../../assets/images/NoPending.jpg";
 import MyTask from "../../../assets/images/MyTask.jpg";
 import AlarmTechnician from "../../../assets/images/alarm.jpg";
@@ -347,7 +342,7 @@ const ViewAccountant = () => {
                   <img src={LoadingImg} alt="Loading" />
                 </div>
               ) : dataListContract && dataListContract.length > 0 ? (
-                dataListContract.map((contract, index) => (
+                dataListContract?.map((contract, index) => (
                   <div
                     key={index}
                     style={{ display: "flex", flexDirection: "column" }}
@@ -459,7 +454,9 @@ const ViewAccountant = () => {
             >
               <MDBCardText
                 style={{ fontSize: "14px", color: "#666" }}
-                className={dataContractStatus.pendingContractCount ? "text-hover" : ""}
+                className={
+                  dataContractStatus.pendingContractCount ? "text-hover" : ""
+                }
               >
                 <PermDeviceInformation
                   style={{
@@ -558,7 +555,7 @@ const ViewAccountant = () => {
                       : "#AAAAAA",
                   }}
                 />
-               Expired Contract Count
+                Expired Contract Count
               </MDBCardText>
             </MDBCol>
             <MDBCol sm="1" style={{ marginLeft: "5px" }}>
@@ -586,14 +583,11 @@ const ViewAccountant = () => {
                     color: dataSummary.contractTermNotDoneCount
                       ? "#3399FF"
                       : "#000",
-                  }}  
+                  }}
                 />
-                
               </MDBCardText>
             </MDBCol>
-            <MDBCol sm="1" style={{ marginLeft: "5px" }}>
-
-            </MDBCol>
+            <MDBCol sm="1" style={{ marginLeft: "5px" }}></MDBCol>
           </MDBRow>
           <hr />
         </MDBCardBody>
@@ -635,7 +629,7 @@ const ViewAccountant = () => {
           </div>
         </Grid>
         <Grid item xs={12}>
-        <Card style={{ height: "290px", overflowY: "auto" }}>
+          <Card style={{ height: "290px", overflowY: "auto" }}>
             <CardContent>
               {loading ? (
                 <div
@@ -648,16 +642,19 @@ const ViewAccountant = () => {
                   <img src={LoadingImg} alt="Loading" />
                 </div>
               ) : dataPayment && dataPayment.length > 0 ? (
-                dataPayment.map((payment, index) => (
+                dataPayment?.map((payment, index) => (
                   <div
                     key={index}
                     style={{ display: "flex", flexDirection: "column" }}
                   >
                     <div style={{ display: "flex" }}>
                       <p style={{ marginRight: "8px", fontSize: "12px" }}>
-                        #{payment.id} - {payment.description || "No Description"}
+                        #{payment.id} -{" "}
+                        {payment.description || "No Description"}
                       </p>
-                      <p style={{ fontSize: "12px" }}>Duration:{payment.duration} </p>
+                      <p style={{ fontSize: "12px" }}>
+                        Duration:{payment.duration}{" "}
+                      </p>
                     </div>
                     <div
                       style={{
@@ -673,7 +670,8 @@ const ViewAccountant = () => {
                       </div>
                       <div>
                         <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                          Create Time: {formatTicketDate(payment.firstDateOfPayment)}
+                          Create Time:{" "}
+                          {formatTicketDate(payment.firstDateOfPayment)}
                         </p>
                       </div>
                     </div>

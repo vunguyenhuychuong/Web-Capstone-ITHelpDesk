@@ -37,6 +37,7 @@ const EditTicketCustomer = () => {
   const [selectedFile, setSelectedFile] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
+  const [imageUrls, setImagewUrls] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
     title: "",
@@ -78,12 +79,33 @@ const EditTicketCustomer = () => {
       setData((prevData) => ({ ...prevData, [name]: value }));
     }
   };
+  const handleFileChange = (e) => {
+    const files = e.target.files;
+    setSelectedFile([...files]);
 
-  const images = data.attachmentUrls.map((url, index) => ({
-    original: url,
-    thumbnail: url,
-    description: `Attachment Preview ${index + 1}`,
-  }));
+    const promises = [];
+    const previewUrls = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const currentFile = files[i];
+      const reader = new FileReader();
+
+      promises.push(
+        new Promise((resolve) => {
+          reader.onloadend = () => {
+            previewUrls.push(reader.result);
+            resolve();
+          };
+          reader.readAsDataURL(currentFile);
+        })
+      );
+    }
+    Promise.all(promises).then(() => {
+      setImagewUrls(previewUrls);
+    });
+
+    setIsImagePreviewOpen(true);
+  };
 
   useEffect(() => {
     const fetchTicketData = async () => {
@@ -106,35 +128,22 @@ const EditTicketCustomer = () => {
     fetchDataManager();
     fetchServices();
   }, []);
-
-  const handleFileChange = (e) => {
-    const files = e.target.files;
-    setSelectedFile([...files]);
-
-    const promises = [];
-    const previewUrls = [];
-
-    for (let i = 0; i < files.length; i++) {
-      const currentFile = files[i];
-      const reader = new FileReader();
-
-      promises.push(
-        new Promise((resolve) => {
-          reader.onloadend = () => {
-            previewUrls.push(reader.result);
-            resolve();
-          };
-          reader.readAsDataURL(currentFile);
-        })
-      );
+  useEffect(() => {
+    try {
+      const attachmentUrls =
+        imageUrls.length > 0 ? imageUrls : data?.attachmentUrls;
+      if (attachmentUrls && attachmentUrls.length > 0) {
+        const images = attachmentUrls.map((url, index) => ({
+          original: url,
+          thumbnail: url,
+          description: `Attachment Preview ${index + 1}`,
+        }));
+        setImagePreviewUrl(images);
+      }
+    } catch (error) {
+      console.log("Error", error);
     }
-
-    Promise.all(promises).then(() => {
-      setImagePreviewUrl(previewUrls);
-    });
-
-    setIsImagePreviewOpen(true);
-  };
+  }, [data, imageUrls]);
 
   const handleSubmitTicket = async (e) => {
     e.preventDefault();
@@ -150,7 +159,7 @@ const EditTicketCustomer = () => {
 
     setIsSubmitting(true);
     try {
-      let attachmentUrls = data.attachmentUrls || [];
+      let attachmentUrls = [];
       if (selectedFile.length > 0) {
         const storage = getStorage();
         for (let i = 0; i < selectedFile.length; i++) {
@@ -162,13 +171,13 @@ const EditTicketCustomer = () => {
           attachmentUrls.push(downloadURL);
         }
       }
-
       const updatedData = {
-        ...data,
+        title: data.title,
+        description: data.description,
+        serviceId: data.serviceId,
         attachmentUrls: attachmentUrls,
       };
-      setData(updatedData);
-      const res = await editTicketByCustomer(ticketId, data);
+      const res = await editTicketByCustomer(ticketId, updatedData);
 
       if (res) {
         toast.success(`Edit ticket successfully`);
@@ -356,6 +365,7 @@ const EditTicketCustomer = () => {
                   name="file"
                   className="form-control input-field"
                   id="attachmentUrls"
+                  multiple
                   onChange={handleFileChange}
                 />
                 {imagePreviewUrl.length > 0 && (
@@ -484,7 +494,7 @@ const EditTicketCustomer = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <Gallery items={images} />
+          <Gallery items={imagePreviewUrl} />
         </DialogContent>
       </Dialog>
     </Grid>

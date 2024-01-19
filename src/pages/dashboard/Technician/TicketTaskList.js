@@ -106,42 +106,47 @@ const TicketTaskList = () => {
     if (selectedtaskIds.length === dataListTicketsTask.length) {
       setSelectedTaskIds([]);
     } else {
-      setSelectedTaskIds(dataListTicketsTask.map((task) => task.id));
+      setSelectedTaskIds(dataListTicketsTask?.map((task) => task.id));
     }
   };
 
   const handleDeleteSelectedTasks = (id) => {
-    try {
-      if (selectedtaskIds.length === 0) {
-        return;
-      }
-
-      let currentIndex = 0;
-
-      const deleteNexttask = () => {
-        if (currentIndex < selectedtaskIds.length) {
-          const taskId = selectedtaskIds[currentIndex];
-
-          deleteTicketTask(taskId)
-            .then(() => {
-              currentIndex++;
-              deleteNexttask();
-            })
-            .catch((error) => {
-              console.error(`Error deleting task with ID ${taskId}: `, error);
-              toast.error(`Error deleting task with ID ${taskId}: `, error);
-            });
-        } else {
-          setSelectedTaskIds([]);
-          toast.success("Selected tasks deleted successfully");
-          setRefreshData((prev) => !prev);
+    const shouldDelete = window.confirm(
+      "Are you sure want to delete selected tasks"
+    );
+    if (shouldDelete) {
+      try {
+        if (selectedtaskIds.length === 0) {
+          return;
         }
-      };
 
-      deleteNexttask();
-    } catch (error) {
-      console.error("Failed to delete selected tasks: ", error);
-      toast.error("Failed to delete selected tasks, Please try again later");
+        let currentIndex = 0;
+
+        const deleteNexttask = () => {
+          if (currentIndex < selectedtaskIds.length) {
+            const taskId = selectedtaskIds[currentIndex];
+
+            deleteTicketTask(taskId)
+              .then(() => {
+                currentIndex++;
+                deleteNexttask();
+              })
+              .catch((error) => {
+                console.error(`Error deleting task with ID ${taskId}: `, error);
+                toast.error(`Error deleting task with ID ${taskId}: `, error);
+              });
+          } else {
+            setSelectedTaskIds([]);
+            toast.success("Selected tasks deleted successfully");
+            setRefreshData((prev) => !prev);
+          }
+        };
+
+        deleteNexttask();
+      } catch (error) {
+        console.error("Failed to delete selected tasks: ", error);
+        toast.error("Failed to delete selected tasks, Please try again later");
+      }
     }
   };
 
@@ -383,7 +388,7 @@ const TicketTaskList = () => {
                   </MDBTableBody>
                 ) : (
                   <MDBTableBody className="bg-light">
-                    {dataListTicketsTask.map((TicketTask, index) => {
+                    {dataListTicketsTask?.map((TicketTask, index) => {
                       const isSelected = selectedtaskIds.includes(
                         TicketTask.id
                       );

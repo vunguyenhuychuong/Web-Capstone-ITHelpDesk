@@ -108,8 +108,8 @@ const ContractInDetail = ({ data, loading, error }) => {
   };
 
   const mapServiceDescriptionToId = () => {
-    const currentServiceIds = formattedDataContractService.map((s) => s.id);
-    const newServiceIds = serviceToAdd.map((service) => {
+    const currentServiceIds = formattedDataContractService?.map((s) => s.id);
+    const newServiceIds = serviceToAdd?.map((service) => {
       return dataSelectedService.find((d) => d.description === service).id;
     });
     return [...currentServiceIds, ...newServiceIds];
@@ -224,7 +224,7 @@ const ContractInDetail = ({ data, loading, error }) => {
     // },
   ];
 
-  const formattedDataContractService = dataContractService.map((contract) => ({
+  const formattedDataContractService = dataContractService?.map((contract) => ({
     id: contract.serviceId,
     Name: contract.service.description,
     Type: contract.service.type,
@@ -735,7 +735,7 @@ const ContractInDetail = ({ data, loading, error }) => {
                   //   checkboxSelection
                   disableRowSelectionOnClick
                   onSelectionModelChange={(newSelection) => {
-                    const selectedRows = newSelection.map((selectedId) => {
+                    const selectedRows = newSelection?.map((selectedId) => {
                       const selectedRow = formattedDataContractService.find(
                         (row) => row.id === selectedId
                       );
@@ -764,7 +764,7 @@ const ContractInDetail = ({ data, loading, error }) => {
             onChange={handleServiceChange}
             fullWidth
           >
-            {dataSelectedService && dataSelectedService.length > 0 ? dataSelectedService.map((service) => (
+            {dataSelectedService && dataSelectedService.length > 0 ? dataSelectedService?.map((service) => (
               <MenuItem key={service.id} value={service.id}>
                 {`${service.description} - ${service.amount}VND - ${service.type}`}
               </MenuItem>
@@ -784,7 +784,7 @@ const ContractInDetail = ({ data, loading, error }) => {
               className={{ width: "100%" }}
             >
               {dataSelectedService && dataSelectedService.length > 0
-                ? dataSelectedService.map((name) => (
+                ? dataSelectedService?.map((name) => (
                     <MenuItem key={name.id} value={name.description}>
                       <Checkbox
                         checked={serviceToAdd.indexOf(name.description) > -1}
@@ -800,7 +800,7 @@ const ContractInDetail = ({ data, loading, error }) => {
           </FormControl>
           <div className="rounded border mt-4">
             <List subheader={<ListSubheader>Preview</ListSubheader>}>
-              {serviceToAdd.map((service) => (
+              {serviceToAdd?.map((service) => (
                 <ListItem>
                   <ListItemButton>
                     <ListItemText primary={service} />

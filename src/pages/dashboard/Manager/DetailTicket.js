@@ -146,7 +146,7 @@ const DetailTicket = () => {
 
   const handleGoBack = () => {
     if (userRole === 2) {
-      navigate(`/home/homeManager?tab=1`);
+      navigate(`/home/listTicket`);
     } else if (userRole === 3) {
       navigate(`/home/ticketAssign`);
     } else if (userRole === 1) {
@@ -288,7 +288,7 @@ const DetailTicket = () => {
                       disabled={!allowEdit}
                       className="custom-select-status"
                     >
-                      {TicketStatusOptions.map((option) => (
+                      {TicketStatusOptions?.map((option) => (
                         <option key={option.id} value={option.id}>
                           {option.name}
                         </option>
@@ -299,7 +299,7 @@ const DetailTicket = () => {
                     ? TicketStatusOptions.filter(
                         (status) =>
                           status.name !== "Close" && status.name !== "Cancelled"
-                      ).map((status) => (
+                      )?.map((status) => (
                         <Button
                           sx={{
                             backgroundColor: "#FFFFFF",
@@ -316,7 +316,7 @@ const DetailTicket = () => {
                         </Button>
                       ))
                     : null}
-                  {userRole === 3 &&
+                  {userRole === 2 &&
                   data.ticketStatus !== 4 &&
                   data.ticketStatus !== 5 ? (
                     <MDBCol>

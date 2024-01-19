@@ -623,7 +623,7 @@ const CreateCompanyMember = () => {
                           textAlign: "right",
                         }}
                       >
-                        <span style={{ color: "red" }}>*</span>Company Address
+                        <span style={{ color: "red" }}>*</span>Default Address
                       </h2>
                     </Grid>
                     <Grid item xs={6}>

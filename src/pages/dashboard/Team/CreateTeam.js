@@ -3,10 +3,10 @@ import { AddTeam, getCityList, getManagerList } from "../../../app/api/team";
 import { MDBBtn, MDBCol, MDBContainer, MDBRow } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
 import { useEffect } from "react";
-import MuiAlert from '@mui/material/Alert';
+import MuiAlert from "@mui/material/Alert";
 import { Snackbar } from "@mui/material";
 
-const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
+const CreateTeam = ({ onClose, onFetchDataTeam }) => {
   const [data, setData] = useState({
     name: "",
     managerId: 1,
@@ -18,13 +18,13 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
   const [dataManagers, setDataManagers] = useState([]);
   const [dataCity, setDataCity] = useState([]);
   const [open, setOpen] = useState(false);
-  
+
   const handleClick = () => {
     setOpen(true);
   };
 
   const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
 
@@ -32,25 +32,36 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
   };
   const [fieldErrors, setFieldErrors] = useState({
     name: "",
-    managerId: 1,
+    managerId: "",
     location: "",
     description: "",
   });
 
   const fetchDataCityList = async () => {
-    try{
+    try {
       const cities = await getCityList();
       setDataCity(cities);
-    }catch(error){
+      if (cities?.length > 0) {
+        setData((prevData) => ({
+          ...prevData,
+          location: cities[0].name,
+        }));
+      }
+    } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const fetchDataManagerList = async () => {
     try {
       const Managers = await getManagerList();
       setDataManagers(Managers);
-
+      if (Managers?.length > 0) {
+        setData((prevData) => ({
+          ...prevData,
+          managerId: Managers[0].id,
+        }));
+      }
     } catch (error) {
       console.log(error);
     }
@@ -136,7 +147,7 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
                 className="form-control"
                 value={data.name}
                 onChange={handleInputChange}
-                style={{ marginTop: '10px' }}
+                style={{ marginTop: "10px" }}
               />
               {fieldErrors.name && (
                 <div style={{ color: "red" }}>{fieldErrors.name}</div>
@@ -154,11 +165,11 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
                 className="form-select"
                 value={data.managerId}
                 onChange={handleInputChange}
-                style={{ marginTop: '10px' }}
+                style={{ marginTop: "10px" }}
               >
                 {dataManagers
                   .filter((manager) => manager.id !== "")
-                  .map((manager) => (
+                  ?.map((manager) => (
                     <option key={manager.id} value={manager.id}>
                       {manager.lastName} {manager.firstName}
                     </option>
@@ -177,14 +188,13 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
                 className="form-select"
                 value={data.location}
                 onChange={handleInputChange}
-                style={{ marginTop: '10px' }}
+                style={{ marginTop: "10px" }}
               >
-                {dataCity
-                  .map((city) => (
-                    <option key={city.code} value={city.name}>
-                      {city.name}
-                    </option>
-                  ))}
+                {dataCity?.map((city) => (
+                  <option key={city.code} value={city.name}>
+                    {city.name}
+                  </option>
+                ))}
               </select>
               {fieldErrors.location && (
                 <div style={{ color: "red" }}>{fieldErrors.location}</div>
@@ -203,7 +213,7 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
                 className="form-control"
                 value={data.description}
                 onChange={handleInputChange}
-                style={{ marginTop: '10px' }}
+                style={{ marginTop: "10px" }}
               />
               {fieldErrors.description && (
                 <div style={{ color: "red" }}>{fieldErrors.description}</div>
@@ -228,10 +238,14 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
           </MDBRow>
         </form>
         <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        <MuiAlert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-          Team created successfully!
-        </MuiAlert>
-      </Snackbar>
+          <MuiAlert
+            onClose={handleClose}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            Team created successfully!
+          </MuiAlert>
+        </Snackbar>
       </MDBContainer>
     </section>
   );

@@ -35,8 +35,8 @@ const EditTicketModel = ({
   });
   console.log("data", data);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [startDate, setStartDate] = useState(moment());
-  const [endDate, setEndDate] = useState(moment());
+  const [startDate, setStartDate] = useState(moment(data.scheduledStartTime));
+  const [endDate, setEndDate] = useState(moment(data.scheduledEndTime));
   const [fieldErrors, setFieldErrors] = useState({
     impactDetail: "",
     location: "",

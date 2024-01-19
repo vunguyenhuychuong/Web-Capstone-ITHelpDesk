@@ -79,7 +79,7 @@ const CreateTicketTask = () => {
     }));
   };
 
-  const images = imagePreviewUrl.map((url, index) => ({
+  const images = imagePreviewUrl?.map((url, index) => ({
     original: url,
     thumbnail: url,
     description: `Attachment Preview ${index + 1}`,
@@ -480,7 +480,7 @@ const CreateTicketTask = () => {
                       >
                         {dataTeam
                           .filter((team) => team.id !== "")
-                          .map((team) => (
+                          ?.map((team) => (
                             <option key={team.id} value={team.id}>
                               {team.name}
                             </option>
@@ -495,7 +495,7 @@ const CreateTicketTask = () => {
                       >
                         {dataTechnician
                           .filter((technician) => technician.id !== "")
-                          .map((technician) => (
+                          ?.map((technician) => (
                             <option key={technician.id} value={technician.id}>
                               {technician.lastName} {technician.firstName}
                             </option>
@@ -527,7 +527,7 @@ const CreateTicketTask = () => {
                         onChange={handleInputChange}
                       >
                         <option value="">Select Progress</option>{" "}
-                        {Object.keys(Process).map((processId) => (
+                        {Object.keys(Process)?.map((processId) => (
                           <option key={processId} value={processId}>
                             {Process[processId]}
                           </option>
@@ -589,7 +589,7 @@ const CreateTicketTask = () => {
                       >
                         {priorityOption
                           .filter((priority) => priority.id !== "")
-                          .map((priority) => (
+                          ?.map((priority) => (
                             <option key={priority.id} value={priority.id}>
                               {priority.name}
                             </option>
@@ -689,7 +689,7 @@ const CreateTicketTask = () => {
                       >
                         {TicketStatusOptions.filter(
                           (status) => status.id !== ""
-                        ).map((status) => (
+                        )?.map((status) => (
                           <option key={status.id} value={status.id}>
                             {status.name}
                           </option>

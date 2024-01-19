@@ -82,7 +82,7 @@ const CreateContract = () => {
     },
   };
 
-  const images = imagePreviewUrl.map((url, index) => ({
+  const images = imagePreviewUrl?.map((url, index) => ({
     original: url,
     thumbnail: url,
     description: `Attachment Preview ${index + 1}`,
@@ -217,7 +217,7 @@ const CreateContract = () => {
   };
 
   const mapServiceDescriptionToId = () => {
-    const serviceIds = data.serviceIds.map((service) => {
+    const serviceIds = data.serviceIds?.map((service) => {
       return dataServiceList.find((d) => d.description === service).id;
     });
     return serviceIds;
@@ -508,7 +508,7 @@ const CreateContract = () => {
                     MenuProps={MenuProps}
                     className={{ width: "100%" }}
                   >
-                    {dataServiceList.map((name) => (
+                    {dataServiceList?.map((name) => (
                       <MenuItem key={name.id} value={name.description}>
                         <Checkbox
                           checked={
@@ -615,7 +615,7 @@ const CreateContract = () => {
                         <option value="">Select Parent Contract</option>
                         {dataParentContract
                           .filter((parentContract) => parentContract.id !== "")
-                          .map((parentContract) => (
+                          ?.map((parentContract) => (
                             <option
                               key={parentContract.id}
                               value={parentContract.id}
@@ -714,7 +714,7 @@ const CreateContract = () => {
                       >
                         {dataCompanyList
                           .filter((company) => company.id !== "")
-                          .map((company) => (
+                          ?.map((company) => (
                             <option key={company.id} value={company.id}>
                               {company.companyName}
                             </option>
@@ -753,7 +753,7 @@ const CreateContract = () => {
                       >
                         {dataAccountList
                           .filter((accountant) => accountant.id !== "")
-                          .map((accountant) => (
+                          ?.map((accountant) => (
                             <option key={accountant.id} value={accountant.id}>
                               {accountant.lastName} {accountant.firstName}
                             </option>

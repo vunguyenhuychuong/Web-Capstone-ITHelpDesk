@@ -88,7 +88,7 @@ const CategoryList = () => {
     if (selectedTeamMembers.length === dataCategory.length) {
       setSelectedTeamMember([]);
     } else {
-      setSelectedTeamMember(dataCategory.map((mode) => mode.id));
+      setSelectedTeamMember(dataCategory?.map((mode) => mode.id));
     }
   };
 
@@ -113,44 +113,49 @@ const CategoryList = () => {
   };
 
   const handleDeleteSelectedCategory = async (id) => {
-    try {
-      if (selectedTeamMembers.length === 0) {
-        return;
-      }
-      const deletePromises = selectedTeamMembers.map(async (categoryId) => {
-        try {
-          const res = await Promise.resolve(deleteCategory(categoryId));
-          if (res.isError) {
+    const shouldDelete = window.confirm(
+      "Are you sure want to delete selected categories"
+    );
+    if (shouldDelete) {
+      try {
+        if (selectedTeamMembers.length === 0) {
+          return;
+        }
+        const deletePromises = selectedTeamMembers.map(async (categoryId) => {
+          try {
+            const res = await Promise.resolve(deleteCategory(categoryId));
+            if (res.isError) {
+              throw new Error(
+                `Error deleting category with ID ${categoryId}: ${res.message}`
+              );
+            }
+            return categoryId;
+          } catch (error) {
             throw new Error(
-              `Error deleting team member with ID ${categoryId}: ${res.message}`
+              `Error deleting category with ID ${categoryId}: ${error.message}`
             );
           }
-          return categoryId;
-        } catch (error) {
-          throw new Error(
-            `Error deleting team member with ID ${categoryId}: ${error.message}`
-          );
-        }
-      });
+        });
 
-      const results = await Promise.allSettled(deletePromises);
+        const results = await Promise.allSettled(deletePromises);
 
-      const successfulDeletes = [];
-      results.forEach((result) => {
-        if (result.status === "fulfilled") {
-          successfulDeletes.push(result.value);
-        } else {
-          toast.error(result.reason.message);
-        }
-      });
-      const updateModes = dataCategory.filter(
-        (mode) => !successfulDeletes.includes(mode.id)
-      );
-      setDataCategory(updateModes);
-      setSelectCategory([]);
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to delete selected modes, Please try again later");
+        const successfulDeletes = [];
+        results.forEach((result) => {
+          if (result.status === "fulfilled") {
+            successfulDeletes.push(result.value);
+          } else {
+            toast.error(result.reason.message);
+          }
+        });
+        const updateModes = dataCategory.filter(
+          (mode) => !successfulDeletes.includes(mode.id)
+        );
+        setDataCategory(updateModes);
+        setSelectCategory([]);
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to delete selected modes, Please try again later");
+      }
     }
   };
 
@@ -195,7 +200,7 @@ const CategoryList = () => {
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
-              <span style={{ color: "#FFFFFF" }}> All Category</span>
+              <span style={{ color: "#FFFFFF" }}> All Categories</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav">
               <MDBBtn
@@ -292,7 +297,7 @@ const CategoryList = () => {
                       onChange={handleSelectAllCategory}
                     />
                   </th>
-                  <th style={{ fontWeight: "bold" }}>Edit</th>
+
                   <th
                     style={{ fontWeight: "bold" }}
                     className="sortable-header"
@@ -349,10 +354,11 @@ const CategoryList = () => {
                         <ArrowDropUp />
                       ))}
                   </th>
+                  <th style={{ fontWeight: "bold" }}></th>
                 </tr>
               </MDBTableHead>
               <MDBTableBody className="bg-light">
-                {dataCategory.map((category, index) => {
+                {dataCategory?.map((category, index) => {
                   const isSelected = selectedTeamMembers.includes(category.id);
                   return (
                     <tr key={index}>
@@ -363,13 +369,13 @@ const CategoryList = () => {
                           onChange={() => handleSelectCategory(category.id)}
                         />
                       </td>
-                      <td>
-                        <Edit onClick={() => handleEditClick(category.id)} />
-                      </td>
                       <td>{category.name}</td>
                       <td>{category.description}</td>
                       <td>{formatDate(category.createdAt || "-")}</td>
                       <td>{formatDate(category.modifiedAt || "-")}</td>
+                      <td>
+                        <Edit onClick={() => handleEditClick(category.id)} />
+                      </td>
                     </tr>
                   );
                 })}

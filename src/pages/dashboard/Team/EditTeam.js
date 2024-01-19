@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { UpdateTeam, getCityList, getManagerList, getTeamById } from "../../../app/api/team";
+import {
+  UpdateTeam,
+  getCityList,
+  getManagerList,
+  getTeamById,
+} from "../../../app/api/team";
 import { toast } from "react-toastify";
 import { MDBBtn, MDBCol, MDBContainer, MDBRow } from "mdb-react-ui-kit";
 
@@ -30,8 +35,8 @@ const EditTeam = ({ onClose, teamId, onFetchDataTeam }) => {
           setData({
             name: result.name || "",
             description: result.description || "",
-            location: result.location || "",
-            managerId: result.managerId || Managers[0]?.id || "",
+            location: result.location ?? "",
+            managerId: result.managerId ?? Managers[0]?.id,
             isActive: result.isActive,
           });
         } else {
@@ -48,13 +53,13 @@ const EditTeam = ({ onClose, teamId, onFetchDataTeam }) => {
   }, [teamId]);
 
   const fetchDataCityList = async () => {
-    try{
+    try {
       const cities = await getCityList();
       setDataCity(cities);
-    }catch(error){
+    } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -99,13 +104,13 @@ const EditTeam = ({ onClose, teamId, onFetchDataTeam }) => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onHandleEditTicket = async (e) => {
+  const onHandleEditTeam = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
       await UpdateTeam(teamId, data);
       setIsSubmitting(false);
-      toast.success("Update Mode successful", {
+      toast.success("Update team successfully", {
         autoClose: 1000,
         hideProgressBar: false,
       });
@@ -120,7 +125,7 @@ const EditTeam = ({ onClose, teamId, onFetchDataTeam }) => {
   return (
     <section
       style={{ backgroundColor: "#DDDDDD" }}
-      className="edit-ticket-container"
+      className="edit-Team-container"
     >
       <MDBContainer>
         <MDBRow className="mb-4">
@@ -232,7 +237,7 @@ const EditTeam = ({ onClose, teamId, onFetchDataTeam }) => {
                 small="true"
                 color="primary"
                 type="submit"
-                onClick={onHandleEditTicket}
+                onClick={onHandleEditTeam}
               >
                 Edit
               </MDBBtn>

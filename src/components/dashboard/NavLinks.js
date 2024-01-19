@@ -26,6 +26,7 @@ const NavLinks = ({ toggleSidebar }) => {
     filteredLink = links.filter(
       (link) =>
         link.id === 1 ||
+        link.id === 2 ||
         link.id === 13 ||
         link.id === 16 ||
         link.id === 19 ||

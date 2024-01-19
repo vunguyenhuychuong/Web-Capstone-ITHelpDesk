@@ -76,10 +76,11 @@ export async function createService(data) {
   }
 }
 
-export async function updateService(serviceId) {
+export async function updateService(serviceId, data) {
   const header = getAuthHeader();
+
   try {
-    const result = await axios.put(`${baseURL}/service/${serviceId}`, {
+    const result = await axios.put(`${baseURL}/service/${serviceId}`, data, {
       headers: {
         Authorization: header,
       },

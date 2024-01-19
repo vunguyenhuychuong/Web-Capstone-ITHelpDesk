@@ -13,9 +13,18 @@ import "../../../assets/css/ticketCustomer.css";
 import { ContentCopy, ViewCompact } from "@mui/icons-material";
 import { formatDate } from "../../helpers/FormatDate";
 import { useNavigate } from "react-router-dom";
-import { Box, Card, CardContent, Pagination } from "@mui/material";
-import { FaPlus } from "react-icons/fa";
-import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
+import {
+  Box,
+  Card,
+  CardContent,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Pagination,
+  Select,
+} from "@mui/material";
+import { FaPlus, FaSearch } from "react-icons/fa";
+import PageSizeSelector from "../Pagination/Pagination";
 import CloseTicket from "../../../assets/images/NoTicketSolution.jpg";
 import {
   ChangeStatusTicket,
@@ -40,12 +49,20 @@ const TicketAssignAvailableList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("desc");
   const [sortBy, setSortBy] = useState("createdAt");
+  const [selectedTicketStatus, setSelectedTicketStatus] = useState(null);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
 
   const handleChangePage = (event, value) => {
     setCurrentPage(value);
   };
+
+  const handleChangePageSize = (event) => {
+    const newSize = parseInt(event.target.value);
+    setPageSize(newSize);
+    setCurrentPage(1);
+  };
+
   const fetchAssignTicket = useCallback(async () => {
     try {
       let filter = "";
@@ -58,7 +75,8 @@ const TicketAssignAvailableList = () => {
         currentPage,
         pageSize,
         sortBy,
-        sortDirection
+        sortDirection,
+        selectedTicketStatus
       );
       setDataListTicketsAssign(res?.data);
       setTotalPages(res?.totalPage);
@@ -67,7 +85,14 @@ const TicketAssignAvailableList = () => {
       console.log("Error while fetching data", error);
       setLoading(false);
     }
-  }, [currentPage, pageSize, searchQuery, sortBy, sortDirection]);
+  }, [
+    currentPage,
+    pageSize,
+    searchQuery,
+    sortBy,
+    sortDirection,
+    selectedTicketStatus,
+  ]);
 
   const fetchDataListTicketSolution = async () => {
     try {
@@ -116,20 +141,78 @@ const TicketAssignAvailableList = () => {
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
               <span style={{ color: "#FFFFFF" }}>All Ticket Assign</span>
             </MDBNavbarBrand>
-            {/* <MDBNavbarNav className="ms-auto manager-navbar-nav">
-              <MDBBtn
-                color="#eee"
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
+              <FormControl
+                variant="outlined"
                 style={{
-                  fontWeight: "bold",
-                  fontSize: "20px",
-                  color: "#FFFFFF",
+                  minWidth: 120,
+                  marginRight: 10,
+                  marginTop: 10,
+                  marginLeft: 10,
                 }}
-                onClick={() => handleOpenCreateTicketSolution()}
+                size="small"
               >
-                <FaPlus style={{ color: "#FFFFFF" }} />{" "}
-                <span style={{ color: "#FFFFFF" }}>New</span>
-              </MDBBtn>
-            </MDBNavbarNav> */}
+                <InputLabel htmlFor="ticketStatus" sx={{ color: "white" }}>
+                  Select Status
+                </InputLabel>
+                <Select
+                  label="Select Status"
+                  value={selectedTicketStatus}
+                  onChange={(e) => setSelectedTicketStatus(e.target.value)}
+                  style={{ color: "white", width: "10vw" }}
+                >
+                  <MenuItem value={null}>All</MenuItem>
+                  {TicketStatusOptions?.map((status) => (
+                    <MenuItem key={status.id} value={status.id}>
+                      {status.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl
+                variant="outlined"
+                style={{
+                  minWidth: 120,
+                  marginRight: 10,
+                  marginTop: 10,
+                  marginLeft: 10,
+                }}
+                size="small"
+              >
+                <Select
+                  value={searchField}
+                  onChange={(e) => setSearchField(e.target.value)}
+                  inputProps={{
+                    name: "searchField",
+                    id: "search-field",
+                  }}
+                  style={{ color: "white" }}
+                >
+                  <MenuItem value="title">Title</MenuItem>
+                  <MenuItem value="impactId">Impact</MenuItem>
+                  <MenuItem value="createdAt">Created At</MenuItem>
+                </Select>
+              </FormControl>
+              <div className="input-wrapper">
+                <FaSearch id="search-icon" />
+                <input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onBeforeInput={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      fetchAssignTicket();
+                    }
+                  }}
+                  className="input-search"
+                  placeholder="Type to search..."
+                />
+              </div>
+              <PageSizeSelector
+                pageSize={pageSize}
+                handleChangePageSize={handleChangePageSize}
+              />
+            </MDBNavbarNav>
           </MDBContainer>
         </MDBNavbar>
         <div>
@@ -151,10 +234,10 @@ const TicketAssignAvailableList = () => {
                   Ticket Status
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}>
-                  Created
+                  Created At
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}>
-                  Last Update
+                  Last Updated At
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
               </tr>
@@ -169,7 +252,7 @@ const TicketAssignAvailableList = () => {
               </MDBTableBody>
             ) : (
               <MDBTableBody className="bg-light">
-                {dataListTicketsAssign.map((TicketAssign, index) => {
+                {dataListTicketsAssign?.map((TicketAssign, index) => {
                   const ticketStatusOption = TicketStatusOptions.find(
                     (option) => option.id === TicketAssign.ticketStatus
                   );
@@ -207,7 +290,7 @@ const TicketAssignAvailableList = () => {
                                 }
                                 onBlur={() => setDropdownVisible(false)}
                               >
-                                {TicketStatusOptions.map((option) => (
+                                {TicketStatusOptions?.map((option) => (
                                   <option
                                     key={option.id}
                                     value={option.id}

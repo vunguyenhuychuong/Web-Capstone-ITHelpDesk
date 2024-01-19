@@ -121,35 +121,42 @@ const IndexTicket = () => {
   }, [selectedTickets]);
 
   const handleDeleteSelectedTickets = async (id) => {
-    try {
-      if (selectedTickets.length === 0) {
-        return;
-      }
-      const deletePromises = selectedTickets.map(async (ticketId) => {
-        try {
-          const res = await deleteTicketByManager(ticketId);
-          if (res.isError) {
-            toast.error(
-              `Error deleting ticket with ID ${ticketId}: `,
-              res.message
-            );
-          }
-          toast.success(`Delete ticket with ID successful ${ticketId}`);
-          return ticketId;
-        } catch (error) {
-          toast.error(`Error deleting ticket with ID ${ticketId}: `, error);
-          return null;
+    const shouldDelete = window.confirm(
+      "Are you sure want to delete selected tickets"
+    );
+    if (shouldDelete) {
+      try {
+        if (selectedTickets.length === 0) {
+          return;
         }
-      });
+        const deletePromises = selectedTickets.map(async (ticketId) => {
+          try {
+            const res = await deleteTicketByManager(ticketId);
+            if (res.isError) {
+              toast.error(
+                `Error deleting ticket with ID ${ticketId}: `,
+                res.message
+              );
+            }
+            toast.success(`Delete ticket with ID successful ${ticketId}`);
+            return ticketId;
+          } catch (error) {
+            toast.error(`Error deleting ticket with ID ${ticketId}: `, error);
+            return null;
+          }
+        });
 
-      const deletedTicketIds = await Promise.all(deletePromises);
-      const updatedTickets = dataTickets.filter(
-        (ticket) => !deletedTicketIds.includes(ticket.id)
-      );
-      setDataTickets(updatedTickets);
-      setSelectedTickets([]);
-    } catch (error) {
-      toast.error("Failed to delete selected tickets, Please try again later");
+        const deletedTicketIds = await Promise.all(deletePromises);
+        const updatedTickets = dataTickets.filter(
+          (ticket) => !deletedTicketIds.includes(ticket.id)
+        );
+        setDataTickets(updatedTickets);
+        setSelectedTickets([]);
+      } catch (error) {
+        toast.error(
+          "Failed to delete selected tickets, Please try again later"
+        );
+      }
     }
   };
 
@@ -457,7 +464,7 @@ const IndexTicket = () => {
               </tr>
             </MDBTableHead>
             <MDBTableBody className="bg-light">
-              {dataTickets.map((ticket, index) => {
+              {dataTickets?.map((ticket, index) => {
                 const isSelected = selectedTickets.includes(ticket.id);
                 const ticketStatusOption = TicketStatusOptions.find(
                   (option) => option.id === ticket.ticketStatus

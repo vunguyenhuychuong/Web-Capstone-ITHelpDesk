@@ -80,44 +80,49 @@ const TeamMemberList = () => {
   };
 
   const handleDeleteSelectedTeamMember = async (id) => {
-    try {
-      if (selectedTeamMembers?.length === 0) {
-        return;
-      }
-      const deletePromises = selectedTeamMembers.map(async (teamId) => {
-        try {
-          const res = await Promise.resolve(deleteMode(teamId));
-          if (res.isError) {
+    const shouldDelete = window.confirm(
+      "Are you sure want to delete selected team members"
+    );
+    if (shouldDelete) {
+      try {
+        if (selectedTeamMembers?.length === 0) {
+          return;
+        }
+        const deletePromises = selectedTeamMembers.map(async (teamId) => {
+          try {
+            const res = await Promise.resolve(deleteMode(teamId));
+            if (res.isError) {
+              throw new Error(
+                `Error deleting team member with ID ${teamId}: ${res.message}`
+              );
+            }
+            return teamId;
+          } catch (error) {
             throw new Error(
-              `Error deleting team member with ID ${teamId}: ${res.message}`
+              `Error deleting team member with ID ${teamId}: ${error.message}`
             );
           }
-          return teamId;
-        } catch (error) {
-          throw new Error(
-            `Error deleting team member with ID ${teamId}: ${error.message}`
-          );
-        }
-      });
+        });
 
-      const results = await Promise.allSettled(deletePromises);
+        const results = await Promise.allSettled(deletePromises);
 
-      const successfulDeletes = [];
-      results.forEach((result) => {
-        if (result.status === "fulfilled") {
-          successfulDeletes.push(result.value);
-        } else {
-          toast.error(result.reason.message);
-        }
-      });
-      const updateModes = dataTeamMembers.filter(
-        (mode) => !successfulDeletes.includes(mode.id)
-      );
-      setDataTeamMembers(updateModes);
-      setSelectTeam([]);
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to delete selected modes, Please try again later");
+        const successfulDeletes = [];
+        results.forEach((result) => {
+          if (result.status === "fulfilled") {
+            successfulDeletes.push(result.value);
+          } else {
+            toast.error(result.reason.message);
+          }
+        });
+        const updateModes = dataTeamMembers.filter(
+          (mode) => !successfulDeletes.includes(mode.id)
+        );
+        setDataTeamMembers(updateModes);
+        setSelectTeam([]);
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to delete selected modes, Please try again later");
+      }
     }
   };
 
@@ -150,7 +155,7 @@ const TeamMemberList = () => {
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
-              <span style={{ color: "#FFFFFF" }}> All TeamMember</span>
+              <span style={{ color: "#FFFFFF" }}> All Team Members</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn

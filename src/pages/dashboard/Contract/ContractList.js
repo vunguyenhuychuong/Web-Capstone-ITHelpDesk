@@ -91,7 +91,7 @@ const ContractList = () => {
     if (selectedContractIds.length === dataListContract.length) {
       setSelectedContractIds([]);
     } else {
-      setSelectedContractIds(dataListContract.map((solution) => solution.id));
+      setSelectedContractIds(dataListContract?.map((solution) => solution.id));
     }
   };
 
@@ -394,7 +394,7 @@ const ContractList = () => {
               </MDBTableBody>
             ) : (
               <MDBTableBody className="bg-light">
-                {dataListContract.map((Contract, index) => {
+                {dataListContract?.map((Contract, index) => {
                   const isSelected = selectedContractIds.includes(Contract.id);
                   return (
                     <tr key={index}>
