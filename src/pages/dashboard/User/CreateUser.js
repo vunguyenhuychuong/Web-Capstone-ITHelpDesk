@@ -660,7 +660,7 @@ const CreateUser = () => {
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                          marginBottom: "20px",
+                          marginBottom: "0px",
                         }}
                       >
                         <span style={{ color: "red" }}>*</span>CompanyAdmin
@@ -733,7 +733,7 @@ const CreateUser = () => {
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                          marginBottom: "40px",
+                          marginBottom: "20px",
                         }}
                       >
                         Brand Address

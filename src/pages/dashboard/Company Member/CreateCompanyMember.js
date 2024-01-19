@@ -448,7 +448,7 @@ const CreateCompanyMember = () => {
                     textAlign: "right",
                   }}
                 >
-                  Attachment
+                  User Avatar
                 </h2>
               </Grid>
               <Grid item xs={9}>
