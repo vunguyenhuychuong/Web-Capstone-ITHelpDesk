@@ -170,7 +170,7 @@ const ServiceList = () => {
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
-              <span style={{ color: "#FFFFFF" }}>All Service</span>
+              <span style={{ color: "#FFFFFF" }}>All Services</span>
             </MDBNavbarBrand>
             <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
@@ -249,11 +249,7 @@ const ServiceList = () => {
             </tr>
           </MDBTableBody>
         ) : (
-          <MDBTable
-            className="align-middle mb-0"
-            responsive
-            style={{ border: "0.05px solid #50545c" }}
-          >
+          <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr style={{ fontSize: "1.2rem" }}>
                 <th style={{ fontWeight: "bold" }}>
@@ -331,7 +327,7 @@ const ServiceList = () => {
                       <Edit />
                     </td>
                     <td onClick={() => onDeleteService(service.id)}>
-                      <DeleteForeverSharp />
+                      <DeleteForeverSharp color="error" />
                     </td>
                   </tr>
                 );

@@ -29,17 +29,20 @@ import DateValidation from "../../helpers/DateValidation";
 import { getDataUser } from "../../../app/api";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
+import { useSelector } from "react-redux";
 
 const EditTicketSolution = () => {
   const navigate = useNavigate();
   const { solutionId } = useParams();
+  const user = useSelector((state) => state.auth.user);
+  const userRole = user.role;
   const [dataCategories, setDataCategories] = useState([]);
   const [data, setData] = useState({
     id: 1,
     title: "",
     content: "",
     categoryId: 1,
-    ownerId: 1,
+    ownerId: userRole === 3 ? Number.parseInt(user.id) : 1,
     reviewDate: "",
     expiredDate: "",
     keyword: "",
@@ -138,7 +141,7 @@ const EditTicketSolution = () => {
           title: solutionData.title,
           content: solutionData.content,
           categoryId: solutionData.categoryId,
-          ownerId: solutionData.ownerId,
+          ownerId: solutionData.ownerId ?? Number.parseInt(user.id),
           reviewDate: solutionData.reviewDate,
           expiredDate: solutionData.expiredDate,
           keyword: solutionData.keyword,
@@ -397,7 +400,7 @@ const EditTicketSolution = () => {
                   </div>
                 )}
               </Grid>
-              <Grid container justifyContent="flex-end">
+              <Grid container justifyContent="flex-start">
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
@@ -432,39 +435,41 @@ const EditTicketSolution = () => {
                   </Grid>
                 </Grid>
 
-                <Grid item xs={6}>
-                  <Grid container alignItems="center">
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        Solution Owner
-                      </h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <select
-                        id="ownerId"
-                        name="ownerId"
-                        className="form-select-custom"
-                        value={data.ownerId}
-                        onChange={handleInputChange}
-                      >
-                        {dataUsers
-                          .filter((owner) => owner.id !== "")
-                          .map((owner) => (
-                            <option key={owner.id} value={owner.id}>
-                              {owner.lastName} {owner.firstName}
-                            </option>
-                          ))}
-                      </select>
+                {userRole === 2 && (
+                  <Grid item xs={6}>
+                    <Grid container alignItems="center">
+                      <Grid item xs={6}>
+                        <h2
+                          className="align-right"
+                          style={{
+                            fontSize: "20px",
+                            fontWeight: "bold",
+                            textAlign: "right",
+                          }}
+                        >
+                          Solution Owner
+                        </h2>
+                      </Grid>
+                      <Grid item xs={5}>
+                        <select
+                          id="ownerId"
+                          name="ownerId"
+                          className="form-select-custom"
+                          value={data.ownerId}
+                          onChange={handleInputChange}
+                        >
+                          {dataUsers
+                            .filter((owner) => owner.id !== "")
+                            .map((owner) => (
+                              <option key={owner.id} value={owner.id}>
+                                {owner.lastName} {owner.firstName}
+                              </option>
+                            ))}
+                        </select>
+                      </Grid>
                     </Grid>
                   </Grid>
-                </Grid>
+                )}
               </Grid>
               {/* <Grid
                 container

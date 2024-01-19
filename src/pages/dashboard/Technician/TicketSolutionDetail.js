@@ -290,7 +290,7 @@ const TicketSolutionDetail = () => {
             </Stack>
           ) : null}
 
-          {userRole === 3 ? (
+          {userRole === 3 && !data.isApproved ? (
             <Stack direction={"row"} spacing={2} py={1} alignItems={"center"}>
               <Button
                 sx={{
