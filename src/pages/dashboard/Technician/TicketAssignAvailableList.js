@@ -23,7 +23,7 @@ import {
   Pagination,
   Select,
 } from "@mui/material";
-import { FaPlus, FaSearch } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import PageSizeSelector from "../Pagination/Pagination";
 import CloseTicket from "../../../assets/images/NoTicketSolution.jpg";
 import {
@@ -40,7 +40,6 @@ import CircularLoading from "../../../components/iconify/CircularLoading";
 
 const TicketAssignAvailableList = () => {
   const [dataListTicketsAssign, setDataListTicketsAssign] = useState([]);
-  const [refreshData, setRefreshData] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isDropdownVisible, setDropdownVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -118,10 +117,6 @@ const TicketAssignAvailableList = () => {
   const handleDropdownClick = (e) => {
     e.stopPropagation();
     setDropdownVisible(!isDropdownVisible);
-  };
-
-  const handleOpenCreateTicketSolution = () => {
-    navigate("/home/createTask");
   };
 
   const handleOpenDetailTicketAssign = (ticketId) => {
@@ -219,27 +214,23 @@ const TicketAssignAvailableList = () => {
           <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr>
-                {/* <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th> */}
-                {/* <th style={{ fontWeight: "bold", fontSize: "18px" }}>
-                  <input type="checkbox" />
-                </th> */}
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }} className="sortable-header">
                   Title{""}
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }} className="sortable-header">
                   Priority
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>Impact</th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }} className="sortable-header">Impact</th>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }} className="sortable-header">
                   Ticket Status
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }} className="sortable-header">
                   Created At
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }} className="sortable-header">
                   Last Updated At
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }} className="sortable-header"></th>
               </tr>
             </MDBTableHead>
             {loading ? (

@@ -7,7 +7,7 @@ import {
   MDBRow,
 } from "mdb-react-ui-kit";
 import React from "react";
-import { Lightbulb, Notifications, Warning } from "@mui/icons-material";
+import { Lightbulb, Notifications, Warning,HomeRepairService } from "@mui/icons-material";
 import "../../../assets/css/profile.css";
 import "../../../assets/css/ticketCustomer.css";
 import { Card, CardContent, Grid } from "@mui/material";
@@ -38,6 +38,10 @@ const HomeCustomer = () => {
 
   const handleOpenListTicket = () => {
     navigate(`/home/requestCustomerList`);
+  };
+
+  const handleOpenListContract = () => {
+    navigate(`/home/companyContractList`);
   };
 
   useEffect(() => {
@@ -101,6 +105,27 @@ const HomeCustomer = () => {
                       onClick={handleOpenSolutionTicket}
                     >
                       View Solution
+                    </MDBBtn>
+                  </MDBCol>
+                </div>
+              </MDBCard>
+            </MDBCol>
+            <MDBCol md="4">
+              <MDBCard className="mb-4 mb-md-0">
+                <div className="d-flex align-items-center custom-green-bg">
+                  <MDBCol md="3" className="red-bg custom-grey-bg text-center">
+                    <HomeRepairService style={{ fontSize: "100px", color: "white" }} />
+                  </MDBCol>
+                  <MDBCol md="9">
+                    <MDBCardText className="mb-4 custom-card-text">
+                      See Contract
+                      <div style={{ fontSize: "18px" }}>Service</div>
+                    </MDBCardText>
+                    <MDBBtn
+                      className="custom-green-btn"
+                      onClick={handleOpenListContract}
+                    >
+                      View Contract Service
                     </MDBBtn>
                   </MDBCol>
                 </div>
