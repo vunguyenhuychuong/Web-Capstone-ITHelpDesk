@@ -5,6 +5,7 @@ import "../../../assets/css/ticket.css";
 import { useEffect } from "react";
 import MuiAlert from "@mui/material/Alert";
 import { Snackbar } from "@mui/material";
+import { getAllCategories } from "../../../app/api/category";
 
 const CreateTeam = ({ onClose, onFetchDataTeam }) => {
   const [data, setData] = useState({
@@ -12,10 +13,12 @@ const CreateTeam = ({ onClose, onFetchDataTeam }) => {
     managerId: 1,
     location: "",
     description: "",
+    categoryId: 1,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dataManagers, setDataManagers] = useState([]);
+  const [dataCategories, setDataCategories] = useState([]);
   const [dataCity, setDataCity] = useState([]);
   const [open, setOpen] = useState(false);
 
@@ -51,6 +54,19 @@ const CreateTeam = ({ onClose, onFetchDataTeam }) => {
       console.log(error);
     }
   };
+  const fetchCategory = async () => {
+    try {
+      const fetchCategories = await getAllCategories();
+      setDataCategories(fetchCategories?.data);
+      setData((prevData) => ({
+        ...prevData,
+        categoryId: fetchCategories.data[0]?.id,
+      }));
+    } catch (error) {
+      console.log("Error while fetching data", error);
+    } finally {
+    }
+  };
 
   const fetchDataManagerList = async () => {
     try {
@@ -70,6 +86,7 @@ const CreateTeam = ({ onClose, onFetchDataTeam }) => {
   useEffect(() => {
     fetchDataManagerList();
     fetchDataCityList();
+    fetchCategory();
   }, []);
 
   const handleInputChange = (e) => {
@@ -172,6 +189,29 @@ const CreateTeam = ({ onClose, onFetchDataTeam }) => {
                   ?.map((manager) => (
                     <option key={manager.id} value={manager.id}>
                       {manager.lastName} {manager.firstName}
+                    </option>
+                  ))}
+              </select>
+            </MDBCol>
+            <MDBCol md="2" className="text-center mt-2 mb-2">
+              <label htmlFor="title" className="narrow-input">
+                <span style={{ color: "red" }}>*</span>Category
+              </label>
+            </MDBCol>
+            <MDBCol md="10">
+              <select
+                id="categoryId"
+                name="categoryId"
+                className="form-select"
+                value={data.categoryId}
+                onChange={handleInputChange}
+                style={{ marginTop: "10px" }}
+              >
+                {dataCategories
+                  .filter((cate) => cate.id !== "")
+                  ?.map((cate) => (
+                    <option key={cate.id} value={cate.id}>
+                      {cate.name}
                     </option>
                   ))}
               </select>

@@ -174,7 +174,7 @@ function Login() {
                 variant="h5"
                 sx={{ fontWeight: "bold", fontSize: "24px" }}
               >
-                Login Page
+                Login
               </Typography>
               <Box component="form" noValidate sx={{ mt: 1 }}>
                 <TextField

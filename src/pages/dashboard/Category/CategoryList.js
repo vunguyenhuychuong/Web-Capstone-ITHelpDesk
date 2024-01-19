@@ -202,7 +202,7 @@ const CategoryList = () => {
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
               <span style={{ color: "#FFFFFF" }}> All Categories</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
                 color="#eee"
                 style={{
@@ -281,11 +281,7 @@ const CategoryList = () => {
           </MDBTableBody>
         ) : (
           <>
-            <MDBTable
-              className="align-middle mb-0"
-              responsive
-              style={{ border: "0.05px solid #50545c" }}
-            >
+            <MDBTable className="align-middle mb-0" responsive>
               <MDBTableHead className="bg-light">
                 <tr style={{ fontSize: "1.2rem" }}>
                   <th style={{ fontWeight: "bold" }}>

@@ -59,7 +59,7 @@ export async function AddTeam(teamData) {
         Authorization: header,
       },
     });
-    toast.success("Create Mode successful", {
+    toast.success("Create team successfully", {
       autoClose: 1000,
       hideProgressBar: false,
     });

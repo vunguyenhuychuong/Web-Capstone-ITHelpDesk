@@ -172,6 +172,7 @@ const TeamDetail = () => {
       const res = await createTeamMemberAssign(editedData);
       if (res) {
         fetchTeamMemberList();
+        fetchSelectTeamMemberList();
       }
     } catch (error) {
       console.error("Error deleting company member:", error);
@@ -186,8 +187,11 @@ const TeamDetail = () => {
     );
     if (shouldDelete) {
       try {
-        await deleteTeamMember(memberId);
-        fetchTeamMemberList();
+        const res = await deleteTeamMember(memberId);
+        if (res) {
+          fetchTeamMemberList();
+          fetchSelectTeamMemberList();
+        }
       } catch (error) {
         console.error("Error deleting company member:", error);
       } finally {
@@ -238,6 +242,7 @@ const TeamDetail = () => {
           setSelectedMemberIds([]);
           toast.success("Selected memberes deleted successfully");
           fetchTeamMemberList();
+          fetchSelectTeamMemberList();
         }
       };
       deleteNextMember();
@@ -507,10 +512,10 @@ const TeamDetail = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {dataMember?.map((member) => {
-                  const isSelected = selectedMemberIds.includes(member.id);
+                {dataMember?.map((teamMember) => {
+                  const isSelected = selectedMemberIds.includes(teamMember.id);
                   return (
-                    <TableRow key={member.id}>
+                    <TableRow key={teamMember.id}>
                       <TableCell
                         sx={{
                           marginTop: "10px",
@@ -524,7 +529,7 @@ const TeamDetail = () => {
                           style={{ width: 10, height: 10 }}
                           type="checkbox"
                           checked={isSelected}
-                          onChange={() => handleSelectMember(member.id)}
+                          onChange={() => handleSelectMember(teamMember.id)}
                         />
                       </TableCell>
                       <TableCell
@@ -538,7 +543,7 @@ const TeamDetail = () => {
                       >
                         <img
                           src={
-                            member.avatarUrl ??
+                            teamMember?.member?.avatarUrl ??
                             "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
                           }
                           alt="Member Avatar"
@@ -553,7 +558,8 @@ const TeamDetail = () => {
                           textAlign: "center",
                         }}
                       >
-                        {member?.firstName} {member?.lastName}
+                        {teamMember?.member?.firstName}{" "}
+                        {teamMember?.member?.lastName}
                       </TableCell>
                       <TableCell
                         style={{
@@ -562,7 +568,7 @@ const TeamDetail = () => {
                           textAlign: "center",
                         }}
                       >
-                        {member?.email}
+                        {teamMember?.member?.email}
                       </TableCell>
                       <TableCell
                         style={{
@@ -572,7 +578,7 @@ const TeamDetail = () => {
                         }}
                       >
                         {" "}
-                        {member?.phoneNumber}
+                        {teamMember?.member?.phoneNumber}
                       </TableCell>
                       <TableCell
                         style={{
@@ -584,7 +590,7 @@ const TeamDetail = () => {
                         <IconButton
                           color="error"
                           onClick={() => {
-                            handleDeleteMember(member.id);
+                            handleDeleteMember(teamMember.id);
                           }}
                         >
                           <Delete />

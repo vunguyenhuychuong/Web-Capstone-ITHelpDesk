@@ -24,14 +24,14 @@ import { useSelector } from "react-redux";
 
 const CreateTicketSolution = () => {
   const navigate = useNavigate();
-  const user = useSelector((state) => state.auth);
-  const check = user.user.role;
+  const user = useSelector((state) => state.auth.user);
+  const userRole = user.role;
   const currentDate = Date.now();
   const [data, setData] = useState({
     title: "",
     content: "",
     categoryId: 1,
-    ownerId: 1,
+    ownerId: userRole === 3 ? Number.parseInt(user.id) : 1,
     reviewDate: currentDate,
     expiredDate: currentDate,
     keyword: "",
@@ -76,7 +76,7 @@ const CreateTicketSolution = () => {
   }, [dataCategories]);
 
   useEffect(() => {
-    if (dataUsers) {
+    if (dataUsers && userRole === 2) {
       setData((prevData) => ({
         ...prevData,
         ownerId: dataUsers.filter(
@@ -208,12 +208,12 @@ const CreateTicketSolution = () => {
         isPublic: data.isPublic,
         attachmentUrls: attachmentUrls,
       });
-      if (check === 3) {
+      if (userRole === 3) {
         navigate(`/home/homeTechnician`);
-      } else if (check === 2) {
+      } else if (userRole === 2) {
         navigate(`/home/homeManager`);
       } else {
-        console.warn("Unhandled user role:", check);
+        console.warn("Unhandled user role:", userRole);
       }
     } catch (error) {
       console.error(error);
@@ -236,12 +236,12 @@ const CreateTicketSolution = () => {
   };
 
   const handleGoBack = () => {
-    if (check === 2) {
+    if (userRole === 2) {
       navigate(`/home/homeManager`);
-    } else if (check === 3) {
+    } else if (userRole === 3) {
       navigate(`/home/homeTechnician`);
     } else {
-      console.warn("Unhandled user role:", check);
+      console.warn("Unhandled user role:", userRole);
     }
   };
 
@@ -424,41 +424,43 @@ const CreateTicketSolution = () => {
                   </Grid>
                 </Grid>
 
-                <Grid item xs={6}>
-                  <Grid container alignItems="center">
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        Solution Owner
-                      </h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <select
-                        id="ownerId"
-                        name="ownerId"
-                        className="form-select-custom"
-                        value={data.ownerId}
-                        onChange={handleInputChange}
-                      >
-                        {dataUsers
-                          .filter(
-                            (owner) => owner.role !== 0 && owner.role !== 1
-                          )
-                          ?.map((owner) => (
-                            <option key={owner.id} value={owner.id}>
-                              {owner.lastName} {owner.firstName}
-                            </option>
-                          ))}
-                      </select>
+                {userRole === 2 && (
+                  <Grid item xs={6}>
+                    <Grid container alignItems="center">
+                      <Grid item xs={6}>
+                        <h2
+                          className="align-right"
+                          style={{
+                            fontSize: "20px",
+                            fontWeight: "bold",
+                            textAlign: "right",
+                          }}
+                        >
+                          Solution Owner
+                        </h2>
+                      </Grid>
+                      <Grid item xs={5}>
+                        <select
+                          id="ownerId"
+                          name="ownerId"
+                          className="form-select-custom"
+                          value={data.ownerId}
+                          onChange={handleInputChange}
+                        >
+                          {dataUsers
+                            .filter(
+                              (owner) => owner.role !== 0 && owner.role !== 1
+                            )
+                            ?.map((owner) => (
+                              <option key={owner.id} value={owner.id}>
+                                {owner.lastName} {owner.firstName}
+                              </option>
+                            ))}
+                        </select>
+                      </Grid>
                     </Grid>
                   </Grid>
-                </Grid>
+                )}
               </Grid>
               <Grid container justifyContent="flex-end">
                 <Grid item xs={3}>
