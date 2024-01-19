@@ -43,6 +43,7 @@ import LastMonthChart from "./charts/LastMonthChart";
 import MonthChart from "./charts/MonthChart";
 import { Chart } from "primereact/chart";
 import { FaTicketAlt } from "react-icons/fa";
+import { formatCurrency } from "../../helpers/FormatCurrency";
 
 const ChartManager = () => {
   const [dataTotalDashBoard, setDataTotalDashBoard] = useState([]);
@@ -555,7 +556,7 @@ const ChartManager = () => {
                         variant="h5"
                         style={{ fontWeight: "bold", color: "#222222" }}
                       >
-                        {dataTotalDashBoard.totalPaymentOfDay} 
+                        {formatCurrency(dataTotalDashBoard.totalPaymentOfDay)}
                       </Typography>
                     </div>
                     <div
