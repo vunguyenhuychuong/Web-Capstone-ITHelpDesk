@@ -390,7 +390,7 @@ const CreateTicketSolution = () => {
               </Grid>
               <Grid
                 container
-                justifyContent="flex-end"
+                justifyContent="flex-start"
                 style={{ marginBottom: "20px" }}
               >
                 <Grid item xs={6}>

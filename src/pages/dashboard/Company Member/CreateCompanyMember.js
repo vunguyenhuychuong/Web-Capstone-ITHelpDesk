@@ -37,7 +37,7 @@ const CreateCompanyMember = () => {
       phoneNumber: "",
     },
     isCompanyAdmin: false,
-    memberPosition: "",
+    memberPosition: positionOptions[0].id,
     companyAddressId: 1,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
