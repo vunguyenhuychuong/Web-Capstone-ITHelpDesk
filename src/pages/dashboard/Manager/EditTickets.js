@@ -1019,7 +1019,6 @@ const EditTickets = () => {
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
                         <DateTimePicker
-                          disablePast
                           slotProps={{
                             textField: {
                               helperText: `${scheduledStartTime}`,
@@ -1052,7 +1051,6 @@ const EditTickets = () => {
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
                         <DateTimePicker
-                          disablePast
                           slotProps={{
                             textField: {
                               helperText: `${scheduledEndTime}`,

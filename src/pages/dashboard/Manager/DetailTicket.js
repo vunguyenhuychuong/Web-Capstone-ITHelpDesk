@@ -3,6 +3,7 @@ import { MDBCol, MDBRow, MDBTable, MDBTableBody } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
 import "../../../assets/css/EditTicket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import "draft-js/dist/Draft.css";
 import CategoryApi from "../../../app/api/category";
 import ModeApi from "../../../app/api/mode";
 import { FaTicketAlt } from "react-icons/fa";

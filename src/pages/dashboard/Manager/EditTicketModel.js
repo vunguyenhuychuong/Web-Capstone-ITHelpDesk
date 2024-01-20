@@ -288,7 +288,6 @@ const EditTicketModel = ({
           <MDBCol md="10" style={{ width: "auto" }}>
             <LocalizationProvider dateAdapter={AdapterMoment}>
               <DateTimePicker
-                disablePast
                 slotProps={{
                   textField: {
                     helperText: `${startDate}`,
@@ -315,7 +314,6 @@ const EditTicketModel = ({
           <MDBCol md="9">
             <LocalizationProvider dateAdapter={AdapterMoment}>
               <DateTimePicker
-                disablePast
                 slotProps={{
                   textField: {
                     helperText: `${endDate}`,

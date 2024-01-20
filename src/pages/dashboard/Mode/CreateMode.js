@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { MDBBtn, MDBCol, MDBContainer, MDBRow } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import "draft-js/dist/Draft.css";
 import { createMode } from "../../../app/api/mode";
 import { toast } from "react-toastify";
 
@@ -30,33 +32,33 @@ const CreateMode = ({ onClose, onSubmitSuccess }) => {
   };
 
   const handleSubmitMode = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const errors = {};
-    if (!data.name) {
-      errors.name = "Mode Name is required";
-    }
+  const errors = {};
+  if (!data.name) {
+    errors.name = "Mode Name is required";
+  }
 
-    if (!data.description) {
-      errors.description = "Description is required";
-    }
+  if (!data.description) {
+    errors.description = "Description is required";
+  }
 
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
-    }
+  if (Object.keys(errors).length > 0) {
+    setFieldErrors(errors);
+    return;
+  }
 
-    setIsSubmitting(true);
-    try {
-      await createMode(data);
-      setIsSubmitting(false);
-      onClose();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  setIsSubmitting(true);
+  try {
+    await createMode(data);
+    setIsSubmitting(false);
+    onClose();
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <section style={{ backgroundColor: "#eee" }}>
@@ -83,7 +85,7 @@ const CreateMode = ({ onClose, onSubmitSuccess }) => {
                 onChange={handleInputChange}
               />
               {fieldErrors.name && (
-                <div style={{ color: "red" }}>{fieldErrors.name}</div>
+                <div style={{ color: 'red' }}>{fieldErrors.name}</div>
               )}
             </MDBCol>
             <MDBCol md="2" className="text-center mt-2 mb-2">
@@ -101,7 +103,7 @@ const CreateMode = ({ onClose, onSubmitSuccess }) => {
                 onChange={handleInputChange}
               />
               {fieldErrors.description && (
-                <div style={{ color: "red" }}>{fieldErrors.description}</div>
+                <div style={{ color: 'red' }}>{fieldErrors.description}</div>
               )}
             </MDBCol>
           </MDBRow>

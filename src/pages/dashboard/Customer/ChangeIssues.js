@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { MDBBtn, MDBCol, MDBContainer, MDBRow } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import "draft-js/dist/Draft.css";
+
 import CategoryApi from "../../../app/api/category";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {

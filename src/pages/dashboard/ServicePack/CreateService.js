@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { MDBBtn, MDBCol, MDBContainer, MDBRow } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import "draft-js/dist/Draft.css";
 import { toast } from "react-toastify";
 import { createService } from "../../../app/api/service";
 

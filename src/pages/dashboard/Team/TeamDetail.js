@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import "draft-js/dist/Draft.css";
 import { ArrowBack, Delete } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 
