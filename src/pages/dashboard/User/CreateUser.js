@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import "draft-js/dist/Draft.css";
 import { useNavigate } from "react-router-dom";
 import {
   Dialog,
@@ -683,125 +682,82 @@ const CreateUser = () => {
                   </Grid>
                 )}  */}
               </Grid>
-              {data.role === 1 && (
-                <Grid
-                  container
-                  justifyContent="flex-end"
-                  style={{ marginBottom: "20px" }}
-                >
-                  <Grid item xs={6}>
-                    <Grid container>
-                      <Grid item xs={6}>
-                        <h2
-                          className="align-right"
-                          style={{
-                            fontSize: "20px",
-                            fontWeight: "bold",
-                            textAlign: "right",
-                          }}
-                        >
-                          <span style={{ color: "red" }}>*</span>Company
-                        </h2>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <select
-                          id="companyId"
-                          name="companyId"
-                          className="form-select-custom"
-                          value={data.companyId}
-                          onChange={handleInputChange}
-                        >
-                          {dataCompany
-                            .filter((company) => company.id !== "")
-                            .map((company) => (
-                              <option key={company.id} value={company.id}>
-                                {company.companyName}
-                              </option>
-                            ))}
-                        </select>
-                      </Grid>
-                    </Grid>
-                  </Grid>
 
-                  <Grid item xs={6}>
-                    <Grid container alignItems="center">
-                      <Grid item xs={6}>
-                        <h2
-                          className="align-right"
-                          style={{
-                            fontSize: "20px",
-                            fontWeight: "bold",
-                            textAlign: "right",
-                            marginBottom: "20px",
-                          }}
-                        >
-                          Brand Address
-                        </h2>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <select
-                          id="companyAddressId"
-                          name="companyAddressId"
-                          className="form-select-custom"
-                          value={data.companyAddressId}
-                          onChange={handleInputChange}
-                        >
-                          {dataDepartment &&
-                            dataDepartment
-                              .filter((department) => department.id !== "")
-                              .map((department) => (
-                                <option
-                                  key={department.id}
-                                  value={department.id}
-                                >
-                                  {department.address}
-                                </option>
-                              ))}
-                        </select>
-                      </Grid>
+              <Grid
+                container
+                justifyContent="flex-end"
+                style={{ marginBottom: "20px" }}
+              >
+                <Grid item xs={6}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        <span style={{ color: "red" }}>*</span>Company
+                      </h2>
                     </Grid>
-                  </Grid>
-
-                  <Grid item xs={6}>
-                    <Grid container alignItems="center">
-                      <Grid item xs={6}>
-                        <h2
-                          className="align-right"
-                          style={{
-                            fontSize: "20px",
-                            fontWeight: "bold",
-                            textAlign: "right",
-                            marginBottom: "40px",
-                          }}
-                        >
-                          Brand Address
-                        </h2>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <select
-                          id="companyAddressId"
-                          name="companyAddressId"
-                          className="form-select-custom"
-                          value={data.companyAddressId}
-                          onChange={handleInputChange}
-                        >
-                          {dataDepartment &&
-                            dataDepartment
-                              .filter((department) => department.id !== "")
-                              .map((department) => (
-                                <option
-                                  key={department.id}
-                                  value={department.id}
-                                >
-                                  {department.address}
-                                </option>
-                              ))}
-                        </select>
-                      </Grid>
+                    <Grid item xs={6}>
+                      <select
+                        id="companyId"
+                        name="companyId"
+                        className="form-select-custom"
+                        value={data.companyId}
+                        onChange={handleInputChange}
+                      >
+                        {dataCompany
+                          .filter((company) => company.id !== "")
+                          .map((company) => (
+                            <option key={company.id} value={company.id}>
+                              {company.companyName}
+                            </option>
+                          ))}
+                      </select>
                     </Grid>
                   </Grid>
                 </Grid>
-              )}
+
+                <Grid item xs={6}>
+                  <Grid container alignItems="center">
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                          marginBottom: "20px",
+                        }}
+                      >
+                        Company Address
+                      </h2>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <select
+                        id="companyAddressId"
+                        name="companyAddressId"
+                        className="form-select-custom"
+                        value={data.companyAddressId}
+                        onChange={handleInputChange}
+                      >
+                        {dataDepartment &&
+                          dataDepartment
+                            .filter((department) => department.id !== "")
+                            .map((department) => (
+                              <option key={department.id} value={department.id}>
+                                {department.address}
+                              </option>
+                            ))}
+                      </select>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
             </Grid>
           </MDBCol>
         </MDBRow>
