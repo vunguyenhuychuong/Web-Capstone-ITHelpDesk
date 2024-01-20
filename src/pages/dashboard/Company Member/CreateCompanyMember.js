@@ -14,7 +14,7 @@ import {
   Stack,
 } from "@mui/material";
 import { ArrowBack, Close } from "@mui/icons-material";
-import { genderOptions } from "../../helpers/tableComlumn";
+import { genderOptions, positionOptions } from "../../helpers/tableComlumn";
 import { createCompanyMember } from "../../../app/api/companyMember";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
@@ -204,7 +204,7 @@ const CreateCompanyMember = () => {
           avatarUrl: avatarUrl,
           phoneNumber: data.user.phoneNumber,
         },
-        isCompanyAdmin: data.isCompanyAdmin,
+        // isCompanyAdmin: data.isCompanyAdmin,
         memberPosition: data.memberPosition,
         companyAddressId: data.companyAddressId,
       });
@@ -560,7 +560,7 @@ const CreateCompanyMember = () => {
                       </h2>
                     </Grid>
                     <Grid item xs={6}>
-                      <input
+                      {/* <input
                         id="memberPosition"
                         type="text"
                         name="memberPosition"
@@ -569,12 +569,27 @@ const CreateCompanyMember = () => {
                         onChange={(e) =>
                           handleMemberPositionChange(e.target.value)
                         }
-                      />
+                      /> */}
+                      <select
+                        id="memberPosition"
+                        name="memberPosition"
+                        className="form-select-custom"
+                        value={data.memberPosition}
+                        onChange={handleInputChange}
+                      >
+                        {positionOptions
+                          .filter((position) => position.id !== "")
+                          .map((position) => (
+                            <option key={position.id} value={position.name}>
+                              {position.name}
+                            </option>
+                          ))}
+                      </select>
                     </Grid>
                   </Grid>
                 </Grid>
 
-                <Grid item xs={6}>
+                {/* <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
                       <h2
@@ -604,7 +619,7 @@ const CreateCompanyMember = () => {
                       </select>
                     </Grid>
                   </Grid>
-                </Grid>
+                </Grid> */}
               </Grid>
 
               <Grid

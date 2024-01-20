@@ -197,7 +197,7 @@ const CreateTicketSolution = () => {
       };
 
       setData(updatedData);
-      await createTicketSolution({
+      const res = await createTicketSolution({
         title: data.title,
         content: data.content,
         categoryId: data.categoryId,
@@ -208,13 +208,16 @@ const CreateTicketSolution = () => {
         isPublic: data.isPublic,
         attachmentUrls: attachmentUrls,
       });
-      if (userRole === 3) {
-        navigate(`/home/homeTechnician`);
-      } else if (userRole === 2) {
-        navigate(`/home/homeManager`);
-      } else {
-        console.warn("Unhandled user role:", userRole);
+      if (res) {
+        navigate(`/home/ticketSolution`);
       }
+      // if (userRole === 3) {
+      //   navigate(`/home/homeTechnician`);
+      // } else if (userRole === 2) {
+      //   navigate(`/home/homeManager`);
+      // } else {
+      //   console.warn("Unhandled user role:", userRole);
+      // }
     } catch (error) {
       console.error(error);
     } finally {

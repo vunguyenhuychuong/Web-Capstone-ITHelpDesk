@@ -193,12 +193,12 @@ const TicketTaskList = () => {
             <MDBRow className="border-box">
               <MDBCol md="8" className="mt-2">
                 <div className="d-flex align-items-center">
-                  <button type="button" className="btn btn-link icon-label">
+                  {/* <button type="button" className="btn btn-link icon-label">
                     <ArrowBack
                       onClick={() => handleGoBack()}
                       className="arrow-back-icon"
                     />
-                  </button>
+                  </button> */}
 
                   <div
                     style={{

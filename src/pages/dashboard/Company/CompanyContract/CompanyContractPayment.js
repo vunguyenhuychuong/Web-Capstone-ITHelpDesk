@@ -334,7 +334,7 @@ const CompanyContractPayment = ({ dataPayment }) => {
                       <TableCell component="th" className="fw-bold" scope="row">
                         Start Date
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell align="right" sx={{ fontWeight: "bold" }}>
                         {moment(payment.startDateOfPayment).format(
                           "MM/DD/YYYY hh:mm A"
                         )}
@@ -344,7 +344,7 @@ const CompanyContractPayment = ({ dataPayment }) => {
                       <TableCell component="th" className="fw-bold" scope="row">
                         End Date
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell align="right" sx={{ fontWeight: "bold" }}>
                         {moment(payment.endDateOfPayment).format(
                           "MM/DD/YYYY hh:mm A"
                         )}

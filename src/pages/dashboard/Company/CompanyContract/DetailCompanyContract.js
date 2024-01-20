@@ -158,7 +158,7 @@ const DetailCompanyContract = () => {
                   #{data.id} {data.name || "null Name"}
                 </span>
                 <span>
-                  Contract number:{" "}
+                  Contract number:
                   <span style={{ fontWeight: "bold" }}>
                     {data.contractNumber}
                   </span>

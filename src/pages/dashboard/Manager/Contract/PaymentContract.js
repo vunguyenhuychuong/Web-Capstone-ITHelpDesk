@@ -379,7 +379,7 @@ const PaymentContract = ({ dataPayment }) => {
                       <TableCell component="th" className="fw-bold" scope="row">
                         Start Date
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell align="right" style={{ fontWeight: "bold" }}>
                         {moment(payment.startDateOfPayment).format(
                           "MM/DD/YYYY hh:mm A"
                         )}
@@ -389,7 +389,7 @@ const PaymentContract = ({ dataPayment }) => {
                       <TableCell component="th" className="fw-bold" scope="row">
                         End Date
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell align="right" style={{ fontWeight: "bold" }}>
                         {moment(payment.endDateOfPayment).format(
                           "MM/DD/YYYY hh:mm A"
                         )}
@@ -491,7 +491,7 @@ const PaymentContract = ({ dataPayment }) => {
                 Delete payment
               </Button>
               <Button variant="outlined" onClick={handleClickOpen}>
-                Update payment
+                Edit payment
               </Button>
               <EditDialog
                 selectedValue={selectedValue}
@@ -653,10 +653,20 @@ function SimpleDialog(props) {
               <TextField
                 fullWidth
                 type="number"
+                InputProps={{
+                  inputProps: {
+                    min: 10,
+                  },
+                }}
                 name="daysAmountForPayment"
                 id="outlined-basic"
                 variant="outlined"
-                onChange={handleInputChange}
+                onChange={(e) => {
+                  var value = parseInt(e.target.value, 10);
+                  if (value < 0) e.target.value = 0;
+
+                  handleInputChange(e);
+                }}
               />
             </Grid>
             <Grid item className="w-100 pt-3">

@@ -8,10 +8,10 @@ import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { getServiceDetail, updateService } from "../../../app/api/service";
 
-const EditService = ({ onClose, serviceId, dataCategories }) => {
+const EditService = ({ onClose, serviceId, dataCategories, refetch }) => {
   const [data, setData] = useState({
     description: "",
-    categoryId: "",
+    categoryId: 1,
   });
 
   const [fieldErrors, setFieldErrors] = useState({
@@ -25,7 +25,7 @@ const EditService = ({ onClose, serviceId, dataCategories }) => {
         const result = await getServiceDetail(serviceId);
         setData({
           description: result.description,
-          categoryId: result.categoryId,
+          categoryId: result.categoryId ?? dataCategories[0].id,
         });
       } catch (error) {
         console.log(error);
@@ -76,6 +76,7 @@ const EditService = ({ onClose, serviceId, dataCategories }) => {
           autoClose: 1000,
           hideProgressBar: false,
         });
+        refetch();
       }
     } catch (error) {
       console.error(error);
@@ -111,7 +112,7 @@ const EditService = ({ onClose, serviceId, dataCategories }) => {
                   name="categoryId"
                   className="form-select"
                   onChange={(e) =>
-                    setData({ ...data, categoryId: e.target.value })
+                    setData({ ...data, categoryId: parseInt(e.target.value) })
                   }
                 >
                   {dataCategories.map((cate) => (

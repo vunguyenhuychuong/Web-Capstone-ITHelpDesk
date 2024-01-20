@@ -83,7 +83,7 @@ const CreateCompany = (props) => {
     setSelectedFile(file);
   };
 
-  const handleSubmitTicket = async (e) => {
+  const handleSubmitCompany = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
@@ -146,9 +146,8 @@ const CreateCompany = (props) => {
         console.log(response.data.responseException.exceptionMessage);
       } else {
         toast.success("Company created successfully");
+        navigate(`/home/companyDetail/${response.data?.id}`);
       }
-
-      toast.success("Company created successfully");
     } catch (error) {
       console.error(error);
     } finally {
@@ -494,7 +493,7 @@ const CreateCompany = (props) => {
               <button
                 type="button"
                 className="btn btn-primary custom-btn-margin"
-                onClick={handleSubmitTicket}
+                onClick={handleSubmitCompany}
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Submitting..." : "Create"}

@@ -88,7 +88,7 @@ const ServiceList = () => {
   useEffect(() => {
     fetchAllCategories();
     fetchAllService();
-  }, [fetchAllService]);
+  }, []);
 
   const handleChangePage = (event, value) => {
     setCurrentPage(value);
@@ -118,12 +118,10 @@ const ServiceList = () => {
   };
 
   const handleOpenCreateService = (e) => {
-    e.preventDefault();
     setDialogOpen(true);
   };
 
   const handleCloseService = (e) => {
-    e.preventDefault();
     setDialogOpen(false);
   };
 
@@ -138,18 +136,18 @@ const ServiceList = () => {
 
   const onDeleteService = async (id) => {
     const shouldDelete = window.confirm(
-      "Are you sure want to delete this mode"
+      "Are you sure want to delete this service"
     );
     if (shouldDelete) {
       try {
         const result = await deleteService(id);
         fetchAllService();
-        toast.success("Delete Service successful", result.message);
-        if (result.isError === false) {
-          toast.success(result.message);
-        } else {
-          toast.error(result.message);
-        }
+        toast.success("Delete Service successfully", result.message);
+        // if (result.isError === false) {
+        //   toast.success(result.message);
+        // } else {
+        //   toast.error(result.message);
+        // }
       } catch (error) {
         toast.error("Failed to delete Service. Please try again later");
       }
@@ -319,7 +317,7 @@ const ServiceList = () => {
                       <input type="checkbox" />
                     </td>
                     <td>{service.description}</td>
-                    <td>{getCategoryById(service.categoryId).name}</td>
+                    <td>{getCategoryById(service?.categoryId)?.name ?? ""}</td>
                     <td>{formatDate(service.createdAt || "-")}</td>
                     <td>{formatDate(service.modifiedAt || "-")}</td>
                     <td onClick={() => handleEditClick(service.id)}>
@@ -346,6 +344,7 @@ const ServiceList = () => {
       </MDBContainer>
       <Dialog open={dialogOpen} onClose={handleCloseService}>
         <CreateService
+          refetch={fetchAllService}
           onClose={handleCloseService}
           dataCategories={dataCategories}
         />
@@ -353,6 +352,7 @@ const ServiceList = () => {
 
       <Dialog open={dialogEdit} onClose={handleCloseEdit}>
         <EditService
+          refetch={fetchAllService}
           onClose={handleCloseEdit}
           serviceId={selectService}
           dataCategories={dataCategories}

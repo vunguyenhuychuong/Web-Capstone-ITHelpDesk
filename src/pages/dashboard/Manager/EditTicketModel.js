@@ -12,6 +12,7 @@ import { UpdateTicketForTechnician } from "../../../app/api/ticket";
 import moment from "moment";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { useEffect } from "react";
 
 const EditTicketModel = ({
   data,
@@ -26,17 +27,14 @@ const EditTicketModel = ({
     impact: data.impact ?? ImpactOptions[0].id,
     impactDetail: data.impactDetail || "",
     priority: data.priority,
-    scheduledStartTime:
-      data.scheduledStartTime ??
-      moment(Date.now()).format("YYYY-MM-DDTHH:mm:ss"),
-    scheduledEndTime:
-      data.scheduledEndTime ?? moment(Date.now()).format("YYYY-MM-DDTHH:mm:ss"),
+    scheduledStartTime: data.scheduledStartTime ?? Date.now(),
+    scheduledEndTime: data.scheduledEndTime ?? Date.now(),
     type: data.type ?? TypeOptions[0],
   });
-  console.log("data", data);
+  console.log("editedData", editedData);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [startDate, setStartDate] = useState(moment(data.scheduledStartTime));
-  const [endDate, setEndDate] = useState(moment(data.scheduledEndTime));
+  const [startDate, setStartDate] = useState(moment());
+  const [endDate, setEndDate] = useState(moment());
   const [fieldErrors, setFieldErrors] = useState({
     impactDetail: "",
     location: "",
@@ -129,6 +127,17 @@ const EditTicketModel = ({
       onClose();
     }
   };
+
+  useEffect(() => {
+    handleStartDateChange(
+      data.scheduledStartTime
+        ? moment(data.scheduledStartTime)
+        : moment(Date.now())
+    );
+    handleEndDateChange(
+      data.scheduledEndTime ? moment(data.scheduledEndTime) : moment(Date.now())
+    );
+  }, [data]);
 
   return (
     <Dialog fullWidth open={open} onClose={onClose}>
