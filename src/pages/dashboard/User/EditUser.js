@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import "draft-js/dist/Draft.css";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -13,6 +13,7 @@ import {
   FormGroup,
   Grid,
   IconButton,
+  Stack,
   Switch,
   Tooltip,
 } from "@mui/material";
@@ -257,12 +258,14 @@ const EditUser = () => {
           <MDBRow className="border-box">
             <MDBCol md="5" className="mt-2">
               <div className="d-flex align-items-center">
-                <button type="button" className="btn btn-link icon-label">
-                  <ArrowBack
-                    onClick={handleGoBack}
-                    className="arrow-back-icon"
-                  />
-                </button>
+                <Stack direction={"row"} alignItems={"center"}>
+                  <Button>
+                    <ArrowBack
+                      onClick={handleGoBack}
+                      style={{ color: "#0099FF" }}
+                    />
+                  </Button>
+                </Stack>
 
                 <div
                   style={{
@@ -430,7 +433,7 @@ const EditUser = () => {
                         value={data.phoneNumber}
                         onChange={handleInputChange}
                       />
-                       {fieldErrors.phoneNumber && (
+                      {fieldErrors.phoneNumber && (
                         <div style={{ color: "red" }}>
                           {fieldErrors.phoneNumber}
                         </div>
@@ -547,75 +550,6 @@ const EditUser = () => {
                   </Grid>
                 </Grid>
               </Grid>
-
-              <Grid
-                container
-                justifyContent="flex-end"
-                style={{ marginBottom: "20px" }}
-              >
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        <span style={{ color: "red" }}>*</span>Date Of Birth
-                      </h2>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <DatePicker
-                          required
-                          fullWidth
-                          value={date}
-                          maxDate={moment()}
-                          onChange={(newValue) => handleDateChange(newValue)}
-                        />
-                      </LocalizationProvider>
-                      {fieldErrors.dateOfBirth && (
-                        <div style={{ color: "red" }}>
-                          {fieldErrors.dateOfBirth}
-                        </div>
-                      )}
-                    </Grid>
-                  </Grid>
-                </Grid>
-
-                <Grid item xs={6}>
-                  <Grid container alignItems="center">
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                          marginBottom: "20px"
-                        }}
-                      >
-                        Address
-                      </h2>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <input
-                        id="address"
-                        type="text"
-                        name="address"
-                        className="form-control-text input-field"
-                        value={data.address}
-                        onChange={handleInputChange}
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-
-             
             </Grid>
           </MDBCol>
         </MDBRow>

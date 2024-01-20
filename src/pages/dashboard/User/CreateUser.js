@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import "draft-js/dist/Draft.css";
 import { useNavigate } from "react-router-dom";
 import {
   Dialog,
@@ -10,47 +9,38 @@ import {
   DialogTitle,
   Grid,
   IconButton,
-  TextField,
   Tooltip,
 } from "@mui/material";
 import { AddDataProfile } from "../../../app/api";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
-import {
-  ArrowBack,
-  Close,
-} from "@mui/icons-material";
+import { ArrowBack, Close } from "@mui/icons-material";
 import { genderOptions, roleOptions } from "../../helpers/tableComlumn";
-import moment from "moment";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { getAllCompanyList } from "../../../app/api/company";
 import { getAllDepartmentSelect } from "../../../app/api/department";
 
 const CreateUser = () => {
   const navigate = useNavigate();
   const [data, setData] = useState({
-    userModel: {
-      firstName: "",
-      lastName: "",
-      username: "",
-      password: "",
-      email: "",
-      role: 0,
-      gender: 0,
-      avatarUrl: "",
-      phoneNumber: "",
-      dateOfBirth: "",
+    firstName: "",
+    lastName: "",
+    username: "",
+    password: "",
+    email: "",
+    role: 0,
+    gender: 0,
+    avatarUrl: "",
+    phoneNumber: "",
+    companyDetail: {
+      companyId: 0,
+      companyAddressId: 0,
+      isCompanyAdmin: true,
     },
-    companyId: 0,
-    departmentId: 0,
-    isCompanyAdmin: true,
   });
   const [dataCompany, setDataCompany] = useState([]);
   const [dataDepartment, setDataDepartment] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [DateBirth, setDateBirth] = useState(moment());
   const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -87,30 +77,57 @@ const CreateUser = () => {
       try {
         const companyList = await getAllCompanyList();
         setDataCompany(companyList);
+        if (companyList.length > 0) {
+          setData((prevData) => ({
+            ...prevData,
+            companyId: companyList[0].id,
+          }));
+        }
       } catch (error) {
         console.log(error);
       }
     };
     fetchDataCreateUser();
+  }, []);
+
+  useEffect(() => {
+    if (data.companyId) {
+      fetchDepartmentsByCompany(data.companyId);
+    }
   }, [data.companyId]);
+
+  useEffect(() => {
+    if (dataDepartment && dataDepartment.length > 0) {
+      setData((prevData) => ({
+        ...prevData,
+        departmentId: dataDepartment[0].id,
+      }));
+    }
+  }, [dataDepartment]);
+
+  useEffect(() => {
+    if (data.companyId) {
+      fetchDepartmentsByCompany(data.companyId);
+    }
+  }, [data.companyId]);
+
+  useEffect(() => {
+    if (dataDepartment && dataDepartment.length > 0) {
+      setData((prevData) => ({
+        ...prevData,
+        companyDetail: {
+          ...prevData.companyDetail,
+          companyAddressId: dataDepartment[0].id,
+        },
+      }));
+    }
+  }, [dataDepartment]);
 
   const images = imagePreviewUrl.map((url, index) => ({
     original: url,
     thumbnail: url,
     description: `Attachment Preview ${index + 1}`,
   }));
-
-  const handleDateOfBirthChange = (newValue) => {
-    const formattedDateOfBirth = moment(newValue).format("YYYY-MM-DDTHH:mm:ss");
-
-    setData((prevInputs) => ({
-      ...prevInputs,
-      userModel: {
-        ...prevInputs.userModel,
-        dateOfBirth: formattedDateOfBirth,
-      },
-    }));
-  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -130,21 +147,23 @@ const CreateUser = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name in data.userModel) {
-      setData((prevData) => ({
-        ...prevData,
-        userModel: {
-          ...prevData.userModel,
-          [name]: name === "gender" ? parseInt(value, 10) : value,
-        },
-      }));
-    } else {
-      setData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
+
+    setData((prevData) => ({
+      ...prevData,
+      [name]: name === "gender" ? parseInt(value, 10) : value,
+      companyDetail: {
+        ...prevData.companyDetail,
+        [name]:
+          name === "isCompanyAdmin" ? value === "true" : parseInt(value, 10),
+      },
+    }));
+
+    if (name === "role") {
+      handleRoleChangeLogic(value);
     }
+
     setFieldErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+
     if (name === "email") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(value)) {
@@ -154,33 +173,43 @@ const CreateUser = () => {
         }));
       }
     }
+
     if (name === "username" && value.length < 6) {
       setFieldErrors((prevErrors) => ({
         ...prevErrors,
         username: "Username must be at least 6 characters",
       }));
     }
+
     if (name === "firstName" && value.length < 2) {
       setFieldErrors((prevErrors) => ({
         ...prevErrors,
         firstName: "First Name must be at least 2 characters",
       }));
     }
+
     if (name === "lastName" && value.length < 2) {
       setFieldErrors((prevErrors) => ({
         ...prevErrors,
         lastName: "Last Name must be at least 2 characters",
       }));
     }
+
     if (name === "companyId") {
       fetchDepartmentsByCompany(parseInt(value, 10));
     }
-    if (name === "phoneNumber" && value.length > 0) {
+
+    if (name === "phoneNumber") {
       const phoneRegex = /^\d{10}$/;
       if (!phoneRegex.test(value)) {
         setFieldErrors((prevErrors) => ({
           ...prevErrors,
           phoneNumber: "Invalid phone number",
+        }));
+      } else {
+        setFieldErrors((prevErrors) => ({
+          ...prevErrors,
+          phoneNumber: "",
         }));
       }
     }
@@ -189,21 +218,21 @@ const CreateUser = () => {
   const handleSubmitUser = async (e) => {
     e.preventDefault();
 
-    const companyId = parseInt(data.companyId, 10);
-    const departmentId = parseInt(data.departmentId, 10);
-    const role = parseInt(data.userModel.role, 10);
+    const companyId = parseInt(data.companyDetail.companyId, 10);
+    const companyAddressId = parseInt(data.companyDetail.companyAddressId, 10);
+    const role = parseInt(data.role, 10);
 
     const errors = {};
-    if (!data.userModel.firstName) {
+    if (!data.firstName) {
       errors.firstName = "First Name is required";
     }
-    if (!data.userModel.lastName) {
+    if (!data.lastName) {
       errors.userModel.lastName = "Last Name is required";
     }
-    if (!data.userModel.username) {
+    if (!data.username) {
       errors.username = "User Name is required";
     }
-    if (!data.userModel.email) {
+    if (!data.email) {
       errors.email = "Email  is required";
     }
     if (Object.keys(errors).length > 0) {
@@ -212,7 +241,7 @@ const CreateUser = () => {
     }
     setIsSubmitting(true);
     try {
-      let avatarUrl = data.userModel.avatarUrl;
+      let avatarUrl = data.avatarUrl;
       if (selectedFile) {
         const storage = getStorage();
         const storageRef = ref(storage, "images/" + selectedFile.name);
@@ -220,37 +249,23 @@ const CreateUser = () => {
         avatarUrl = await getDownloadURL(storageRef);
       }
 
-      const formattedDateOfBirth = moment(data.userModel.dateOfBirth).format(
-        "YYYY-MM-DDTHH:mm:ss"
-      );
       const updatedData = {
-        userModel: {
-          ...data.userModel,
-          avatarUrl: avatarUrl,
-          dateOfBirth: formattedDateOfBirth,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        username: data.username,
+        email: data.email,
+        role: role,
+        gender: data.gender,
+        avatarUrl: avatarUrl,
+        phoneNumber: data.phoneNumber,
+        companyDetail: {
+          companyId: companyId,
+          companyAddressId: companyAddressId,
+          // isCompanyAdmin: data.companyDetail.isCompanyAdmin,
         },
-        companyId: companyId,
-        departmentId: departmentId,
-        isCompanyAdmin: data.isCompanyAdmin,
       };
       setData(updatedData);
-      await AddDataProfile({
-        userModel: {
-          firstName: data.userModel.firstName,
-          lastName: data.userModel.lastName,
-          username: data.userModel.username,
-          password: data.userModel.password,
-          email: data.userModel.email,
-          role: role,
-          gender: data.userModel.gender,
-          avatarUrl: data.userModel.avatarUrl,
-          phoneNumber: data.userModel.phoneNumber,
-          dateOfBirth: data.userModel.dateOfBirth,
-        },
-        companyId: companyId,
-        departmentId: departmentId,
-        isCompanyAdmin: data.isCompanyAdmin,
-      });
+      await AddDataProfile(updatedData);
       navigate("/home/userList");
     } catch (error) {
       console.error(error);
@@ -259,13 +274,31 @@ const CreateUser = () => {
     }
   };
 
+  const handleRoleChangeLogic = (selectedRoleId) => {
+    const roleId = parseInt(selectedRoleId, 10);
+
+    console.log("Selected Role ID:", roleId);
+
+    if (roleId === 1) {
+      setData((prevData) => ({
+        ...prevData,
+        role: 1,
+      }));
+    } else {
+      setData((prevData) => ({
+        ...prevData,
+        isCompanyAdmin: false,
+      }));
+    }
+  };
+
   const handleGoBack = () => {
     const isFormFilled =
-      data.userModel.firstName.trim() !== "" ||
-      data.userModel.lastName.trim() !== "" ||
-      data.userModel.username.trim() !== "" ||
-      data.userModel.password.trim() !== "" ||
-      data.userModel.email.trim() !== "";
+      data.firstName.trim() !== "" ||
+      data.lastName.trim() !== "" ||
+      data.username.trim() !== "" ||
+      data.password.trim() !== "" ||
+      data.email.trim() !== "";
     if (isFormFilled) {
       const confirmLeave = window.confirm(
         "Are you sure you want to leave? Your changes may not be saved."
@@ -582,6 +615,76 @@ const CreateUser = () => {
 
               <Grid
                 container
+                justifyContent="flex-start"
+                style={{ marginBottom: "20px" }}
+              >
+                <Grid item xs={6}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Phone Number
+                      </h2>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <input
+                        id="phoneNumber"
+                        type="phoneNumber"
+                        name="phoneNumber"
+                        className="form-control-text input-field"
+                        value={data.phoneNumber}
+                        onChange={handleInputChange}
+                      />
+                      {fieldErrors.phoneNumber && (
+                        <div style={{ color: "red" }}>
+                          {fieldErrors.phoneNumber}
+                        </div>
+                      )}
+                    </Grid>
+                  </Grid>
+                </Grid>
+                {/* {data.role === 1 && (
+                <Grid item xs={6}>
+                  <Grid container alignItems="center">
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                          marginBottom: "0px",
+                        }}
+                      >
+                        <span style={{ color: "red" }}>*</span>CompanyAdmin
+                      </h2>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <select
+                        id="isCompanyAdmin"
+                        name="isCompanyAdmin"
+                        className="form-select-custom"
+                        value={data.isCompanyAdmin}
+                        onChange={(e) =>
+                          handleIsCompanyAdminChange(e.target.value === "true")
+                        }
+                      >
+                        <option value="true">True</option>
+                        <option value="false">False</option>
+                      </select>
+                    </Grid>
+                  </Grid>
+                )}  */}
+              </Grid>
+
+              <Grid
+                container
                 justifyContent="flex-end"
                 style={{ marginBottom: "20px" }}
               >
@@ -618,6 +721,7 @@ const CreateUser = () => {
                     </Grid>
                   </Grid>
                 </Grid>
+
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
@@ -627,56 +731,18 @@ const CreateUser = () => {
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                          marginBottom: "40px",
+                          marginBottom: "20px",
                         }}
                       >
-                        Phone Number
-                      </h2>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <input
-                        id="phoneNumber"
-                        type="phoneNumber"
-                        name="phoneNumber"
-                        className="form-control-text input-field"
-                        value={data.phoneNumber}
-                        onChange={handleInputChange}
-                      />
-                      {fieldErrors.phoneNumber && (
-                        <div style={{ color: "red" }}>
-                          {fieldErrors.phoneNumber}
-                        </div>
-                      )}
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-
-              <Grid
-                container
-                justifyContent="flex-end"
-                style={{ marginBottom: "20px" }}
-              >
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        <span style={{ color: "red" }}>*</span>Department
+                        Company Address
                       </h2>
                     </Grid>
                     <Grid item xs={6}>
                       <select
-                        id="departmentId"
-                        name="departmentId"
+                        id="companyAddressId"
+                        name="companyAddressId"
                         className="form-select-custom"
-                        value={data.departmentId}
+                        value={data.companyAddressId}
                         onChange={handleInputChange}
                       >
                         {dataDepartment &&
@@ -687,72 +753,6 @@ const CreateUser = () => {
                                 {department.address}
                               </option>
                             ))}
-                      </select>
-                    </Grid>
-                  </Grid>
-                </Grid>
-
-                <Grid item xs={6}>
-                  <Grid container alignItems="center">
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                          marginBottom: "40px",
-                        }}
-                      >
-                        Date Create
-                      </h2>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <DateTimePicker
-                          value={DateBirth}
-                          onChange={(newValue) =>
-                            handleDateOfBirthChange(newValue)
-                          }
-                          renderInput={(props) => <TextField {...props} />}
-                        />
-                      </LocalizationProvider>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-
-              <Grid
-                container
-                justifyContent="flex-end"
-                style={{ marginBottom: "20px" }}
-              >
-                <Grid item xs={6}>
-                  <Grid container alignItems="center">
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        CompanyAdmin
-                      </h2>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <select
-                        id="isCompanyAdmin"
-                        name="isCompanyAdmin"
-                        className="form-select-custom"
-                        value={data.isCompanyAdmin}
-                        onChange={(e) =>
-                          handleIsCompanyAdminChange(e.target.value === "true")
-                        }
-                      >
-                        <option value="true">True</option>
-                        <option value="false">False</option>
                       </select>
                     </Grid>
                   </Grid>

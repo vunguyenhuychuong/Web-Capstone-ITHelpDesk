@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
 import {
+  Checkbox,
   Dialog,
   DialogContent,
   DialogTitle,
+  FormControl,
   Grid,
   IconButton,
+  InputLabel,
+  ListItemText,
+  MenuItem,
+  OutlinedInput,
+  Select,
   TextField,
 } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
@@ -21,26 +28,34 @@ import {
   createContract,
   getAllAccountList,
   getAllCompanyList,
-  getParentContract,
 } from "../../../app/api/contract";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
+import { getAllService } from "../../../app/api/service";
+import { DatePicker } from "@mui/x-date-pickers";
+import { convertPriceToNumber, formatPrice } from "../../../utils/helper";
 
+const currentDate = new Date();
+currentDate.setHours(0, 0, 0, 0);
 const CreateContract = () => {
   const navigate = useNavigate();
   const [dataParentContract, setDataParentContract] = useState([]);
   const [dataAccountList, setDataAccountList] = useState([]);
   const [dataCompanyList, setDataCompanyList] = useState([]);
+  const [dataServiceList, setDataServiceList] = useState([]);
   const [data, setData] = useState({
+    contractNumber: "",
     name: "",
     description: "",
-    value: 1000,
-    startDate: "",  
+    value: formatPrice(10000),
+    startDate: moment(currentDate).format("YYYY-MM-DDTHH:mm:ss"),
     endDate: "",
     parentContractId: null,
-    accountantId: 1,
-    companyId: 1,
+    // accountantId: 1,
+    // companyId: 1,
+    duration: 3,
     attachmentUrls: [],
+    serviceIds: [],
   });
   const [selectedFile, setSelectedFile] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,12 +64,25 @@ const CreateContract = () => {
   const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
+    contractNumber: "",
     name: "",
     description: "",
     value: "",
   });
 
-  const images = imagePreviewUrl.map((url, index) => ({
+  // Dropdown service
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
+
+  const images = imagePreviewUrl?.map((url, index) => ({
     original: url,
     thumbnail: url,
     description: `Attachment Preview ${index + 1}`,
@@ -62,19 +90,28 @@ const CreateContract = () => {
 
   const fetchDataCreateContract = async () => {
     try {
-      const contractParent = await getParentContract();
-      const accountList = await getAllAccountList();
+      // const contractParent = await getParentContract();
+      // const accountList = await getAllAccountList();
       const companyList = await getAllCompanyList();
-      setDataParentContract(contractParent);
-      setDataAccountList(accountList);
+      const serviceList = await getAllService();
+      // setDataParentContract(contractParent);
+      // setDataAccountList(accountList);
       setDataCompanyList(companyList);
+      setDataServiceList(serviceList);
+      setData((prevInputs) => ({
+        ...prevInputs,
+        companyId: companyList[0].id,
+      }));
     } catch (error) {
       console.log(error);
     }
   };
 
   const handleStartDateChange = (newDate) => {
-    const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
+    const newDateWithHours = new Date(newDate).setHours(0, 0, 0, 0);
+    const formattedDate = moment(newDateWithHours).format(
+      "YYYY-MM-DDTHH:mm:ss"
+    );
     setStartDate(newDate);
     setData((prevInputs) => ({
       ...prevInputs,
@@ -93,7 +130,6 @@ const CreateContract = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
     if (
       name === "parentContractId" ||
       name === "accountantId" ||
@@ -102,14 +138,29 @@ const CreateContract = () => {
       const selectedValue = parseInt(value, 10);
       setData((prevData) => ({ ...prevData, [name]: selectedValue }));
     } else if (name === "value") {
-      const numericValue = parseInt(value);
-      if (numericValue >= 10000 && numericValue <= 99999999) {
-        setData((prevData) => ({ ...prevData, [name]: numericValue }));
-        setFieldErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+      if (value !== "") {
+        var numericValue = value.replace(/[^0-9]/g, "");
+
+        if (numericValue > 0) {
+          setData((prevData) => ({
+            ...prevData,
+            [name]: formatPrice(numericValue),
+          }));
+          setFieldErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+        } else {
+          setData((prevData) => ({
+            ...prevData,
+            [name]: formatPrice(numericValue),
+          }));
+          // setFieldErrors((prevErrors) => ({
+          //   ...prevErrors,
+          //   [name]: "Value must be between 10000 and 99999999",
+          // }));
+        }
       } else {
-        setFieldErrors((prevErrors) => ({
-          ...prevErrors,
-          [name]: "Value must be between 10000 and 99999999",
+        setData((prevData) => ({
+          ...prevData,
+          [name]: formatPrice(0),
         }));
       }
     } else {
@@ -155,10 +206,30 @@ const CreateContract = () => {
     return isBefore;
   };
 
+  const handleServiceListChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setData((prevInputs) => ({
+      ...prevInputs,
+      serviceIds: typeof value === "string" ? value.split(",") : value,
+    }));
+  };
+
+  const mapServiceDescriptionToId = () => {
+    const serviceIds = data.serviceIds?.map((service) => {
+      return dataServiceList.find((d) => d.description === service).id;
+    });
+    return serviceIds;
+  };
+
   const handleSubmitContract = async (e) => {
     e.preventDefault();
 
     const errors = {};
+    if (!data.contractNumber) {
+      errors.contractNumber = "Description contract is required";
+    }
     if (!data.name) {
       errors.name = "Name contract is required";
     }
@@ -171,16 +242,16 @@ const CreateContract = () => {
     }
 
     const isDataValid = validateDate(data.startDate, data.endDate);
-    if (!isDataValid) {
-      toast.info("Start Date must be earlier than End Date.", {
-        autoClose: 2000,
-        hideProgressBar: false,
-        position: toast.POSITION.TOP_CENTER,
-      });
-      return;
-    }
+    // if (!isDataValid) {
+    //   toast.info("Start Date must be earlier than End Date.", {
+    //     autoClose: 2000,
+    //     hideProgressBar: false,
+    //     position: toast.POSITION.TOP_CENTER,
+    //   });
+    //   return;
+    // }
 
-    const formattedReviewDate = moment(data.startDate).format(
+    const formattedStartDate = moment(data.startDate).format(
       "YYYY-MM-DDTHH:mm:ss"
     );
     const formattedExpiredDate = moment(data.endDate).format(
@@ -188,13 +259,14 @@ const CreateContract = () => {
     );
 
     setIsSubmitting(true);
+    mapServiceDescriptionToId();
     try {
-      let attachmentUrls = data.attachmentUrls || []; 
+      let attachmentUrls = data.attachmentUrls || [];
       if (selectedFile.length > 0) {
         const storage = getStorage();
         const promises = [];
 
-        for(let i = 0; i < selectedFile.length; i++) {
+        for (let i = 0; i < selectedFile.length; i++) {
           const file = selectedFile[i];
           const storageRef = ref(storage, `images/${file.name}`);
           await uploadBytes(storageRef, file);
@@ -207,23 +279,26 @@ const CreateContract = () => {
       const updatedData = {
         ...data,
         attachmentUrls: attachmentUrls,
-        startDate: formattedReviewDate,
-        endDate: formattedExpiredDate,
+        startDate: formattedStartDate,
+        // endDate: formattedExpiredDate,
       };
 
       setData(updatedData);
-      await createContract({
+      const res = await createContract({
+        contractNumber: data.contractNumber,
         name: data.name,
         description: data.description,
-        value: data.value,
-        startDate: formattedReviewDate,
-        endDate: formattedExpiredDate,
-        parentContractId: data.parentContractId,
-        accountantId: data.accountantId,
+        value: convertPriceToNumber(data.value),
+        startDate: formattedStartDate,
+        // endDate: formattedExpiredDate,
         companyId: data.companyId,
         attachmentUrls: attachmentUrls,
+        duration: data.duration,
+        serviceIds: mapServiceDescriptionToId(),
       });
-      navigate("/home/contractList")
+      if (res) {
+        navigate("/home/contractList");
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -304,6 +379,33 @@ const CreateContract = () => {
                     textAlign: "right",
                   }}
                 >
+                  <span style={{ color: "red" }}>*</span>Contract Number
+                </h2>
+              </Grid>
+              <Grid item xs={9}>
+                <input
+                  id="contractNumber"
+                  type="text"
+                  name="contractNumber"
+                  className="form-control-text input-field"
+                  value={data.contractNumber}
+                  onChange={handleInputChange}
+                />
+                {fieldErrors.contractNumber && (
+                  <div style={{ color: "red" }}>
+                    {fieldErrors.contractNumber}
+                  </div>
+                )}
+              </Grid>
+              <Grid item xs={3}>
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
                   <span style={{ color: "red" }}>*</span>Name
                 </h2>
               </Grid>
@@ -367,7 +469,7 @@ const CreateContract = () => {
                   multiple
                   onChange={handleFileChange}
                 />
-                {imagePreviewUrl && (
+                {imagePreviewUrl.length > 0 && (
                   <div
                     className="image-preview"
                     onClick={() => setIsImagePreviewOpen(true)}
@@ -378,11 +480,86 @@ const CreateContract = () => {
                   </div>
                 )}
               </Grid>
+              <Grid item xs={3}>
+                <h2
+                  className="align-right"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                  }}
+                >
+                  Services{" "}
+                </h2>
+              </Grid>
+              <Grid item xs={9}>
+                <FormControl style={{ width: "100%" }}>
+                  <InputLabel id="demo-multiple-checkbox-label">
+                    Services
+                  </InputLabel>
+                  <Select
+                    labelId="demo-multiple-checkbox-label"
+                    id="demo-multiple-checkbox"
+                    multiple
+                    value={data.serviceIds}
+                    onChange={handleServiceListChange}
+                    input={<OutlinedInput label="Services" />}
+                    renderValue={(selected) => selected.join(", ")}
+                    MenuProps={MenuProps}
+                    className={{ width: "100%" }}
+                  >
+                    {dataServiceList?.map((name) => (
+                      <MenuItem key={name.id} value={name.description}>
+                        <Checkbox
+                          checked={
+                            data.serviceIds.indexOf(name.description) > -1
+                          }
+                        />
+                        <ListItemText
+                          primary={name.description}
+                          className="text-wrap"
+                        />
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
               <Grid
                 container
                 justifyContent="flex-end"
-                style={{ marginBottom: "20px" }}
+                style={{ marginBottom: "20px", marginTop: "20px" }}
               >
+                <Grid item xs={6}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        <span style={{ color: "red" }}>*</span>Duration
+                      </h2>
+                    </Grid>
+                    <Grid item xs={5}>
+                      <select
+                        id="duration"
+                        name="duration"
+                        className="form-select-custom"
+                        value={data.duration}
+                        onChange={handleInputChange}
+                      >
+                        <option value={3}>3 months</option>
+                        <option value={6}>6 months</option>
+                        <option value={12}>12 months</option>
+                        <option value={24}>24 months</option>
+                      </select>
+                    </Grid>
+                  </Grid>
+                </Grid>
+
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
@@ -413,7 +590,7 @@ const CreateContract = () => {
                   </Grid>
                 </Grid>
 
-                <Grid item xs={6}>
+                {/* <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
                       <h2
@@ -438,7 +615,7 @@ const CreateContract = () => {
                         <option value="">Select Parent Contract</option>
                         {dataParentContract
                           .filter((parentContract) => parentContract.id !== "")
-                          .map((parentContract) => (
+                          ?.map((parentContract) => (
                             <option
                               key={parentContract.id}
                               value={parentContract.id}
@@ -449,7 +626,7 @@ const CreateContract = () => {
                       </select>
                     </Grid>
                   </Grid>
-                </Grid>
+                </Grid> */}
               </Grid>
               <Grid container justifyContent="flex-end">
                 <Grid item xs={6}>
@@ -468,7 +645,7 @@ const CreateContract = () => {
                     </Grid>
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <DateTimePicker
+                        <DatePicker
                           slotProps={{
                             textField: {
                               helperText: `${startDate}`,
@@ -479,12 +656,13 @@ const CreateContract = () => {
                             handleStartDateChange(newValue)
                           }
                           renderInput={(props) => <TextField {...props} />}
+                          disablePast
                         />
                       </LocalizationProvider>
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item xs={6}>
+                {/* <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
                       <h2
@@ -512,47 +690,7 @@ const CreateContract = () => {
                       </LocalizationProvider>
                     </Grid>
                   </Grid>
-                </Grid>
-              </Grid>
-              <Grid
-                container
-                justifyContent="flex-end"
-                style={{ marginBottom: "20px" }}
-              >
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        <span style={{ color: "red" }}>*</span>Accountant
-                      </h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <select
-                        id="accountantId"
-                        name="accountantId"
-                        className="form-select-custom"
-                        value={data.accountantId}
-                        onChange={handleInputChange}
-                      >
-                        {dataAccountList
-                          .filter((accountant) => accountant.id !== "")
-                          .map((accountant) => (
-                            <option key={accountant.id} value={accountant.id}>
-                              {accountant.lastName} {accountant.firstName}
-                            </option>
-                          ))}
-                      </select>
-                    </Grid>
-                  </Grid>
-                </Grid>
-
+                </Grid> */}
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
@@ -577,7 +715,7 @@ const CreateContract = () => {
                       >
                         {dataCompanyList
                           .filter((company) => company.id !== "")
-                          .map((company) => (
+                          ?.map((company) => (
                             <option key={company.id} value={company.id}>
                               {company.companyName}
                             </option>
@@ -586,6 +724,45 @@ const CreateContract = () => {
                     </Grid>
                   </Grid>
                 </Grid>
+              </Grid>
+              <Grid
+                container
+                justifyContent="flex-end"
+                style={{ marginBottom: "20px" }}
+              >
+                {/* <Grid item xs={6}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        <span style={{ color: "red" }}>*</span>Accountant
+                      </h2>
+                    </Grid>
+                    <Grid item xs={5}>
+                      <select
+                        id="accountantId"
+                        name="accountantId"
+                        className="form-select-custom"
+                        value={data.accountantId}
+                        onChange={handleInputChange}
+                      >
+                        {dataAccountList
+                          .filter((accountant) => accountant.id !== "")
+                          ?.map((accountant) => (
+                            <option key={accountant.id} value={accountant.id}>
+                              {accountant.lastName} {accountant.firstName}
+                            </option>
+                          ))}
+                      </select>
+                    </Grid>
+                  </Grid>
+                </Grid> */}
               </Grid>
             </Grid>
           </MDBCol>
@@ -601,7 +778,7 @@ const CreateContract = () => {
                   onClick={handleSubmitContract}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Submitting..." : "Save"}
+                  {isSubmitting ? "Submitting..." : "Create"}
                 </button>
                 <button
                   type="button"

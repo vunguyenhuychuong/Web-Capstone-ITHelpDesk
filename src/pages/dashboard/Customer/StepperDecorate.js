@@ -4,7 +4,7 @@ import {
   stepConnectorClasses,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { Info, SendTimeExtension, Settings } from "@mui/icons-material";
+import { Info, Pending, SendTimeExtension } from "@mui/icons-material";
 import PropTypes from "prop-types";
 
 export const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
@@ -55,9 +55,9 @@ export function ColorlibStepIcon(props) {
   const { active, completed, className } = props;
 
   const icons = {
-    1: <Settings />,
-    2: <Info />,
-    3: <SendTimeExtension />,
+    1: <Info />,
+    2: <SendTimeExtension />,
+    3: <Pending />,
   };
 
   return (

@@ -3,7 +3,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 10px;
   gap: 10px;
   border: 2px dashed #ccc;
   border-radius: 4px;
@@ -16,12 +16,12 @@
 }
 
 .upload-progress {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%; /* Set the progress bar width to 100% */
-  }
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%; /* Set the progress bar width to 100% */
+}
 
 .upload-content span {
-    color: #007bff; /* Set the desired color for the text inside the span element */
-  }
+  color: #007bff; /* Set the desired color for the text inside the span element */
+}

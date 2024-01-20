@@ -17,11 +17,18 @@ import {
 import { useState } from "react";
 import { useEffect } from "react";
 import { getAllUserActiveService } from "../../../../app/api/service";
-import { Close,CloudUpload } from "@mui/icons-material";
+import { Close, CloudUpload } from "@mui/icons-material";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 
-const Step1 = ({ data, handleInputChange,handleFileChange,imagePreviewUrl,isImagePreviewOpen,setIsImagePreviewOpen}) => {
+const Step1 = ({
+  data,
+  handleInputChange,
+  handleFileChange,
+  imagePreviewUrl,
+  isImagePreviewOpen,
+  setIsImagePreviewOpen,
+}) => {
   const [dataService, setDataServices] = useState([]);
   const [selectedFileName, setSelectedFileNames] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(
@@ -61,8 +68,8 @@ const Step1 = ({ data, handleInputChange,handleFileChange,imagePreviewUrl,isImag
             label="Service"
           >
             {dataService
-              .filter((service) => service.id !== "") 
-              .map((service) => (
+              ?.filter((service) => service.id !== "")
+              ?.map((service) => (
                 <MenuItem key={service.id} value={service.id}>
                   {service.description}
                 </MenuItem>
@@ -175,7 +182,7 @@ const Step1 = ({ data, handleInputChange,handleFileChange,imagePreviewUrl,isImag
           )}
         </FormControl>
       </Tooltip>
-    
+
       <Dialog
         open={isImagePreviewOpen}
         onClose={() => setIsImagePreviewOpen(false)}

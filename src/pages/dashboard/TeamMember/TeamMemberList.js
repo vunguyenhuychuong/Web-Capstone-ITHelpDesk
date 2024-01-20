@@ -21,6 +21,7 @@ import { Box } from "@mui/system";
 import { getAllTeamMember } from "../../../app/api/teamMember";
 import { useNavigate } from "react-router-dom";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
+import CircularLoading from "../../../components/iconify/CircularLoading";
 
 const TeamMemberList = () => {
   const [dataTeamMembers, setDataTeamMembers] = useState([]);
@@ -42,7 +43,7 @@ const TeamMemberList = () => {
         filter = `title="${encodeURIComponent(searchQuery)}"`;
       }
 
-      const mode = await getAllTeamMember(
+      const response = await getAllTeamMember(
         searchField,
         searchQuery,
         currentPage,
@@ -50,7 +51,8 @@ const TeamMemberList = () => {
         sortBy,
         sortDirection
       );
-      setDataTeamMembers(mode);
+      setDataTeamMembers(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.error(error);
     }
@@ -66,7 +68,7 @@ const TeamMemberList = () => {
   };
 
   const handleSelectAllTeamMembers = () => {
-    if (selectedTeamMembers.length === dataTeamMembers.length) {
+    if (selectedTeamMembers?.length === dataTeamMembers?.length) {
       setSelectedTeamMember([]);
     } else {
       setSelectedTeamMember(dataTeamMembers.map((mode) => mode.id));
@@ -78,44 +80,49 @@ const TeamMemberList = () => {
   };
 
   const handleDeleteSelectedTeamMember = async (id) => {
-    try {
-      if (selectedTeamMembers.length === 0) {
-        return;
-      }
-      const deletePromises = selectedTeamMembers.map(async (teamId) => {
-        try {
-          const res = await Promise.resolve(deleteMode(teamId));
-          if (res.isError) {
+    const shouldDelete = window.confirm(
+      "Are you sure want to delete selected team members"
+    );
+    if (shouldDelete) {
+      try {
+        if (selectedTeamMembers?.length === 0) {
+          return;
+        }
+        const deletePromises = selectedTeamMembers.map(async (teamId) => {
+          try {
+            const res = await Promise.resolve(deleteMode(teamId));
+            if (res.isError) {
+              throw new Error(
+                `Error deleting team member with ID ${teamId}: ${res.message}`
+              );
+            }
+            return teamId;
+          } catch (error) {
             throw new Error(
-              `Error deleting team member with ID ${teamId}: ${res.message}`
+              `Error deleting team member with ID ${teamId}: ${error.message}`
             );
           }
-          return teamId;
-        } catch (error) {
-          throw new Error(
-            `Error deleting team member with ID ${teamId}: ${error.message}`
-          );
-        }
-      });
+        });
 
-      const results = await Promise.allSettled(deletePromises);
+        const results = await Promise.allSettled(deletePromises);
 
-      const successfulDeletes = [];
-      results.forEach((result) => {
-        if (result.status === "fulfilled") {
-          successfulDeletes.push(result.value);
-        } else {
-          toast.error(result.reason.message);
-        }
-      });
-      const updateModes = dataTeamMembers.filter(
-        (mode) => !successfulDeletes.includes(mode.id)
-      );
-      setDataTeamMembers(updateModes);
-      setSelectTeam([]);
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to delete selected modes, Please try again later");
+        const successfulDeletes = [];
+        results.forEach((result) => {
+          if (result.status === "fulfilled") {
+            successfulDeletes.push(result.value);
+          } else {
+            toast.error(result.reason.message);
+          }
+        });
+        const updateModes = dataTeamMembers.filter(
+          (mode) => !successfulDeletes.includes(mode.id)
+        );
+        setDataTeamMembers(updateModes);
+        setSelectTeam([]);
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to delete selected modes, Please try again later");
+      }
     }
   };
 
@@ -135,7 +142,6 @@ const TeamMemberList = () => {
 
   useEffect(() => {
     fetchAllTeamMember();
-    setTotalPages(4);
     setIsLoading(false);
   }, [fetchAllTeamMember]);
 
@@ -147,21 +153,29 @@ const TeamMemberList = () => {
       >
         <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
-            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "16px" }}>
+            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
-              <span style={{ color: "#FFFFFF" }}> All TeamMember</span>
+              <span style={{ color: "#FFFFFF" }}> All Team Members</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  color: "#FFFFFF",
+                }}
                 onClick={() => handleOpenCreateTeamMember()}
               >
                 <FaPlus /> New
               </MDBBtn>
               <MDBBtn
                 color="eee"
-                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  color: "#FFFFFF",
+                }}
                 onClick={handleDeleteSelectedTeamMember}
               >
                 <Delete /> Delete
@@ -213,7 +227,13 @@ const TeamMemberList = () => {
           </MDBContainer>
         </MDBNavbar>
         {isLoading ? (
-          <CustomizedProgressBars />
+          <MDBTableBody className="bg-light">
+            <tr>
+              <td>
+                <CircularLoading />
+              </td>
+            </tr>
+          </MDBTableBody>
         ) : (
           <>
             <MDBTable
@@ -233,7 +253,7 @@ const TeamMemberList = () => {
                     />
                   </th>
                   <th style={{ fontWeight: "bold" }}>Edit</th>
-                  <th style={{ fontWeight: "bold" }}>ID</th>
+                  {/* <th style={{ fontWeight: "bold" }}>ID</th> */}
                   <th style={{ fontWeight: "bold" }}>Member ID</th>
                   <th style={{ fontWeight: "bold" }}>Expertises</th>
                   <th style={{ fontWeight: "bold" }}>Create Time</th>
@@ -241,7 +261,7 @@ const TeamMemberList = () => {
                 </tr>
               </MDBTableHead>
               <MDBTableBody className="bg-light">
-                {dataTeamMembers.map((teamMember, index) => {
+                {dataTeamMembers?.map((teamMember, index) => {
                   const isSelected = selectedTeamMembers.includes(
                     teamMember.id
                   );
@@ -261,7 +281,7 @@ const TeamMemberList = () => {
                           }
                         />
                       </td>
-                      <td>{teamMember.id}</td>
+                      {/* <td>{teamMember.id}</td> */}
                       <td>{teamMember.memberId}</td>
                       <td>{teamMember.expertises}</td>
                       <td>{formatDate(teamMember.createdAt || "-")}</td>

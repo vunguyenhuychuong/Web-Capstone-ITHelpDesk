@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Grid } from "@mui/material";
+import { Button, Grid, Stack } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack } from "@mui/icons-material";
 import { toast } from "react-toastify";
@@ -8,7 +8,7 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { createTicketByCustomer } from "../../../app/api/ticket";
 import CustomizedSteppers from "./CustomizedSteppers";
 import { useNavigate } from "react-router-dom";
-import { getAllUserActiveService } from "../../../app/api/service";
+import { useSelector } from "react-redux";
 
 const RequestIssue = () => {
   const [data, setData] = useState({
@@ -17,27 +17,13 @@ const RequestIssue = () => {
     serviceId: 1,
     attachmentUrls: [],
   });
-
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [dataService, setDataServices] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
+  const [activeStep, setActiveStep] = React.useState(0);
+  const user = useSelector((store) => store.auth.user);
   const navigate = useNavigate();
-
-  const fetchService = async () => {
-    try {
-      const response = await getAllUserActiveService();
-      setDataServices(response);
-    } catch (error) {
-      console.log("Error while fetching data", error);
-    } finally {
-    }
-  };
-
-  useEffect(() => {
-    fetchService();
-  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target || e;
@@ -85,8 +71,6 @@ const RequestIssue = () => {
     setIsImagePreviewOpen(true);
   };
 
-  
-
   const handleSubmitTicket = async (e) => {
     e.preventDefault();
 
@@ -96,7 +80,7 @@ const RequestIssue = () => {
     }
     let attachmentUrls = data.attachmentUrls;
 
-    if(selectedFiles.length > 0) {
+    if (selectedFiles.length > 0) {
       const storage = getStorage();
       for (let i = 0; i < selectedFiles.length; i++) {
         const file = selectedFiles[i];
@@ -147,12 +131,14 @@ const RequestIssue = () => {
           <MDBRow className="border-box">
             <MDBCol md="5" className="mt-2">
               <div className="d-flex align-items-center">
-                <button type="button" className="btn btn-link icon-label">
-                  <ArrowBack
-                    onClick={handleGoBack}
-                    className="arrow-back-icon"
-                  />
-                </button>
+                <Stack direction={"row"} alignItems={"center"}>
+                  <Button>
+                    <ArrowBack
+                      onClick={handleGoBack}
+                      style={{ color: "#0099FF" }}
+                    />
+                  </Button>
+                </Stack>
 
                 <div
                   style={{
@@ -181,39 +167,42 @@ const RequestIssue = () => {
         <MDBRow className="mb-4" style={{ marginTop: "20px" }}>
           <CustomizedSteppers
             data={data}
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
             handleInputChange={handleInputChange}
             handleFileChange={handleFileChange}
             handleSubmitTicket={handleSubmitTicket}
             imagePreviewUrl={imagePreviewUrl}
             isImagePreviewOpen={isImagePreviewOpen}
             setIsImagePreviewOpen={setIsImagePreviewOpen}
+            isSubmitting={isSubmitting}
           />
         </MDBRow>
-        <MDBCol md="12">
-          <MDBRow className="border-box">
-            <MDBCol md="12" className="mt-2 mb-2">
-              <div className="d-flex justify-content-center align-items-center">
-                <button
-                  type="button"
-                  className="btn btn-primary custom-btn-margin"
-                  onClick={handleSubmitTicket}
-                  disabled={isSubmitting}
-                >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary custom-btn-margin"
-                >
-                  Cancel
-                </button>
-              </div>
-            </MDBCol>
-          </MDBRow>
-        </MDBCol>
+        {/* {activeStep === 1 && (
+          <MDBCol md="12">
+            <MDBRow className="border-box">
+              <MDBCol md="12" className="mt-2 mb-2">
+                <div className="d-flex justify-content-center align-items-center">
+                  <button
+                    type="button"
+                    className="btn btn-primary custom-btn-margin"
+                    onClick={handleSubmitTicket}
+                    disabled={isSubmitting}
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary custom-btn-margin"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </MDBCol>
+            </MDBRow>
+          </MDBCol>
+        )} */}
       </Grid>
-
-      
     </Grid>
   );
 };

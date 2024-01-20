@@ -3,22 +3,19 @@ import { MDBBtn, MDBCol, MDBContainer, MDBRow } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
 import "../../../assets/css/EditTicket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import "draft-js/dist/Draft.css";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { getServiceDetail, updateService } from "../../../app/api/service";
 
-const EditService = ({ onClose, serviceId }) => {
+const EditService = ({ onClose, serviceId, dataCategories, refetch }) => {
   const [data, setData] = useState({
     description: "",
-    type: "",
-    amount: "",
+    categoryId: 1,
   });
 
   const [fieldErrors, setFieldErrors] = useState({
     type: "",
-    description: "",
-    amount: "",
+    categoryId: "",
   });
 
   useEffect(() => {
@@ -27,8 +24,7 @@ const EditService = ({ onClose, serviceId }) => {
         const result = await getServiceDetail(serviceId);
         setData({
           description: result.description,
-          type: result.type,
-          amount: result.amount,
+          categoryId: result.categoryId ?? dataCategories[0].id,
         });
       } catch (error) {
         console.log(error);
@@ -42,8 +38,6 @@ const EditService = ({ onClose, serviceId }) => {
   const handleCancelEdit = () => {
     onClose();
   };
-  
-  
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -63,28 +57,32 @@ const EditService = ({ onClose, serviceId }) => {
 
     const errors = {
       description: !data.description ? "Description is required" : "",
-      type: !data.type ? "Type is required" : "",
-      amount: !data.amount ? "Amount is required" : "",
-      ...validateAmount(data.amount),
+      categoryId: !data.categoryId ? "Category is required" : "",
     };
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
-    }
+
+    // if (Object.values(errors).length > 0) {
+    //   setFieldErrors(errors);
+    //   return;
+    // }
 
     setFieldErrors({});
     setIsSubmitting(true);
     try {
-      await updateService(serviceId, data);
-      setIsSubmitting(false);
-      toast.success("Update Mode successful", {
-        autoClose: 1000,
-        hideProgressBar: false,
-      });
-      onClose();
+      const res = await updateService(serviceId, data);
+
+      if (res) {
+        toast.success("Update service successfully", {
+          autoClose: 1000,
+          hideProgressBar: false,
+        });
+        refetch();
+      }
     } catch (error) {
       console.error(error);
       setIsSubmitting(false);
+    } finally {
+      setIsSubmitting(false);
+      onClose();
     }
   };
 
@@ -102,6 +100,30 @@ const EditService = ({ onClose, serviceId }) => {
         <form onSubmit={(e) => e.preventDefault()}>
           <MDBRow className="mb-4">
             <MDBRow className="mb-4">
+              <MDBCol md="2" className="text-center mt-2 mb-4">
+                <label htmlFor="title" className="narrow-input">
+                  Category
+                </label>
+              </MDBCol>
+              <MDBCol md="10">
+                <select
+                  id="categoryId"
+                  name="categoryId"
+                  className="form-select"
+                  onChange={(e) =>
+                    setData({ ...data, categoryId: parseInt(e.target.value) })
+                  }
+                >
+                  {dataCategories.map((cate) => (
+                    <option key={cate.id} value={cate.id}>
+                      {cate.name}
+                    </option>
+                  ))}
+                </select>
+                {fieldErrors.type && (
+                  <div style={{ color: "red" }}>{fieldErrors.category}</div>
+                )}
+              </MDBCol>
               <MDBCol md="2" className="text-center mt-2">
                 <label htmlFor="title" className="narrow-input">
                   Description
@@ -120,49 +142,6 @@ const EditService = ({ onClose, serviceId }) => {
                 />
                 {fieldErrors.description && (
                   <div style={{ color: "red" }}>{fieldErrors.description}</div>
-                )}
-              </MDBCol>
-            </MDBRow>
-            <MDBRow className="mb-4">
-              <MDBCol md="2" className="text-center mt-2">
-                <label htmlFor="title" className="narrow-input">
-                  Type
-                </label>
-              </MDBCol>
-              <MDBCol md="10">
-                <input
-                  id="type"
-                  type="text"
-                  name="type"
-                  className="form-control"
-                  value={data.type}
-                  onChange={(e) => setData({ ...data, type: e.target.value })}
-                />
-                {fieldErrors.type && (
-                  <div style={{ color: "red" }}>{fieldErrors.type}</div>
-                )}
-              </MDBCol>
-            </MDBRow>
-            <MDBRow className="mb-4">
-              <MDBCol md="2" className="text-center mt-2">
-                <label htmlFor="title" className="narrow-input">
-                  Amount
-                </label>
-              </MDBCol>
-              <MDBCol md="10">
-                <input
-                  id="amount"
-                  type="text"
-                  name="amount"
-                  className="form-control"
-                  value={data.amount}
-                  onChange={(e) => {
-                    setData({ ...data, amount: e.target.value });
-                    setFieldErrors({ ...fieldErrors, amount: "" });
-                  }}
-                />
-                {fieldErrors.amount && (
-                  <div style={{ color: "red" }}>{fieldErrors.amount}</div>
                 )}
               </MDBCol>
             </MDBRow>

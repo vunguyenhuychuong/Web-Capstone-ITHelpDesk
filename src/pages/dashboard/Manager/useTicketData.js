@@ -32,42 +32,35 @@ const useTicketData = (ticketId) => {
       role: 1,
     },
     category: {
-        assignedTechnical: ""
+      assignedTechnical: "",
     },
     service: {
-        type: "",
-        description: "",
-    }
+      type: "",
+      description: "",
+    },
   });
+  const fetchData = async () => {
+    try {
+      const ticketData = await getTicketByTicketId(ticketId);
+      setData({
+        ...ticketData,
+      });
+    } catch (error) {
+      console.error("Error fetching ticket data: ", error);
+
+      setError(error);
+    }
+  };
 
   useEffect(() => {
-    let isMounted = true;
-    const fetchData = async () => {
-      try {
-        const ticketData = await getTicketByTicketId(ticketId);
-        if (isMounted) {
-          setData({
-            ...ticketData,
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching ticket data: ", error);
-        if(isMounted){
-            setError(error);
-        }
-      }
-    };
-
     fetchData();
-    return () => {
-        isMounted = false;
-      };
-    }, [ticketId]);
-  
-    if (error) {
-      return { error }; // Return error separately
-    }
-    return { data }; // Return data separately
+    return () => {};
+  }, [ticketId]);
+
+  if (error) {
+    return { error }; // Return error separately
+  }
+  return { data, fetchData }; // Return data separately
 };
 
 export default useTicketData;

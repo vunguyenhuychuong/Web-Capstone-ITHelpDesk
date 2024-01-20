@@ -24,18 +24,31 @@ import {
 import { formatDate } from "../../helpers/FormatDate";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCallback } from "react";
-import { Box, FormControl, MenuItem, Pagination, Select } from "@mui/material";
+import {
+  Box,
+  Chip,
+  FormControl,
+  MenuItem,
+  Pagination,
+  Select,
+} from "@mui/material";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
-import { getAllTicketTasks } from "../../../app/api/ticketTask";
+import {
+  deleteTicketTask,
+  getAllTicketTasks,
+} from "../../../app/api/ticketTask";
 import {
   TicketStatusOptions,
   getPriorityOption,
+  ticketTaskStatus,
 } from "../../helpers/tableComlumn";
+import CircularLoading from "../../../components/iconify/CircularLoading";
+import { toast } from "react-toastify";
 
 const TicketTaskList = () => {
   const [dataListTicketsTask, setDataListTicketsTask] = useState([]);
-  const [selectedSolutionIds, setSelectedSolutionIds] = useState([]);
+  const [selectedtaskIds, setSelectedTaskIds] = useState([]);
   const [refreshData, setRefreshData] = useState(false);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -64,7 +77,8 @@ const TicketTaskList = () => {
         sortDirection,
         ticketId
       );
-      setDataListTicketsTask(response);
+      setDataListTicketsTask(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.log(error);
     } finally {
@@ -80,74 +94,61 @@ const TicketTaskList = () => {
     ticketId,
   ]);
 
-  const handleSelectSolution = (solutionId) => {
-    if (selectedSolutionIds.includes(solutionId)) {
-      setSelectedSolutionIds(
-        selectedSolutionIds.filter((id) => id !== solutionId)
-      );
+  const handleSelectTask = (taskId) => {
+    if (selectedtaskIds.includes(taskId)) {
+      setSelectedTaskIds(selectedtaskIds.filter((id) => id !== taskId));
     } else {
-      setSelectedSolutionIds([...selectedSolutionIds, solutionId]);
+      setSelectedTaskIds([...selectedtaskIds, taskId]);
     }
   };
 
-  const handleSelectAllSolutions = () => {
-    if (selectedSolutionIds.length === dataListTicketsTask.length) {
-      setSelectedSolutionIds([]);
+  const handleSelectAllTasks = () => {
+    if (selectedtaskIds.length === dataListTicketsTask.length) {
+      setSelectedTaskIds([]);
     } else {
-      setSelectedSolutionIds(
-        dataListTicketsTask.map((solution) => solution.id)
-      );
+      setSelectedTaskIds(dataListTicketsTask?.map((task) => task.id));
     }
   };
 
-  // const handleDeleteSelectedSolutions = (id) => {
-  //   try {
-  //     console.log("Deleting selected solutions...");
+  const handleDeleteSelectedTasks = (id) => {
+    const shouldDelete = window.confirm(
+      "Are you sure want to delete selected tasks"
+    );
+    if (shouldDelete) {
+      try {
+        if (selectedtaskIds.length === 0) {
+          return;
+        }
 
-  //     if (selectedSolutionIds.length === 0) {
-  //       console.log("No selected solutions to delete.");
-  //       return;
-  //     }
+        let currentIndex = 0;
 
-  //     let currentIndex = 0;
+        const deleteNexttask = () => {
+          if (currentIndex < selectedtaskIds.length) {
+            const taskId = selectedtaskIds[currentIndex];
 
-  //     const deleteNextSolution = () => {
-  //       if (currentIndex < selectedSolutionIds.length) {
-  //         const solutionId = selectedSolutionIds[currentIndex];
+            deleteTicketTask(taskId)
+              .then(() => {
+                currentIndex++;
+                deleteNexttask();
+              })
+              .catch((error) => {
+                console.error(`Error deleting task with ID ${taskId}: `, error);
+                toast.error(`Error deleting task with ID ${taskId}: `, error);
+              });
+          } else {
+            setSelectedTaskIds([]);
+            toast.success("Selected tasks deleted successfully");
+            setRefreshData((prev) => !prev);
+          }
+        };
 
-  //         deleteTicketSolution(solutionId)
-  //           .then(() => {
-  //             console.log(
-  //               `Solution with ID ${solutionId} deleted successfully`
-  //             );
-  //             currentIndex++;
-  //             deleteNextSolution();
-  //           })
-  //           .catch((error) => {
-  //             console.error(
-  //               `Error deleting solution with ID ${solutionId}: `,
-  //               error
-  //             );
-  //             toast.error(
-  //               `Error deleting solution with ID ${solutionId}: `,
-  //               error
-  //             );
-  //           });
-  //       } else {
-  //         setSelectedSolutionIds([]);
-  //         toast.success("Selected solutions deleted successfully");
-  //         setRefreshData((prev) => !prev);
-  //       }
-  //     };
-
-  //     deleteNextSolution();
-  //   } catch (error) {
-  //     console.error("Failed to delete selected solutions: ", error);
-  //     toast.error(
-  //       "Failed to delete selected solutions, Please try again later"
-  //     );
-  //   }
-  // };
+        deleteNexttask();
+      } catch (error) {
+        console.error("Failed to delete selected tasks: ", error);
+        toast.error("Failed to delete selected tasks, Please try again later");
+      }
+    }
+  };
 
   const handleOpenCreateTask = (ticketId) => {
     navigate(`/home/createTask/${ticketId}`);
@@ -176,68 +177,66 @@ const TicketTaskList = () => {
     }
   };
 
-  
   const handleGoBack = () => {
     navigate(`/home/homeTechnician`);
   };
 
   useEffect(() => {
     fetchDataListTicketTask();
-    setTotalPages(4);
   }, [fetchDataListTicketTask, refreshData]);
 
   return (
     <section style={{ backgroundColor: "#eee" }}>
       <MDBNavbar expand="lg" style={{ backgroundColor: "#fff" }}>
         <MDBContainer fluid>
-        <MDBCol md="12">
-          <MDBRow className="border-box">
-            <MDBCol md="8" className="mt-2">
-              <div className="d-flex align-items-center">
-                <button type="button" className="btn btn-link icon-label">
-                  <ArrowBack
-                    onClick={() => handleGoBack()}
-                    className="arrow-back-icon"
-                  />
-                </button>
+          <MDBCol md="12">
+            <MDBRow className="border-box">
+              <MDBCol md="8" className="mt-2">
+                <div className="d-flex align-items-center">
+                  {/* <button type="button" className="btn btn-link icon-label">
+                    <ArrowBack
+                      onClick={() => handleGoBack()}
+                      className="arrow-back-icon"
+                    />
+                  </button> */}
 
-                <div
-                  style={{
-                    marginLeft: "40px",
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                >
-                  <h2
+                  <div
                     style={{
-                      fontSize: "30px",
-                      fontWeight: "bold",
-                      marginRight: "10px",
+                      marginLeft: "40px",
+                      display: "flex",
+                      alignItems: "center",
                     }}
                   >
-                    All Task List
-                  </h2>
-                  <span style={{ fontSize: "18px", color: "#888" }}>
-                    The list task available for assistance.
-                  </span>
+                    <h2
+                      style={{
+                        fontSize: "30px",
+                        fontWeight: "bold",
+                        marginRight: "10px",
+                      }}
+                    >
+                      Task List
+                    </h2>
+                    <span style={{ fontSize: "18px", color: "#888" }}>
+                      The list of available task for assistance.
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </MDBCol>
-          </MDBRow>
-        </MDBCol>
+              </MDBCol>
+            </MDBRow>
+          </MDBCol>
         </MDBContainer>
       </MDBNavbar>
       <MDBContainer className="py-5 custom-container">
         {dataListTicketsTask.length === 0 ? (
           <div style={{ textAlign: "center", padding: "20px" }}>
-            <Info /> No task available.{" "}
+            <Info /> No available task.{" "}
             <span
               onClick={() => handleOpenCreateTask(ticketId)}
               className="blueLink"
             >
-              Create new Task
+              Create new task
             </span>{" "}
-            or <span>Add Task from template</span>
+            or <span>Add task from template</span>
           </div>
         ) : (
           <>
@@ -246,22 +245,31 @@ const TicketTaskList = () => {
                 <MDBNavbarBrand
                   style={{ fontWeight: "bold", fontSize: "24px" }}
                 >
-                  <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />  <span style={{ color: "#FFFFFF" }}>All Task</span>
+                  <ContentCopy
+                    style={{ marginRight: "20px", color: "#FFFFFF" }}
+                  />{" "}
+                  <span style={{ color: "#FFFFFF" }}>All Tasks</span>
                 </MDBNavbarBrand>
-                <MDBNavbarNav className="ms-auto manager-navbar-nav">
+                <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
                   <MDBBtn
                     color="#eee"
-                    style={{ fontWeight: "bold", fontSize: "20px",
-                    color: "#FFFFFF" }}
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "20px",
+                      color: "#FFFFFF",
+                    }}
                     onClick={() => handleOpenCreateTask(ticketId)}
                   >
                     <FaPlus /> Create
                   </MDBBtn>
                   <MDBBtn
                     color="#eee"
-                    style={{ fontWeight: "bold", fontSize: "20px",
-                    color: "#FFFFFF" }}
-                    // onClick={() => handleDeleteSelectedSolutions()}
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "20px",
+                      color: "#FFFFFF",
+                    }}
+                    onClick={() => handleDeleteSelectedTasks()}
                   >
                     <Delete /> Delete
                   </MDBBtn>
@@ -315,18 +323,16 @@ const TicketTaskList = () => {
               <MDBTable className="align-middle mb-0" responsive>
                 <MDBTableHead className="bg-light">
                   <tr>
-                    <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th>
+                    {/* <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th> */}
                     <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                       <input
                         type="checkbox"
                         checked={
-                          selectedSolutionIds.length ===
-                          dataListTicketsTask.length
+                          selectedtaskIds.length === dataListTicketsTask.length
                         }
-                        onChange={handleSelectAllSolutions}
+                        onChange={handleSelectAllTasks}
                       />
                     </th>
-                    <th style={{ fontWeight: "bold", fontSize: "18px" }}></th>
                     <th
                       style={{ fontWeight: "bold", fontSize: "18px" }}
                       onClick={() => handleSortChange("title")}
@@ -351,64 +357,65 @@ const TicketTaskList = () => {
                     >
                       Priority
                     </th>
-                    <th 
+                    <th
                       style={{ fontWeight: "bold", fontSize: "18px" }}
                       onClick={() => handleSortChange("scheduledStartTime")}
-                      >
+                    >
                       Start time
                     </th>
-                    <th 
+                    <th
                       style={{ fontWeight: "bold", fontSize: "18px" }}
                       onClick={() => handleSortChange("scheduledEndTime")}
-                      >
+                    >
                       End time
                     </th>
-                    <th 
+                    <th
                       style={{ fontWeight: "bold", fontSize: "18px" }}
                       onClick={() => handleSortChange("progress")}
-                      >
+                    >
                       Progress
                     </th>
+                    <th style={{ fontWeight: "bold", fontSize: "18px" }}></th>
                   </tr>
                 </MDBTableHead>
                 {loading ? (
-                  <CustomizedProgressBars />
+                  <MDBTableBody className="bg-light">
+                    <tr>
+                      <td>
+                        <CircularLoading />
+                      </td>
+                    </tr>
+                  </MDBTableBody>
                 ) : (
                   <MDBTableBody className="bg-light">
-                    {dataListTicketsTask.map((TicketTask, index) => {
-                      const isSelected = selectedSolutionIds.includes(
+                    {dataListTicketsTask?.map((TicketTask, index) => {
+                      const isSelected = selectedtaskIds.includes(
                         TicketTask.id
                       );
-                      const ticketStatusOption = TicketStatusOptions.find(
+                      const taskStatus = ticketTaskStatus.find(
                         (option) => option.id === TicketTask.taskStatus
                       );
 
                       return (
                         <tr key={index}>
-                          <td>{TicketTask.id}</td>
+                          {/* <td>{TicketTask.id}</td> */}
                           <td>
                             <input
                               type="checkbox"
                               checked={isSelected}
-                              // onChange={() =>
-                              //   handleSelectSolution(TicketSolution.id)
-                              // }
+                              onChange={() => handleSelectTask(TicketTask.id)}
                             />
-                          </td>
-                          <td>
-                            <ViewCompact
-                              onClick={() =>
-                                handleOpenDetailTicketTask(TicketTask.id)
-                              }
-                            />{" "}
                           </td>
                           <td>{TicketTask.title}</td>
                           <td>
-                            {ticketStatusOption ? (
-                              <span style={ticketStatusOption.badgeStyle}>
-                                {ticketStatusOption.icon}
-                                {ticketStatusOption.name}
-                              </span>
+                            {taskStatus ? (
+                              <Chip
+                                label={taskStatus.name}
+                                sx={{
+                                  backgroundColor: taskStatus.color,
+                                  color: "white",
+                                }}
+                              />
                             ) : (
                               "Unknown Status"
                             )}
@@ -454,6 +461,13 @@ const TicketTaskList = () => {
                                 {TicketTask.progress}%
                               </div>
                             </div>
+                          </td>
+                          <td>
+                            <ViewCompact
+                              onClick={() =>
+                                handleOpenDetailTicketTask(TicketTask.id)
+                              }
+                            />
                           </td>
                         </tr>
                       );

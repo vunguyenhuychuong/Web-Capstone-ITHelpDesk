@@ -11,10 +11,25 @@ import {
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketCustomer.css";
 import PageSizeSelector from "../Pagination/Pagination";
-import { ContentCopy, Delete, ViewCompact } from "@mui/icons-material";
+import {
+  ContentCopy,
+  Delete,
+  ViewCompact,
+  Visibility,
+  VisibilityOff,
+} from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useCallback } from "react";
-import { Box, FormControl, MenuItem, Pagination, Select } from "@mui/material";
+import {
+  Box,
+  FormControl,
+  IconButton,
+  MenuItem,
+  Pagination,
+  Select,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import {
@@ -25,6 +40,7 @@ import {
 import { toast } from "react-toastify";
 import { formatDate } from "../../helpers/FormatDate";
 import { truncateUrl } from "../../helpers/FormatText";
+import CircularLoading from "../../../components/iconify/CircularLoading";
 
 const CompanyList = () => {
   const [dataListCompany, setDataListCompany] = useState([]);
@@ -68,7 +84,15 @@ const CompanyList = () => {
         sortBy,
         sortDirection
       );
-      setDataListCompany(response);
+      const companies = response?.data.map((company) => {
+        const newCompany = {
+          ...company,
+          phoneNumber: { value: company.phoneNumber, isVisible: false },
+        };
+        return newCompany;
+      });
+      setDataListCompany(companies);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.log(error);
     } finally {
@@ -90,54 +114,61 @@ const CompanyList = () => {
     if (selectedCompanyIds.length === dataListCompany.length) {
       setSelectedCompanyIds([]);
     } else {
-      setSelectedCompanyIds(dataListCompany.map((company) => company.id));
+      setSelectedCompanyIds(dataListCompany?.map((company) => company.id));
     }
   };
 
   const handleDeleteSelectedCompany = (id) => {
-    try {
-      console.log("Deleting selected solutions...");
+    const shouldDelete = window.confirm(
+      "Are you sure want to delete selected company"
+    );
+    if (shouldDelete) {
+      try {
+        console.log("Deleting selected companies...");
 
-      if (selectedCompanyIds.length === 0) {
-        console.log("No selected solutions to delete.");
-        return;
-      }
-
-      let currentIndex = 0;
-
-      const deleteNextSolution = () => {
-        if (currentIndex < selectedCompanyIds.length) {
-          const companyId = selectedCompanyIds[currentIndex];
-
-          deleteCompany(companyId)
-            .then(() => {
-              console.log(`Solution with ID ${companyId} deleted successfully`);
-              currentIndex++;
-              deleteNextSolution();
-            })
-            .catch((error) => {
-              console.error(
-                `Error deleting solution with ID ${companyId}: `,
-                error
-              );
-              toast.error(
-                `Error deleting solution with ID ${companyId}: `,
-                error
-              );
-            });
-        } else {
-          setSelectedCompanyIds([]);
-          toast.success("Selected solutions deleted successfully");
-          setRefreshData((prev) => !prev);
+        if (selectedCompanyIds.length === 0) {
+          console.log("No selected companies to delete.");
+          return;
         }
-      };
 
-      deleteNextSolution();
-    } catch (error) {
-      console.error("Failed to delete selected solutions: ", error);
-      toast.error(
-        "Failed to delete selected solutions, Please try again later"
-      );
+        let currentIndex = 0;
+
+        const deleteNextSolution = () => {
+          if (currentIndex < selectedCompanyIds.length) {
+            const companyId = selectedCompanyIds[currentIndex];
+
+            deleteCompany(companyId)
+              .then(() => {
+                console.log(
+                  `Solution with ID ${companyId} deleted successfully`
+                );
+                currentIndex++;
+                deleteNextSolution();
+              })
+              .catch((error) => {
+                console.error(
+                  `Error deleting company with ID ${companyId}: `,
+                  error
+                );
+                toast.error(
+                  `Error deleting company with ID ${companyId}: `,
+                  error
+                );
+              });
+          } else {
+            setSelectedCompanyIds([]);
+            toast.success("Selected companies deleted successfully");
+            setRefreshData((prev) => !prev);
+          }
+        };
+
+        deleteNextSolution();
+      } catch (error) {
+        console.error("Failed to delete selected companies: ", error);
+        toast.error(
+          "Failed to delete selected companies, Please try again later"
+        );
+      }
     }
   };
 
@@ -145,8 +176,8 @@ const CompanyList = () => {
     navigate(`/home/createCompany`);
   };
 
-  const handleOpenEditCompany = async (companyId) => {
-    navigate(`/home/editCompany/${companyId}`);
+  const handleOpenCompanyDetail = async (companyId) => {
+    navigate(`/home/companyDetail/${companyId}`);
   };
 
   const handleChangePage = (event, value) => {
@@ -157,6 +188,20 @@ const CompanyList = () => {
     const newSize = parseInt(event.target.value);
     setPageSize(newSize);
     setCurrentPage(1);
+  };
+
+  const handleChangeIsVisiblePhone = (phoneNumber) => {
+    var newCompanyList = [...dataListCompany];
+    const index = dataListCompany.findIndex(
+      (company) => company.phoneNumber === phoneNumber
+    );
+    if (index > -1) {
+      newCompanyList[index].phoneNumber = {
+        ...newCompanyList[index].phoneNumber,
+        isVisible: !newCompanyList[index].phoneNumber.isVisible,
+      };
+    }
+    setDataListCompany(newCompanyList);
   };
 
   //   const handleSortChange = (field) => {
@@ -172,7 +217,6 @@ const CompanyList = () => {
 
   useEffect(() => {
     fetchDataListTicketTask();
-    setTotalPages(4);
   }, [fetchDataListTicketTask, refreshData]);
 
   return (
@@ -181,19 +225,28 @@ const CompanyList = () => {
         <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
-              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />  <span style={{ color: "#FFFFFF" }}>All Company</span>
+              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
+              <span style={{ color: "#FFFFFF" }}>All Companies</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  color: "#FFFFFF",
+                }}
                 onClick={() => handleOpenCreateCompany()}
               >
                 <FaPlus /> Create
               </MDBBtn>
               <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px",color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  color: "#FFFFFF",
+                }}
                 onClick={() => handleDeleteSelectedCompany()}
               >
                 <Delete /> Delete
@@ -249,7 +302,7 @@ const CompanyList = () => {
           <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th>
+                {/* <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th> */}
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                   <input
                     type="checkbox"
@@ -259,7 +312,7 @@ const CompanyList = () => {
                     onChange={handleSelectAllCompany}
                   />
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}></th>
+
                 <th
                   style={{ fontWeight: "bold", fontSize: "18px" }}
                   // onClick={() => handleSortChange("title")}
@@ -276,7 +329,13 @@ const CompanyList = () => {
                   style={{ fontWeight: "bold", fontSize: "18px" }}
                   // onClick={() => handleSortChange("isApproved")}
                 >
-                  Tax
+                  Tax Code
+                </th>
+                <th
+                  style={{ fontWeight: "bold", fontSize: "18px" }}
+                  // onClick={() => handleSortChange("isApproved")}
+                >
+                  Phone Number
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "18px" }}
@@ -291,17 +350,24 @@ const CompanyList = () => {
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                   Modified
                 </th>
+                <th style={{ fontWeight: "bold", fontSize: "18px" }}></th>
               </tr>
             </MDBTableHead>
             {loading ? (
-              <CustomizedProgressBars />
+              <MDBTableBody className="bg-light">
+                <tr>
+                  <td>
+                    <CircularLoading />
+                  </td>
+                </tr>
+              </MDBTableBody>
             ) : (
               <MDBTableBody className="bg-light">
-                {dataListCompany.map((company, index) => {
+                {dataListCompany?.map((company, index) => {
                   const isSelected = selectedCompanyIds.includes(company.id);
                   return (
                     <tr key={index}>
-                      <td>{company.id}</td>
+                      {/* <td>{company.id}</td> */}
                       <td>
                         <input
                           type="checkbox"
@@ -309,22 +375,47 @@ const CompanyList = () => {
                           onChange={() => handleSelectCompany(company.id)}
                         />
                       </td>
+
                       <td>
-                        <ViewCompact
-                          onClick={() => handleOpenEditCompany(company.id)}
+                        <img
+                          src={
+                            company.logoUrl ??
+                            "https://cdn-icons-png.flaticon.com/512/1630/1630842.png"
+                          }
+                          alt="Company Logo"
+                          style={{ width: 50, height: "auto" }}
                         />
-                      </td>
-                      <td>
-                        {company.logoUrl && (
-                          <img
-                            src={company.logoUrl}
-                            alt="Company Logo"
-                            style={{ width: "50px", height: "auto" }}
-                          />
-                        )}
                       </td>
                       <td>{company.companyName}</td>
                       <td>{company.taxCode}</td>
+                      <td>
+                        <Stack
+                          direction={"row"}
+                          spacing={1}
+                          alignItems={"center"}
+                        >
+                          <Typography minWidth={"5vw"}>
+                            {!company.phoneNumber.isVisible
+                              ? "*******".concat(
+                                  company.phoneNumber.value.substring(
+                                    company.phoneNumber.value.length - 3
+                                  )
+                                )
+                              : company.phoneNumber.value}
+                          </Typography>
+                          <IconButton
+                            onClick={() =>
+                              handleChangeIsVisiblePhone(company.phoneNumber)
+                            }
+                          >
+                            {company.phoneNumber.isVisible ? (
+                              <VisibilityOff />
+                            ) : (
+                              <Visibility />
+                            )}
+                          </IconButton>
+                        </Stack>
+                      </td>
                       <td>
                         {company.website && (
                           <a
@@ -352,6 +443,11 @@ const CompanyList = () => {
                       </td>
                       <td>{formatDate(company.createdAt || "-")}</td>
                       <td>{formatDate(company.deletedAt || "-")}</td>
+                      <td>
+                        <ViewCompact
+                          onClick={() => handleOpenCompanyDetail(company.id)}
+                        />
+                      </td>
                     </tr>
                   );
                 })}

@@ -6,16 +6,15 @@ import { Box, Button, StepButton, StepLabel } from "@mui/material";
 import { ColorlibConnector, ColorlibStepIcon } from "./StepperDecorate";
 import Step1 from "./StepForm/Step1";
 import Step2 from "./StepForm/Step2";
-import Step3 from "./StepForm/Step3";
 import { CheckCircle, FastForward, FastRewind } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-
-
-const steps = ["Select Category", "Fill Request", "Complete And Send"];
+const steps = ["Fill Request", "Complete And Send"];
 
 export default function CustomizedSteppers({
+  activeStep,
+  setActiveStep,
   data,
   handleInputChange,
   handleFileChange,
@@ -23,15 +22,14 @@ export default function CustomizedSteppers({
   imagePreviewUrl,
   isImagePreviewOpen,
   setIsImagePreviewOpen,
+  isSubmitting,
 }) {
-  const [activeStep, setActiveStep] = React.useState(0);
   const navigate = useNavigate();
   const totalSteps = steps.length;
   const handleNext = () => {
-    if (activeStep === 2) {
+    if (activeStep === 1) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    } else if (activeStep === 1) {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      handleSubmitTicket();
     } else if (activeStep === 0) {
       if (data.title && data.description) {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -43,6 +41,13 @@ export default function CustomizedSteppers({
         });
       }
     }
+  };
+
+  const isStep1 = activeStep === 0;
+  const isStep2 = activeStep === 1;
+
+  const moveToStep3 = () => {
+    setActiveStep(2);
   };
 
   const handleBack = () => {
@@ -89,7 +94,7 @@ export default function CustomizedSteppers({
         ))}
       </Stepper>
 
-      {activeStep === 0 && (
+      {isStep1 && (
         <Step1
           data={data}
           handleInputChange={handleInputChange}
@@ -100,20 +105,18 @@ export default function CustomizedSteppers({
         />
       )}
 
-      {activeStep === 1 && (
+      {isStep2 && (
         <Step2
           data={data}
-          handleSubmit={handleSubmitTicket}
+          handleSubmitTicket={handleSubmitTicket}
           imagePreviewUrl={imagePreviewUrl}
           isImagePreviewOpen={isImagePreviewOpen}
           setIsImagePreviewOpen={setIsImagePreviewOpen}
+          isSubmitting={isSubmitting}
+          moveToStep3={moveToStep3}
+          setActiveStep={setActiveStep}
         />
       )}
-
-       {activeStep === 2 && (
-        <Step3
-        />
-      )}  
 
       <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
         <Button
@@ -127,9 +130,13 @@ export default function CustomizedSteppers({
         <Box sx={{ flex: "1 1 auto" }} />
         <Button
           onClick={activeStep === totalSteps - 1 ? handleComplete : handleNext}
+          sx={{
+            display: activeStep === totalSteps - 1 ? "none" : "flex",
+          }}
         >
           {activeStep === totalSteps - 1 ? (
-            <CheckCircle onClick={() => handleGoBack()} />
+            // <CheckCircle onClick={() => handleGoBack()} />
+            <></>
           ) : (
             <FastForward />
           )}

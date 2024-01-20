@@ -2,32 +2,22 @@ import React, { useEffect, useState } from "react";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import "draft-js/dist/Draft.css";
 import { useNavigate } from "react-router-dom";
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogTitle,
   Grid,
   IconButton,
-  TextField,
-  Tooltip,
+  Stack,
 } from "@mui/material";
-import {
-  ArrowBack,
-  Close,
-  Visibility,
-  VisibilityOff,
-} from "@mui/icons-material";
-import { genderOptions } from "../../helpers/tableComlumn";
-import zxcvbn from "zxcvbn";
+import { ArrowBack, Close } from "@mui/icons-material";
+import { genderOptions, positionOptions } from "../../helpers/tableComlumn";
 import { createCompanyMember } from "../../../app/api/companyMember";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import moment from "moment";
-import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { useSelector } from "react-redux";
 import { getAllDepartmentSelect } from "../../../app/api/department";
 
@@ -45,14 +35,12 @@ const CreateCompanyMember = () => {
       gender: 0,
       avatarUrl: "",
       phoneNumber: "",
-      dateOfBirth: "",
     },
     isCompanyAdmin: false,
     memberPosition: "",
-    departmentId: 1,
+    companyAddressId: 1,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [DateBirth, setDateBirth] = useState(moment());
   const [dataDepartment, setDataDepartment] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
@@ -71,18 +59,6 @@ const CreateCompanyMember = () => {
     thumbnail: url,
     description: `Attachment Preview ${index + 1}`,
   }));
-
-  const handleDateBirthChange = (newDate) => {
-    const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
-    setDateBirth(newDate);
-    setData((prevInputs) => ({
-      ...prevInputs,
-      user: {
-        ...prevInputs.user,
-        dateOfBirth: formattedDate,
-      },
-    }));
-  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -140,7 +116,7 @@ const CreateCompanyMember = () => {
       }));
     } else {
       const numericValue =
-        name === "departmentId" ? parseInt(value, 10) : value;
+        name === "companyAddressId" ? parseInt(value, 10) : value;
       setData((prevData) => ({
         ...prevData,
         [name]: numericValue,
@@ -210,15 +186,11 @@ const CreateCompanyMember = () => {
       }
       const updatedData = {
         user: {
-          ...data.user,
           avatarUrl: avatarUrl,
-          dateOfBirth: data.user.dateOfBirth
-            ? moment(data.user.dateOfBirth).format("YYYY-MM-DDTHH:mm:ss")
-            : null,
         },
         isCompanyAdmin: data.isCompanyAdmin,
         memberPosition: data.memberPosition,
-        departmentId: data.departmentId,
+        companyAddressId: data.companyAddressId,
       };
       setData(updatedData);
       await createCompanyMember({
@@ -228,13 +200,12 @@ const CreateCompanyMember = () => {
           username: data.user.username,
           email: data.user.email,
           gender: data.user.gender,
-          avatarUrl: data.user.avatarUrl,
+          avatarUrl: avatarUrl,
           phoneNumber: data.user.phoneNumber,
-          dateOfBirth: data.user.dateOfBirth,
         },
-        isCompanyAdmin: data.isCompanyAdmin,
+        // isCompanyAdmin: data.isCompanyAdmin,
         memberPosition: data.memberPosition,
-        departmentId: data.departmentId,
+        companyAddressId: data.companyAddressId,
       });
       navigate("/home/companyMember");
     } catch (error) {
@@ -281,12 +252,14 @@ const CreateCompanyMember = () => {
           <MDBRow className="border-box">
             <MDBCol md="5" className="mt-2">
               <div className="d-flex align-items-center">
-                <button type="button" className="btn btn-link icon-label">
-                  <ArrowBack
-                    onClick={handleGoBack}
-                    className="arrow-back-icon"
-                  />
-                </button>
+                <Stack direction={"row"} alignItems={"center"}>
+                  <Button>
+                    <ArrowBack
+                      onClick={handleGoBack}
+                      style={{ color: "#0099FF" }}
+                    />
+                  </Button>
+                </Stack>
 
                 <div
                   style={{
@@ -432,7 +405,7 @@ const CreateCompanyMember = () => {
 
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
-                  <Grid item xs={6}>
+                    <Grid item xs={6}>
                       <h2
                         className="align-right"
                         style={{
@@ -474,7 +447,7 @@ const CreateCompanyMember = () => {
                     textAlign: "right",
                   }}
                 >
-                  Attachment
+                  User Avatar
                 </h2>
               </Grid>
               <Grid item xs={9}>
@@ -534,14 +507,14 @@ const CreateCompanyMember = () => {
 
                 <Grid item xs={6}>
                   <Grid container alignItems="center">
-                  <Grid item xs={6}>
+                    <Grid item xs={6}>
                       <h2
                         className="align-right"
                         style={{
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                          marginBottom: "40px"
+                          marginBottom: "40px",
                         }}
                       >
                         <span style={{ color: "red" }}>*</span>phone number
@@ -573,7 +546,7 @@ const CreateCompanyMember = () => {
               >
                 <Grid item xs={6}>
                   <Grid container>
-                  <Grid item xs={6}>
+                    <Grid item xs={6}>
                       <h2
                         className="align-right"
                         style={{
@@ -586,7 +559,7 @@ const CreateCompanyMember = () => {
                       </h2>
                     </Grid>
                     <Grid item xs={6}>
-                      <input
+                      {/* <input
                         id="memberPosition"
                         type="text"
                         name="memberPosition"
@@ -595,87 +568,27 @@ const CreateCompanyMember = () => {
                         onChange={(e) =>
                           handleMemberPositionChange(e.target.value)
                         }
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
-
-                <Grid item xs={6}>
-                  <Grid container alignItems="center">
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                          marginBottom: "40px",
-                        }}
-                      >
-                        Date 
-                      </h2>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <DateTimePicker
-                          slotProps={{
-                            textField: {
-                              helperText: `${DateBirth}`,
-                            },
-                          }}
-                          value={DateBirth}
-                          onChange={(newValue) =>
-                            handleDateBirthChange(newValue)
-                          }
-                          renderInput={(props) => <TextField {...props} />}
-                        />
-                      </LocalizationProvider>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-
-              <Grid
-                container
-                justifyContent="flex-end"
-                style={{ marginBottom: "20px" }}
-              >
-                <Grid item xs={6}>
-                  <Grid container>
-                  <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        <span style={{ color: "red" }}>*</span>Department
-                      </h2>
-                    </Grid>
-                    <Grid item xs={6}>
+                      /> */}
                       <select
-                        id="departmentId"
-                        name="departmentId"
+                        id="memberPosition"
+                        name="memberPosition"
                         className="form-select-custom"
-                        value={data.departmentId}
+                        value={data.memberPosition}
                         onChange={handleInputChange}
                       >
-                        {dataDepartment &&
-                          dataDepartment
-                            .filter((department) => department.id !== "")
-                            .map((department) => (
-                              <option key={department.id} value={department.id}>
-                                {department.address}
-                              </option>
-                            ))}
+                        {positionOptions
+                          .filter((position) => position.id !== "")
+                          .map((position) => (
+                            <option key={position.id} value={position.name}>
+                              {position.name}
+                            </option>
+                          ))}
                       </select>
                     </Grid>
                   </Grid>
                 </Grid>
 
-                <Grid item xs={6}>
+                {/* <Grid item xs={6}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
                       <h2
@@ -684,6 +597,7 @@ const CreateCompanyMember = () => {
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
+                          marginBottom: "20px",
                         }}
                       >
                         Company Admin
@@ -703,6 +617,54 @@ const CreateCompanyMember = () => {
                         <option value="false">False</option>
                       </select>
                     </Grid>
+                  </Grid>
+                </Grid> */}
+              </Grid>
+
+              <Grid
+                container
+                justifyContent="flex-end"
+                style={{ marginBottom: "20px" }}
+              >
+                <Grid item xs={6}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        <span style={{ color: "red" }}>*</span>Default Address
+                      </h2>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <select
+                        id="companyAddressId"
+                        name="companyAddressId"
+                        className="form-select-custom"
+                        value={data.companyAddressId}
+                        onChange={handleInputChange}
+                      >
+                        {dataDepartment &&
+                          dataDepartment
+                            .filter((department) => department.id !== "")
+                            .map((department) => (
+                              <option key={department.id} value={department.id}>
+                                {department.address}
+                              </option>
+                            ))}
+                      </select>
+                    </Grid>
+                  </Grid>
+                </Grid>
+
+                <Grid item xs={6}>
+                  <Grid container alignItems="center">
+                    <Grid item xs={6}></Grid>
+                    <Grid item xs={6}></Grid>
                   </Grid>
                 </Grid>
               </Grid>
@@ -725,6 +687,7 @@ const CreateCompanyMember = () => {
                 <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
+                  onClick={handleGoBack}
                 >
                   Cancel
                 </button>

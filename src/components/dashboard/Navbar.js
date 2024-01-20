@@ -26,6 +26,7 @@ import {
   Menu,
   MenuItem,
   Popover,
+  Stack,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -108,7 +109,8 @@ const Navbar = ({ notifications }) => {
 
   useEffect(() => {
     fetchDataListNotification();
-  }, []);
+    setNotificationCount(notifications?.length || 0);
+  }, [notifications]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -230,21 +232,21 @@ const Navbar = ({ notifications }) => {
 
   return (
     <Wrapper>
-      {shouldRenderLogo  && (
-        <div className="nav-center">
+      {shouldRenderLogo && (
+        <div className="nav-between">
           <button type="button" className="toggle-btn" onClick={toggle}>
             <FaAlignLeft />
           </button>
-          <Logo />
+          {<Logo />}
           <div className="btn-container">
             <div className="icons-wrapper">
-              <Tooltip title="Message" arrow>
+              {/* <Tooltip title="Message" arrow>
                 <IconButton size="large" style={{ color: "#0099FF" }}>
-                  <Badge badgeContent={4} color="error">
+                  <Badge color="error">
                     <Mail />
                   </Badge>
                 </IconButton>
-              </Tooltip>
+              </Tooltip> */}
               <Tooltip title="Notifications" arrow>
                 <IconButton
                   size="large"
@@ -318,7 +320,7 @@ const Navbar = ({ notifications }) => {
                   notificationCount={notificationCount}
                 />
               </Popover>
-              <Tooltip title="Open Setting" arrow>
+              {/* <Tooltip title="Open Setting" arrow>
                 <IconButton size="large" style={{ color: "#0099FF" }}>
                   <Badge color="error">
                     <Settings />
@@ -337,12 +339,15 @@ const Navbar = ({ notifications }) => {
                   <Badge color="error">
                     <Help />
                   </Badge>
-                </IconButton>
-              </Tooltip>
+                </IconButton> */}
+              {/* </Tooltip> */}
               <Box sx={{ flexGrow: 0 }}>
                 <div
                   className="icon-wrapper"
-                  style={{ display: "flex", alignItems: "center" }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
                 >
                   <Tooltip title="Profile User" arrow>
                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -357,10 +362,6 @@ const Navbar = ({ notifications }) => {
                       <div className="online-dot" />
                     </IconButton>
                   </Tooltip>
-                  <div style={{ marginLeft: "8px" }}>
-                    <Typography variant="body1">{userName}</Typography>
-                    <Typography variant="caption">{userRole}</Typography>
-                  </div>
                 </div>
                 <Menu
                   sx={{ mt: "45px" }}
@@ -378,6 +379,22 @@ const Navbar = ({ notifications }) => {
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
                 >
+                  <Stack
+                    sx={{
+                      borderBottom: "1px groove #0099FF",
+                      padding: 2,
+                      textAlign: "center",
+                    }}
+                  >
+                    <Typography variant="body1">{userName}</Typography>
+                    <Typography
+                      variant="caption"
+                      color="#0099FF"
+                      fontWeight={"bold"}
+                    >
+                      {userRole}
+                    </Typography>
+                  </Stack>
                   {settings.map((setting) => (
                     <MenuItem
                       key={setting}

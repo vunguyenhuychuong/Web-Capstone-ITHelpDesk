@@ -201,7 +201,7 @@ const CreateTeamMember = () => {
                       >
                         {dataTeam
                           .filter((team) => team.id !== "")
-                          .map((team) => (
+                          ?.map((team) => (
                             <option key={team.id} value={team.id}>
                               {team.name}
                             </option>
@@ -232,7 +232,7 @@ const CreateTeamMember = () => {
                         value={data.memberId}
                         onChange={handleInputChange}
                       >
-                        {dataMember.map((member) => (
+                        {dataMember?.map((member) => (
                           <option key={member.id} value={member.id}>
                             {member.firstName} {member.lastName}
                           </option>
@@ -287,6 +287,7 @@ const CreateTeamMember = () => {
                 <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
+                  onClick={() => handleGoBack()}
                 >
                   Cancel
                 </button>

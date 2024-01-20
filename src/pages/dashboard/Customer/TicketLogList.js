@@ -5,12 +5,21 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { ListAlt } from "@mui/icons-material";
+import { Edit, ExpandMore, ListAlt } from "@mui/icons-material";
 import { useState } from "react";
-import { Input } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Input,
+  Stack,
+  TableHead,
+  Typography,
+} from "@mui/material";
 import { getTicketLog } from "../../../app/api/ticketLog";
 import { useParams } from "react-router-dom";
 import { formatDate } from "../../helpers/FormatDate";
+import { capitalizeWord } from "../../../utils/helper";
 
 export default function TicketLogList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,7 +29,6 @@ export default function TicketLogList() {
   const fetchDataTicketLog = async () => {
     try {
       const ticketLog = await getTicketLog(ticketId);
-      console.log(ticketLog);
       setDataTicketLog(ticketLog);
     } catch (error) {
       console.log(error);
@@ -34,7 +42,7 @@ export default function TicketLogList() {
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="caption table">
-        <div
+        {/* <div
           style={{
             marginBottom: "40px",
             display: "flex",
@@ -52,18 +60,71 @@ export default function TicketLogList() {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ marginRight: "10px", width: "400px" }}
           />
-        </div>
+        </div> */}
+        <TableHead>
+          <TableRow>
+            <TableCell>Changes</TableCell>
+            <TableCell align="right">Time</TableCell>
+            <TableCell align="right">By</TableCell>
+            <TableCell align="right">Action</TableCell>
+          </TableRow>
+        </TableHead>
         <TableBody>
           {dataTicketLog && dataTicketLog.length > 0 ? (
-            dataTicketLog.map((entry, index) => (
-              <TableRow key={index}>
-                <TableCell align="right" style={{ width: "50px" }}>
-                  {formatDate(entry.timestamp)}
+            dataTicketLog?.map((log, index) => (
+              <TableRow key={log.timestamp}>
+                <TableCell align="left" style={{ width: "40vw" }}>
+                  {log.entries[0].message && log.entries[0].message !== "" ? (
+                    <Accordion>
+                      <AccordionSummary
+                        expandIcon={<ExpandMore />}
+                        aria-controls="panel2-content"
+                        id="panel2-header"
+                      >
+                        <Stack
+                          direction={"row"}
+                          spacing={2}
+                          fontWeight={"semibold"}
+                          alignItems={"center"}
+                        >
+                          <ListAlt />
+                          <Typography>
+                            {log.entries.length + " changes"}
+                          </Typography>
+                        </Stack>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <Stack spacing={1}>
+                          {log.entries?.map((entry) => (
+                            <Typography key={entry.id}>
+                              {entry.message ? <Edit /> : <></>}{" "}
+                              {entry.message ?? ""}
+                            </Typography>
+                          ))}
+                        </Stack>
+                      </AccordionDetails>
+                    </Accordion>
+                  ) : (
+                    <Stack
+                      direction={"row"}
+                      spacing={2}
+                      fontWeight={"semibold"}
+                      alignItems={"center"}
+                      px={2}
+                    >
+                      <Typography>{""}</Typography>
+                    </Stack>
+                  )}
                 </TableCell>
-                <TableCell align="left" style={{ width: "500px" }}>
-                  <ListAlt /> {entry.entries[0].message || "none message"}
+                <TableCell align="right" style={{ width: "20vw" }}>
+                  {formatDate(log.timestamp)}
                 </TableCell>
-                <TableCell align="left">
+                <TableCell align="right">
+                  <div style={{ color: "#555", paddingLeft: "8px" }}>
+                    {capitalizeWord(log.username)}
+                  </div>
+                </TableCell>
+                <TableCell align="right">
                   <div
                     style={{
                       fontSize: "1.2em",
@@ -71,10 +132,7 @@ export default function TicketLogList() {
                       color: "#007bff",
                     }}
                   >
-                    {entry.username}
-                  </div>
-                  <div style={{ color: "#555" ,paddingLeft: "8px" }}>
-                    {entry.action}
+                    {log.action}
                   </div>
                 </TableCell>
               </TableRow>

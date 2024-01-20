@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Dialog, DialogContent, DialogTitle, Grid, IconButton, Switch, TextField } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  IconButton,
+  Stack,
+} from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -8,9 +16,6 @@ import { getDataCategories } from "../../../app/api/category";
 import { toast } from "react-toastify";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { createTicketSolution } from "../../../app/api/ticketSolution";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment from "moment";
 import { getDataUser } from "../../../app/api";
 import Gallery from "react-image-gallery";
@@ -19,15 +24,16 @@ import { useSelector } from "react-redux";
 
 const CreateTicketSolution = () => {
   const navigate = useNavigate();
-  const user = useSelector((state) => state.auth);
-  const check = user.user.role;
+  const user = useSelector((state) => state.auth.user);
+  const userRole = user.role;
+  const currentDate = Date.now();
   const [data, setData] = useState({
     title: "",
     content: "",
     categoryId: 1,
-    ownerId: 1,
-    reviewDate: "",
-    expiredDate: "",
+    ownerId: userRole === 3 ? Number.parseInt(user.id) : 1,
+    reviewDate: currentDate,
+    expiredDate: currentDate,
     keyword: "",
     internalComments: "",
     isPublic: true,
@@ -36,8 +42,6 @@ const CreateTicketSolution = () => {
   const [dataCategories, setDataCategories] = useState([]);
   const [selectedFile, setSelectedFile] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [reviewDate, setReviewDate] = useState(moment());
-  const [expiredDate, setExpiredDate] = useState(moment());
   const [dataUsers, setDataUsers] = useState([]);
   const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
@@ -45,24 +49,6 @@ const CreateTicketSolution = () => {
     title: "",
     content: "",
   });
-
-  const handleReviewDateChange = (newDate) => {
-    const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
-    setReviewDate(newDate);
-    setData((prevInputs) => ({
-      ...prevInputs,
-      reviewDate: formattedDate,
-    }));
-  };
-
-  const handleExpiredDateChange = (newDate) => {
-    const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
-    setExpiredDate(newDate);
-    setData((prevInputs) => ({
-      ...prevInputs,
-      expiredDate: formattedDate,
-    }));
-  };
 
   const fetchDataSolution = async () => {
     try {
@@ -79,6 +65,26 @@ const CreateTicketSolution = () => {
   useEffect(() => {
     fetchDataSolution();
   }, []);
+
+  useEffect(() => {
+    if (dataCategories) {
+      setData((prevData) => ({
+        ...prevData,
+        categoryId: dataCategories[0]?.id,
+      }));
+    }
+  }, [dataCategories]);
+
+  useEffect(() => {
+    if (dataUsers && userRole === 2) {
+      setData((prevData) => ({
+        ...prevData,
+        ownerId: dataUsers.filter(
+          (owner) => owner.role !== 0 && owner.role !== 1
+        )[0]?.id,
+      }));
+    }
+  }, [dataUsers]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -126,7 +132,7 @@ const CreateTicketSolution = () => {
 
   const validateDate = (reviewDate, expiredDate) => {
     if (!reviewDate || !expiredDate) {
-      return false; 
+      return false;
     }
     return moment(reviewDate).isBefore(expiredDate);
   };
@@ -148,31 +154,31 @@ const CreateTicketSolution = () => {
       return;
     }
 
-    const isDataValid = validateDate(data.reviewDate, data.expiredDate);
-      if (!isDataValid) {
-        toast.warning(
-          "scheduledStartTime must be earlier than scheduledEndTime.",
-          {
-            autoClose: 2000,
-            hideProgressBar: false,
-            position: toast.POSITION.TOP_CENTER,
-          }
-        );
-        return;
-      }
+    // const isDataValid = validateDate(data.reviewDate, data.expiredDate);
+    // if (!isDataValid) {
+    //   toast.warning(
+    //     "scheduledStartTime must be earlier than scheduledEndTime.",
+    //     {
+    //       autoClose: 2000,
+    //       hideProgressBar: false,
+    //       position: toast.POSITION.TOP_CENTER,
+    //     }
+    //   );
+    //   return;
+    // }
 
-      const formattedReviewDate = moment(data.reviewDate).format(
-        "YYYY-MM-DDTHH:mm:ss"
-      );
-      const formattedExpiredDate = moment(data.expiredDate).format(
-        "YYYY-MM-DDTHH:mm:ss"
-      );
+    const formattedReviewDate = moment(data.reviewDate).format(
+      "YYYY-MM-DDTHH:mm:ss"
+    );
+    const formattedExpiredDate = moment(data.expiredDate).format(
+      "YYYY-MM-DDTHH:mm:ss"
+    );
     setIsSubmitting(true);
     try {
       let attachmentUrls = data.attachmentUrls || [];
       if (selectedFile.length > 0) {
         const storage = getStorage();
-        
+
         for (let i = 0; i < selectedFile.length; i++) {
           const file = selectedFile[i];
           const storageRef = ref(storage, `images/${file.name}`);
@@ -191,7 +197,7 @@ const CreateTicketSolution = () => {
       };
 
       setData(updatedData);
-      await createTicketSolution({
+      const res = await createTicketSolution({
         title: data.title,
         content: data.content,
         categoryId: data.categoryId,
@@ -199,10 +205,19 @@ const CreateTicketSolution = () => {
         reviewDate: formattedReviewDate,
         expiredDate: formattedExpiredDate,
         keyword: data.keyword,
-        internalComments: data.internalComments,
         isPublic: data.isPublic,
         attachmentUrls: attachmentUrls,
       });
+      if (res) {
+        navigate(`/home/ticketSolution`);
+      }
+      // if (userRole === 3) {
+      //   navigate(`/home/homeTechnician`);
+      // } else if (userRole === 2) {
+      //   navigate(`/home/homeManager`);
+      // } else {
+      //   console.warn("Unhandled user role:", userRole);
+      // }
     } catch (error) {
       console.error(error);
     } finally {
@@ -210,7 +225,7 @@ const CreateTicketSolution = () => {
     }
   };
 
-  const images = imagePreviewUrl.map((url, index) => ({
+  const images = imagePreviewUrl?.map((url, index) => ({
     original: url,
     thumbnail: url,
     description: `Attachment Preview ${index + 1}`,
@@ -224,12 +239,12 @@ const CreateTicketSolution = () => {
   };
 
   const handleGoBack = () => {
-    if (check === 2) {
+    if (userRole === 2) {
       navigate(`/home/homeManager`);
-    } else if (check === 3) {
+    } else if (userRole === 3) {
       navigate(`/home/homeTechnician`);
     } else {
-      console.warn('Unhandled user role:', check);
+      console.warn("Unhandled user role:", userRole);
     }
   };
 
@@ -247,12 +262,14 @@ const CreateTicketSolution = () => {
           <MDBRow className="border-box">
             <MDBCol md="5" className="mt-2">
               <div className="d-flex align-items-center">
-                <button type="button" className="btn btn-link icon-label">
-                  <ArrowBack
-                    onClick={handleGoBack}
-                    className="arrow-back-icon"
-                  />
-                </button>
+                <Stack direction={"row"} alignItems={"center"}>
+                  <Button>
+                    <ArrowBack
+                      onClick={handleGoBack}
+                      style={{ color: "#0099FF" }}
+                    />
+                  </Button>
+                </Stack>
                 <div
                   style={{
                     marginLeft: "40px",
@@ -358,7 +375,7 @@ const CreateTicketSolution = () => {
                   className="form-control input-field"
                   id="attachmentUrl"
                   onChange={handleFileChange}
-                  multiple  
+                  multiple
                 />
                 {imagePreviewUrl.length > 0 && (
                   <div
@@ -400,7 +417,7 @@ const CreateTicketSolution = () => {
                       >
                         {dataCategories
                           .filter((category) => category.id !== "")
-                          .map((category) => (
+                          ?.map((category) => (
                             <option key={category.id} value={category.id}>
                               {category.name}
                             </option>
@@ -410,104 +427,43 @@ const CreateTicketSolution = () => {
                   </Grid>
                 </Grid>
 
-                <Grid item xs={6}>
-                  <Grid container alignItems="center">
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        Solution Owner
-                      </h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <select
-                        id="ownerId"
-                        name="ownerId"
-                        className="form-select-custom"
-                        value={data.ownerId}
-                        onChange={handleInputChange}
-                      >
-                        {dataUsers
-                          .filter((owner) => owner.id !== "")
-                          .map((owner) => (
-                            <option key={owner.id} value={owner.id}>
-                              {owner.lastName} {owner.firstName}
-                            </option>
-                          ))}
-                      </select>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid container justifyContent="flex-end">
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        Review Date
-                      </h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <DateTimePicker
-                          slotProps={{
-                            textField: {
-                              helperText: `${reviewDate}`,
-                            },
+                {userRole === 2 && (
+                  <Grid item xs={6}>
+                    <Grid container alignItems="center">
+                      <Grid item xs={6}>
+                        <h2
+                          className="align-right"
+                          style={{
+                            fontSize: "20px",
+                            fontWeight: "bold",
+                            textAlign: "right",
                           }}
-                          value={reviewDate}
-                          onChange={(newValue) =>
-                            handleReviewDateChange(newValue)
-                          }
-                          renderInput={(props) => <TextField {...props} />}
-                        />
-                      </LocalizationProvider>
+                        >
+                          Solution Owner
+                        </h2>
+                      </Grid>
+                      <Grid item xs={5}>
+                        <select
+                          id="ownerId"
+                          name="ownerId"
+                          className="form-select-custom"
+                          value={data.ownerId}
+                          onChange={handleInputChange}
+                        >
+                          {dataUsers
+                            .filter(
+                              (owner) => owner.role !== 0 && owner.role !== 1
+                            )
+                            ?.map((owner) => (
+                              <option key={owner.id} value={owner.id}>
+                                {owner.lastName} {owner.firstName}
+                              </option>
+                            ))}
+                        </select>
+                      </Grid>
                     </Grid>
                   </Grid>
-                </Grid>
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        Expiry Date
-                      </h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <LocalizationProvider dateAdapter={AdapterMoment}>
-                        <DateTimePicker
-                          slotProps={{
-                            textField: {
-                              helperText: `${expiredDate}`,
-                            },
-                          }}
-                          value={expiredDate}
-                          onChange={(newValue) =>
-                            handleExpiredDateChange(newValue)
-                          }
-                        />
-                      </LocalizationProvider>
-                    </Grid>
-                  </Grid>
-                </Grid>
+                )}
               </Grid>
               <Grid container justifyContent="flex-end">
                 <Grid item xs={3}>
@@ -523,53 +479,14 @@ const CreateTicketSolution = () => {
                   </h2>
                 </Grid>
                 <Grid item xs={9}>
-                  <input
+                  <textarea
                     id="keyword"
                     type="text"
                     name="keyword"
                     className="form-control-text input-field"
+                    rows="4"
                     value={data.keyword}
                     onChange={handleInputChange}
-                  />
-                </Grid>
-              </Grid>
-              <Grid container justifyContent="flex-end">
-                <Grid item xs={9}>
-                  <p className="input-field-description">
-                    * Keywords should be comma separated <br /> Choosing a
-                    relevant keyword for a solution will improve its search
-                    capability, for example, Printer, toner, paper
-                  </p>
-                  <h5>Public</h5>
-                  <Switch
-                    checked={data.isPublic}
-                    onChange={handlePublicToggle}
-                    color="primary"
-                  />
-                </Grid>
-              </Grid>
-              <Grid container justifyContent="flex-end">
-                <Grid item xs={3}>
-                  <h2
-                    className="align-right"
-                    style={{
-                      fontSize: "20px",
-                      fontWeight: "bold",
-                      textAlign: "right",
-                    }}
-                  >
-                    Internal Comments
-                  </h2>
-                </Grid>
-                <Grid item xs={9}>
-                  <textarea
-                    id="internalComments"
-                    type="text"
-                    name="internalComments"
-                    className="form-control-text input-field"
-                    value={data.internalComments}
-                    onChange={handleInputChange}
-                    row={4}
                   />
                 </Grid>
               </Grid>
@@ -587,11 +504,12 @@ const CreateTicketSolution = () => {
                   onClick={handleSubmitTicket}
                   disabled={isSubmitting}
                 >
-                   {isSubmitting ? 'Submitting...' : 'Save'}
+                  {isSubmitting ? "Submitting..." : "Create"}
                 </button>
                 <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
+                  onClick={handleGoBack}
                 >
                   Cancel
                 </button>

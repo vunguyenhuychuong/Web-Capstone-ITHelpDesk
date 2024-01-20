@@ -2,21 +2,36 @@ import { Button, Dialog, DialogActions, TextField } from "@mui/material";
 import { MDBCol, MDBContainer, MDBRow } from "mdb-react-ui-kit";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
-import { ImpactOptions, UrgencyOptions } from "../../helpers/tableComlumn";
+import {
+  ImpactOptions,
+  TypeOptions,
+  UrgencyOptions,
+  priorityOptions,
+} from "../../helpers/tableComlumn";
 import { UpdateTicketForTechnician } from "../../../app/api/ticket";
 import moment from "moment";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { useEffect } from "react";
 
-const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket }) => {
+const EditTicketModel = ({
+  data,
+  open,
+  onClose,
+  ticketId,
+  updateTicket,
+  refetchDetail,
+}) => {
   const [editedData, setEditedData] = useState({
     location: data.location,
-    impact: data.impact,
+    impact: data.impact ?? ImpactOptions[0].id,
     impactDetail: data.impactDetail || "",
-    urgency: data.urgency,
-    scheduledStartTime: data.scheduledStartTime,
-    scheduledEndTime: data.scheduledEndTime,
+    priority: data.priority,
+    scheduledStartTime: data.scheduledStartTime ?? Date.now(),
+    scheduledEndTime: data.scheduledEndTime ?? Date.now(),
+    type: data.type ?? TypeOptions[0],
   });
+  console.log("editedData", editedData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [startDate, setStartDate] = useState(moment());
   const [endDate, setEndDate] = useState(moment());
@@ -40,7 +55,7 @@ const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket }) => {
     setStartDate(newDate);
     setEditedData((prevInputs) => ({
       ...prevInputs,
-      startDate: formattedDate,
+      scheduledStartTime: formattedDate,
     }));
   };
 
@@ -49,7 +64,7 @@ const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket }) => {
     setEndDate(newDate);
     setEditedData((prevInputs) => ({
       ...prevInputs,
-      endDate: formattedDate,
+      scheduledEndTime: formattedDate,
     }));
   };
 
@@ -57,13 +72,13 @@ const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket }) => {
     if (!startDate || !endDate) {
       return false;
     }
-    const isBefore = moment(startDate).isBefore(endDate);
+    const isBefore = moment(startDate).isBefore(moment(endDate));
     return isBefore;
   };
 
   const handleSaveChanges = async () => {
     const errors = {};
-    if (!data.impactDetail) {
+    if (!editedData.impactDetail) {
       errors.impactDetail = "ImpactDetail is required";
     }
     if (Object.keys(errors).length > 0) {
@@ -71,7 +86,11 @@ const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket }) => {
       return;
     }
 
-    const isDataValid = validateDate(data.startDate, data.endDate);
+    const isDataValid = validateDate(
+      editedData.scheduledStartTime,
+      editedData.scheduledEndTime
+    );
+
     if (!isDataValid) {
       toast.info("Start Date must be earlier than End Date.", {
         autoClose: 2000,
@@ -81,17 +100,17 @@ const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket }) => {
       return;
     }
 
-    const formattedReviewDate = moment(data.startDate).format(
+    const formattedReviewDate = moment(editedData.scheduledStartTime).format(
       "YYYY-MM-DDTHH:mm:ss"
     );
-    const formattedExpiredDate = moment(data.endDate).format(
+    const formattedExpiredDate = moment(editedData.scheduledEndTime).format(
       "YYYY-MM-DDTHH:mm:ss"
     );
 
     setIsSubmitting(true);
     try {
       const updatedData = {
-        location: editedData.location,
+        // location: editedData.location,
         impact: parseInt(editedData.impact, 10),
         impactDetail: editedData.impactDetail,
         urgency: parseInt(editedData.urgency, 10),
@@ -102,9 +121,23 @@ const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket }) => {
       updateTicket(updatedData);
     } catch (error) {
       console.log("Error while assigning ticket", error);
+    } finally {
+      setIsSubmitting(false);
+      await refetchDetail();
+      onClose();
     }
-    onClose();
   };
+
+  useEffect(() => {
+    handleStartDateChange(
+      data.scheduledStartTime
+        ? moment(data.scheduledStartTime)
+        : moment(Date.now())
+    );
+    handleEndDateChange(
+      data.scheduledEndTime ? moment(data.scheduledEndTime) : moment(Date.now())
+    );
+  }, [data]);
 
   return (
     <Dialog fullWidth open={open} onClose={onClose}>
@@ -112,11 +145,11 @@ const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket }) => {
         <MDBRow className="mb-4">
           <MDBCol className="text-center">
             <h2 style={{ fontWeight: "bold", color: "#3399FF" }}>
-              Edit Ticket
+              Edit Ticket's Properties
             </h2>
           </MDBCol>
         </MDBRow>
-        <MDBRow className="mb-4">
+        {/* <MDBRow className="mb-4">
           <MDBCol md="2" className="text-center mt-2">
             <label
               htmlFor="title"
@@ -137,7 +170,7 @@ const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket }) => {
               onChange={handleInputChange}
             />
           </MDBCol>
-        </MDBRow>
+        </MDBRow> */}
         <MDBRow className="mb-4">
           <MDBCol md="2" className="text-center mt-2">
             <label
@@ -196,20 +229,46 @@ const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket }) => {
               className="narrow-input"
               style={{ color: "#3399FF", fontWeight: "bold" }}
             >
-              Urgency
+              Priority
             </label>
           </MDBCol>
           <MDBCol md="10">
             <select
-              id="urgency"
-              name="urgency"
+              id="priority"
+              name="priority"
               className="form-select"
-              value={editedData.urgency}
+              value={editedData.priority}
               onChange={handleInputChange}
             >
-              {UrgencyOptions.map((urgency) => (
-                <option key={urgency.id} value={urgency.id}>
-                  {urgency.name}
+              {priorityOptions.map((priority) => (
+                <option key={priority.id} value={priority.id}>
+                  {priority.name}
+                </option>
+              ))}
+            </select>
+          </MDBCol>
+        </MDBRow>
+        <MDBRow className="mb-4">
+          <MDBCol md="2" className="text-center mt-2">
+            <label
+              htmlFor="title"
+              className="narrow-input"
+              style={{ color: "#3399FF", fontWeight: "bold" }}
+            >
+              Type
+            </label>
+          </MDBCol>
+          <MDBCol md="10">
+            <select
+              id="type"
+              name="type"
+              className="form-select"
+              value={editedData.type}
+              onChange={handleInputChange}
+            >
+              {TypeOptions.map((type) => (
+                <option key={type.id} value={type.name}>
+                  {type.name}
                 </option>
               ))}
             </select>
@@ -223,12 +282,13 @@ const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket }) => {
               className="narrow-input"
               style={{ color: "#3399FF", fontWeight: "bold" }}
             >
-              StartTime
+              Scheduled Start Time
             </label>
           </MDBCol>
-          <MDBCol md="10" >
+          <MDBCol md="10" style={{ width: "auto" }}>
             <LocalizationProvider dateAdapter={AdapterMoment}>
               <DateTimePicker
+                disablePast
                 slotProps={{
                   textField: {
                     helperText: `${startDate}`,
@@ -249,12 +309,13 @@ const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket }) => {
               className="narrow-input"
               style={{ color: "#3399FF", fontWeight: "bold" }}
             >
-              EndTime
+              Scheduled End Time
             </label>
           </MDBCol>
           <MDBCol md="9">
             <LocalizationProvider dateAdapter={AdapterMoment}>
               <DateTimePicker
+                disablePast
                 slotProps={{
                   textField: {
                     helperText: `${endDate}`,
@@ -262,6 +323,7 @@ const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket }) => {
                 }}
                 value={endDate}
                 onChange={(newValue) => handleEndDateChange(newValue)}
+                renderInput={(props) => <TextField {...props} />}
               />
             </LocalizationProvider>
           </MDBCol>
@@ -271,15 +333,6 @@ const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket }) => {
       <DialogActions
         style={{ justifyContent: "center", backgroundColor: "#EEEEEE" }}
       >
-        <Button
-          color="primary"
-          autoFocus
-          style={{ color: "white", backgroundColor: "#007bff" }}
-          onClick={() => handleSaveChanges()}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Submitting..." : "Submit"}
-        </Button>
         <Button
           onClick={onClose}
           color="primary"
@@ -291,6 +344,15 @@ const EditTicketModel = ({ data, open, onClose, ticketId, updateTicket }) => {
           }}
         >
           Cancel
+        </Button>
+        <Button
+          color="primary"
+          autoFocus
+          style={{ color: "white", backgroundColor: "#007bff" }}
+          onClick={() => handleSaveChanges()}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Submitting..." : "Submit"}
         </Button>
       </DialogActions>
     </Dialog>

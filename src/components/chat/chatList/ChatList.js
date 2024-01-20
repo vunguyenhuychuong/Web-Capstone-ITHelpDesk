@@ -71,12 +71,12 @@ const ChatList = () => {
 
   const createNewChat = async () => {
     console.log("Selected Customer ID:", selectedCustomerId);
-  console.log("Selected Technician ID:", selectedTechnicianId);
+    console.log("Selected Technician ID:", selectedTechnicianId);
     if (selectedCustomerId && selectedTechnicianId) {
       try {
         const customer = await getUserById(selectedCustomerId);
         const technician = await getUserById(selectedTechnicianId);
-  
+
         const newChat = {
           participants: [
             {
@@ -99,15 +99,15 @@ const ChatList = () => {
             },
           ],
         };
-  
+
         const newChatRef = push(conversationsRef, newChat);
         await newChatRef;
-  
+
         setConversations((prevConversations) => [
           ...prevConversations,
           { id: newChatRef.key, ...newChat },
         ]);
-  
+
         handleCloseDialog();
       } catch (error) {
         console.error("Error creating a new chat:", error);
@@ -116,7 +116,6 @@ const ChatList = () => {
       console.error("Error: Customer or Technician not selected");
     }
   };
-  
 
   const sendMessage = () => {
     if (newMessage.trim() !== "" && selectedConversation) {
@@ -239,7 +238,7 @@ const ChatList = () => {
           </div>
         </div>
         <div className="chatlist__items">
-          {conversations.map((conversation, index) => (
+          {conversations?.map((conversation, index) => (
             <ChatListItems
               key={conversation.id}
               animationDelay={index + 1}
@@ -267,7 +266,7 @@ const ChatList = () => {
                 value={selectedCustomerId || ""}
                 onChange={(e) => setSelectedCustomerId(e.target.value)}
               >
-                {dataCustomer.map((customer) => (
+                {dataCustomer?.map((customer) => (
                   <MenuItem key={customer.id} value={customer.id}>
                     {customer.lastName} {customer.firstName} - {customer.id}
                   </MenuItem>
@@ -285,7 +284,7 @@ const ChatList = () => {
               value={selectedTechnicianId || user.user.id}
               onChange={(e) => setSelectedTechnicianId(e.target.value)}
             >
-              {dataTechnician.map((technician) => (
+              {dataTechnician?.map((technician) => (
                 <MenuItem key={technician.id} value={technician.id}>
                   {technician.lastName} {technician.firstName} - {technician.id}
                 </MenuItem>

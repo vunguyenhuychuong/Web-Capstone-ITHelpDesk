@@ -3,19 +3,27 @@ import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import "../../../../assets/css/ticket.css";
 import "../../../../assets/css/EditTicket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import "draft-js/dist/Draft.css";
 import { FaFileContract } from "react-icons/fa";
 import {
   ArrowBack,
   ChatOutlined,
-  Newspaper,
   Paid,
-  Receipt,
   ReceiptLong,
 } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import AssignTicketModal from "../AssignTicketModal";
-import { Grid, MenuItem, Select, Tab, Tabs } from "@mui/material";
+import {
+  Button,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  Stack,
+  Tab,
+  Tabs,
+} from "@mui/material";
 import { formatDate } from "../../../helpers/FormatDate";
 import { Box } from "@mui/system";
 import LoadingSkeleton from "../../../../components/iconify/LoadingSkeleton";
@@ -23,21 +31,27 @@ import { useSelector } from "react-redux";
 import useContractData from "./useContractData";
 import PaymentContract from "./PaymentContract";
 import Details from "./Details";
-import usePaymentData from "./usePaymentData";
-import ContractChildList from "./ContractChildList";
-import ContractRenew from "./ContractRenew";
 import { getStatusContract } from "../../../helpers/tableComlumn";
+import ReactImageGallery from "react-image-gallery";
+import ConfirmDialog from "../../../../components/dialog/ConfirmDialog";
+import { deleteContract } from "../../../../app/api/contract";
 
 const DetailContract = () => {
   const { contractId } = useParams();
-  const { data, loading, setData } = useContractData(contractId);
-  const { dataPayment, setDataPayment } = usePaymentData(contractId);
+  const {
+    data,
+    loading,
+    setData,
+    fetchData: refetch,
+  } = useContractData(contractId);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [value, setValue] = useState(0);
+  const [previewImages, setPreviewImages] = useState([]);
+  const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth);
   const userRole = user.user.role;
-  const [selectedValue, setSelectedValue] = useState("");
+  const [openConfirm, setOpenConfirm] = React.useState(false);
 
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
@@ -47,10 +61,29 @@ const DetailContract = () => {
     navigate(`/home/editContract/${contractId}`);
   };
 
+  const handleDeleteContract = async (contractId) => {
+    try {
+      await deleteContract(contractId);
+      // await refetch();
+      handleCloseConfirm();
+      handleGoBack();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const handleCloseAssignTicket = () => {
     setDialogOpen(false);
   };
+  const handleCloseConfirm = () => {
+    setOpenConfirm(false);
+  };
+  const handleOpenImagePreview = () => {
+    setIsImagePreviewOpen(true);
+  };
 
+  const handleCloseImagePreview = () => {
+    setIsImagePreviewOpen(false);
+  };
   const handleGoBack = () => {
     if (userRole === 2) {
       navigate(`/home/contractList`);
@@ -58,7 +91,21 @@ const DetailContract = () => {
       navigate(`/home/contractList`);
     }
   };
-
+  useEffect(() => {
+    try {
+      const attachmentUrls = data?.attachmentUrls;
+      if (attachmentUrls && attachmentUrls.length > 0) {
+        const images = attachmentUrls.map((url, index) => ({
+          original: url,
+          thumbnail: url,
+          description: `Attachment Preview ${index + 1}`,
+        }));
+        setPreviewImages(images);
+      }
+    } catch (error) {
+      console.log("Error", error);
+    }
+  }, [data]);
   useEffect(() => {
     setValue(0);
   }, []);
@@ -66,10 +113,6 @@ const DetailContract = () => {
   if (loading) {
     return <div>Loading...</div>;
   }
-
-  const handleChange = (event) => {
-    setSelectedValue(event.target.value);
-  };
 
   return (
     <>
@@ -85,65 +128,54 @@ const DetailContract = () => {
           item
           style={{
             flex: 1,
-            paddingLeft: "10px",
           }}
         >
-          <Grid container spacing={2} className="border-box-detail">
-            <Grid item md={1} className="mt-2">
-              <div className="d-flex align-items-center">
-                <button
-                  type="button"
-                  className="btn btn-link icon-label"
-                  onClick={handleGoBack}
-                >
-                  <ArrowBack />
-                </button>
-              </div>
-            </Grid>
-            <Grid item md={2}>
-              <div className="d-flex align-items-center">
-                <button
-                  type="button"
-                  className="btn btn-link narrow-input icon-label mt-2"
+          <Stack
+            direction={"row"}
+            alignItems={"center"}
+            sx={{
+              backgroundColor: "#EEEEEE",
+              padding: 0.75,
+            }}
+            spacing={2}
+          >
+            <Button
+              sx={{
+                backgroundColor: "#FFFFFF",
+                borderRadius: "5px",
+              }}
+              onClick={handleGoBack}
+            >
+              <ArrowBack />
+            </Button>
+
+            {data.status !== 1 && (
+              <>
+                <Button
+                  sx={{
+                    backgroundColor: "#FFFFFF",
+                    borderRadius: "5px",
+                  }}
                   onClick={() => handleOpenEditTicket(contractId)}
                 >
                   Edit
-                </button>
-                <Select
-                  displayEmpty
-                  value={selectedValue}
-                  onChange={handleChange}
-                  inputProps={{ "aria-label": "Without label" }}
-                  style={{
-                    backgroundColor: "#f2f2f2",
+                </Button>
+
+                <Button
+                  color="error"
+                  sx={{
+                    backgroundColor: "#FFFFFF",
                     borderRadius: "5px",
-                    paddingLeft: "10px",
-                    height: "45px",
-                    padding: "10px 0",
-                    zIndex: 9999,
                   }}
+                  onClick={() => setOpenConfirm(true)}
                 >
-                  {selectedValue !== "" ? null : (
-                    <MenuItem value="" disabled>
-                      <em className="action-menu-item">Action</em>
-                    </MenuItem>
-                  )}
+                  Delete
+                </Button>
+              </>
+            )}
+          </Stack>
 
-                  <MenuItem value={10}>Renew Contract</MenuItem>
-
-                  {userRole === 2 && [
-                    <MenuItem key={20} value={20}>
-                      Add Child Contract
-                    </MenuItem>,
-                    <MenuItem key={30} value={30}>
-                      Add Payment Information
-                    </MenuItem>,
-                  ]}
-                </Select>
-              </div>
-            </Grid>
-          </Grid>
-          <MDBRow className="mb-4">
+          <MDBRow className="mb-2">
             <MDBCol
               md="12"
               className="mt-2"
@@ -159,11 +191,21 @@ const DetailContract = () => {
                 <span style={{ marginBottom: "5px", fontSize: "1.5em" }}>
                   #{data.id} {data.name || "null Name"}
                 </span>
+                <span>
+                  Contract number:{" "}
+                  <span style={{ fontWeight: "bold" }}>
+                    {data.contractNumber}
+                  </span>
+                </span>
                 <span style={{ fontSize: "1rem" }}>
                   Status:{" "}
-                  <span style={{ color: "red" }}>
-                    {getStatusContract(data.status)}
-                  </span>
+                  <Chip
+                    label={getStatusContract(data.status)?.name}
+                    sx={{
+                      color: "white",
+                      backgroundColor: getStatusContract(data.status)?.color,
+                    }}
+                  />
                   <span className="bold-text"></span>{" "}
                   <ChatOutlined color="#007bff" />
                   <span className="bold-text"> Valid till:</span>{" "}
@@ -171,6 +213,18 @@ const DetailContract = () => {
                 </span>
               </div>
             </MDBCol>
+            <Stack direction="row" justifyContent={"center"}>
+              {data?.attachmentUrls && (
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={handleOpenImagePreview}
+                  style={{ marginTop: "2rem", width: "50%" }}
+                >
+                  View Attachments
+                </Button>
+              )}
+            </Stack>
           </MDBRow>
           <Box sx={{ width: "100%" }}>
             <Tabs
@@ -212,34 +266,6 @@ const DetailContract = () => {
                 }
                 className="custom-tab-label"
               />
-              <Tab
-                label={
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      textTransform: "none",
-                    }}
-                  >
-                    <Receipt sx={{ marginRight: 1 }} /> Child Contract
-                  </div>
-                }
-                className="custom-tab-label"
-              />
-              <Tab
-                label={
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      textTransform: "none",
-                    }}
-                  >
-                    <Newspaper sx={{ marginRight: 1 }} /> Renewal Details
-                  </div>
-                }
-                className="custom-tab-label"
-              />
             </Tabs>
             <Box role="tabpanel" hidden={value !== 0}>
               {value === 0 ? (
@@ -251,27 +277,42 @@ const DetailContract = () => {
             <Box role="tabpanel" hidden={value !== 1}>
               {value === 1 ? (
                 <PaymentContract
-                  dataPayment={dataPayment}
+                  dataPayment={data}
                   loading={loading || false}
                 />
               ) : (
                 <LoadingSkeleton />
               )}
             </Box>
-            <Box role="tabpanel" hidden={value !== 2}>
-              {value === 2 ? <ContractChildList /> : <LoadingSkeleton />}
-            </Box>
-            <Box role="tabpanel" hidden={value !== 3}>
-              {value === 3 ? <ContractRenew /> : <LoadingSkeleton />}
-            </Box>
           </Box>
         </Grid>
       </Grid>
-
+      <Dialog
+        open={isImagePreviewOpen}
+        onClose={handleCloseImagePreview}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Attachment Image Preview</DialogTitle>
+        <DialogContent>
+          <ReactImageGallery items={previewImages} />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseImagePreview} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
       <AssignTicketModal
         open={dialogOpen}
         onClose={handleCloseAssignTicket}
         ticketId={contractId}
+      />
+      <ConfirmDialog
+        content={"Are you sure want to delete this contract?"}
+        open={openConfirm}
+        action={() => handleDeleteContract(contractId)}
+        handleClose={handleCloseConfirm}
       />
     </>
   );

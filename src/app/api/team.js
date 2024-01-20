@@ -59,10 +59,10 @@ export async function AddTeam(teamData) {
         Authorization: header,
       },
     });
-    toast.success("Create Mode successful", {
-        autoClose: 1000,
-        hideProgressBar: false,
-      });
+    toast.success("Create team successfully", {
+      autoClose: 1000,
+      hideProgressBar: false,
+    });
     return res.data.result;
   } catch (error) {
     if (
@@ -148,27 +148,46 @@ export async function getManagerList() {
   } catch (error) {
     console.log(error);
   }
-};
+}
 
 export async function getCityList() {
-  try{
-    const res = await axios.get(`https://provinces.open-api.vn/api/?fbclid=IwAR3163YbjjVD3neOn1YZkYGdQYxz2Q0Y9_WiB__rSw8gmGsScxtvj-Z7TQE`);
+  try {
+    const res = await axios.get(
+      `https://provinces.open-api.vn/api/?fbclid=IwAR3163YbjjVD3neOn1YZkYGdQYxz2Q0Y9_WiB__rSw8gmGsScxtvj-Z7TQE`
+    );
     return res.data;
-  }catch(error){
+  } catch (error) {
     console.log(error);
   }
-};
+}
 
 export async function getTechnicianList() {
   const header = getAuthHeader();
-  try{
+  try {
     const res = await axios.get(`${baseURL}/user/list/technicians`, {
       headers: {
         Authorization: header,
       },
     });
     return res.data.result;
-  }catch(error){
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getTechnicianByTeam(teamId) {
+  const header = getAuthHeader();
+  try {
+    const res = await axios.get(
+      `${baseURL}/assign/get-technicians?teamId=${teamId}`,
+      {
+        headers: {
+          Authorization: header,
+        },
+      }
+    );
+    return res.data.result;
+  } catch (error) {
     console.log(error);
   }
 }

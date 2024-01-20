@@ -35,9 +35,12 @@ import { useCallback } from "react";
 import PageSizeSelector from "../Pagination/Pagination";
 import { formatDate } from "../../helpers/FormatDate";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
+import CircularLoading from "../../../components/iconify/CircularLoading";
+import { getAllCategories } from "../../../app/api/category";
 
 const ServiceList = () => {
   const [dataService, setDataService] = useState([]);
+  const [dataCategories, setDataCategories] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogEdit, setDialogEdit] = useState(false);
   const [selectService, setSelectService] = useState(null);
@@ -50,13 +53,22 @@ const ServiceList = () => {
   const [sortBy, setSortBy] = useState("id");
   const [isLoading, setIsLoading] = useState(true);
 
+  const fetchAllCategories = async () => {
+    try {
+      const res = await getAllCategories();
+      setDataCategories(res?.data);
+    } catch (error) {
+      console.log("Error while fetching data", error);
+    }
+  };
+
   const fetchAllService = useCallback(async () => {
     try {
       let filter = "";
       if (searchQuery) {
         filter = `title="${encodeURIComponent(searchQuery)}"`;
       }
-      const service = await getAllServices(
+      const response = await getAllServices(
         searchField,
         searchQuery,
         currentPage,
@@ -64,7 +76,8 @@ const ServiceList = () => {
         sortBy,
         sortDirection
       );
-      setDataService(service);
+      setDataService(response?.data);
+      setTotalPages(response?.totalPage);
       setIsLoading(false);
     } catch (error) {
       console.error(error);
@@ -73,8 +86,9 @@ const ServiceList = () => {
   }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection]);
 
   useEffect(() => {
+    fetchAllCategories();
     fetchAllService();
-  }, [fetchAllService]);
+  }, []);
 
   const handleChangePage = (event, value) => {
     setCurrentPage(value);
@@ -104,12 +118,10 @@ const ServiceList = () => {
   };
 
   const handleOpenCreateService = (e) => {
-    e.preventDefault();
     setDialogOpen(true);
   };
 
   const handleCloseService = (e) => {
-    e.preventDefault();
     setDialogOpen(false);
   };
 
@@ -117,20 +129,25 @@ const ServiceList = () => {
     setDialogEdit(false);
   };
 
+  const getCategoryById = (id) => {
+    const category = dataCategories.find((cate) => cate.id === id);
+    return category;
+  };
+
   const onDeleteService = async (id) => {
     const shouldDelete = window.confirm(
-      "Are you sure want to delete this mode"
+      "Are you sure want to delete this service"
     );
     if (shouldDelete) {
       try {
         const result = await deleteService(id);
         fetchAllService();
-        toast.success("Delete Service successful", result.message);
-        if (result.isError === false) {
-          toast.success(result.message);
-        } else {
-          toast.error(result.message);
-        }
+        toast.success("Delete Service successfully", result.message);
+        // if (result.isError === false) {
+        //   toast.success(result.message);
+        // } else {
+        //   toast.error(result.message);
+        // }
       } catch (error) {
         toast.error("Failed to delete Service. Please try again later");
       }
@@ -139,7 +156,6 @@ const ServiceList = () => {
 
   useEffect(() => {
     fetchAllService();
-    setTotalPages(3);
   }, [fetchAllService]);
 
   return (
@@ -152,9 +168,9 @@ const ServiceList = () => {
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
-              <span style={{ color: "#FFFFFF" }}>All Service</span>
+              <span style={{ color: "#FFFFFF" }}>All Services</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
                 color="#eee"
                 style={{
@@ -196,8 +212,7 @@ const ServiceList = () => {
                   style={{ color: "white" }}
                 >
                   <MenuItem value="type">Type</MenuItem>
-                  <MenuItem value="description">Description</MenuItem>
-                  <MenuItem value="id">Id</MenuItem>
+                  <MenuItem value="description">Description</MenuItem>              
                 </Select>
               </FormControl>
               <div className="input-wrapper">
@@ -223,13 +238,15 @@ const ServiceList = () => {
           </MDBContainer>
         </MDBNavbar>
         {isLoading ? (
-          <CustomizedProgressBars />
+          <MDBTableBody className="bg-light">
+            <tr>
+              <td>
+                <CircularLoading />
+              </td>
+            </tr>
+          </MDBTableBody>
         ) : (
-          <MDBTable
-            className="align-middle mb-0"
-            responsive
-            style={{ border: "0.05px solid #50545c" }}
-          >
+          <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr style={{ fontSize: "1.2rem" }}>
                 <th style={{ fontWeight: "bold" }}>
@@ -252,10 +269,10 @@ const ServiceList = () => {
                 <th
                   style={{ fontWeight: "bold" }}
                   className="sortable-header"
-                  onClick={() => handleSortChange("type")}
+                  onClick={() => handleSortChange("categoryId")}
                 >
-                  Type
-                  {sortBy === "type" &&
+                  Category
+                  {sortBy === "categoryId" &&
                     (sortDirection === "asc" ? (
                       <ArrowDropDown />
                     ) : (
@@ -293,21 +310,21 @@ const ServiceList = () => {
               </tr>
             </MDBTableHead>
             <MDBTableBody className="bg-light">
-              {dataService.map((service, index) => {
+              {dataService?.map((service, index) => {
                 return (
                   <tr key={index}>
                     <td>
                       <input type="checkbox" />
-                    </td>      
+                    </td>
                     <td>{service.description}</td>
-                    <td>{service.type}</td>
+                    <td>{getCategoryById(service?.categoryId)?.name ?? ""}</td>
                     <td>{formatDate(service.createdAt || "-")}</td>
                     <td>{formatDate(service.modifiedAt || "-")}</td>
                     <td onClick={() => handleEditClick(service.id)}>
                       <Edit />
                     </td>
                     <td onClick={() => onDeleteService(service.id)}>
-                      <DeleteForeverSharp />
+                      <DeleteForeverSharp color="error" />
                     </td>
                   </tr>
                 );
@@ -326,11 +343,20 @@ const ServiceList = () => {
         </Box>
       </MDBContainer>
       <Dialog open={dialogOpen} onClose={handleCloseService}>
-        <CreateService onClose={handleCloseService} />
+        <CreateService
+          refetch={fetchAllService}
+          onClose={handleCloseService}
+          dataCategories={dataCategories}
+        />
       </Dialog>
 
       <Dialog open={dialogEdit} onClose={handleCloseEdit}>
-        <EditService onClose={handleCloseEdit} serviceId={selectService} />
+        <EditService
+          refetch={fetchAllService}
+          onClose={handleCloseEdit}
+          serviceId={selectService}
+          dataCategories={dataCategories}
+        />
       </Dialog>
     </>
   );

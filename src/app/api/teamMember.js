@@ -72,6 +72,7 @@ export async function getTeamMemberId(id) {
         Authorization: header,
       },
     });
+
     return res.data.result;
   } catch (error) {
     console.log(error);
@@ -86,8 +87,18 @@ export async function createTeamMemberAssign(data) {
         Authorization: header,
       },
     });
+    toast.success("Add team member successfully", {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     return res.data.result;
   } catch (error) {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     console.log(error);
   }
 }
@@ -104,8 +115,18 @@ export async function updateTeamMember(id, data) {
         },
       }
     );
+    toast.success("Update team member successfully", {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     return res.data.result;
   } catch (error) {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     console.log(error);
   }
 }
@@ -118,8 +139,18 @@ export async function deleteTeamMember(id) {
         Authorization: header,
       },
     });
+    toast.success("Remove team member successfully", {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     return res.data.result;
   } catch (error) {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
     console.log(error);
   }
 }

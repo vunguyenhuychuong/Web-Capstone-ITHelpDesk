@@ -8,20 +8,26 @@ import {
   Typography,
   Card,
   Box,
+  Button,
+  Stack,
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { useState } from "react";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import { getAllService } from "../../../../app/api/service";
+import { useNavigate } from "react-router-dom";
 
 const Step2 = ({
   data,
   imagePreviewUrl,
   isImagePreviewOpen,
   setIsImagePreviewOpen,
+  handleSubmitTicket,
+  isSubmitting,
 }) => {
   const [dataService, setDataServices] = useState([]);
+  const navigate = useNavigate();
   const fetchService = async () => {
     try {
       const response = await getAllService();
@@ -80,6 +86,25 @@ const Step2 = ({
         </Box>
       </Card>
 
+      <Stack sx={{ flexDirection: "row", justifyContent: "center" }}>
+        <Button
+          color="primary"
+          variant="contained"
+          onClick={handleSubmitTicket}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Creating..." : "Create"}
+        </Button>
+        <Button
+          color="inherit"
+          variant="contained"
+          style={{ marginLeft: "8px" }}
+          onClick={() => navigate(`/home/requestCustomerList`)}
+        >
+          Cancel
+        </Button>
+      </Stack>
+
       <Dialog
         open={isImagePreviewOpen}
         onClose={() => setIsImagePreviewOpen(false)}
@@ -109,6 +134,5 @@ Step2.propTypes = {
   data: PropTypes.object.isRequired,
   handleSubmit: PropTypes.func.isRequired,
 };
-
 
 export default Step2;

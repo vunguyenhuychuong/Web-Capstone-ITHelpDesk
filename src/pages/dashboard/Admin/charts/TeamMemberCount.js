@@ -9,7 +9,7 @@ export default function TeamMemberCount(props) {
     return null;
   }
 
-  const transformedData = dataSummary.data.map((item, index) => ({
+  const transformedData = dataSummary.data?.map((item, index) => ({
     id: index,
     value: item.numberOfMembers,
     label: item.name,
@@ -20,8 +20,8 @@ export default function TeamMemberCount(props) {
         series={[
           {
             data: transformedData,
-            highlightScope: { faded: 'global', highlighted: 'item' },
-            faded: { innerRadius: 40, additionalRadius: -30, color: 'gray' },
+            highlightScope: { faded: "global", highlighted: "item" },
+            faded: { innerRadius: 40, additionalRadius: -30, color: "gray" },
           },
         ]}
         height={200}

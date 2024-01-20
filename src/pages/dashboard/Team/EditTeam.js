@@ -1,67 +1,89 @@
 import { useEffect, useState } from "react";
-import { UpdateTeam, getCityList, getManagerList, getTeamById } from "../../../app/api/team";
+import {
+  UpdateTeam,
+  getCityList,
+  getManagerList,
+  getTeamById,
+} from "../../../app/api/team";
 import { toast } from "react-toastify";
 import { MDBBtn, MDBCol, MDBContainer, MDBRow } from "mdb-react-ui-kit";
+import { getAllCategories } from "../../../app/api/category";
 
 const EditTeam = ({ onClose, teamId, onFetchDataTeam }) => {
   const [data, setData] = useState({
     name: "",
     managerId: 1,
+    categoryId: 1,
     location: "",
     description: "",
     isActive: true,
   });
   const [dataManagers, setDataManagers] = useState([]);
+  const [dataCategories, setDataCategories] = useState([]);
   const [dataCity, setDataCity] = useState([]);
   const [fieldErrors, setFieldErrors] = useState({
     name: "",
     managerId: "",
     location: "",
+    categoryId: "",
     description: "",
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const result = await getTeamById(teamId);
-        const Managers = await getManagerList();
-        setDataManagers(Managers);
-        if (result) {
-          setData({
-            name: result.name || "",
-            description: result.description || "",
-            location: result.location || "",
-            managerId: result.managerId || Managers[0]?.id || "",
-            isActive: result.isActive,
-          });
-        } else {
-          console.error("Error: Received undefined or null result from API");
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    if (teamId) {
-      fetchDataCityList();
-      fetchData();
-    }
-  }, [teamId]);
-
   const fetchDataCityList = async () => {
-    try{
+    try {
       const cities = await getCityList();
       setDataCity(cities);
-    }catch(error){
+    } catch (error) {
       console.log(error);
     }
-  }
-
+  };
+  const fetchCategory = async () => {
+    try {
+      const fetchCategories = await getAllCategories();
+      setDataCategories(fetchCategories?.data);
+      setData((prevData) => ({
+        ...prevData,
+        categoryId: fetchCategories.data[0]?.id,
+      }));
+    } catch (error) {
+      console.log("Error while fetching data", error);
+    } finally {
+    }
+  };
+  const fetchData = async () => {
+    try {
+      const result = await getTeamById(teamId);
+      const Managers = await getManagerList();
+      setDataManagers(Managers);
+      if (result) {
+        setData({
+          name: result.name || "",
+          description: result.description || "",
+          location: result.location ?? "",
+          categoryId: result.categoryId ?? dataCategories[0]?.id,
+          managerId: result.managerId ?? Managers[0]?.id,
+          isActive: result.isActive,
+        });
+      } else {
+        console.error("Error: Received undefined or null result from API");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    if (name === "categoryId") {
+      setData((prevData) => ({
+        ...prevData,
+        [name]: Number.parseInt(value),
+      }));
+    } else {
+      setData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
 
     // Validate the field and update the errors
     const errors = validateField(name, value);
@@ -99,13 +121,13 @@ const EditTeam = ({ onClose, teamId, onFetchDataTeam }) => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onHandleEditTicket = async (e) => {
+  const onHandleEditTeam = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
       await UpdateTeam(teamId, data);
       setIsSubmitting(false);
-      toast.success("Update Mode successful", {
+      toast.success("Update team successfully", {
         autoClose: 1000,
         hideProgressBar: false,
       });
@@ -117,10 +139,18 @@ const EditTeam = ({ onClose, teamId, onFetchDataTeam }) => {
     }
   };
 
+  useEffect(() => {
+    if (teamId) {
+      fetchDataCityList();
+      fetchData();
+      fetchCategory();
+    }
+  }, [teamId]);
+
   return (
     <section
       style={{ backgroundColor: "#DDDDDD" }}
-      className="edit-ticket-container"
+      className="edit-Team-container"
     >
       <MDBContainer>
         <MDBRow className="mb-4">
@@ -205,6 +235,31 @@ const EditTeam = ({ onClose, teamId, onFetchDataTeam }) => {
               </MDBCol>
             </MDBRow>
             <MDBRow className="mb-4">
+              <MDBCol md="2" className="text-center mt-2 mb-2">
+                <label htmlFor="title" className="narrow-input">
+                  Category
+                </label>
+              </MDBCol>
+              <MDBCol md="10">
+                <select
+                  id="categoryId"
+                  name="categoryId"
+                  className="form-select"
+                  value={data.categoryId}
+                  onChange={handleInputChange}
+                  style={{ marginTop: "10px" }}
+                >
+                  {dataCategories
+                    .filter((cate) => cate.id !== "")
+                    ?.map((cate) => (
+                      <option key={cate.id} value={cate.id}>
+                        {cate.name}
+                      </option>
+                    ))}
+                </select>
+              </MDBCol>
+            </MDBRow>
+            <MDBRow className="mb-4">
               <MDBCol md="2" className="text-center mt-2">
                 <label htmlFor="title" className="narrow-input">
                   Description
@@ -232,7 +287,7 @@ const EditTeam = ({ onClose, teamId, onFetchDataTeam }) => {
                 small="true"
                 color="primary"
                 type="submit"
-                onClick={onHandleEditTicket}
+                onClick={onHandleEditTeam}
               >
                 Edit
               </MDBBtn>

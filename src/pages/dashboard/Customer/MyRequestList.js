@@ -11,9 +11,22 @@ import {
 import React, { useCallback, useEffect, useState } from "react";
 import "../../../assets/css/ticketCustomer.css";
 import PageSizeSelector from "../Pagination/Pagination";
-import { ContentCopy, ViewCompact } from "@mui/icons-material";
+import {
+  ArrowDropDown,
+  ArrowDropUp,
+  ContentCopy,
+  ViewCompact,
+} from "@mui/icons-material";
 import { formatDate } from "../../helpers/FormatDate";
-import { Box, FormControl, MenuItem, Pagination, Select } from "@mui/material";
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Pagination,
+  Select,
+  Tooltip,
+} from "@mui/material";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import { getTicketByUserIdPagination } from "../../../app/api/ticket";
@@ -24,13 +37,13 @@ import {
 } from "../../helpers/tableComlumn";
 import { getAllCategories } from "../../../app/api/category";
 import { useNavigate } from "react-router-dom";
+import CircularLoading from "../../../components/iconify/CircularLoading";
 
 const MyRequestList = () => {
   const [dataListTicketsCustomer, setDataListTicketsCustomer] = useState([]);
   const user = useSelector((state) => state.auth);
   const userId = user.user.id;
   const [dataCategories, setDataCategories] = useState([]);
-  const [selectedTicketIds, setSelectedTicketIds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -39,6 +52,7 @@ const MyRequestList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
   const [sortBy, setSortBy] = useState("id");
+  const [ticketStatus, setTicketStatus] = useState(null);
   const navigate = useNavigate();
 
   const fetchDataListTicketCustomer = useCallback(async () => {
@@ -55,9 +69,11 @@ const MyRequestList = () => {
         pageSize,
         sortBy,
         sortDirection,
-        userId
+        userId,
+        ticketStatus
       );
-      setDataListTicketsCustomer(response);
+      setDataListTicketsCustomer(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.log(error);
     } finally {
@@ -71,32 +87,17 @@ const MyRequestList = () => {
     sortBy,
     sortDirection,
     userId,
+    ticketStatus,
   ]);
 
-  const handleSelectTicket = (ticketId) => {
-    if (selectedTicketIds.includes(ticketId)) {
-      setSelectedTicketIds(
-        selectedTicketIds.filter((id) => id !== ticketId)
-      );
-    } else {
-      setSelectedTicketIds([...selectedTicketIds, ticketId]);
-    }
-  };
-
-  const handleSelectAllSolutions = () => {
-    if (selectedTicketIds.length === dataListTicketsCustomer.length) {
-      setSelectedTicketIds([]);
-    } else {
-      setSelectedTicketIds(
-        dataListTicketsCustomer.map((ticket) => ticket.id)
-      );
-    }
+  const handleStatusChange = (e) => {
+    setTicketStatus(e.target.value);
   };
 
   const fetchAllCategories = async () => {
     try {
       const res = await getAllCategories();
-      setDataCategories(res);
+      setDataCategories(res?.data);
     } catch (error) {
       console.log("Error while fetching data", error);
     }
@@ -126,10 +127,6 @@ const MyRequestList = () => {
     }
   };
 
-  const handleOpenDetailTicketLog = (ticketId) => {
-    navigate(`/home/ticketLog/${ticketId}`);
-  };
-
   const handleOpenDetailTicket = (ticketId) => {
     navigate(`/home/detailTicket/${ticketId}`);
   };
@@ -141,7 +138,6 @@ const MyRequestList = () => {
   useEffect(() => {
     fetchDataListTicketCustomer();
     fetchAllCategories();
-    setTotalPages(4);
   }, [fetchDataListTicketCustomer]);
 
   return (
@@ -149,18 +145,56 @@ const MyRequestList = () => {
       <MDBContainer className="py-5 custom-container">
         <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid>
-            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "16px" }}>
+            <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
               <span style={{ color: "#FFFFFF" }}>All My Requests</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
-            <MDBBtn
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
+              <MDBBtn
                 color="#eee"
-                style={{ fontWeight: "bold", fontSize: "20px", color: "#FFFFFF" }}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "20px",
+                  color: "#FFFFFF",
+                }}
                 onClick={handleOpenRequestTicket}
               >
                 <FaPlus /> New
               </MDBBtn>
+              <div style={{ textAlign: "center" }}>
+                <FormControl
+                  variant="outlined"
+                  style={{
+                    minWidth: 120,
+                    marginRight: 10,
+                    marginTop: 10,
+                    marginLeft: 10,
+                  }}
+                  size="small"
+                >
+                  <InputLabel sx={{ color: "white" }}>
+                    Sort Status Ticket
+                  </InputLabel>
+                  <Select
+                    label="Sort Status Ticket"
+                    value={ticketStatus}
+                    onChange={handleStatusChange}
+                    inputProps={{
+                      name: "sortField",
+                      id: "search-field",
+                    }}
+                    style={{ color: "white" }}
+                  >
+                    <MenuItem value={null}>-</MenuItem>
+                    <MenuItem value={0}>Open</MenuItem>
+                    <MenuItem value={1}>Assign</MenuItem>
+                    <MenuItem value={2}>Progress</MenuItem>
+                    <MenuItem value={3}>Resolved</MenuItem>
+                    <MenuItem value={4}>Closed</MenuItem>
+                    <MenuItem value={5}>Cancelled</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
               <FormControl
                 variant="outlined"
                 style={{
@@ -178,7 +212,7 @@ const MyRequestList = () => {
                     name: "searchField",
                     id: "search-field",
                   }}
-                  style={{color: 'white'}}
+                  style={{ color: "white" }}
                 >
                   <MenuItem value="id">ID</MenuItem>
                   <MenuItem value="title">Title</MenuItem>
@@ -214,106 +248,144 @@ const MyRequestList = () => {
           <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>
-                  <input
-                    type="checkbox"
-                    checked={
-                      selectedTicketIds.length ===
-                      dataListTicketsCustomer.length
-                    }
-                    onChange={handleSelectAllSolutions}
-                  />
-                </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>Log</th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>Detail</th>
+                {/* <th style={{ fontWeight: "bold", fontSize: "18px" }}>ID</th> */}
+
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("title")}
+                  className="sortable-header"
                 >
-                  Title
+                  <Tooltip title="Click here to sort by Title" arrow>
+                    Title
+                    {sortBy === "title" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </Tooltip>
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
+                  className="sortable-header"
                   onClick={() => handleSortChange("categoryId")}
                 >
-                  Category
+                  <Tooltip title="Click here to sort by Category" arrow>
+                    Category
+                    {sortBy === "categoryId" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </Tooltip>
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("priority")}
+                  className="sortable-header"
                 >
-                  Priority
+                  <Tooltip title="Click here to sort by Priority" arrow>
+                    Priority
+                    {sortBy === "priority" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </Tooltip>
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("ticketStatus")}
+                  className="sortable-header"
                 >
-                  Ticket Status
+                  <Tooltip title="Click here to sort by Ticket Status" arrow>
+                    Ticket Status
+                    {sortBy === "ticketStatus" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </Tooltip>
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
-                  Created
+                <th
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
+                  onClick={() => handleSortChange("createdAt")}
+                  className="sortable-header"
+                >
+                  <Tooltip title="Click here to sort by Create Time" arrow>
+                    Created
+                    {sortBy === "modifiedAt" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </Tooltip>
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}>
-                  Last Update
+                <th
+                  style={{ fontWeight: "bold", fontSize: "14px" }}
+                  onClick={() => handleSortChange("modifiedAt")}
+                  className="sortable-header"
+                >
+                  <Tooltip title="Click here to sort by Update Time" arrow>
+                    Last Update
+                    {sortBy === "modifiedAt" &&
+                      (sortDirection === "asc" ? (
+                        <ArrowDropDown />
+                      ) : (
+                        <ArrowDropUp />
+                      ))}
+                  </Tooltip>
                 </th>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
               </tr>
             </MDBTableHead>
             {loading ? (
-              <CustomizedProgressBars />
+              <MDBTableBody className="bg-light">
+                <tr>
+                  <td>
+                    <CircularLoading />
+                  </td>
+                </tr>
+              </MDBTableBody>
             ) : (
               <MDBTableBody className="bg-light">
-                {dataListTicketsCustomer.map((Ticket, index) => {
-                  const isSelected = selectedTicketIds.includes(
-                    Ticket.id
-                  );
+                {dataListTicketsCustomer?.map((Ticket, index) => {
                   const ticketStatusOption = TicketStatusOptions.find(
                     (option) => option.id === Ticket.ticketStatus
                   );
                   const priorityOption = getPriorityOptionById(Ticket.priority);
                   return (
                     <tr key={index}>
-                      <td>{Ticket.id}</td>
-                      <td>
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() =>
-                            handleSelectTicket(Ticket.id)
-                          }
-                        />
-                      </td>
-                      <td>
-                        <ViewCompact
-                          onClick={() =>
-                            handleOpenDetailTicketLog(Ticket.id)
-                          }
-                        />{" "}
-                      </td>
-                      <td>
-                        <ViewCompact
-                          onClick={() =>
-                            handleOpenDetailTicket(Ticket.id)
-                          }
-                        />{" "}
-                      </td>
+                      {/* <td>{Ticket.id}</td> */}
                       <td>{Ticket.title}</td>
                       <td>{getCategoryNameById(Ticket.categoryId)}</td>
-                      <td> <span
-                        className={`badge ${priorityOption.colorClass} rounded-pill`}
-                        style={{ fontSize: priorityOption.fontSize }}
-                      >
-                        {priorityOption.name}
-                      </span></td>
+                      <td>
+                        {" "}
+                        <span
+                          className={`badge ${priorityOption.colorClass} rounded-pill`}
+                          style={{ fontSize: priorityOption.fontSize }}
+                        >
+                          {priorityOption.name}
+                        </span>
+                      </td>
                       <td>
                         <span style={ticketStatusOption.badgeStyle}>
                           {ticketStatusOption.icon}
                           {ticketStatusOption.name}
                         </span>
-                         {/* <td>{getStatusNameById(Ticket.ticketStatus)}</td> */}
+                        {/* <td>{getStatusNameById(Ticket.ticketStatus)}</td> */}
                       </td>
                       <td>{formatDate(Ticket.createdAt)}</td>
                       <td>{formatDate(Ticket.modifiedAt)}</td>
+                      <td>
+                        <ViewCompact
+                          onClick={() => handleOpenDetailTicket(Ticket.id)}
+                        />
+                      </td>
                     </tr>
                   );
                 })}
