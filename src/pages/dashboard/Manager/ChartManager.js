@@ -21,6 +21,7 @@ import {
 import "../../../assets/css/homeManager.css";
 import React, { useEffect, useState } from "react";
 import {
+  exportFileManager,
   getChartCategory,
   getChartDashBoardManager,
   getChartLastMonth,
@@ -43,6 +44,8 @@ import LastMonthChart from "./charts/LastMonthChart";
 import MonthChart from "./charts/MonthChart";
 import { Chart } from "primereact/chart";
 import { FaTicketAlt } from "react-icons/fa";
+import { formatCurrency } from "../../helpers/FormatCurrency";
+import FileSaver from 'file-saver';
 
 const ChartManager = () => {
   const [dataTotalDashBoard, setDataTotalDashBoard] = useState([]);
@@ -201,6 +204,24 @@ const ChartManager = () => {
   });
   const [chartOptions, setChartOptions] = useState({});
 
+  const handleExportClick = async () => {
+    try {
+      const response = await exportFileManager();
+
+      // Assuming the API returns a hash code
+      const hashCode = response.data.hashCode;
+
+      // Make another API call to get the file content based on the hash code
+      const fileContentResponse = await fetch(`/api/getFileContent?hashCode=${hashCode}`);
+      const fileContent = await fileContentResponse.blob();
+
+      // Use FileSaver to trigger the file download
+      FileSaver.saveAs(fileContent, 'downloaded_file.xlsx');
+    } catch (error) {
+      console.error('Error exporting file:', error);
+    }
+  };
+
   useEffect(() => {
     const fetchDataTotalChart = async () => {
       try {
@@ -298,6 +319,7 @@ const ChartManager = () => {
                       variant="contained"
                       color="secondary"
                       className="custom-button"
+                      onClick={handleExportClick}
                     >
                      <FileDownload /> Export
                     </button>
@@ -555,7 +577,7 @@ const ChartManager = () => {
                         variant="h5"
                         style={{ fontWeight: "bold", color: "#222222" }}
                       >
-                        {dataTotalDashBoard.totalPaymentOfDay} 
+                        {formatCurrency(dataTotalDashBoard.totalPaymentOfDay)}
                       </Typography>
                     </div>
                     <div

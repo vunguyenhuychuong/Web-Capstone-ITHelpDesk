@@ -282,7 +282,6 @@ const Team = () => {
                   }}
                   style={{ color: "white" }}
                 >
-                  <MenuItem value="id">ID</MenuItem>
                   <MenuItem value="name">Name Team</MenuItem>
                   <MenuItem value="location">Location</MenuItem>
                   <MenuItem value="description">Description</MenuItem>

@@ -212,8 +212,7 @@ const ServiceList = () => {
                   style={{ color: "white" }}
                 >
                   <MenuItem value="type">Type</MenuItem>
-                  <MenuItem value="description">Description</MenuItem>
-                  <MenuItem value="id">Id</MenuItem>
+                  <MenuItem value="description">Description</MenuItem>              
                 </Select>
               </FormControl>
               <div className="input-wrapper">

@@ -4,8 +4,9 @@ import {
   Dashboard,
   LocalActivity,
   ReceiptLong,
-  RoomServiceRounded,
+  HomeRepairService,
   SupervisedUserCircle,
+  Business
 } from "@mui/icons-material";
 import { Grid, Tab, Tabs } from "@mui/material";
 import { Box } from "@mui/system";
@@ -20,6 +21,7 @@ import TeamMemberList from "../TeamMember/TeamMemberList";
 import ContractList from "../Contract/ContractList";
 import ServiceList from "../ServicePack/ServiceList";
 import CategoryList from "../Category/CategoryList";
+import CompanyList from "../Company/CompanyList";
 
 const HomeManager = () => {
 
@@ -154,7 +156,7 @@ const HomeManager = () => {
                     textTransform: "none",
                   }}
                 >
-                  <RoomServiceRounded
+                  <HomeRepairService
                     sx={{ marginRight: 1, color: "#0099FF" }}
                   />{" "}
                   Service
@@ -175,6 +177,23 @@ const HomeManager = () => {
                     sx={{ marginRight: 1, color: "#0099FF" }}
                   />{" "}
                   Category
+                </div>
+              }
+              className="custom-tab-label"
+            />
+            <Tab
+              label={
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    textTransform: "none",
+                  }}
+                >
+                  <Business
+                    sx={{ marginRight: 1, color: "#0099FF" }}
+                  />{" "}
+                  Company
                 </div>
               }
               className="custom-tab-label"
@@ -201,6 +220,9 @@ const HomeManager = () => {
           </Box>
           <Box role="tabpanel" hidden={value !== 6}>
             {value === 6? <CategoryList /> : <LoadingSkeleton />}
+          </Box>
+          <Box role="tabpanel" hidden={value !== 7}>
+            {value === 7? <CompanyList /> : <LoadingSkeleton />}
           </Box>
         </Box>
       </Grid>

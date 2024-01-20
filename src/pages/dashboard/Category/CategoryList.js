@@ -245,8 +245,7 @@ const CategoryList = () => {
                   style={{ color: "white" }}
                 >
                   <MenuItem value="name">name</MenuItem>
-                  <MenuItem value="description">description</MenuItem>
-                  <MenuItem value="id">id</MenuItem>
+                  <MenuItem value="description">description</MenuItem>           
                 </Select>
               </FormControl>
               <div className="input-wrapper">
