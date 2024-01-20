@@ -3,7 +3,6 @@ import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import "../../../../assets/css/ticket.css";
 import "../../../../assets/css/EditTicket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import "draft-js/dist/Draft.css";
 import { FaFileContract } from "react-icons/fa";
 import {
   ArrowBack,

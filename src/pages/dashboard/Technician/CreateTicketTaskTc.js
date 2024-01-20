@@ -532,6 +532,7 @@ const CreateTicketTaskTc = () => {
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
                         <DateTimePicker
+                          disablePast
                           slotProps={{
                             textField: {
                               helperText: `${scheduledStartTime}`,
@@ -564,6 +565,7 @@ const CreateTicketTaskTc = () => {
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
                         <DateTimePicker
+                          disablePast
                           slotProps={{
                             textField: {
                               helperText: `${scheduledEndTime}`,

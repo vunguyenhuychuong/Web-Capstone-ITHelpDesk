@@ -3,7 +3,6 @@ import { MDBBtn, MDBCol, MDBContainer, MDBRow } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
 import "../../../assets/css/EditTicket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import "draft-js/dist/Draft.css";
 import { getModeDetail, updateMode } from "../../../app/api/mode";
 import { useEffect } from "react";
 import { toast } from "react-toastify";

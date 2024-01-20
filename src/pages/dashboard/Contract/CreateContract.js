@@ -656,6 +656,7 @@ const CreateContract = () => {
                             handleStartDateChange(newValue)
                           }
                           renderInput={(props) => <TextField {...props} />}
+                          disablePast
                         />
                       </LocalizationProvider>
                     </Grid>
