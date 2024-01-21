@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
-import { Dialog, DialogContent, DialogTitle, Grid, IconButton } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  IconButton,
+} from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack, Close } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
@@ -9,11 +15,12 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { priorityOption } from "../../helpers/tableComlumn";
 import { getDataCategories } from "../../../app/api/category";
 import {
-  editTicketByManager,
+  editTicketByCustomer,
   getTicketByTicketId,
 } from "../../../app/api/ticket";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
+import { getAllUserActiveService } from "../../../app/api/service";
 
 const EditTicketCustomer = () => {
   const navigate = useNavigate();
@@ -21,14 +28,16 @@ const EditTicketCustomer = () => {
   const [data, setData] = useState({
     title: "",
     description: "",
-    priority: 0,
-    categoryId: 1,
+    // priority: 0,
+    serviceId: 1,
     attachmentUrls: [],
   });
   const [dataCategories, setDataCategories] = useState([]);
+  const [dataServices, setDataServices] = useState([]);
   const [selectedFile, setSelectedFile] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
+  const [imageUrls, setImagewUrls] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
     title: "",
@@ -37,14 +46,26 @@ const EditTicketCustomer = () => {
 
   const fetchDataManager = async () => {
     try {
-      const fetchCategories = await getDataCategories();
-      setDataCategories(fetchCategories);
+      // const fetchCategories = await getDataCategories();
+      // setDataCategories(fetchCategories);
     } catch (error) {
       console.log("Error while fetching data", error);
     } finally {
     }
   };
-
+  const fetchServices = async () => {
+    try {
+      const services = await getAllUserActiveService(
+        parseInt(data.categoryId, 10)
+      );
+      setDataServices(services);
+      // if (services.length > 0) {
+      //   setData((prevData) => ({ ...prevData, serviceId: services[0]?.id }));
+      // }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -58,33 +79,6 @@ const EditTicketCustomer = () => {
       setData((prevData) => ({ ...prevData, [name]: value }));
     }
   };
-
-  const images = data.attachmentUrls.map((url, index) => ({
-    original: url,
-    thumbnail: url,
-    description: `Attachment Preview ${index + 1}`,
-  }));
-
-  useEffect(() => {
-    const fetchTicketData = async () => {
-      try {
-        const ticketData = await getTicketByTicketId(ticketId);
-        setData((prevData) => ({
-          ...prevData,
-          title: ticketData.title,
-          description: ticketData.description,
-          categoryId: ticketData.categoryId,
-          priority: ticketData.priority,
-          attachmentUrls: ticketData.attachmentUrls,
-        }));
-      } catch (error) {
-        console.error("Error fetching ticket data: ", error);
-      }
-    };
-    fetchTicketData();
-    fetchDataManager();
-  }, []);
-
   const handleFileChange = (e) => {
     const files = e.target.files;
     setSelectedFile([...files]);
@@ -106,13 +100,50 @@ const EditTicketCustomer = () => {
         })
       );
     }
-
     Promise.all(promises).then(() => {
-      setImagePreviewUrl(previewUrls);
+      setImagewUrls(previewUrls);
     });
 
     setIsImagePreviewOpen(true);
   };
+
+  useEffect(() => {
+    const fetchTicketData = async () => {
+      try {
+        const ticketData = await getTicketByTicketId(ticketId);
+        setData((prevData) => ({
+          ...prevData,
+          title: ticketData.title,
+          description: ticketData.description,
+          // categoryId: ticketData.categoryId,
+          // priority: ticketData.priority,
+          serviceId: ticketData.serviceId,
+          attachmentUrls: ticketData.attachmentUrls,
+        }));
+      } catch (error) {
+        console.error("Error fetching ticket data: ", error);
+      }
+    };
+    fetchTicketData();
+    fetchDataManager();
+    fetchServices();
+  }, []);
+  useEffect(() => {
+    try {
+      const attachmentUrls =
+        imageUrls.length > 0 ? imageUrls : data?.attachmentUrls;
+      if (attachmentUrls && attachmentUrls.length > 0) {
+        const images = attachmentUrls.map((url, index) => ({
+          original: url,
+          thumbnail: url,
+          description: `Attachment Preview ${index + 1}`,
+        }));
+        setImagePreviewUrl(images);
+      }
+    } catch (error) {
+      console.log("Error", error);
+    }
+  }, [data, imageUrls]);
 
   const handleSubmitTicket = async (e) => {
     e.preventDefault();
@@ -128,8 +159,7 @@ const EditTicketCustomer = () => {
 
     setIsSubmitting(true);
     try {
-
-      let attachmentUrls = data.attachmentUrls || [];
+      let attachmentUrls = [];
       if (selectedFile.length > 0) {
         const storage = getStorage();
         for (let i = 0; i < selectedFile.length; i++) {
@@ -141,16 +171,21 @@ const EditTicketCustomer = () => {
           attachmentUrls.push(downloadURL);
         }
       }
-
       const updatedData = {
-        ...data,
+        title: data.title,
+        description: data.description,
+        serviceId: data.serviceId,
         attachmentUrls: attachmentUrls,
       };
-      setData(updatedData);
-      await editTicketByManager(ticketId, data);
-      setIsSubmitting(false);
+      const res = await editTicketByCustomer(ticketId, updatedData);
+
+      if (res) {
+        toast.success(`Edit ticket successfully`);
+        handleGoBack();
+      }
     } catch (error) {
       console.error(error);
+      toast.error(`Edit ticket failed`);
     } finally {
       setIsSubmitting(false);
     }
@@ -216,7 +251,45 @@ const EditTicketCustomer = () => {
             }}
           >
             <Grid container justifyContent="flex-end">
-              {" "}
+              <Grid
+                container
+                justifyContent="flex-end"
+                style={{ marginBottom: "20px" }}
+              >
+                <Grid item xs={12}>
+                  <Grid container>
+                    <Grid item xs={3}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Services
+                      </h2>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <select
+                        id="serviceId"
+                        name="serviceId"
+                        className="form-select"
+                        onChange={handleInputChange}
+                      >
+                        {dataServices.map((service) => (
+                          <option
+                            key={service.id}
+                            value={parseInt(service.id, 10)}
+                          >
+                            {service.description}
+                          </option>
+                        ))}
+                      </select>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
               <Grid
                 container
                 justifyContent="flex-end"
@@ -292,6 +365,7 @@ const EditTicketCustomer = () => {
                   name="file"
                   className="form-control input-field"
                   id="attachmentUrls"
+                  multiple
                   onChange={handleFileChange}
                 />
                 {imagePreviewUrl.length > 0 && (
@@ -305,7 +379,7 @@ const EditTicketCustomer = () => {
                   </div>
                 )}
               </Grid>
-              <Grid container justifyContent="flex-end">
+              {/* <Grid container justifyContent="flex-end">
                 <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
@@ -372,7 +446,7 @@ const EditTicketCustomer = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
+              </Grid> */}
             </Grid>
           </MDBCol>
         </MDBRow>
@@ -392,6 +466,7 @@ const EditTicketCustomer = () => {
                 <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
+                  onClick={handleGoBack}
                 >
                   Cancel
                 </button>
@@ -419,7 +494,7 @@ const EditTicketCustomer = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <Gallery items={images} />
+          <Gallery items={imagePreviewUrl} />
         </DialogContent>
       </Dialog>
     </Grid>

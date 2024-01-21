@@ -3,8 +3,8 @@ import { getAuthHeader } from "./auth";
 import { baseURL } from "./link";
 import { toast } from "react-toastify";
 
-const header = getAuthHeader();
 export async function getAllCompanyMember(companyId) {
+  const header = getAuthHeader();
   try {
     const res = await axios.get(`${baseURL}/company/member/${companyId}`, {
       headers: {
@@ -15,7 +15,7 @@ export async function getAllCompanyMember(companyId) {
   } catch (error) {
     console.log(error);
   }
-};
+}
 
 export async function getAllMemberCompany(
   searchField,
@@ -23,8 +23,9 @@ export async function getAllMemberCompany(
   page = 1,
   pageSize = 5,
   sortBy = "id",
-  sortDirection = "asc",
+  sortDirection = "asc"
 ) {
+  const header = getAuthHeader();
   try {
     let filter = `${searchField}.contains("${searchQuery}")`;
     const params = {
@@ -44,9 +45,36 @@ export async function getAllMemberCompany(
     console.log(error);
     return [];
   }
-};
+}
+
+export async function getCompanyMemberList(
+  page = 1,
+  pageSize = 10,
+  sortBy = "id",
+  sortDirection = "asc"
+) {
+  const header = getAuthHeader();
+  try {
+    const params = {
+      page: page,
+      pageSize: pageSize,
+      sort: `${sortBy} ${sortDirection}`,
+    };
+    const res = await axios.get(`${baseURL}/company/member`, {
+      headers: {
+        Authorization: header,
+      },
+      params: params,
+    });
+    return res.data.result;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}
 
 export async function getCompanyMemberSelect(companyId) {
+  const header = getAuthHeader();
   try {
     const res = await axios.get(
       `${baseURL}/company/member/select-list?companyId=${companyId}`,
@@ -60,9 +88,10 @@ export async function getCompanyMemberSelect(companyId) {
   } catch (error) {
     console.log(error);
   }
-};
+}
 
 export async function getCompanyMemberAdmin(companyId) {
+  const header = getAuthHeader();
   try {
     const res = await axios.get(
       `${baseURL}/company/member/company-admins?companyId=${companyId}`,
@@ -79,90 +108,9 @@ export async function getCompanyMemberAdmin(companyId) {
 }
 
 export async function createCompanyMember(data) {
+  const header = getAuthHeader();
   try {
     const res = await axios.post(`${baseURL}/company/member`, data, {
-      headers: {
-        Authorization: header,
-      },
-    });
-    toast.success(res.data.result.message, {
-      autoClose: 2000,
-      hideProgressBar: false,
-      position: toast.POSITION.TOP_CENTER,
-    });
-    return res.data.result;
-  } catch (error) {
-    console.log(error);
-    toast.error(error.response.data.responseException.exceptionMessage, {
-      autoClose: 2000,
-      hideProgressBar: false,
-      position: toast.POSITION.TOP_CENTER,
-    });
-  }
-}
-
-export async function updateCompanyMember(data,memberId ) {
-  try {
-    const res = await axios.put(`${baseURL}/company/member/${memberId}`, data, {
-      headers: {
-        Authorization: header,
-      },
-    });
-    toast.success(res.data.result.message, {
-      autoClose: 2000,
-      hideProgressBar: false,
-      position: toast.POSITION.TOP_CENTER,
-    });
-    return res.data.result;
-  } catch (error) {
-    console.log(error);
-    toast.error(error.response.data.responseException.exceptionMessage, {
-      autoClose: 2000,
-      hideProgressBar: false,
-      position: toast.POSITION.TOP_CENTER,
-    });
-  }
-};
-
-export async function getCompanyMemberById(memberId) {
-  try{
-    const res = await axios.get(`${baseURL}/company/member/${memberId}`, {
-      headers: {
-        Authorization: header,
-      },
-    });
-    return res.data.result;
-  }catch(error) {
-    console.log(error);
-  }
-};
-
-export async function deleteCompanyMember(memberId) {
-  try {
-    const res = await axios.delete(`${baseURL}/company/member/${memberId}`, {
-      headers: {
-        Authorization: header,
-      },
-    });
-    toast.success(res.data.result.message, {
-      autoClose: 2000,
-      hideProgressBar: false,
-      position: toast.POSITION.TOP_CENTER,
-    });
-    return res.data.result;
-  } catch (error) {
-    console.log(error);
-    toast.error(error.response.data.responseException.exceptionMessage, {
-      autoClose: 2000,
-      hideProgressBar: false,
-      position: toast.POSITION.TOP_CENTER,
-    });
-  }
-};
-
-export async function forgotPassword(email) {
-  try{
-    const res = await axios.post(`${baseURL}/auth/reset-password?email=${email}`,{
       headers: {
         Authorization: header,
       },
@@ -173,9 +121,119 @@ export async function forgotPassword(email) {
       position: toast.POSITION.TOP_CENTER,
     });
     return res.data.result;
-  }catch(error){
+  } catch (error) {
+    if (error.response && error.response.data && error.response.data.responseException) {
+      const exception = error.response.data.responseException;
+      if (exception.exceptionMessage && exception.exceptionMessage.errors) {
+        const errors = exception.exceptionMessage.errors;
+        if (errors.model && errors.model.length > 0) {
+          toast.error(errors.model[0], {
+            autoClose: 2000,
+            hideProgressBar: false,
+            position: toast.POSITION.TOP_CENTER,
+          });
+          return;
+        }
+        if (errors['$.memberPosition'] && errors['$.memberPosition'].length > 0) {
+          toast.error(errors['$.memberPosition'][0], {
+            autoClose: 2000,
+            hideProgressBar: false,
+            position: toast.POSITION.TOP_CENTER,
+          });
+          return;
+        }
+      }
+    }
+    toast.error('Email is exist. Please use a different email address to create user.', {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+  }
+}
+
+export async function updateCompanyMember(data, memberId) {
+  const header = getAuthHeader();
+  try {
+    const res = await axios.put(`${baseURL}/company/member/${memberId}`, data, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+    return res.data.result;
+  } catch (error) {
     console.log(error);
-    toast.error(error.response.data.responseException.exceptionMessage, {
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+  }
+}
+
+export async function getCompanyMemberById(memberId) {
+  const header = getAuthHeader();
+  try {
+    const res = await axios.get(`${baseURL}/company/member/${memberId}`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    return res.data.result;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function deleteCompanyMember(memberId) {
+  const header = getAuthHeader();
+  try {
+    const res = await axios.delete(`${baseURL}/company/member/${memberId}`, {
+      headers: {
+        Authorization: header,
+      },
+    });
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+    return res.data.result;
+  } catch (error) {
+    console.log(error);
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+  }
+}
+
+export async function forgotPassword(email) {
+  const header = getAuthHeader();
+  try {
+    const res = await axios.post(
+      `${baseURL}/auth/reset-password?email=${email}`,
+      {
+        headers: {
+          Authorization: header,
+        },
+      }
+    );
+    toast.success(res.data.result, {
+      autoClose: 2000,
+      hideProgressBar: false,
+      position: toast.POSITION.TOP_CENTER,
+    });
+    return res.data.result;
+  } catch (error) {
+    console.log(error);
+    toast.error(error.response.data.responseException.exceptionMessage.title, {
       autoClose: 2000,
       hideProgressBar: false,
       position: toast.POSITION.TOP_CENTER,

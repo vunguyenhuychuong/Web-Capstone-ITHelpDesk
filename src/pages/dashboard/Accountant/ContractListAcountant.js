@@ -25,10 +25,11 @@ import { formatDate } from "../../helpers/FormatDate";
 import { useNavigate } from "react-router-dom";
 import { Box, FormControl, MenuItem, Pagination, Select } from "@mui/material";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import { deleteTicketSolution } from "../../../app/api/ticketSolution";
+import { deleteTicketContract } from "../../../app/api/ticketContract";
 import { toast } from "react-toastify";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import { getContractAccountant } from "../../../app/api/contract";
+import CircularLoading from "../../../components/iconify/CircularLoading";
 
 const ContractListAcountant = () => {
   const [dataListContract, setDataListContract] = useState([]);
@@ -48,7 +49,8 @@ const ContractListAcountant = () => {
     try {
       setLoading(true);
       const response = await getContractAccountant();
-      setDataListContract(response);
+      setDataListContract(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.log(error);
     } finally {
@@ -56,7 +58,7 @@ const ContractListAcountant = () => {
     }
   };
 
-  const handleSelectSolution = (contractId) => {
+  const handleSelectContract = (contractId) => {
     if (selectedContractIds.includes(contractId)) {
       setSelectedContractIds(
         selectedContractIds.filter((id) => id !== contractId)
@@ -66,64 +68,69 @@ const ContractListAcountant = () => {
     }
   };
 
-  const handleSelectAllSolutions = () => {
+  const handleSelectAllContracts = () => {
     if (selectedContractIds.length === dataListContract.length) {
       setSelectedContractIds([]);
     } else {
-      setSelectedContractIds(dataListContract.map((solution) => solution.id));
+      setSelectedContractIds(dataListContract?.map((contract) => contract.id));
     }
   };
 
-  const handleDeleteSelectedSolutions = (id) => {
-    try {
-      console.log("Deleting selected solutions...");
+  const handleDeleteSelectedContracts = (id) => {
+    const shouldDelete = window.confirm(
+      "Are you sure want to delete selected contracts"
+    );
+    if (shouldDelete) {
+      try {
+        console.log("Deleting selected contracts...");
 
-      if (selectedContractIds.length === 0) {
-        console.log("No selected solutions to delete.");
-        return;
-      }
-
-      let currentIndex = 0;
-
-      const deleteNextSolution = () => {
-        if (currentIndex < selectedContractIds.length) {
-          const contractId = selectedContractIds[currentIndex];
-
-          deleteTicketSolution(contractId)
-            .then(() => {
-              console.log(
-                `Solution with ID ${contractId} deleted successfully`
-              );
-              currentIndex++;
-              deleteNextSolution();
-            })
-            .catch((error) => {
-              console.error(
-                `Error deleting solution with ID ${contractId}: `,
-                error
-              );
-              toast.error(
-                `Error deleting solution with ID ${contractId}: `,
-                error
-              );
-            });
-        } else {
-          setSelectedContractIds([]);
-          toast.success("Selected solutions deleted successfully");
-          setRefreshData((prev) => !prev);
+        if (selectedContractIds.length === 0) {
+          console.log("No selected contracts to delete.");
+          return;
         }
-      };
 
-      deleteNextSolution();
-    } catch (error) {
-      console.error("Failed to delete selected solutions: ", error);
-      toast.error(
-        "Failed to delete selected solutions, Please try again later"
-      );
+        let currentIndex = 0;
+
+        const deleteNextContract = () => {
+          if (currentIndex < selectedContractIds.length) {
+            const contractId = selectedContractIds[currentIndex];
+
+            deleteTicketContract(contractId)
+              .then(() => {
+                console.log(
+                  `Contract with ID ${contractId} deleted successfully`
+                );
+                currentIndex++;
+                deleteNextContract();
+              })
+              .catch((error) => {
+                console.error(
+                  `Error deleting contract with ID ${contractId}: `,
+                  error
+                );
+                toast.error(
+                  `Error deleting contract with ID ${contractId}: `,
+                  error
+                );
+              });
+          } else {
+            setSelectedContractIds([]);
+            toast.success("Selected contracts deleted successfully");
+            setRefreshData((prev) => !prev);
+          }
+        };
+
+        deleteNextContract();
+      } catch (error) {
+        console.error("Failed to delete selected contracts: ", error);
+        toast.error(
+          "Failed to delete selected contracts, Please try again later"
+        );
+      }
     }
   };
 
-  const handleOpenCreateTicketSolution = () => {
+  const handleOpenCreateTicketContract = () => {
     navigate("/home/createContract");
   };
 
@@ -152,8 +159,7 @@ const ContractListAcountant = () => {
 
   useEffect(() => {
     fetchDataListContract();
-    setTotalPages(4);
-  }, [ refreshData]);
+  }, [refreshData]);
 
   return (
     <>
@@ -172,7 +178,7 @@ const ContractListAcountant = () => {
                   fontSize: "18px",
                   color: "#FFFFFF",
                 }}
-                onClick={() => handleOpenCreateTicketSolution()}
+                onClick={() => handleOpenCreateTicketContract()}
               >
                 <FaPlus /> New
               </MDBBtn>
@@ -183,7 +189,7 @@ const ContractListAcountant = () => {
                   fontSize: "18px",
                   color: "#FFFFFF",
                 }}
-                onClick={() => handleDeleteSelectedSolutions()}
+                onClick={() => handleDeleteSelectedContracts()}
               >
                 <DeleteForever /> Delete
               </MDBBtn>
@@ -241,10 +247,10 @@ const ContractListAcountant = () => {
           <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr>
-                <th 
+                {/* <th
                   style={{ fontWeight: "bold", fontSize: "18px" }}
                   onClick={() => handleSortChange("id")}
-                  >
+                >
                   Id
                   {sortBy === "id" &&
                     (sortDirection === "asc" ? (
@@ -252,14 +258,14 @@ const ContractListAcountant = () => {
                     ) : (
                       <ArrowDropUp />
                     ))}
-                  </th>
+                </th> */}
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                   <input
                     type="checkbox"
                     checked={
                       selectedContractIds.length === dataListContract.length
                     }
-                    onChange={handleSelectAllSolutions}
+                    onChange={handleSelectAllContracts}
                   />
                 </th>
                 <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
@@ -362,19 +368,25 @@ const ContractListAcountant = () => {
               </tr>
             </MDBTableHead>
             {loading ? (
-              <CustomizedProgressBars />
+              <MDBTableBody className="bg-light">
+                <tr>
+                  <td>
+                    <CircularLoading />
+                  </td>
+                </tr>
+              </MDBTableBody>
             ) : (
               <MDBTableBody className="bg-light">
-                {dataListContract.map((Contract, index) => {
+                {dataListContract?.map((Contract, index) => {
                   const isSelected = selectedContractIds.includes(Contract.id);
                   return (
                     <tr key={index}>
-                      <td>{Contract.id}</td>
+                      {/* <td>{Contract.id}</td> */}
                       <td>
                         <input
                           type="checkbox"
                           checked={isSelected}
-                          onChange={() => handleSelectSolution(Contract.id)}
+                          onChange={() => handleSelectContract(Contract.id)}
                         />
                       </td>
                       <td>

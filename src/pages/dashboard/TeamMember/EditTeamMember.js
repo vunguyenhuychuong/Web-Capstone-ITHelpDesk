@@ -202,7 +202,7 @@ const EditTeamMember = () => {
                       >
                         {dataTeam
                           .filter((team) => team.id !== "")
-                          .map((team) => (
+                          ?.map((team) => (
                             <option key={team.id} value={team.id}>
                               {team.name}
                             </option>
@@ -234,7 +234,7 @@ const EditTeamMember = () => {
                         onChange={handleInputChange}
                         disabled={data.memberId}
                       >
-                        {dataMember.map((member) => (
+                        {dataMember?.map((member) => (
                           <option key={member.id} value={member.id}>
                             {member.firstName} {member.lastName}
                           </option>

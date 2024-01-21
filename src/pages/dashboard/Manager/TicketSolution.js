@@ -14,6 +14,7 @@ import { formatDate } from "../../helpers/FormatDate";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import CloseTicket from "../../../assets/images/NoTicketSolution.jpg";
 import { Card, CardContent } from "@mui/material";
+import CircularLoading from "../../../components/iconify/CircularLoading";
 const TicketSolution = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [dataTicketSolution, setDataTicketSolution] = useState([]);
@@ -53,7 +54,13 @@ const TicketSolution = () => {
           </MDBContainer>
         </MDBNavbar>
         {isLoading ? (
-          <CustomizedProgressBars />
+          <MDBTableBody className="bg-light">
+            <tr>
+              <td>
+                <CircularLoading />
+              </td>
+            </tr>
+          </MDBTableBody>
         ) : (
           <>
             {dataTicketSolution && dataTicketSolution.length === 0 ? (

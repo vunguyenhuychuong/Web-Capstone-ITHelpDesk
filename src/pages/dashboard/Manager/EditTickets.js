@@ -8,6 +8,7 @@ import {
   Grid,
   IconButton,
   Switch,
+  TextField,
 } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
 import { ArrowBack, Close } from "@mui/icons-material";
@@ -22,9 +23,12 @@ import {
   priorityOption,
 } from "../../helpers/tableComlumn";
 import { getDataCategories } from "../../../app/api/category";
-import { getDataUser } from "../../../app/api";
+import { getCustomerList, getDataUser } from "../../../app/api";
 import ModeApi from "../../../app/api/mode";
-import { getAllServiceByCategory } from "../../../app/api/service";
+import {
+  getAllServiceByCategory,
+  getDataServices,
+} from "../../../app/api/service";
 import {
   editTicketByManager,
   getTicketByTicketId,
@@ -38,34 +42,45 @@ import {
 } from "../Customer/StepForm/fetchDataSelect";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
+import { getAllTeams, getTechnicianByTeam } from "../../../app/api/team";
+import moment from "moment";
+import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 
 const EditTickets = () => {
   const navigate = useNavigate();
   const { ticketId } = useParams();
   const [data, setData] = useState({
+    id: 1,
     requesterId: 1,
     title: "",
     description: "",
     modeId: 1,
     serviceId: 1,
     impactDetail: "",
-    ticketStatus: 0,
     priority: 0,
     impact: 0,
-    urgency: 0,
     type: "Offline",
-    location: "",
+    // location: "",
     categoryId: 1,
     attachmentUrls: [],
+    scheduledStartTime: "",
+    scheduledEndTime: "",
+    technicianId: "",
+    teamId: "",
   });
   const [dataCategories, setDataCategories] = useState([]);
   const [dataMode, setDataMode] = useState([]);
   const [dataUser, setDataUser] = useState([]);
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [dataTechnicians, setDataTechnicians] = useState([]);
+  const [dataTeams, setDataTeams] = useState([]);
+  const [selectedFile, setSelectedFile] = useState([]);
   const [imagePreviewUrl, setImagePreviewUrl] = useState([]);
   const [dataLocation, setDataLocation] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
+  const [scheduledStartTime, setScheduledStartTime] = useState(moment());
+  const [scheduledEndTime, setScheduledEndTime] = useState(moment());
   const [isPeriodic, setIsPeriodic] = useState(false);
   const [categoryServices, setCategoryServices] = useState([]);
   const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
@@ -74,21 +89,50 @@ const EditTickets = () => {
     title: "",
     description: "",
   });
+  const handleScheduledStartTimeChange = (newDate) => {
+    const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
+    setScheduledStartTime(newDate);
+    setData((prevInputs) => ({
+      ...prevInputs,
+      scheduledStartTime: formattedDate,
+    }));
+  };
 
+  const handleScheduledEndTimeChange = (newDate) => {
+    const formattedDate = moment(newDate).format("YYYY-MM-DDTHH:mm:ss");
+    setScheduledEndTime(newDate);
+    setData((prevInputs) => ({
+      ...prevInputs,
+      scheduledEndTime: formattedDate,
+    }));
+  };
   const fetchDataManager = async () => {
     try {
       const fetchCategories = await getDataCategories();
-      const fetchUsers = await getDataUser();
+      const fetchUsers = await getCustomerList();
       const fetchModes = await ModeApi.getMode();
       setDataCategories(fetchCategories);
       setDataUser(fetchUsers);
-      setDataMode(fetchModes);
+      setDataMode(fetchModes?.data);
     } catch (error) {
       console.log("Error while fetching data", error);
     } finally {
     }
   };
 
+  const fetchServices = async () => {
+    try {
+      const services = await getAllServiceByCategory(
+        parseInt(data.categoryId, 10)
+      );
+      setCategoryServices(services);
+      if (services.length > 0) {
+        setData((prevData) => ({ ...prevData, serviceId: services[0]?.id }));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const handleToggle = () => {
     setIsPeriodic((prevIsPeriodic) => !prevIsPeriodic);
   };
@@ -107,7 +151,7 @@ const EditTickets = () => {
     }
   };
 
-  const images = data.attachmentUrls.map((url, index) => ({
+  const images = data.attachmentUrls?.map((url, index) => ({
     original: url,
     thumbnail: url,
     description: `Attachment Preview ${index + 1}`,
@@ -153,9 +197,6 @@ const EditTickets = () => {
       );
       const categoryIdValue = selectedCategory ? selectedCategory.id : null;
       setData((prevData) => ({ ...prevData, [name]: categoryIdValue }));
-
-      const services = await getAllServiceByCategory(parseInt(value, 10));
-      setCategoryServices(services);
     }
 
     setFieldErrors((prevErrors) => ({
@@ -165,11 +206,16 @@ const EditTickets = () => {
   };
 
   useEffect(() => {
+    fetchServices();
+  }, [data.categoryId]);
+
+  useEffect(() => {
     const fetchTicketData = async () => {
       try {
         const ticketData = await getTicketByTicketId(ticketId);
         setData((prevData) => ({
           ...prevData,
+          id: ticketData.id,
           requesterId: ticketData.requesterId,
           title: ticketData.title,
           description: ticketData.description,
@@ -177,22 +223,26 @@ const EditTickets = () => {
           serviceId: ticketData.serviceId,
           priority: ticketData.priority,
           impact: ticketData.impact,
-          urgency: ticketData.urgency,
           type: ticketData.type,
-          street: ticketData.street,
-          ward: ticketData.ward,
-          district: ticketData.district,
-          city: ticketData.city,
-          isPeriodic: ticketData.isPeriodic,
+          // street: ticketData.street,
+          // ward: ticketData.ward,
+          // district: ticketData.district,
+          // city: ticketData.city,
+          // isPeriodic: ticketData.isPeriodic,
           impactDetail: ticketData.impactDetail,
-          ticketStatus: ticketData.ticketStatus,
-          scheduledStartTime: ticketData.scheduledStartTime,
-          scheduledEndTime: ticketData.scheduledEndTime,
-          dueTime: ticketData.dueTime,
-          completedTime: ticketData.completedTime,
+          scheduledStartTime:
+            ticketData.scheduledStartTime ??
+            moment(Date.now()).format("YYYY-MM-DDTHH:mm:ss"),
+          scheduledEndTime:
+            ticketData.scheduledEndTime ??
+            moment(Date.now()).format("YYYY-MM-DDTHH:mm:ss"),
+          // dueTime: ticketData.dueTime,
+          // completedTime: ticketData.completedTime,
           categoryId: ticketData.categoryId,
           attachmentUrls: ticketData.attachmentUrls,
         }));
+        setScheduledStartTime(moment(ticketData.scheduledStartTime));
+        setScheduledEndTime(moment(ticketData.scheduledEndTime));
       } catch (error) {
         console.error("Error fetching ticket data: ", error);
       }
@@ -269,7 +319,7 @@ const EditTickets = () => {
     setIsSubmitting(true);
     try {
       let attachmentUrls = data.attachmentUrls || [];
-      if (selectedFile.length > 0) {
+      if (selectedFile && selectedFile?.length > 0) {
         const storage = getStorage();
         const promise = [];
         for (let i = 0; i < selectedFile.length; i++) {
@@ -286,20 +336,23 @@ const EditTickets = () => {
         attachmentUrls: attachmentUrls,
       };
       const res = await editTicketByManager(ticketId, updatedData);
-      setIsSubmitting(false);
-      if (res.isError && res.responseException?.exceptionMessage) {
-        toast.info(
-          "Ticket is currently being executed and cannot be updated.",
-          {
-            autoClose: 2000,
-            hideProgressBar: false,
-            position: toast.POSITION.TOP_CENTER,
-          }
-        );
-      } else {
-        toast.success("Ticket updated successfully");
+      // if (res.isError && res.responseException?.exceptionMessage) {
+      //   toast.info(
+      //     "Ticket is currently being executed and cannot be updated.",
+      //     {
+      //       autoClose: 2000,
+      //       hideProgressBar: false,
+      //       position: toast.POSITION.TOP_CENTER,
+      //     }
+      //   );
+      // } else {
+      //   toast.success("Ticket updated successfully");
+      // }
+      if (res) {
+        handleGoBack();
       }
     } catch (error) {
+      console.log("error", error);
       if (error.response && error.response.status === 400) {
         const errorMessage =
           error.response.data?.message ||
@@ -308,11 +361,13 @@ const EditTickets = () => {
       } else {
         toast.info("Error updating ticket. Please try again later");
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleGoBack = () => {
-    navigate(`/home/detailTicket/${ticketId}`);
+    navigate(`/home/detailTicket/${data.id}`);
   };
 
   return (
@@ -331,7 +386,7 @@ const EditTickets = () => {
               <div className="d-flex align-items-center">
                 <button type="button" className="btn btn-link icon-label">
                   <ArrowBack
-                    onClick={() => handleGoBack(ticketId)}
+                    onClick={() => handleGoBack()}
                     className="arrow-back-icon"
                   />
                 </button>
@@ -356,7 +411,7 @@ const EditTickets = () => {
                     Edit a new ticket for assistance.
                   </span>
                 </div>
-                <FormControlLabel
+                {/* <FormControlLabel
                   control={
                     <Switch
                       checked={isPeriodic}
@@ -366,7 +421,7 @@ const EditTickets = () => {
                   }
                   label="Periodic"
                   labelPlacement="start"
-                />
+                /> */}
               </div>
             </MDBCol>
           </MDBRow>
@@ -409,9 +464,9 @@ const EditTickets = () => {
                         value={data.requesterId}
                         onChange={handleInputChange}
                       >
-                        {dataUser.map((user) => (
+                        {dataUser?.map((user) => (
                           <option key={user.id} value={user.id}>
-                            {user.username}
+                            {user.lastName} {user.firstName}
                           </option>
                         ))}
                       </select>
@@ -523,7 +578,7 @@ const EditTickets = () => {
                           textAlign: "right",
                         }}
                       >
-                        <span style={{ color: "red" }}>*</span>Mode Id
+                        <span style={{ color: "red" }}>*</span>Mode
                       </h2>
                     </Grid>
                     <Grid item xs={5}>
@@ -536,7 +591,7 @@ const EditTickets = () => {
                       >
                         {dataMode
                           .filter((mode) => mode.id !== "")
-                          .map((mode) => (
+                          ?.map((mode) => (
                             <option key={mode.id} value={mode.id}>
                               {mode.name}
                             </option>
@@ -570,7 +625,7 @@ const EditTickets = () => {
                       >
                         {dataCategories
                           .filter((category) => category.id !== "")
-                          .map((category) => (
+                          ?.map((category) => (
                             <option key={category.id} value={category.id}>
                               {category.name}
                             </option>
@@ -581,7 +636,7 @@ const EditTickets = () => {
                 </Grid>
               </Grid>
               <Grid container justifyContent="flex-end">
-                <Grid item xs={6}>
+                {/* <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
                       <h2
@@ -605,9 +660,42 @@ const EditTickets = () => {
                       >
                         {UrgencyOptions.filter(
                           (urgency) => urgency.id !== ""
-                        ).map((urgency) => (
+                        )?.map((urgency) => (
                           <option key={urgency.id} value={urgency.id}>
                             {urgency.name}
+                          </option>
+                        ))}
+                      </select>
+                    </Grid>
+                  </Grid>
+                </Grid> */}
+                <Grid item xs={6}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          textAlign: "right",
+                        }}
+                      >
+                        Priority
+                      </h2>
+                    </Grid>
+                    <Grid item xs={5}>
+                      <select
+                        id="priority"
+                        name="priority"
+                        className="form-select-custom"
+                        onChange={handleInputChange}
+                      >
+                        {priorityOption?.map((priorityItem) => (
+                          <option
+                            key={priorityItem.id}
+                            value={parseInt(priorityItem.id, 10)}
+                          >
+                            {priorityItem.name}
                           </option>
                         ))}
                       </select>
@@ -636,7 +724,7 @@ const EditTickets = () => {
                         value={data.serviceId}
                         onChange={handleInputChange}
                       >
-                        {categoryServices.map((service) => (
+                        {categoryServices?.map((service) => (
                           <option key={service.id} value={service.id}>
                             {service.description}
                           </option>
@@ -651,7 +739,7 @@ const EditTickets = () => {
                 justifyContent="flex-end"
                 style={{ marginTop: "15px" }}
               >
-                <Grid item xs={6}>
+                {/* <Grid item xs={6}>
                   <Grid container>
                     <Grid item xs={6}>
                       <h2
@@ -673,7 +761,7 @@ const EditTickets = () => {
                         value={data.ticketStatus}
                         onChange={handleInputChange}
                       >
-                        {TicketStatusOptions.map((ticketStatus) => (
+                        {TicketStatusOptions?.map((ticketStatus) => (
                           <option key={ticketStatus.id} value={ticketStatus.id}>
                             {ticketStatus.name}
                           </option>
@@ -681,40 +769,7 @@ const EditTickets = () => {
                       </select>
                     </Grid>
                   </Grid>
-                </Grid>
-                <Grid item xs={6}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <h2
-                        className="align-right"
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "bold",
-                          textAlign: "right",
-                        }}
-                      >
-                        Priority
-                      </h2>
-                    </Grid>
-                    <Grid item xs={5}>
-                      <select
-                        id="priority"
-                        name="priority"
-                        className="form-select-custom"
-                        onChange={handleInputChange}
-                      >
-                        {priorityOption.map((priorityItem) => (
-                          <option
-                            key={priorityItem.id}
-                            value={parseInt(priorityItem.id, 10)}
-                          >
-                            {priorityItem.name}
-                          </option>
-                        ))}
-                      </select>
-                    </Grid>
-                  </Grid>
-                </Grid>
+                </Grid> */}
 
                 <Grid
                   container
@@ -743,7 +798,7 @@ const EditTickets = () => {
                           value={data.impact}
                           onChange={handleInputChange}
                         >
-                          {ImpactOptions.map((impact) => (
+                          {ImpactOptions?.map((impact) => (
                             <option key={impact.id} value={impact.id}>
                               {impact.name}
                             </option>
@@ -773,7 +828,7 @@ const EditTickets = () => {
                           className="form-select-custom"
                           onChange={handleInputChange}
                         >
-                          {TypeOptions.map((type) => (
+                          {TypeOptions?.map((type) => (
                             <option key={type.id} value={parseInt(type.id, 10)}>
                               {type.name}
                             </option>
@@ -784,7 +839,7 @@ const EditTickets = () => {
                   </Grid>
                 </Grid>
 
-                <Grid
+                {/* <Grid
                   container
                   justifyContent="flex-end"
                   style={{ marginTop: "15px" }}
@@ -811,7 +866,7 @@ const EditTickets = () => {
                           value={data.city}
                           onChange={handleCityChange}
                         >
-                          {dataLocation.map((city) => (
+                          {dataLocation?.map((city) => (
                             <option key={city.code} value={city.code}>
                               {city.name}
                             </option>
@@ -842,7 +897,7 @@ const EditTickets = () => {
                           value={data.district}
                           onChange={handleDistrictChange}
                         >
-                          {districts.map((district) => (
+                          {districts?.map((district) => (
                             <option key={district.code} value={district.code}>
                               {district.name}
                             </option>
@@ -851,9 +906,9 @@ const EditTickets = () => {
                       </Grid>
                     </Grid>
                   </Grid>
-                </Grid>
+                </Grid> */}
 
-                <Grid
+                {/* <Grid
                   container
                   justifyContent="flex-end"
                   style={{ marginTop: "15px" }}
@@ -880,7 +935,7 @@ const EditTickets = () => {
                           value={data.ward}
                           onChange={handleInputChange}
                         >
-                          {wards.map((ward) => (
+                          {wards?.map((ward) => (
                             <option key={ward.code} value={ward.code}>
                               {ward.name}
                             </option>
@@ -915,7 +970,7 @@ const EditTickets = () => {
                       </Grid>
                     </Grid>
                   </Grid>
-                </Grid>
+                </Grid> */}
                 <Grid
                   container
                   justifyContent="flex-end"
@@ -930,7 +985,7 @@ const EditTickets = () => {
                         textAlign: "right",
                       }}
                     >
-                      <span style={{ color: "red" }}>*</span>ImpactDetail
+                      <span style={{ color: "red" }}>*</span>Impact Detail
                     </h2>
                   </Grid>
                   <Grid item xs={9}>
@@ -943,6 +998,73 @@ const EditTickets = () => {
                       value={data.impactDetail}
                       onChange={handleInputChange}
                     />
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid container justifyContent="flex-end">
+                <Grid item xs={6}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          marginBottom: "25px",
+                        }}
+                      >
+                        Schedule Start Time
+                      </h2>
+                    </Grid>
+                    <Grid item xs={5}>
+                      <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <DateTimePicker
+                          disablePast
+                          slotProps={{
+                            textField: {
+                              helperText: `${scheduledStartTime}`,
+                            },
+                          }}
+                          value={scheduledStartTime}
+                          onChange={(newValue) =>
+                            handleScheduledStartTimeChange(newValue)
+                          }
+                          renderInput={(props) => <TextField {...props} />}
+                        />
+                      </LocalizationProvider>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid item xs={6}>
+                  <Grid container>
+                    <Grid item xs={6}>
+                      <h2
+                        className="align-right"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          marginBottom: "25px",
+                        }}
+                      >
+                        Schedule End Time
+                      </h2>
+                    </Grid>
+                    <Grid item xs={5}>
+                      <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <DateTimePicker
+                          disablePast
+                          slotProps={{
+                            textField: {
+                              helperText: `${scheduledEndTime}`,
+                            },
+                          }}
+                          value={scheduledEndTime}
+                          onChange={(newValue) =>
+                            handleScheduledEndTimeChange(newValue)
+                          }
+                        />
+                      </LocalizationProvider>
+                    </Grid>
                   </Grid>
                 </Grid>
               </Grid>

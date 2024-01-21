@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import {
   Avatar,
+  Box,
   Button,
-  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   IconButton,
   Slide,
+  Stack,
   TextField,
+  Tooltip,
+  Typography,
 } from "@mui/material";
 import {
   Cancel,
@@ -40,11 +43,7 @@ import { useParams } from "react-router-dom";
 import { formatDate } from "../../../helpers/FormatDate";
 import { toast } from "react-toastify";
 import useSolutionTicketData from "../SolutionTicketData";
-
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+import ConfirmDialog from "../../../../components/dialog/ConfirmDialog";
 
 const CommentSolution = (props) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -59,8 +58,14 @@ const CommentSolution = (props) => {
     useSolutionTicketData(solutionId);
 
   const [dataLike, setDataLike] = useState({
-    countDislike: props.data && props.data.countDislike !== undefined ? props.data.countDislike : 0,
-    countLike: props.data && props.data.countLike !== undefined ? props.data.countLike : 0,
+    countDislike:
+      props.data && props.data.countDislike !== undefined
+        ? props.data.countDislike
+        : 0,
+    countLike:
+      props.data && props.data.countLike !== undefined
+        ? props.data.countLike
+        : 0,
   });
 
   const [dataCmt, setDataCmt] = useState({
@@ -81,24 +86,28 @@ const CommentSolution = (props) => {
     isPublic: true,
   });
 
-  const handleDetailFeedBack = async (commentId) => {
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleDetailFeedBack = async (feedback) => {
     try {
-      const feedback = await getDetailFeedBack(commentId);
+      // const feedback = await getDetailFeedBack(commentId);
       if (feedback) {
-        setDataCmt({
-          id: feedback.id || "",
-          userId: feedback.userId || "",
-          solutionId: feedback.solutionId || "",
-          comment: feedback.comment || "",
-          isPublic: feedback.isPublic || "",
-          createdAt: feedback.createdAt || "",
-          modifiedAt: feedback.modifiedAt || "",
-        });
-        setDataCmt({
-          id: 1,
-          userId: 1,
-          solutionId: 1,
-          comment: "",
+        // setDataCmt({
+        //   id: feedback.id ?? "",
+        //   userId: feedback.userId ?? "",
+        //   solutionId: feedback.solutionId ?? "",
+        //   comment: feedback.comment ?? "",
+        //   isPublic: feedback.isPublic ?? "",
+        //   createdAt: feedback.createdAt ?? "",
+        //   modifiedAt: feedback.modifiedAt ?? "",
+        // });
+        setEditComment({
+          id: feedback.id,
+          userId: feedback.userId,
+          solutionId: feedback.solutionId,
+          comment: feedback.comment,
           isPublic: true,
         });
       } else {
@@ -107,22 +116,18 @@ const CommentSolution = (props) => {
     } catch (error) {
       console.error("Error while fetching detail Feed Back:", error);
     } finally {
-      setEditCommentId(commentId);
+      setEditCommentId(feedback.id);
     }
   };
 
   const handleLike = async () => {
     try {
       const updatedData = await createLike(solutionId);
-      setDataLike((prevDataLike) => ({
-        ...prevDataLike,
-        countLike: updatedData.countLike,
-        countDislike: updatedData.countDislike,
-      }));
-      if (typeof refetch === 'function') {
+
+      if (typeof refetch === "function") {
         refetch();
       } else {
-        console.error('refetch is not a function');
+        console.error("refetch is not a function");
       }
     } catch (error) {
       console.error("Error liking solution:", error.message || error);
@@ -132,11 +137,7 @@ const CommentSolution = (props) => {
   const handleDislike = async () => {
     try {
       const updatedData = await createDisLike(solutionId);
-      setDataLike((prevDataLike) => ({
-        ...prevDataLike,
-        countLike: updatedData.countLike,
-        countDislike: updatedData.countDislike,
-      }));
+
       refetch();
     } catch (error) {
       console.error("Error disliking solution:", error.message || error);
@@ -145,19 +146,33 @@ const CommentSolution = (props) => {
 
   useEffect(() => {
     setDataLike({
-      countDislike: props.data && props.data.countDislike !== undefined ? props.data.countDislike : 0,
-      countLike: props.data && props.data.countLike !== undefined ? props.data.countLike : 0,
+      countDislike:
+        props.data && props.data.countDislike !== undefined
+          ? props.data.countDislike
+          : 0,
+      countLike:
+        props.data && props.data.countLike !== undefined
+          ? props.data.countLike
+          : 0,
     });
   }, [props.data]);
 
-  const handleEditComment = async (solutionId) => {
+  useEffect(() => {
+    setDataLike({
+      countDislike:
+        data && data.countDislike !== undefined ? data.countDislike : 0,
+      countLike: data && data.countLike !== undefined ? data.countLike : 0,
+    });
+  }, [data]);
+
+  const handleEditComment = async (commentId) => {
     try {
       const payload = {
         comment: editComment.comment,
         isPublic: editComment.isPublic,
       };
 
-      await editFeedBack(editComment.id, payload);
+      await editFeedBack(commentId, payload);
       fetchDataListFeedBack();
       setEditCommentId(null);
     } catch (error) {
@@ -213,16 +228,16 @@ const CommentSolution = (props) => {
 
     setIsSubmitting(true);
     try {
-        await createFeedBack({
-        solutionId: solutionId,
+      await createFeedBack({
+        solutionId: Number.parseInt(solutionId),
         comment: dataCmt.comment,
         isPublic: dataCmt.isPublic,
       });
-     
-        setDataCmt((prevData) => ({
-          ...prevData,
-          comment: "",
-        }));
+
+      setDataCmt((prevData) => ({
+        ...prevData,
+        comment: "",
+      }));
       fetchDataListFeedBack();
     } catch (error) {
       console.log("Please check data input", error);
@@ -246,7 +261,7 @@ const CommentSolution = (props) => {
       if (result.dataCmt && result.dataCmt.responseException.exceptionMessage) {
         console.log(result.dataCmt.responseException.exceptionMessage);
       } else {
-        toast.success("Feedback created successfully");
+        toast.success("Feedback deleted successfully");
         fetchDataListFeedBack();
       }
     } catch (error) {
@@ -257,16 +272,12 @@ const CommentSolution = (props) => {
     }
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   useEffect(() => {
     fetchDataListFeedBack();
   }, [fetchDataListFeedBack]);
 
   return (
-    <div>
+    <Stack>
       <div
         style={{
           display: "flex",
@@ -281,162 +292,195 @@ const CommentSolution = (props) => {
           aria-label="Thumbs Up"
           style={{ marginLeft: "10px" }}
           onClick={handleLike}
-           type="button"
+          type="button"
         >
-          <ThumbUp />
+          <ThumbUp color={data?.currentReactionUser === 0 ? "primary" : ""} />
         </IconButton>
         <span style={{ marginLeft: "5px" }}>{dataLike.countLike}</span>
         <IconButton
           aria-label="Thumbs Down"
           style={{ marginLeft: "10px" }}
           onClick={handleDislike}
-           type="button"
+          type="button"
         >
-          <ThumbDown />
+          <ThumbDown color={data?.currentReactionUser === 1 ? "primary" : ""} />
         </IconButton>
         <span style={{ marginLeft: "5px" }}>{dataLike.countDislike}</span>
       </div>
       <Button
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        style={{
-          marginLeft: "10px",
-          cursor: "pointer",
+        sx={{
+          marginX: "1rem",
           color: "#222222",
           backgroundColor: "#CCCCCC",
           textTransform: "none",
         }}
       >
         {isDropdownOpen
-          ? `Comments ▲ (${dataFeedBack.length})`
-          : `Comments ▼ (${dataFeedBack.length})`}
+          ? `Hide Comments ▲ (${dataFeedBack.length})`
+          : `View Comments ▼ (${dataFeedBack.length})`}
       </Button>
-      {isDropdownOpen &&
-        dataFeedBack.map((comment) => (
-          <div
-            key={comment.id}
-            style={{
-              display: "flex",
-              // alignItems: "center",
-              alignItems: "flex-start",
-              marginBottom: "20px",
-              marginTop: "20px",
-            }}
-          >
-            <Avatar
-              alt={comment.user.username}
-              src={comment.user.avatarUrl}
-              className="avatar"
-            />
-            <div
-              style={{
-                marginLeft: "10px",
-                display: "flex",
-                flexDirection: "column",
-                flex: "1",
+      <Stack
+        sx={{
+          borderLeft: "1px solid #c2c2c2",
+          px: "2rem",
+          marginLeft: "2rem",
+          marginY: "2rem",
+        }}
+      >
+        {isDropdownOpen &&
+          dataFeedBack.map((comment) => (
+            <Stack
+              key={comment.id}
+              direction={"row"}
+              sx={{
+                alignItems: "flex-start",
+                marginY: 1,
               }}
             >
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <strong>
-                  {comment.user.lastName} {comment.user.firstName}
-                </strong>
-                <small style={{ marginLeft: "10px" }}>
-                  {formatDate(comment.createdAt)}
-                </small>{" "}
-                {comment.isPublic ? (
+              <Avatar
+                alt={comment.user.username}
+                src={comment.user.avatarUrl}
+                className="avatar"
+              />
+              <div
+                style={{
+                  marginLeft: "10px",
+                  display: "flex",
+                  flexDirection: "column",
+                  flex: "1",
+                }}
+              >
+                <Box
+                  sx={{
+                    backgroundColor: "#c2c2c290",
+                    paddingX: 2,
+                    paddingY: 1,
+                    boxSizing: "content-box",
+                    borderRadius: 6,
+                    width: "fit-content",
+                  }}
+                >
+                  <Stack flexDirection={"row"} alignItems={"center"}>
+                    <Typography variant="h6">
+                      {comment.user.lastName} {comment.user.firstName}
+                    </Typography>
+                    <small style={{ marginLeft: "10px" }}>
+                      {formatDate(comment.createdAt)}
+                    </small>{" "}
+                    {/* {comment.isPublic ? (
                   <LockOpen style={{ color: "#66FF66" }} />
                 ) : (
                   <Lock style={{ color: "#FFCC66" }} />
-                )}
-              </div>
-              <p>{comment.comment}</p>
-              {isEditingComment(comment.id) ? (
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <TextField
-                    variant="outlined"
-                    fullWidth
-                    id="edit-comment"
-                    name="edit-comment"
-                    value={editComment.comment}
-                    onChange={(e) => setEditComment((prevEditComment) => ({ ...prevEditComment, comment: e.target.value }))}
-                    style={{ margin: "10px 0", marginRight: "10px" }}
-                  />
-                  <IconButton aria-label="Save" onClick={handleEditComment}>
-                    <Save />
-                    <span style={{ fontSize: "0.6em" }}>Save</span>
-                  </IconButton>
-                  <IconButton aria-label="Cancel" onClick={handleCancelEdit}>
-                    <Cancel />
-                    <span style={{ fontSize: "0.6em" }}>Cancel</span>
-                  </IconButton>
-                </div>
-              ) : (
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <IconButton aria-label="Reply">
+                )} */}
+                  </Stack>
+                  <p>{comment.comment}</p>
+                </Box>
+                {isEditingComment(comment.id) ? (
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      id="edit-comment"
+                      name="edit-comment"
+                      value={editComment.comment}
+                      onChange={(e) =>
+                        setEditComment((prevEditComment) => ({
+                          ...prevEditComment,
+                          comment: e.target.value,
+                        }))
+                      }
+                      style={{ margin: "10px 0", marginRight: "10px" }}
+                    />
+                    <Stack alignItems={"flex-start"}>
+                      <IconButton
+                        aria-label="Save"
+                        onClick={() => handleEditComment(comment.id)}
+                      >
+                        <Save />
+                        <span style={{ fontSize: "0.6em" }}>Save</span>
+                      </IconButton>
+                      <IconButton
+                        aria-label="Cancel"
+                        onClick={handleCancelEdit}
+                        color="error"
+                      >
+                        <Cancel />
+                        <span style={{ fontSize: "0.6em" }}>Cancel</span>
+                      </IconButton>
+                    </Stack>
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    {/* <IconButton aria-label="Reply">
                     <Reply />
                     <span style={{ fontSize: "0.6em" }}>Reply</span>
-                  </IconButton>
-                  <IconButton
-                    aria-label="Edit"
-                    onClick={() => {
-                      console.log("Editing comment ID:", comment.id);
-                      handleDetailFeedBack(comment.id)}
-                    }
-                  >
-                    <EditNote />
-                    <span style={{ fontSize: "0.6em" }}>Edit</span>
-                  </IconButton>
-                  <IconButton
-                    aria-label="Delete"
-                    onClick={handleDeleteCommentClick(comment.id)}
-                  >
-                    <Delete />
-                    <span style={{ fontSize: "0.6em" }}>Delete</span>
-                  </IconButton>
-                </div>
-              )}
-              {comment.feedbackReplies &&
-                comment.feedbackReplies.length > 0 && (
-                  <div style={{ marginLeft: "20px" }}>
-                    {comment.feedbackReplies.map((reply) => (
-                      <div
-                        key={reply.id}
-                        style={{ display: "flex", alignItems: "center" }}
-                      >
-                        <Avatar
-                          alt={reply.user.username}
-                          src={reply.user.avatarUrl}
-                          className="avatar"
-                        />
-                        <div
-                          style={{ marginLeft: "10px", marginBottom: "25px" }}
-                        >
-                          <strong>
-                            {reply.user.lastName} {reply.user.firstName}
-                          </strong>
-                          <small style={{ marginLeft: "10px" }}>
-                            {formatDate(reply.createdAt)}
-                          </small>
-                          {reply.isPublic ? (
-                            <LockOpen style={{ color: "#66FF66" }} />
-                          ) : (
-                            <Lock style={{ color: "#FFCC66" }} />
-                          )}
-                          <p>{reply.comment}</p>
-                        </div>
-                      </div>
-                    ))}
+                  </IconButton> */}
+                    <IconButton
+                      aria-label="Edit"
+                      onClick={() => {
+                        handleDetailFeedBack(comment);
+                      }}
+                    >
+                      <Tooltip title="Edit" arrow>
+                        <EditNote />
+                      </Tooltip>
+                    </IconButton>
+                    <IconButton
+                      aria-label="Delete"
+                      onClick={handleDeleteCommentClick(comment.id)}
+                    >
+                      <Tooltip title="Delete" arrow>
+                        <Delete />
+                      </Tooltip>
+                    </IconButton>
                   </div>
                 )}
-            </div>
-          </div>
-        ))}
-      <div style={{ backgroundColor: "#f2f2f2", padding: "20px" }}>
+                {comment.feedbackReplies &&
+                  comment.feedbackReplies.length > 0 && (
+                    <div style={{ marginLeft: "20px" }}>
+                      {comment.feedbackReplies.map((reply) => (
+                        <div
+                          key={reply.id}
+                          style={{ display: "flex", alignItems: "center" }}
+                        >
+                          <Avatar
+                            alt={reply.user.username}
+                            src={reply.user.avatarUrl}
+                            className="avatar"
+                          />
+                          <Box
+                            sx={{
+                              backgroundColor: "#c2c2c290",
+                              p: 2,
+                              boxSizing: "content-box",
+                              borderRadius: 6,
+                              width: "fit-content",
+                            }}
+                          >
+                            <Stack flexDirection={"row"} alignItems={"center"}>
+                              <Typography variant="h6">
+                                {reply.user.lastName} {reply.user.firstName}
+                              </Typography>
+                              <small style={{ marginLeft: "10px" }}>
+                                {formatDate(reply.createdAt)}
+                              </small>{" "}
+                            </Stack>
+                            <p>{reply.comment}</p>
+                          </Box>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+              </div>
+            </Stack>
+          ))}
+      </Stack>
+      <div
+        style={{ backgroundColor: "#f2f2f2", padding: "1rem", margin: "1rem" }}
+      >
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h4 style={{ color: "#666666", fontWeight: "bold" }}>Add Comment</h4>
-          <p style={{ color: "#666666" }}>
-            <Info style={{ color: "#33CCFF" }} />
-            Tag Technician(@Technician-name) to notify them
-          </p>
         </div>
         <TextField
           multiline
@@ -451,12 +495,6 @@ const CommentSolution = (props) => {
           style={{ marginBottom: "10px" }}
         />
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <div style={{ display: "flex", marginRight: "auto" }}>
-            <Checkbox color="primary" onChange={handleInputChange} />
-            <span style={{ marginTop: "10px" }}>
-              Show a comment to requester
-            </span>
-          </div>
           <Button
             variant="contained"
             color="primary"
@@ -468,24 +506,13 @@ const CommentSolution = (props) => {
         </div>
       </div>
 
-      <Dialog
+      <ConfirmDialog
+        content={"Are you sure want to delete this comment?"}
         open={open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        aria-describedby="alert-dialog-slide-description"
-      >
-        <DialogContent>
-          <DialogContentText id="alert-dialog-slide-description">
-            Are you sure want to delete this comment.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDeleteFeedBack}>Yes</Button>
-          <Button onClick={handleClose}>Cancel</Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+        action={handleDeleteFeedBack}
+        handleClose={handleClose}
+      />
+    </Stack>
   );
 };
 

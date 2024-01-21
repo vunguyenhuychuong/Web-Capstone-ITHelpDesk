@@ -1,5 +1,7 @@
 import {
-  MDBBtn,MDBContainer, MDBNavbar,
+  MDBBtn,
+  MDBContainer,
+  MDBNavbar,
   MDBNavbarBrand,
   MDBNavbarNav,
   MDBTable,
@@ -8,11 +10,27 @@ import {
 } from "mdb-react-ui-kit";
 import React, { useCallback, useState } from "react";
 import {
-  ArrowDropDown,ArrowDropUp,ContentCopy,Delete,Female,Lock,LockOpen,Male,Phone,ViewCompact,
+  ArrowDropDown,
+  ArrowDropUp,
+  ContentCopy,
+  Delete,
+  Female,
+  Lock,
+  LockOpen,
+  Male,
+  ViewCompact,
 } from "@mui/icons-material";
 import { useEffect } from "react";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import { Avatar,CircularProgress,FormControl,MenuItem,Pagination,Select,Tooltip } from "@mui/material";
+import {
+  Avatar,
+  CircularProgress,
+  FormControl,
+  MenuItem,
+  Pagination,
+  Select,
+  Tooltip,
+} from "@mui/material";
 import { toast } from "react-toastify";
 import { formatDate } from "../../helpers/FormatDate";
 import PageSizeSelector from "../Pagination/Pagination";
@@ -40,7 +58,7 @@ const UserList = () => {
         filter = `title="${encodeURIComponent(searchQuery)}"`;
       }
 
-      const mode = await getAllUser(
+      const response = await getAllUser(
         searchField,
         searchQuery,
         currentPage,
@@ -48,7 +66,8 @@ const UserList = () => {
         sortBy,
         sortDirection
       );
-      setDataUsers(mode);
+      setDataUsers(response?.data);
+      setTotalPages(response?.totalPage);
       setLoading(false);
     } catch (error) {
       console.error(error);
@@ -69,7 +88,7 @@ const UserList = () => {
     if (selectedUsers.length === dataUsers.length) {
       setSelectedUsers([]);
     } else {
-      setSelectedUsers(dataUsers.map((mode) => mode.id));
+      setSelectedUsers(dataUsers?.map((mode) => mode.id));
     }
   };
 
@@ -87,44 +106,50 @@ const UserList = () => {
   };
 
   const handleDeleteSelectedUsers = async (id) => {
-    try {
-      if (selectedUsers.length === 0) {
-        return;
-      }
-      const deletePromises = selectedUsers.map(async (userId) => {
-        try {
-          const res = await Promise.resolve(DeleteDataUser(userId));
-          if (res.isError) {
+    const shouldDelete = window.confirm(
+      "Are you sure want to delete selected users"
+    );
+    if (shouldDelete) {
+      try {
+        if (selectedUsers.length === 0) {
+          toast.warning("Please select at least one user to delete.");
+          return;
+        }
+        const deletePromises = selectedUsers.map(async (userId) => {
+          try {
+            const res = await Promise.resolve(DeleteDataUser(userId));
+            if (res.isError) {
+              throw new Error(
+                `Error deleting user with ID ${userId}: ${res.message}`
+              );
+            }
+            return userId;
+          } catch (error) {
             throw new Error(
-              `Error deleting user with ID ${userId}: ${res.message}`
+              `Error deleting user with ID ${userId}: ${error.message}`
             );
           }
-          return userId;
-        } catch (error) {
-          throw new Error(
-            `Error deleting user with ID ${userId}: ${error.message}`
-          );
-        }
-      });
+        });
 
-      const results = await Promise.allSettled(deletePromises);
+        const results = await Promise.allSettled(deletePromises);
 
-      const successfulDeletes = [];
-      results.forEach((result) => {
-        if (result.status === "fulfilled") {
-          successfulDeletes.push(result.value);
-        } else {
-          toast.error(result.reason.message);
-        }
-      });
-      const updateUsers = dataUsers.filter(
-        (user) => !successfulDeletes.includes(user.id)
-      );
-      setDataUsers(updateUsers);
-      setSelectedUsers([]);
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to delete selected users, Please try again later");
+        const successfulDeletes = [];
+        results.forEach((result) => {
+          if (result.status === "fulfilled") {
+            successfulDeletes.push(result.value);
+          } else {
+            toast.error(result.reason.message);
+          }
+        });
+        const updateUsers = dataUsers.filter(
+          (user) => !successfulDeletes.includes(user.id)
+        );
+        setDataUsers(updateUsers);
+        setSelectedUsers([]);
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to delete selected users, Please try again later");
+      }
     }
   };
 
@@ -144,7 +169,6 @@ const UserList = () => {
 
   useEffect(() => {
     fetchDataUser();
-    setTotalPages(4);
   }, [fetchDataUser]);
 
   return (
@@ -157,9 +181,9 @@ const UserList = () => {
           <MDBContainer fluid>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
-              <span style={{ color: "#FFFFFF" }}>All User</span>
+              <span style={{ color: "#FFFFFF" }}>All Users</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
                 color="#eee"
                 style={{
@@ -182,8 +206,9 @@ const UserList = () => {
                 }}
                 data-mdb-toggle="tooltip"
                 title="Delete Selected Users"
+                onClick={handleDeleteSelectedUsers}
               >
-                <Delete onClick={handleDeleteSelectedUsers} /> Delete
+                <Delete /> Delete
               </MDBBtn>
               <FormControl
                 variant="outlined"
@@ -245,7 +270,6 @@ const UserList = () => {
                   onChange={handleSelectAllUsers}
                 />
               </th>
-              <th></th>
               <th
                 style={{ fontWeight: "bold" }}
                 className="sortable-header"
@@ -350,7 +374,8 @@ const UserList = () => {
                       <ArrowDropUp />
                     ))}
                 </Tooltip>
-              </th>
+              </th>{" "}
+              <th></th>
             </tr>
           </MDBTableHead>
           <MDBTableBody className="bg-light">
@@ -361,7 +386,7 @@ const UserList = () => {
                 </td>
               </tr>
             ) : (
-              dataUsers.map((user, index) => (
+              dataUsers?.map((user, index) => (
                 <tr key={index}>
                   <td>
                     <input
@@ -370,11 +395,7 @@ const UserList = () => {
                       onChange={() => handleSelectUser(user.id)}
                     />
                   </td>
-                  <td>
-                    <ViewCompact
-                      onClick={() => handleOpenDetailCustomer(user.id)}
-                    />
-                  </td>
+
                   <td>
                     <div className="d-flex">
                       <div style={{ flex: "3" }}>
@@ -451,6 +472,11 @@ const UserList = () => {
                   </td>
                   <td>{formatDate(user.createdAt || "-")}</td>
                   <td>{formatDate(user.modifiedAt || "-")}</td>
+                  <td>
+                    <ViewCompact
+                      onClick={() => handleOpenDetailCustomer(user.id)}
+                    />
+                  </td>
                 </tr>
               ))
             )}

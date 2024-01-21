@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect } from "react";
-import { ReadNotification, getAllNotification } from "../../../app/api/notification";
+import { ReadNotification } from "../../../app/api/notification";
 import { useState } from "react";
 import {
   IconButton,
@@ -34,21 +34,20 @@ const NotificationList = ({
     };
 
     fetchData();
-  }, []);
+  }, [fetchDataListNotification]);
 
-  const handleMarkAsRead = async (notificationId) =>{
-    try{
+  const handleMarkAsRead = async (notificationId) => {
+    try {
       const result = await ReadNotification(notificationId);
-      console.log('Mark as read result:', result);
-    }catch(error){
-      console.log('Error marking notification as read:', error);
+      console.log("Mark as read result:", result);
+    } catch (error) {
+      console.log("Error marking notification as read:", error);
     }
   };
 
   return (
     <div className="notification-list-container">
       {loading ? (
-        // Display LoadingImg when data is still loading
         <div
           style={{
             display: "flex",
@@ -75,7 +74,7 @@ const NotificationList = ({
       ) : (
         <Paper elevation={3}>
           <List>
-            {notifications.map((notification) => (
+            {notifications?.map((notification) => (
               <ListItem key={notification.id}>
                 <ListItemText
                   primary={notification.title}
@@ -100,9 +99,10 @@ const NotificationList = ({
                   }
                 />
                 {!readNotifications.includes(notification.id) && (
-                  <IconButton
-                  >
-                    <DoneAll onClick={() => handleMarkAsRead(notification.id)}/>
+                  <IconButton>
+                    <DoneAll
+                      onClick={() => handleMarkAsRead(notification.id)}
+                    />
                   </IconButton>
                 )}
               </ListItem>

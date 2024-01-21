@@ -16,8 +16,6 @@ import {
   ArrowDropUp,
   ContentCopy,
   DeleteForever,
-  Lock,
-  LockOpen,
   Square,
   ViewCompact,
 } from "@mui/icons-material";
@@ -32,6 +30,8 @@ import {
   MenuItem,
   Pagination,
   Select,
+  Stack,
+  Tooltip,
 } from "@mui/material";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import {
@@ -39,8 +39,10 @@ import {
   getAllTicketSolutions,
 } from "../../../app/api/ticketSolution";
 import { toast } from "react-toastify";
-import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
+
 import CloseTicket from "../../../assets/images/NoTicketSolution.jpg";
+import CircularLoading from "../../../components/iconify/CircularLoading";
+import { useSelector } from "react-redux";
 
 const TicketSolutionList = () => {
   const [dataListTicketsSolution, setDataListTicketsSolution] = useState([]);
@@ -54,8 +56,9 @@ const TicketSolutionList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("desc");
   const [sortBy, setSortBy] = useState("createdAt");
+  const user = useSelector((state) => state.auth);
+  const userRole = user.user.role;
   const navigate = useNavigate();
-
   const fetchDataListTicketSolution = useCallback(async () => {
     try {
       let filter = "";
@@ -71,7 +74,8 @@ const TicketSolutionList = () => {
         sortBy,
         sortDirection
       );
-      setDataListTicketsSolution(response);
+      setDataListTicketsSolution(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.log(error);
     } finally {
@@ -94,54 +98,59 @@ const TicketSolutionList = () => {
       setSelectedSolutionIds([]);
     } else {
       setSelectedSolutionIds(
-        dataListTicketsSolution.map((solution) => solution.id)
+        dataListTicketsSolution?.map((solution) => solution.id)
       );
     }
   };
 
   const handleDeleteSelectedSolutions = (id) => {
-    try {
-      if (selectedSolutionIds.length === 0) {
-        return;
-      }
-
-      let currentIndex = 0;
-
-      const deleteNextSolution = () => {
-        if (currentIndex < selectedSolutionIds.length) {
-          const solutionId = selectedSolutionIds[currentIndex];
-
-          deleteTicketSolution(solutionId)
-            .then(() => {
-              console.log(
-                `Solution with ID ${solutionId} deleted successfully`
-              );
-              currentIndex++;
-              deleteNextSolution();
-            })
-            .catch((error) => {
-              console.error(
-                `Error deleting solution with ID ${solutionId}: `,
-                error
-              );
-              toast.error(
-                `Error deleting solution with ID ${solutionId}: `,
-                error
-              );
-            });
-        } else {
-          setSelectedSolutionIds([]);
-          toast.success("Selected solutions deleted successfully");
-          setRefreshData((prev) => !prev);
+    const shouldDelete = window.confirm(
+      "Are you sure want to delete selected solutions"
+    );
+    if (shouldDelete) {
+      try {
+        if (selectedSolutionIds.length === 0) {
+          return;
         }
-      };
 
-      deleteNextSolution();
-    } catch (error) {
-      console.error("Failed to delete selected solutions: ", error);
-      toast.error(
-        "Failed to delete selected solutions, Please try again later"
-      );
+        let currentIndex = 0;
+
+        const deleteNextSolution = () => {
+          if (currentIndex < selectedSolutionIds.length) {
+            const solutionId = selectedSolutionIds[currentIndex];
+
+            deleteTicketSolution(solutionId)
+              .then(() => {
+                console.log(
+                  `Solution with ID ${solutionId} deleted successfully`
+                );
+                currentIndex++;
+                deleteNextSolution();
+              })
+              .catch((error) => {
+                console.error(
+                  `Error deleting solution with ID ${solutionId}: `,
+                  error
+                );
+                toast.error(
+                  `Error deleting solution with ID ${solutionId}: `,
+                  error
+                );
+              });
+          } else {
+            setSelectedSolutionIds([]);
+            toast.success("Selected solutions deleted successfully");
+            setRefreshData((prev) => !prev);
+          }
+        };
+
+        deleteNextSolution();
+      } catch (error) {
+        console.error("Failed to delete selected solutions: ", error);
+        toast.error(
+          "Failed to delete selected solutions, Please try again later"
+        );
+      }
     }
   };
 
@@ -174,7 +183,6 @@ const TicketSolutionList = () => {
 
   useEffect(() => {
     fetchDataListTicketSolution();
-    setTotalPages(4);
   }, [fetchDataListTicketSolution, refreshData]);
 
   return (
@@ -183,42 +191,45 @@ const TicketSolutionList = () => {
         <MDBNavbar expand="lg" style={{ backgroundColor: "#3399FF" }}>
           <MDBContainer fluid style={{ color: "#FFFFFF" }}>
             <MDBNavbarBrand style={{ fontWeight: "bold", fontSize: "24px" }}>
-              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
+              <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />
               <span style={{ color: "#FFFFFF" }}>All Solutions</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
-              <MDBBtn
-                color="#eee"
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "20px",
-                  color: "#FFFFFF",
-                }}
-                onClick={() => handleOpenCreateTicketSolution()}
-              >
-                <FaPlus style={{ color: "#FFFFFF" }} />{" "}
-                <span style={{ color: "#FFFFFF" }}>New</span>
-              </MDBBtn>
-              <MDBBtn
-                color="#eee"
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "20px",
-                  color: "#FFFFFF",
-                }}
-                onClick={() => handleDeleteSelectedSolutions()}
-              >
-                <DeleteForever style={{ color: "#FFFFFF" }} />{" "}
-                <span style={{ color: "#FFFFFF" }}>Delete</span>
-              </MDBBtn>
-
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
+              {userRole === 1 ? null : (
+                <>
+                  <MDBBtn
+                    color="#eee"
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "20px",
+                      color: "#FFFFFF",
+                    }}
+                    onClick={() => handleOpenCreateTicketSolution()}
+                  >
+                    <FaPlus style={{ color: "#FFFFFF" }} />{" "}
+                    <span style={{ color: "#FFFFFF" }}>New</span>
+                  </MDBBtn>
+                  {userRole === 3 ? null : (
+                    <MDBBtn
+                      color="#eee"
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: "20px",
+                        color: "#FFFFFF",
+                      }}
+                      onClick={() => handleDeleteSelectedSolutions()}
+                    >
+                      <DeleteForever style={{ color: "#FFFFFF" }} />{" "}
+                      <span style={{ color: "#FFFFFF" }}>Delete</span>
+                    </MDBBtn>
+                  )}
+                </>
+              )}
               <FormControl
                 variant="outlined"
                 style={{
                   minWidth: 120,
-                  marginRight: 10,
-                  marginTop: 10,
-                  marginLeft: 10,
+                  margin: 10,
                 }}
                 size="small"
               >
@@ -229,14 +240,11 @@ const TicketSolutionList = () => {
                     name: "searchField",
                     id: "search-field",
                   }}
-                  style={{ color: "white" }}
+                  style={{ color: "white", height: "100%" }}
                 >
-                  <MenuItem value="id">ID</MenuItem>
                   <MenuItem value="title">Title</MenuItem>
                   <MenuItem value="keyword">Keyword</MenuItem>
                   <MenuItem value="isApproved">Status</MenuItem>
-                  <MenuItem value="isPublic">Visibility</MenuItem>
-                  <MenuItem value="reviewDate">reviewDate</MenuItem>
                 </Select>
               </FormControl>
               <div className="input-wrapper">
@@ -244,7 +252,7 @@ const TicketSolutionList = () => {
                 <input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => {
+                  onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
                       fetchDataListTicketSolution();
@@ -265,31 +273,21 @@ const TicketSolutionList = () => {
           <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr>
-                <th
-                  style={{ fontWeight: "bold", fontSize: "18px" }}
-                  onClick={() => handleSortChange("id")}
-                >
-                  ID
-                  {sortBy === "id" &&
-                    (sortDirection === "asc" ? (
-                      <ArrowDropDown />
-                    ) : (
-                      <ArrowDropUp />
-                    ))}
-                </th>
-                <th style={{ fontWeight: "bold", fontSize: "18px" }}>
-                  <input
-                    type="checkbox"
-                    checked={
-                      selectedSolutionIds.length ===
-                      dataListTicketsSolution.length
-                    }
-                    onChange={handleSelectAllSolutions}
-                  />
-                </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
+                {userRole === 2 && (
+                  <th style={{ fontWeight: "bold", fontSize: "18px" }}>
+                    <input
+                      type="checkbox"
+                      checked={
+                        selectedSolutionIds?.length ===
+                        dataListTicketsSolution?.length
+                      }
+                      onChange={handleSelectAllSolutions}
+                    />
+                  </th>
+                )}
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
+                  className="sortable-header"
                   onClick={() => handleSortChange("title")}
                 >
                   Title{""}
@@ -302,6 +300,7 @@ const TicketSolutionList = () => {
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
+                  className="sortable-header"
                   onClick={() => handleSortChange("keyword")}
                 >
                   Keyword
@@ -314,22 +313,11 @@ const TicketSolutionList = () => {
                 </th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
+                  className="sortable-header"
                   onClick={() => handleSortChange("isApproved")}
                 >
                   Status
                   {sortBy === "isApproved" &&
-                    (sortDirection === "asc" ? (
-                      <ArrowDropDown />
-                    ) : (
-                      <ArrowDropUp />
-                    ))}
-                </th>
-                <th
-                  style={{ fontWeight: "bold", fontSize: "14px" }}
-                  onClick={() => handleSortChange("isPublic")}
-                >
-                  Visibility
-                  {sortBy === "isPublic" &&
                     (sortDirection === "asc" ? (
                       <ArrowDropDown />
                     ) : (
@@ -363,6 +351,7 @@ const TicketSolutionList = () => {
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("modifiedAt")}
+                  className="sortable-header"
                 >
                   Last Update
                   {sortBy === "modifiedAt" &&
@@ -372,52 +361,51 @@ const TicketSolutionList = () => {
                       <ArrowDropUp />
                     ))}
                 </th>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
               </tr>
             </MDBTableHead>
             {loading ? (
-              <CustomizedProgressBars />
+              <MDBTableBody className="bg-light">
+                <tr>
+                  <td>
+                    <CircularLoading />
+                  </td>
+                </tr>
+              </MDBTableBody>
             ) : (
               <MDBTableBody className="bg-light">
-                {dataListTicketsSolution.map((TicketSolution, index) => {
+                {dataListTicketsSolution?.map((TicketSolution, index) => {
                   const isSelected = selectedSolutionIds.includes(
                     TicketSolution.id
                   );
                   return (
                     <tr key={index}>
-                      <td>{TicketSolution.id}</td>
-                      <td>
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() =>
-                            handleSelectSolution(TicketSolution.id)
-                          }
-                        />
-                      </td>
-                      <td>
-                        <ViewCompact
-                          onClick={() =>
-                            handleOpenDetailTicketSolution(TicketSolution.id)
-                          }
-                        />{" "}
-                      </td>
+                      {/* <td>{TicketSolution.id}</td> */}
+                      {userRole === 2 && (
+                        <td>
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() =>
+                              handleSelectSolution(TicketSolution.id)
+                            }
+                          />
+                        </td>
+                      )}
+
                       <td
-                        className="tooltip-cell"
+                        className="tooltip-cell text-truncate"
+                        style={{ maxWidth: 250 }}
                         title={`Id:${TicketSolution.id} \n💡:${TicketSolution.title}\nContent:${TicketSolution.content}`}
                       >
-                        {TicketSolution.title.length > 10
-                          ? `${TicketSolution.title.slice(0, 10)}...`
-                          : TicketSolution.title}
+                        {TicketSolution.title}
                       </td>
                       <td
-                        className="tooltip-cell"
+                        className="tooltip-cell text-truncate"
+                        style={{ maxWidth: 250 }}
                         title={`Keyword:${TicketSolution.keyword}`}
                       >
-                        {TicketSolution.keyword
-                          ? TicketSolution.keyword.length > 10
-                            ? `${TicketSolution.keyword.slice(0, 10)}...`
-                            : TicketSolution.keyword
-                          : "-"}
+                        {TicketSolution.keyword}
                       </td>
                       <td>
                         {TicketSolution.isApproved ? (
@@ -435,7 +423,7 @@ const TicketSolutionList = () => {
                           </>
                         )}
                       </td>
-                      <td>
+                      {/* <td>
                         {TicketSolution.isPublic ? (
                           <>
                             <LockOpen
@@ -449,10 +437,19 @@ const TicketSolutionList = () => {
                             <Lock className="square-icon" /> Private
                           </>
                         )}
-                      </td>
+                      </td> */}
                       <td>{formatDate(TicketSolution.reviewDate)}</td>
                       <td>{formatDate(TicketSolution.createdAt)}</td>
                       <td>{formatDate(TicketSolution.modifiedAt)}</td>
+                      <td>
+                        <Tooltip title="View detail" arrow>
+                          <ViewCompact
+                            onClick={() =>
+                              handleOpenDetailTicketSolution(TicketSolution.id)
+                            }
+                          />
+                        </Tooltip>
+                      </td>
                     </tr>
                   );
                 })}

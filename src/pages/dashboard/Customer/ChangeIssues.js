@@ -2,15 +2,13 @@ import React, { useEffect, useState } from "react";
 import { MDBBtn, MDBCol, MDBContainer, MDBRow } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import "draft-js/dist/Draft.css";
-
 import CategoryApi from "../../../app/api/category";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   editTicketByCustomer,
   getTicketByTicketId,
 } from "../../../app/api/ticket";
-import {FaTicketAlt } from "react-icons/fa";
+import { FaTicketAlt } from "react-icons/fa";
 import { priorityOption } from "../../helpers/tableComlumn";
 
 const ChangeIssues = ({ onClose, ticketId }) => {
@@ -33,7 +31,7 @@ const ChangeIssues = ({ onClose, ticketId }) => {
   const fetchCategory = async () => {
     try {
       const fetchCategories = await CategoryApi.getAllCategories();
-      setDataCategories(fetchCategories);
+      setDataCategories(fetchCategories?.data);
     } catch (error) {
       console.log("Error while fetching data", error);
     } finally {
@@ -224,7 +222,8 @@ const ChangeIssues = ({ onClose, ticketId }) => {
                 color="primary"
                 type="submit"
                 onClick={handleSubmitTicket}
-                className="me-2" >
+                className="me-2"
+              >
                 {isSubmitting ? "Submitting..." : "Submit"}
               </MDBBtn>
               <MDBBtn color="danger" onClick={onClose}>

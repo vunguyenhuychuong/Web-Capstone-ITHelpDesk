@@ -3,28 +3,31 @@ import { AddTeam, getCityList, getManagerList } from "../../../app/api/team";
 import { MDBBtn, MDBCol, MDBContainer, MDBRow } from "mdb-react-ui-kit";
 import "../../../assets/css/ticket.css";
 import { useEffect } from "react";
-import MuiAlert from '@mui/material/Alert';
+import MuiAlert from "@mui/material/Alert";
 import { Snackbar } from "@mui/material";
+import { getAllCategories } from "../../../app/api/category";
 
-const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
+const CreateTeam = ({ onClose, onFetchDataTeam }) => {
   const [data, setData] = useState({
     name: "",
     managerId: 1,
     location: "",
     description: "",
+    categoryId: 1,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dataManagers, setDataManagers] = useState([]);
+  const [dataCategories, setDataCategories] = useState([]);
   const [dataCity, setDataCity] = useState([]);
   const [open, setOpen] = useState(false);
-  
+
   const handleClick = () => {
     setOpen(true);
   };
 
   const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
 
@@ -32,25 +35,49 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
   };
   const [fieldErrors, setFieldErrors] = useState({
     name: "",
-    managerId: 1,
+    managerId: "",
     location: "",
     description: "",
   });
 
   const fetchDataCityList = async () => {
-    try{
+    try {
       const cities = await getCityList();
       setDataCity(cities);
-    }catch(error){
+      if (cities?.length > 0) {
+        setData((prevData) => ({
+          ...prevData,
+          location: cities[0].name,
+        }));
+      }
+    } catch (error) {
       console.log(error);
     }
-  }
+  };
+  const fetchCategory = async () => {
+    try {
+      const fetchCategories = await getAllCategories();
+      setDataCategories(fetchCategories?.data);
+      setData((prevData) => ({
+        ...prevData,
+        categoryId: fetchCategories.data[0]?.id,
+      }));
+    } catch (error) {
+      console.log("Error while fetching data", error);
+    } finally {
+    }
+  };
 
   const fetchDataManagerList = async () => {
     try {
       const Managers = await getManagerList();
       setDataManagers(Managers);
-
+      if (Managers?.length > 0) {
+        setData((prevData) => ({
+          ...prevData,
+          managerId: Managers[0].id,
+        }));
+      }
     } catch (error) {
       console.log(error);
     }
@@ -59,6 +86,7 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
   useEffect(() => {
     fetchDataManagerList();
     fetchDataCityList();
+    fetchCategory();
   }, []);
 
   const handleInputChange = (e) => {
@@ -136,7 +164,7 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
                 className="form-control"
                 value={data.name}
                 onChange={handleInputChange}
-                style={{ marginTop: '10px' }}
+                style={{ marginTop: "10px" }}
               />
               {fieldErrors.name && (
                 <div style={{ color: "red" }}>{fieldErrors.name}</div>
@@ -154,13 +182,36 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
                 className="form-select"
                 value={data.managerId}
                 onChange={handleInputChange}
-                style={{ marginTop: '10px' }}
+                style={{ marginTop: "10px" }}
               >
                 {dataManagers
                   .filter((manager) => manager.id !== "")
-                  .map((manager) => (
+                  ?.map((manager) => (
                     <option key={manager.id} value={manager.id}>
                       {manager.lastName} {manager.firstName}
+                    </option>
+                  ))}
+              </select>
+            </MDBCol>
+            <MDBCol md="2" className="text-center mt-2 mb-2">
+              <label htmlFor="title" className="narrow-input">
+                <span style={{ color: "red" }}>*</span>Category
+              </label>
+            </MDBCol>
+            <MDBCol md="10">
+              <select
+                id="categoryId"
+                name="categoryId"
+                className="form-select"
+                value={data.categoryId}
+                onChange={handleInputChange}
+                style={{ marginTop: "10px" }}
+              >
+                {dataCategories
+                  .filter((cate) => cate.id !== "")
+                  ?.map((cate) => (
+                    <option key={cate.id} value={cate.id}>
+                      {cate.name}
                     </option>
                   ))}
               </select>
@@ -177,14 +228,13 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
                 className="form-select"
                 value={data.location}
                 onChange={handleInputChange}
-                style={{ marginTop: '10px' }}
+                style={{ marginTop: "10px" }}
               >
-                {dataCity
-                  .map((city) => (
-                    <option key={city.code} value={city.name}>
-                      {city.name}
-                    </option>
-                  ))}
+                {dataCity?.map((city) => (
+                  <option key={city.code} value={city.name}>
+                    {city.name}
+                  </option>
+                ))}
               </select>
               {fieldErrors.location && (
                 <div style={{ color: "red" }}>{fieldErrors.location}</div>
@@ -203,7 +253,7 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
                 className="form-control"
                 value={data.description}
                 onChange={handleInputChange}
-                style={{ marginTop: '10px' }}
+                style={{ marginTop: "10px" }}
               />
               {fieldErrors.description && (
                 <div style={{ color: "red" }}>{fieldErrors.description}</div>
@@ -228,10 +278,14 @@ const CreateTeam = ({ onClose, onFetchDataTeam  }) => {
           </MDBRow>
         </form>
         <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        <MuiAlert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-          Team created successfully!
-        </MuiAlert>
-      </Snackbar>
+          <MuiAlert
+            onClose={handleClose}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            Team created successfully!
+          </MuiAlert>
+        </Snackbar>
       </MDBContainer>
     </section>
   );

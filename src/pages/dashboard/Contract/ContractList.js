@@ -23,12 +23,21 @@ import {
 } from "@mui/icons-material";
 import { formatDate } from "../../helpers/FormatDate";
 import { useNavigate } from "react-router-dom";
-import { Box, FormControl, MenuItem, Pagination, Select } from "@mui/material";
+import {
+  Box,
+  Chip,
+  FormControl,
+  MenuItem,
+  Pagination,
+  Select,
+} from "@mui/material";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import { deleteTicketSolution } from "../../../app/api/ticketSolution";
 import { toast } from "react-toastify";
 import CustomizedProgressBars from "../../../components/iconify/LinearProccessing";
 import { getAllContract } from "../../../app/api/contract";
+import { getStatusContract } from "../../helpers/tableComlumn";
+import CircularLoading from "../../../components/iconify/CircularLoading";
 
 const ContractList = () => {
   const [dataListContract, setDataListContract] = useState([]);
@@ -41,7 +50,7 @@ const ContractList = () => {
   const [searchField, setSearchField] = useState("name");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
-  const [sortBy, setSortBy] = useState("id");
+  const [sortBy, setSortBy] = useState("name");
   const navigate = useNavigate();
 
   const fetchDataListContract = useCallback(async () => {
@@ -59,7 +68,8 @@ const ContractList = () => {
         sortBy,
         sortDirection
       );
-      setDataListContract(response);
+      setDataListContract(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.log(error);
     } finally {
@@ -81,7 +91,7 @@ const ContractList = () => {
     if (selectedContractIds.length === dataListContract.length) {
       setSelectedContractIds([]);
     } else {
-      setSelectedContractIds(dataListContract.map((solution) => solution.id));
+      setSelectedContractIds(dataListContract?.map((solution) => solution.id));
     }
   };
 
@@ -129,7 +139,7 @@ const ContractList = () => {
     }
   };
 
-  const handleOpenCreateTicketSolution = () => {
+  const handleOpenCreateContract = () => {
     navigate("/home/createContract");
   };
 
@@ -158,7 +168,6 @@ const ContractList = () => {
 
   useEffect(() => {
     fetchDataListContract();
-    setTotalPages(4);
   }, [fetchDataListContract, refreshData]);
 
   return (
@@ -170,7 +179,7 @@ const ContractList = () => {
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
               <span style={{ color: "#FFFFFF" }}>All Contracts</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
                 color="#eee"
                 style={{
@@ -178,11 +187,11 @@ const ContractList = () => {
                   fontSize: "18px",
                   color: "#FFFFFF",
                 }}
-                onClick={() => handleOpenCreateTicketSolution()}
+                onClick={() => handleOpenCreateContract()}
               >
                 <FaPlus /> New
               </MDBBtn>
-              <MDBBtn
+              {/* <MDBBtn
                 color="#eee"
                 style={{
                   fontWeight: "bold",
@@ -192,7 +201,7 @@ const ContractList = () => {
                 onClick={() => handleDeleteSelectedSolutions()}
               >
                 <DeleteForever /> Delete
-              </MDBBtn>
+              </MDBBtn> */}
 
               <FormControl
                 variant="outlined"
@@ -213,12 +222,12 @@ const ContractList = () => {
                   }}
                   style={{ color: "white" }}
                 >
-                  <MenuItem value="id">ID</MenuItem>
+                  {/* <MenuItem value="id">ID</MenuItem> */}
                   <MenuItem value="name">Name</MenuItem>
                   <MenuItem value="description">Description</MenuItem>
-                  <MenuItem value="value">Value</MenuItem>
+                  {/* <MenuItem value="value">Value</MenuItem>
                   <MenuItem value="status">Status</MenuItem>
-                  <MenuItem value="startDate">StartDate</MenuItem>
+                  <MenuItem value="startDate">StartDate</MenuItem> */}
                 </Select>
               </FormControl>
               <div className="input-wrapper">
@@ -226,7 +235,7 @@ const ContractList = () => {
                 <input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => {
+                  onBeforeInput={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
                       fetchDataListContract();
@@ -247,11 +256,11 @@ const ContractList = () => {
           <MDBTable className="align-middle mb-0" responsive>
             <MDBTableHead className="bg-light">
               <tr>
-                <th 
+                {/* <th
                   style={{ fontWeight: "bold", fontSize: "18px" }}
                   onClick={() => handleSortChange("id")}
                   className="sortable-header"
-                  >
+                >
                   Id
                   {sortBy === "id" &&
                     (sortDirection === "asc" ? (
@@ -259,7 +268,7 @@ const ContractList = () => {
                     ) : (
                       <ArrowDropUp />
                     ))}
-                  </th>
+                </th> */}
                 <th style={{ fontWeight: "bold", fontSize: "18px" }}>
                   <input
                     type="checkbox"
@@ -269,7 +278,6 @@ const ContractList = () => {
                     onChange={handleSelectAllSolutions}
                   />
                 </th>
-                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("name")}
@@ -308,7 +316,7 @@ const ContractList = () => {
                       <ArrowDropUp />
                     ))}
                 </th>
-                <th
+                {/* <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("status")}
                   className="sortable-header"
@@ -320,7 +328,7 @@ const ContractList = () => {
                     ) : (
                       <ArrowDropUp />
                     ))}
-                </th>
+                </th> */}
                 <th
                   style={{ fontWeight: "bold", fontSize: "14px" }}
                   onClick={() => handleSortChange("startDate")}
@@ -373,17 +381,24 @@ const ContractList = () => {
                       <ArrowDropUp />
                     ))}
                 </th>
+                <th style={{ fontWeight: "bold", fontSize: "14px" }}></th>
               </tr>
             </MDBTableHead>
             {loading ? (
-              <CustomizedProgressBars />
+              <MDBTableBody className="bg-light">
+                <tr>
+                  <td>
+                    <CircularLoading />
+                  </td>
+                </tr>
+              </MDBTableBody>
             ) : (
               <MDBTableBody className="bg-light">
-                {dataListContract.map((Contract, index) => {
+                {dataListContract?.map((Contract, index) => {
                   const isSelected = selectedContractIds.includes(Contract.id);
                   return (
                     <tr key={index}>
-                      <td>{Contract.id}</td>
+                      {/* <td>{Contract.id}</td> */}
                       <td>
                         <input
                           type="checkbox"
@@ -391,32 +406,24 @@ const ContractList = () => {
                           onChange={() => handleSelectSolution(Contract.id)}
                         />
                       </td>
-                      <td>
-                        <ViewCompact
-                          onClick={() => handleOpenDetailContract(Contract.id)}
-                        />{" "}
-                      </td>
                       <td
-                         className="tooltip-cell"
-                         title={`Name Contract: ${Contract.name}\nDescription: ${Contract.description}`}
-                      >{Contract.name}</td>
-                      <td>
-                        {Contract.isApproved ? (
-                          <>
-                            <Square
-                              className="square-icon"
-                              style={{ color: "green" }}
-                            />
-                            <span>Approved</span>
-                          </>
-                        ) : (
-                          <>
-                            <Square className="square-icon" />
-                            <span>Not Approved</span>
-                          </>
-                        )}
+                        className="tooltip-cell"
+                        title={`Name Contract: ${Contract.name}\nDescription: ${Contract.description}`}
+                        onClick={() => handleOpenDetailContract(Contract.id)}
+                      >
+                        {Contract.name}
                       </td>
                       <td>
+                        <Chip
+                          label={getStatusContract(Contract.status)?.name}
+                          sx={{
+                            color: "white",
+                            backgroundColor: getStatusContract(Contract.status)
+                              ?.color,
+                          }}
+                        />
+                      </td>
+                      {/* <td>
                         {Contract.isPublic ? (
                           <>
                             <LockOpen
@@ -430,11 +437,16 @@ const ContractList = () => {
                             <Lock className="square-icon" /> Private
                           </>
                         )}
-                      </td>
+                      </td> */}
                       <td>{formatDate(Contract.startDate)}</td>
                       <td>{formatDate(Contract.endDate)}</td>
                       <td>{formatDate(Contract.createdAt)}</td>
                       <td>{formatDate(Contract.modifiedAt)}</td>
+                      <td>
+                        <ViewCompact
+                          onClick={() => handleOpenDetailContract(Contract.id)}
+                        />
+                      </td>
                     </tr>
                   );
                 })}

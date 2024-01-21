@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "../../../assets/css/ticketSolution.css";
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogTitle,
   Grid,
   IconButton,
+  Stack,
   TextField,
 } from "@mui/material";
 import { MDBCol, MDBRow } from "mdb-react-ui-kit";
@@ -255,12 +257,14 @@ const CreateTicketTaskTc = () => {
           <MDBRow className="border-box">
             <MDBCol md="8" className="mt-2">
               <div className="d-flex align-items-center">
-                <button type="button" className="btn btn-link icon-label">
-                  <ArrowBack
-                    onClick={() => handleGoBack()}
-                    className="arrow-back-icon"
-                  />
-                </button>
+                <Stack direction={"row"} alignItems={"center"}>
+                  <Button>
+                    <ArrowBack
+                      onClick={handleGoBack}
+                      style={{ color: "#0099FF" }}
+                    />
+                  </Button>
+                </Stack>
 
                 <div
                   style={{
@@ -342,7 +346,7 @@ const CreateTicketTaskTc = () => {
                           fontSize: "20px",
                           fontWeight: "bold",
                           textAlign: "right",
-                          marginBottom: "20px"
+                          marginBottom: "20px",
                         }}
                       >
                         TicketId
@@ -528,6 +532,7 @@ const CreateTicketTaskTc = () => {
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
                         <DateTimePicker
+                          disablePast
                           slotProps={{
                             textField: {
                               helperText: `${scheduledStartTime}`,
@@ -560,6 +565,7 @@ const CreateTicketTaskTc = () => {
                     <Grid item xs={5}>
                       <LocalizationProvider dateAdapter={AdapterMoment}>
                         <DateTimePicker
+                          disablePast
                           slotProps={{
                             textField: {
                               helperText: `${scheduledEndTime}`,

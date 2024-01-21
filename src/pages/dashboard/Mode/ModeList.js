@@ -57,7 +57,7 @@ const ModeList = () => {
         filter = `title="${encodeURIComponent(searchQuery)}"`;
       }
       setLoading(true);
-      const mode = await getDataMode(
+      const response = await getDataMode(
         searchField,
         searchQuery,
         currentPage,
@@ -65,11 +65,12 @@ const ModeList = () => {
         sortBy,
         sortDirection
       );
-      setDataModes(mode);
+      setDataModes(response?.data);
+      setTotalPages(response?.totalPage);
     } catch (error) {
       console.error(error);
-    }finally {
-      setLoading(false); 
+    } finally {
+      setLoading(false);
     }
   }, [currentPage, pageSize, searchField, searchQuery, sortBy, sortDirection]);
 
@@ -194,7 +195,6 @@ const ModeList = () => {
 
   useEffect(() => {
     fetchAllMode();
-    setTotalPages(4);
   }, [fetchAllMode]);
 
   return (
@@ -209,7 +209,7 @@ const ModeList = () => {
               <ContentCopy style={{ marginRight: "20px", color: "#FFFFFF" }} />{" "}
               <span style={{ color: "#FFFFFF" }}>All Mode</span>
             </MDBNavbarBrand>
-            <MDBNavbarNav className="ms-auto manager-navbar-nav">
+            <MDBNavbarNav className="ms-auto manager-navbar-nav justify-content-end align-items-center">
               <MDBBtn
                 color="#eee"
                 style={{
@@ -277,7 +277,7 @@ const ModeList = () => {
             </MDBNavbarNav>
           </MDBContainer>
         </MDBNavbar>
-        {loading ? ( 
+        {loading ? (
           <Box
             display="flex"
             justifyContent="center"

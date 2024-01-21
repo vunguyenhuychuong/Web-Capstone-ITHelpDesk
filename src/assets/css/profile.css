@@ -227,7 +227,7 @@
 }
 
 .section-container {
-  background-image: url("https://img-c.udemycdn.com/course/480x270/4568656_a477_2.jpg"); /* Replace 'path/to/your/image.jpg' with the actual path to your image file */
+  background-image: url("../../assets/images/background.jpg"); /* Replace 'path/to/your/image.jpg' with the actual path to your image file */
   background-size: cover;
   background-position: center;
   height: 40vh;
@@ -294,9 +294,11 @@
   color: white; /* Set text color to white */
 }
 
-
 .dashboard-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    opacity 0.3s ease;
   cursor: pointer;
 }
 

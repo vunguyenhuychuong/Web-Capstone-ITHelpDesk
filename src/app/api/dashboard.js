@@ -339,6 +339,21 @@ export async function getChartManagerContract() {
   }
 };
 
+export async function exportFileManager() {
+  const header = getAuthHeader();
+  try{
+     const res = await axios.get(`https://dichvuit-be.hisoft.vn/manager`, {
+      headers: {
+        Authorization: header,
+      }
+     })
+     console.log(res.data);
+     return res.data;
+  }catch(error) {
+    console.log(error);
+  }
+};
+
 
 
 

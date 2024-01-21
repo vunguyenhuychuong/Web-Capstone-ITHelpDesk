@@ -20,6 +20,7 @@ import {
 import moment from "moment";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import Gallery from "react-image-gallery";
 
 const CreateChildContract = () => {
   const navigate = useNavigate();
@@ -525,6 +526,7 @@ const CreateChildContract = () => {
                 <button
                   type="button"
                   className="btn btn-secondary custom-btn-margin"
+                  onClick={() => handleGoBack()}
                 >
                   Cancel
                 </button>
